@@ -140,6 +140,9 @@
 		if (interface.role == 'downstream')
 			interface.type = 'bridge';
 		netdev = '';
+	} else if (tunnel_proto == 'vxlan') {
+		netdev = '@' + name + '_vx';
+		interface.type = 'bridge';
 	} else
 		// anything else requires a bridge-vlan
 		include("interface/bridge-vlan.uc", { interface, name, eth_ports, this_vid, bridgedev });
