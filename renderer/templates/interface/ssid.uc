@@ -167,7 +167,7 @@
 	function match_sae_pwe(phy) {
 		if ('6G' in phy.band)
 			return 1;
-		return 2;
+		return '';
 	}
 
 	function match_wds() {
