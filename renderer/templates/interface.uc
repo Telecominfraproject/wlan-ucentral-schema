@@ -1,9 +1,17 @@
 {%
 	let has_downstream_relays = false;
+	let dest;
 
 	// Skip interfaces previously marked as conflicting.
 	if (interface.conflicting) {
 		warn("Skipping conflicting interface declaration");
+
+		return;
+	}
+
+	// Skip upstream interfaces that try to use a wireguard overlay
+	if (interface.role == 'upstream' && 'wireguard-overlay' in interface.services) {
+		warn("Skipping interface. wireguard-overlay is not allowed on upstream interfaces.");
 
 		return;
 	}
@@ -147,6 +155,9 @@
 		// anything else requires a bridge-vlan
 		include("interface/bridge-vlan.uc", { interface, name, eth_ports, this_vid, bridgedev });
 
+	if (interface.role == "downstream" && "wireguard-overlay" in interface.services)
+		dest = 'unet';
+
 	if ("open-flow" in interface.services)
 		openflow_prefix = "ofwlan";
 
@@ -156,7 +167,7 @@
 		ipv6_mode, ipv6: interface.ipv6 || {}
 	});
 
-	include('interface/firewall.uc', { name, ipv4_mode, ipv6_mode });
+	include('interface/firewall.uc', { name, ipv4_mode, ipv6_mode, dest });
 
 	if (interface.ipv4 || interface.ipv6) {
 		include('interface/dhcp.uc', {
@@ -185,6 +196,13 @@
 	if (interface.captive)
 		include('interface/captive.uc', { name });
 %}
+
+{% if (interface.role == "downstream" && "wireguard-overlay" in interface.services): %}
+add network rule
+set network.@rule[-1].in='{{name}}'
+set network.@rule[-1].lookup='{{ routing_table.get('wireguard_overlay') }}'
+{% endif %}
+
 
 {% if (interface.role == "downstream" && "open-flow" in interface.services): %}
 {% for (let port in keys(eth_ports)): %}

@@ -2511,6 +2511,62 @@
                 }
             }
         },
+        "service.wireguard-overlay": {
+            "type": "object",
+            "properties": {
+                "proto": {
+                    "type": "string",
+                    "const": "wireguard-overlay"
+                },
+                "private-key": {
+                    "type": "string"
+                },
+                "peer-port": {
+                    "type": "integer",
+                    "maximum": 65535,
+                    "minimum": 1,
+                    "default": 3456
+                },
+                "peer-exchange-port": {
+                    "type": "integer",
+                    "maximum": 65535,
+                    "minimum": 1,
+                    "default": 3458
+                },
+                "hosts": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "key": {
+                                "type": "string"
+                            },
+                            "endpoint": {
+                                "type": "string",
+                                "format": "uc-ip"
+                            },
+                            "subnet": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string",
+                                    "format": "uc-cidr"
+                                }
+                            },
+                            "ipaddr": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string",
+                                    "format": "uc-ip"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "service": {
             "type": "object",
             "properties": {
@@ -2564,6 +2620,9 @@
                 },
                 "airtime-fairness": {
                     "$ref": "#/$defs/service.airtime-fairness"
+                },
+                "wireguard-overlay": {
+                    "$ref": "#/$defs/service.wireguard-overlay"
                 }
             }
         },
