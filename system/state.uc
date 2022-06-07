@@ -297,7 +297,7 @@ cursor.foreach("network", "interface", function(d) {
 				if (length(stations[vap.ifname])) {
 					ssid.associations = stations[vap.ifname];
 					for (let assoc in ssid.associations)
-						if (length(ip4leases[assic.station]))
+						if (length(ip4leases[assoc.station]))
 			                                assoc.ipaddr_v4 = ip4leases[mac];
 				}
 
