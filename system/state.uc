@@ -44,6 +44,7 @@ let poe = ctx.call("poe", "info");
 let gps = ctx.call("gps", "info");
 let lldp = [];
 let wireless = cursor.get_all("wireless");
+let snoop = ctx.call("dhcpsnoop", "dump");
 
 /* prepare dhcp leases cache */
 let ip4leases = {};
@@ -296,11 +297,13 @@ cursor.foreach("network", "interface", function(d) {
 
 				if (length(stations[vap.ifname])) {
 					ssid.associations = stations[vap.ifname];
-					for (let assoc in ssid.associations)
+					for (let assoc in ssid.associations) {
 						if (length(ip4leases[assoc.station]))
-			                                assoc.ipaddr_v4 = ip4leases[mac];
+			                                assoc.ipaddr_v4 = ip4leases[assoc.station];
+						else if (snoop && snoop[assoc.station])
+							assoc.ipaddr_v4 = snoop[assoc.station];
+					}
 				}
-
 
 				ssid.iface = vap.ifname;
 				ssid.counters = ports[vap.ifname].stats;
