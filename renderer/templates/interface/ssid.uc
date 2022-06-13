@@ -230,7 +230,7 @@ add_list openvswitch.@ovs_bridge[-1].ports="{{ ifname }}"
 		return radius_vendor;
 	}
 
-	let radius_gw_proxy = (index(ssid.services, "radius-gw-proxy") >= 0);
+	let radius_gw_proxy = ssid.services && (index(ssid.services, "radius-gw-proxy") >= 0);
 %}
 
 # Wireless configuration
