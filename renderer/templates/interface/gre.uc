@@ -27,5 +27,9 @@ include("common.uc", {
 
 set network.gre_{{ interface.vlan.id }}=interface
 set network.gre_{{ interface.vlan.id }}.ifname='gre.{{ interface.vlan.id }}'
-set network.gre_{{ interface.vlan.id }}.network='gretun_{{ interface.vlan.id }}'
 set network.gre_{{ interface.vlan.id }}.mtu='1500'
+
+add network device
+set network.@device[-1].name={{ s(name) }}
+set network.@device[-1].type='bridge'
+set network.@device[-1].ports='gre4t-gre.{{ interface.vlan.id }}'

@@ -151,7 +151,7 @@
 	} else if (tunnel_proto == 'vxlan') {
 		netdev = '@' + name + '_vx';
 		interface.type = 'bridge';
-	} else
+	} else if (tunnel_proto != 'gre')
 		// anything else requires a bridge-vlan
 		include("interface/bridge-vlan.uc", { interface, name, eth_ports, this_vid, bridgedev });
 
