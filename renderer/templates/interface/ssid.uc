@@ -271,7 +271,7 @@ set wireless.{{ section }}.fils_discovery_max_interval={{ ssid.fils_discovery_in
 set wireless.{{ section }}.ieee80211w={{ match_ieee80211w(phy) }}
 set wireless.{{ section }}.sae_pwe={{ match_sae_pwe(phy) }}
 set wireless.{{ section }}.encryption={{ crypto.proto }}
-set wireless.{{ section }}.key={{ crypto.key }}
+set wireless.{{ section }}.key={{ s(crypto.key) }}
 
 {%   if (crypto.eap_local): %}
 set wireless.{{ section }}.eap_server=1
