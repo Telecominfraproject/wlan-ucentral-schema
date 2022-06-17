@@ -14,15 +14,43 @@ items:
       type: string
       description:
         The BSSID of the remote BSS.
+    station:
+      type: string
+      description:
+        The MAC address of the station.
     rssi:
       type: number
       description:
         The RX signal strength of the remore BSS. (dBm)
+    connected:
+      type: number
+      description:
+        The time since connected
+    inactive:
+      type: number
+      description:
+        The time since inactive
+    tx_duration:
+      type: number
+      description:
+        The tx duration
+    rx_duration:
+      type: number
+      description:
+        The rx duration
     rx_bytes:
       type: number
       description:
         The number of bytes received.
+    ack_signal:
+      type: number
+    ack_signal_avg:
+      type: number
     rx_packets:
+      type: number
+      description:
+        The number of packets received.
+    tx_packets:
       type: number
       description:
         The number of packets received.
@@ -30,7 +58,53 @@ items:
       type: number
       description:
         The number of bytes transmitted.
+    tx_retries:
+      type: number
     tx_failed:
       type: number
       description:
         The number of packets transmitted.
+    rx_rate:
+      type: array
+      items:
+        properties:
+          bitrate:
+            type: number
+          sgi:
+            type: boolean
+          vht:
+            type: boolean
+          mcs:
+            type: number
+          nss:
+            type: number
+          chwidth:
+            type: number
+    tx_rate:
+      type: array
+      items:
+        properties:
+          bitrate:
+            type: number
+          sgi:
+            type: boolean
+          vht:
+            type: boolean
+          mcs:
+            type: number
+          nss:
+            type: number
+          chwidth:
+            type: number
+    tid_stats:
+       type: array
+       items:
+         properties:
+           rx_msdu:
+             type: number
+           tx_msdu:
+             type: number
+           tx_msdu_retries:
+             type: number
+           tx_msdu_failed:
+             type: number
