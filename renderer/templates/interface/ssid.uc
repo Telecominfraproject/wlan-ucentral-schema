@@ -212,22 +212,23 @@ add_list openvswitch.@ovs_bridge[-1].ports="{{ ifname }}"
 	if (ssid.bss_mode == "wds-sta")
 		bss_mode =  "sta";
 
-	function radius_vendor_tlv_serial() {
+	function radius_vendor_tlv(server, port) {
 		let radius_serial = replace(serial, /^(..)(..)(..)(..)(..)(..)$/, "$1-$2-$3-$4-$5-$6");
 		let radius_serial_len = length(radius_serial) + 2;
-		let radius_vendor = "26:x:0000e60847" + // vendor element
-			sprintf("%02x", 2 + radius_serial_len) +
+		let radius_vendor = "26:x:0000e608" + // vendor element
 			"0113" + replace(radius_serial, /./g, (m) => sprintf("%02x", ord(m)));
+
+		let radius_ip = sprintf("%s:%s", server, port);
+		let radius_ip_len = length(radius_ip) + 2;
+		radius_vendor += "02" + sprintf("%02x", radius_ip_len) + replace(radius_ip, /./g, (m) => sprintf("%02x", ord(m)));
 		return radius_vendor;
 	}
 
-	function radius_vendor_tlv_server(server, port) {
-		let radius_ip = sprintf("%s:%s", server, port);
-		let radius_ip_len = length(radius_ip) + 2;
-		let radius_vendor = "26:x:0000e60847" + // vendor element
-			sprintf("%02x", 2 + radius_ip_len) +
-			"02" + sprintf("%02x", radius_ip_len) + replace(radius_ip, /./g, (m) => sprintf("%02x", ord(m)));
-		return radius_vendor;
+	function radius_proxy_tlv(server, port, name) {
+		let tlv = "33:x:" +
+			replace(replace(serial, /^(..)(..)(..)(..)(..)(..)$/, "$1$2$3$4$5$6") + sprintf(":%s:%s:%s", server, port, name),
+				/./g, (m) => sprintf("%02x", ord(m)));
+		return tlv;
 	}
 
 	let radius_gw_proxy = ssid.services && (index(ssid.services, "radius-gw-proxy") >= 0);
@@ -294,8 +295,11 @@ set wireless.{{ section }}.auth_secret={{ crypto.auth.secret }}
 {%     for (let request in crypto.auth.request_attribute): %}
 add_list wireless.{{ section }}.radius_auth_req_attr={{ s(request.id + ':' + request.value) }}
 {%     endfor %}
-add_list wireless.{{ section }}.radius_auth_req_attr={{ s(radius_vendor_tlv_serial()) }}
-add_list wireless.{{ section }}.radius_auth_req_attr={{ s(radius_vendor_tlv_server(crypto.auth.host, crypto.auth.port)) }}
+{%     if (radius_gw_proxy): %}
+add_list wireless.{{ section }}.radius_auth_req_attr={{ s(radius_proxy_tlv(crypto.auth.host, crypto.auth.port, name + '_' + n + '_' + count)) }}
+{%     else %}
+add_list wireless.{{ section }}.radius_auth_req_attr={{ s(radius_vendor_tlv(crypto.auth.host, crypto.auth.port)) }}
+{%     endif %}
 {%   endif %}
 
 {%   if (crypto.acct): %}
@@ -306,8 +310,11 @@ set wireless.{{ section }}.acct_interval={{ crypto.acct.interval }}
 {%     for (let request in crypto.acct.request_attribute): %}
 add_list wireless.{{ section }}.radius_acct_req_attr={{ s(request.id + ':' + request.value) }}
 {%     endfor %}
-add_list wireless.{{ section }}.radius_acct_req_attr={{ s(radius_vendor_tlv_serial()) }}
-add_list wireless.{{ section }}.radius_acct_req_attr={{ s(radius_vendor_tlv_server(crypto.acct.host, crypto.acct.port)) }}
+{%     if (radius_gw_proxy): %}
+add_list wireless.{{ section }}.radius_acct_req_attr={{ s(radius_proxy_tlv(crypto.acct.host, crypto.acct.port, name + '_' + n + '_' + count)) }}
+{%     else %}
+add_list wireless.{{ section }}.radius_acct_req_attr={{ s(radius_vendor_tlv(crypto.acct.host, crypto.acct.port)) }}
+{%     endif %}
 {%   endif %}
 
 {%   if (crypto.dyn_auth): %}
