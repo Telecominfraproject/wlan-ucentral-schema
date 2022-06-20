@@ -78,7 +78,7 @@ add radsecproxy realm
 set radsecproxy.@realm[-1].name='{{ name }}'
 set radsecproxy.@realm[-1].server='server{{ idx }}auth'
 {%       if (realm.acct_server): %}
-set radsecproxy.@realm[-1].accountingServer='server{{ idx }}'
+set radsecproxy.@realm[-1].accountingServer='server{{ idx }}acct'
 {%       endif %}
 {%     endfor %}
 {%   endif %}
