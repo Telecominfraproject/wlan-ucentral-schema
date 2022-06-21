@@ -341,6 +341,13 @@ add_list wireless.{{ section }}.radius_acct_req_attr={{ s(radius_vendor_tlv(cryp
 set wireless.{{ section }}.dae_client={{ crypto.dyn_auth.host }}
 set wireless.{{ section }}.dae_port={{ crypto.dyn_auth.port }}
 set wireless.{{ section }}.dae_secret={{ crypto.dyn_auth.secret }}
+
+set firewall.dyn_auth=rule
+set firewall.dyn_auth.name='Allow-CoA'
+set firewall.dyn_auth.src='{{ s(ethernet.find_interface("upstream", 0)) }}'
+set firewall.dyn_auth.dest_port='{{ crypto.dyn_auth.port }}'
+set firewall.dyn_auth.proto='udp'
+set firewall.dyn_auth.target='ACCEPT'
 {%   endif %}
 
 {%   if (crypto.radius): %}
