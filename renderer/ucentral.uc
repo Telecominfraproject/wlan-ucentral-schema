@@ -9,6 +9,7 @@ let fs = require("fs");
 
 let inputfile = fs.open(ARGV[0], "r");
 let inputjson = json(inputfile.read("all"));
+let custom_config = (split(ARGV[0], ".")[0] != "/etc/ucentral/ucentral");
 
 let error = 0;
 
@@ -68,13 +69,12 @@ try {
 				  '/etc/init.d/dnsmasq restart'])
 			system(cmd);
 
-		let old_config = fs.readlink("/etc/ucentral/ucentral.active");
-		fs.unlink('/etc/ucentral/ucentral.active');
-		fs.symlink(ARGV[0], '/etc/ucentral/ucentral.active');
+		if (!custom_config) {
+			fs.unlink('/etc/ucentral/ucentral.active');
+			fs.symlink(ARGV[0], '/etc/ucentral/ucentral.active');
+		}
 
 		set_service_state(true);
-		if (old_config && split(old_config, ".")[1] == "/etc/ucentral/ucentral")
-			fs.unlink(old_config);
 	} else {
 		error = 1;
 	}
@@ -90,7 +90,7 @@ catch (e) {
 
 let ubus = require("ubus").connect();
 
-if (inputjson.uuid && inputjson.uuid > 1) {
+if (inputjson.uuid && inputjson.uuid > 1 && !custom_config) {
 	let status = {
 		error,
 		text: error ? "Failed" : "Success",
