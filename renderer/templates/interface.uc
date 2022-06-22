@@ -185,11 +185,25 @@
 			include('interface/ssid.uc', {
 				location: location + '/ssids/' + i,
 				ssid: { ...ssid, bss_mode: mode },
-				count: count++,
+				count,
 				name,
 				network,
 				openflow_prefix,
 			});
+			if (ssid?.encryption?.proto == 'owe') {
+				ssid.encryption.proto = 'none';
+				include('interface/ssid.uc', {
+					location: location + '/ssids/' + i + '_owe',
+					ssid: { ...ssid, bss_mode: mode },
+					count,
+					name,
+					network,
+					openflow_prefix,
+					owe: true,
+			});
+
+			}
+			count++;
 		}
 	}
 

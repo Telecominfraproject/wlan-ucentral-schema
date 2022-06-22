@@ -128,6 +128,11 @@
 			};
 		}
 
+		if (ssid?.encryption?.proto in [ "owe" ])
+			return {
+				proto: 'owe'
+			};
+
 		if (ssid.encryption.proto in [ "psk", "psk2", "psk-mixed", "sae", "sae-mixed" ] &&
 		    ssid.encryption.key)
 			return {
@@ -236,7 +241,8 @@ add_list openvswitch.@ovs_bridge[-1].ports="{{ ifname }}"
 
 # Wireless configuration
 {% for (let n, phy in phys): %}
-{%   let section = name + '_' + n + '_' + count; %}
+{%   let basename = name + '_' + n + '_' + count; %}
+{%   let section = (owe ? 'o' : '' ) + basename; %}
 {%   let id = wiphy.allocate_ssid_section_id(phy) %}
 {%   let crypto = validate_encryption(phy); %}
 {%   let ifname = openflow_ifname(n, count) %}
@@ -245,6 +251,14 @@ set wireless.{{ section }}=wifi-iface
 set wireless.{{ section }}.ucentral_path={{ s(location) }}
 set wireless.{{ section }}.device={{ phy.section }}
 set wireless.{{ section }}.ifname={{ s(ifname) }}
+{%   if (ssid?.encryption?.proto == 'owe'): %}
+set wireless.{{ section }}.ifname={{ s(section) }}
+set wireless.{{ section }}.owe_transition_ifname={{ s('o' + section) }}
+{%   endif %}
+{%   if (owe): %}
+set wireless.{{ section }}.ifname={{ s(section) }}
+set wireless.{{ section }}.owe_transition_ifname={{ s(basename) }}
+{%   endif %}
 {%   if (bss_mode == 'mesh'): %}
 set wireless.{{ section }}.mode={{ bss_mode }}
 set wireless.{{ section }}.mesh_id={{ s(ssid.name) }}
