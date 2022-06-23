@@ -144,7 +144,7 @@
 	} else if ("open-flow" in interface.services && interface.role == "downstream") {
 		netdev = "gw0";
 		network = "";
-	} else if (!interface.ethernet && length(interface.ssids) == 1 && !tunnel_proto) {
+	} else if (!interface.ethernet && length(interface.ssids) == 1 && !tunnel_proto && !("vxlan-overlay" in interface.services)) {
 		if (interface.role == 'downstream')
 			interface.type = 'bridge';
 		netdev = '';

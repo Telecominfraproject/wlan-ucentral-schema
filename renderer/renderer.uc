@@ -996,6 +996,55 @@ let routing_table = {
 };
 
 /**
+ * @class uCentral.latency
+ * @classdesc
+ *
+ * The latency measurement utility class allows registering IPs and URLs that will
+ * get pinged periodically to find out the latency.
+ */
+
+/** @lends uCentral.routing_table.prototype */
+
+let latency = {
+	ipv4: [],
+
+	ipv6: [],
+
+	/**
+	 * Add an IP/URL that shall have its latency measured
+	 *
+	 * @param {string} ip/url  The IP/URL to measure
+	 * @param {number} network family
+	 */
+	add: function(host, family) {
+		switch(family) {
+		case 4:
+			push(this.ipv4, host);
+			break;
+		case 6:
+			push(this.ipv6, host);
+			break;
+		}
+	},
+
+	/**
+	 * create the files in /tmp that hold the hosts that we want to measure
+	 */
+	write: function() {
+		for (let family in ['ipv4', 'ipv6']) {
+			let file = fs.open(`/tmp/latency.${family}`, 'w');
+			if (!file) {
+				warn(`failed to open /tmp/latency.${family}\n`);
+				continue;
+			}
+			for (let ip in this[family])
+				file.write(ip + '\n');
+			file.close();
+		}
+	},
+};
+
+/**
  * @constructs
  * @name uCentral
  * @classdesc
@@ -1043,6 +1092,9 @@ return /** @lends uCentral.prototype */ {
 
 			/** @member {uCentral.files} */
 			files,
+
+			/** @member {uCentral.latency} */
+			latency,
 
 			/** @member {uCentral.shell} */
 			shell,

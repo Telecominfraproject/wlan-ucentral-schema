@@ -26,6 +26,27 @@ properties:
     maximum: 65535
     minimum: 1
     default: 3458
+  root-node:
+    description:
+      The descritption of the root node of the overlay.
+    type: object
+    properties:
+      key:
+        description:
+          The public key of the host.
+        type: string
+      endpoint:
+        description:
+          The public IP of the host (optional).
+        type: string
+        format: uc-ip
+      ipaddr:
+        description:
+          The list of private IPs that a host is reachable on inside the overlay.
+        type: array
+        items:
+          type: string
+          format: uc-ip
   hosts:
     description:
       The list of all known hosts inside the overlay.
@@ -60,3 +81,28 @@ properties:
           items:
             type: string
             format: uc-ip
+  vxlan:
+    description:
+      The descritption of the root node of the overlay.
+    type: object
+    properties:
+      port:
+        description:
+          The network port that shall be used to establish the vxlan overlay.
+        type: integer
+        maximum: 65535
+        minimum: 1
+        default: 3457
+      mtu:
+        description:
+          The MTU that shall be used by the vxlan tunnel.
+        type: integer
+        maximum: 65535
+        minimum: 256
+        default: 1420
+      isolate:
+        description:
+          If set to true hosts will only be able to talk with the root node and not
+          forward L@ traffic between each other.
+        type: boolean
+        default: true

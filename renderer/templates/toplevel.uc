@@ -105,4 +105,6 @@
 
 	if (state.config_raw)
 		include("config_raw.uc", { location: '/config_raw', config_raw: state.config_raw });
+
+	latency.write();
 %}

@@ -6839,6 +6839,79 @@ function instantiateServiceWireguardOverlay(location, value, errors) {
 			obj.peer_exchange_port = 3458;
 		}
 
+		function parseRootNode(location, value, errors) {
+			if (type(value) == "object") {
+				let obj = {};
+
+				function parseKey(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "key")) {
+					obj.key = parseKey(location + "/key", value["key"], errors);
+				}
+
+				function parseEndpoint(location, value, errors) {
+					if (type(value) == "string") {
+						if (!matchUcIp(value))
+							push(errors, [ location, "must be a valid IPv4 or IPv6 address" ]);
+
+					}
+
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "endpoint")) {
+					obj.endpoint = parseEndpoint(location + "/endpoint", value["endpoint"], errors);
+				}
+
+				function parseIpaddr(location, value, errors) {
+					if (type(value) == "array") {
+						function parseItem(location, value, errors) {
+							if (type(value) == "string") {
+								if (!matchUcIp(value))
+									push(errors, [ location, "must be a valid IPv4 or IPv6 address" ]);
+
+							}
+
+							if (type(value) != "string")
+								push(errors, [ location, "must be of type string" ]);
+
+							return value;
+						}
+
+						return map(value, (item, i) => parseItem(location + "/" + i, item, errors));
+					}
+
+					if (type(value) != "array")
+						push(errors, [ location, "must be of type array" ]);
+
+					return value;
+				}
+
+				if (exists(value, "ipaddr")) {
+					obj.ipaddr = parseIpaddr(location + "/ipaddr", value["ipaddr"], errors);
+				}
+
+				return obj;
+			}
+
+			if (type(value) != "object")
+				push(errors, [ location, "must be of type object" ]);
+
+			return value;
+		}
+
+		if (exists(value, "root-node")) {
+			obj.root_node = parseRootNode(location + "/root-node", value["root-node"], errors);
+		}
+
 		function parseHosts(location, value, errors) {
 			if (type(value) == "array") {
 				function parseItem(location, value, errors) {
@@ -6960,6 +7033,83 @@ function instantiateServiceWireguardOverlay(location, value, errors) {
 
 		if (exists(value, "hosts")) {
 			obj.hosts = parseHosts(location + "/hosts", value["hosts"], errors);
+		}
+
+		function parseVxlan(location, value, errors) {
+			if (type(value) == "object") {
+				let obj = {};
+
+				function parsePort(location, value, errors) {
+					if (type(value) in [ "int", "double" ]) {
+						if (value > 65535)
+							push(errors, [ location, "must be lower than or equal to 65535" ]);
+
+						if (value < 1)
+							push(errors, [ location, "must be bigger than or equal to 1" ]);
+
+					}
+
+					if (type(value) != "int")
+						push(errors, [ location, "must be of type integer" ]);
+
+					return value;
+				}
+
+				if (exists(value, "port")) {
+					obj.port = parsePort(location + "/port", value["port"], errors);
+				}
+				else {
+					obj.port = 3457;
+				}
+
+				function parseMtu(location, value, errors) {
+					if (type(value) in [ "int", "double" ]) {
+						if (value > 65535)
+							push(errors, [ location, "must be lower than or equal to 65535" ]);
+
+						if (value < 256)
+							push(errors, [ location, "must be bigger than or equal to 256" ]);
+
+					}
+
+					if (type(value) != "int")
+						push(errors, [ location, "must be of type integer" ]);
+
+					return value;
+				}
+
+				if (exists(value, "mtu")) {
+					obj.mtu = parseMtu(location + "/mtu", value["mtu"], errors);
+				}
+				else {
+					obj.mtu = 1420;
+				}
+
+				function parseIsolate(location, value, errors) {
+					if (type(value) != "bool")
+						push(errors, [ location, "must be of type boolean" ]);
+
+					return value;
+				}
+
+				if (exists(value, "isolate")) {
+					obj.isolate = parseIsolate(location + "/isolate", value["isolate"], errors);
+				}
+				else {
+					obj.isolate = true;
+				}
+
+				return obj;
+			}
+
+			if (type(value) != "object")
+				push(errors, [ location, "must be of type object" ]);
+
+			return value;
+		}
+
+		if (exists(value, "vxlan")) {
+			obj.vxlan = parseVxlan(location + "/vxlan", value["vxlan"], errors);
 		}
 
 		return obj;

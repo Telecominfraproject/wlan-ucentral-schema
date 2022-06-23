@@ -2534,6 +2534,25 @@
                     "minimum": 1,
                     "default": 3458
                 },
+                "root-node": {
+                    "type": "object",
+                    "properties": {
+                        "key": {
+                            "type": "string"
+                        },
+                        "endpoint": {
+                            "type": "string",
+                            "format": "uc-ip"
+                        },
+                        "ipaddr": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "format": "uc-ip"
+                            }
+                        }
+                    }
+                },
                 "hosts": {
                     "type": "array",
                     "items": {
@@ -2563,6 +2582,27 @@
                                     "format": "uc-ip"
                                 }
                             }
+                        }
+                    }
+                },
+                "vxlan": {
+                    "type": "object",
+                    "properties": {
+                        "port": {
+                            "type": "integer",
+                            "maximum": 65535,
+                            "minimum": 1,
+                            "default": 3457
+                        },
+                        "mtu": {
+                            "type": "integer",
+                            "maximum": 65535,
+                            "minimum": 256,
+                            "default": 1420
+                        },
+                        "isolate": {
+                            "type": "boolean",
+                            "default": true
                         }
                     }
                 }
