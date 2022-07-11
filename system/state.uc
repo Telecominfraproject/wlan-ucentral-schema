@@ -258,8 +258,12 @@ cursor.foreach("network", "interface", function(d) {
 			client.mac = mac;
 			if (length(topo["ipv4"]))
 				client.ipv4_addresses = topo["ipv4"];
+			else if (snoop && snoop[mac])
+				client.ipv4_addresses = [ snoop[mac] ];
+
 			if (length(topo["ipv6"]))
 				client.ipv6_addresses = topo["ipv6"];
+
 			client.ports = topo.fdb;
 			client.last_seen == topo.last_seen;
 			if (index(stats.types, 'clients') >= 0)
