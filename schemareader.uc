@@ -7059,7 +7059,7 @@ function instantiateServiceWireguardOverlay(location, value, errors) {
 					obj.port = parsePort(location + "/port", value["port"], errors);
 				}
 				else {
-					obj.port = 3457;
+					obj.port = 4789;
 				}
 
 				function parseMtu(location, value, errors) {

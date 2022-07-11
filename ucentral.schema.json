@@ -2592,7 +2592,7 @@
                             "type": "integer",
                             "maximum": 65535,
                             "minimum": 1,
-                            "default": 3457
+                            "default": 4789
                         },
                         "mtu": {
                             "type": "integer",

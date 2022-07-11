@@ -63,7 +63,7 @@ if (vxlan) {
 		"l2-tunnel": {
 			"type": "vxlan",
 			"config": {
-				port: wireguard_overlay?.vxlan?.port || 3457,
+				port: wireguard_overlay?.vxlan?.port || 4789,
 			},
 			"members": [ "gateway", "@ap" ]
 		}

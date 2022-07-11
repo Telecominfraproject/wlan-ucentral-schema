@@ -92,7 +92,7 @@ properties:
         type: integer
         maximum: 65535
         minimum: 1
-        default: 3457
+        default: 4789
       mtu:
         description:
           The MTU that shall be used by the vxlan tunnel.
