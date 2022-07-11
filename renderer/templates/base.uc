@@ -19,12 +19,16 @@ add network device
 set network.@device[-1].name=up
 set network.@device[-1].type=bridge
 set network.@device[-1].stp={{ loop_detect("upstream") }}
+set network.@device[-1].igmp_snooping='1'
+set network.@device[-1].multicast_to_unicast='1'
 
 {% if (capab.platform != "switch"): %}
 add network device
 set network.@device[-1].name=down
 set network.@device[-1].type=bridge
 set network.@device[-1].stp={{ loop_detect("downstream") }}
+set network.@device[-1].igmp_snooping='1'
+set network.@device[-1].multicast_to_unicast='1'
 
 {% endif %}
 set network.up_none=interface
