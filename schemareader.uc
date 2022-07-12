@@ -3019,31 +3019,123 @@ function instantiateInterfaceSsidRadiusServer(location, value, errors) {
 		function parseRequestAttribute(location, value, errors) {
 			if (type(value) == "array") {
 				function parseItem(location, value, errors) {
-					if (type(value) == "object") {
-						let obj = {};
+					function parseVariant0(location, value, errors) {
+						if (type(value) == "object") {
+							let obj = {};
 
-						function parseId(location, value, errors) {
-							if (type(value) in [ "int", "double" ]) {
-								if (value > 255)
-									push(errors, [ location, "must be lower than or equal to 255" ]);
+							function parseVendorId(location, value, errors) {
+								if (type(value) in [ "int", "double" ]) {
+									if (value > 65535)
+										push(errors, [ location, "must be lower than or equal to 65535" ]);
 
-								if (value < 1)
-									push(errors, [ location, "must be bigger than or equal to 1" ]);
+									if (value < 1)
+										push(errors, [ location, "must be bigger than or equal to 1" ]);
 
+								}
+
+								if (type(value) != "int")
+									push(errors, [ location, "must be of type integer" ]);
+
+								return value;
 							}
 
-							if (type(value) != "int")
-								push(errors, [ location, "must be of type integer" ]);
+							if (exists(value, "vendor-id")) {
+								obj.vendor_id = parseVendorId(location + "/vendor-id", value["vendor-id"], errors);
+							}
 
-							return value;
+							function parseVendorAttributes(location, value, errors) {
+								if (type(value) == "array") {
+									function parseItem(location, value, errors) {
+										if (type(value) == "object") {
+											let obj = {};
+
+											function parseId(location, value, errors) {
+												if (type(value) in [ "int", "double" ]) {
+													if (value > 255)
+														push(errors, [ location, "must be lower than or equal to 255" ]);
+
+													if (value < 1)
+														push(errors, [ location, "must be bigger than or equal to 1" ]);
+
+												}
+
+												if (type(value) != "int")
+													push(errors, [ location, "must be of type integer" ]);
+
+												return value;
+											}
+
+											if (exists(value, "id")) {
+												obj.id = parseId(location + "/id", value["id"], errors);
+											}
+
+											function parseValue(location, value, errors) {
+												if (type(value) != "string")
+													push(errors, [ location, "must be of type string" ]);
+
+												return value;
+											}
+
+											if (exists(value, "value")) {
+												obj.value = parseValue(location + "/value", value["value"], errors);
+											}
+
+											return obj;
+										}
+
+										if (type(value) != "object")
+											push(errors, [ location, "must be of type object" ]);
+
+										return value;
+									}
+
+									return map(value, (item, i) => parseItem(location + "/" + i, item, errors));
+								}
+
+								if (type(value) != "array")
+									push(errors, [ location, "must be of type array" ]);
+
+								return value;
+							}
+
+							if (exists(value, "vendor-attributes")) {
+								obj.vendor_attributes = parseVendorAttributes(location + "/vendor-attributes", value["vendor-attributes"], errors);
+							}
+
+							return obj;
 						}
 
-						if (exists(value, "id")) {
-							obj.id = parseId(location + "/id", value["id"], errors);
-						}
+						if (type(value) != "object")
+							push(errors, [ location, "must be of type object" ]);
 
-						function parseValue(location, value, errors) {
-							function parseVariant0(location, value, errors) {
+						return value;
+					}
+
+					function parseVariant1(location, value, errors) {
+						if (type(value) == "object") {
+							let obj = {};
+
+							function parseId(location, value, errors) {
+								if (type(value) in [ "int", "double" ]) {
+									if (value > 255)
+										push(errors, [ location, "must be lower than or equal to 255" ]);
+
+									if (value < 1)
+										push(errors, [ location, "must be bigger than or equal to 1" ]);
+
+								}
+
+								if (type(value) != "int")
+									push(errors, [ location, "must be of type integer" ]);
+
+								return value;
+							}
+
+							if (exists(value, "id")) {
+								obj.id = parseId(location + "/id", value["id"], errors);
+							}
+
+							function parseValue(location, value, errors) {
 								if (type(value) in [ "int", "double" ]) {
 									if (value > 4294967295)
 										push(errors, [ location, "must be lower than or equal to 4294967295" ]);
@@ -3059,65 +3151,116 @@ function instantiateInterfaceSsidRadiusServer(location, value, errors) {
 								return value;
 							}
 
-							function parseVariant1(location, value, errors) {
+							if (exists(value, "value")) {
+								obj.value = parseValue(location + "/value", value["value"], errors);
+							}
+
+							return obj;
+						}
+
+						if (type(value) != "object")
+							push(errors, [ location, "must be of type object" ]);
+
+						return value;
+					}
+
+					function parseVariant2(location, value, errors) {
+						if (type(value) == "object") {
+							let obj = {};
+
+							function parseId(location, value, errors) {
+								if (type(value) in [ "int", "double" ]) {
+									if (value > 255)
+										push(errors, [ location, "must be lower than or equal to 255" ]);
+
+									if (value < 1)
+										push(errors, [ location, "must be bigger than or equal to 1" ]);
+
+								}
+
+								if (type(value) != "int")
+									push(errors, [ location, "must be of type integer" ]);
+
+								return value;
+							}
+
+							if (exists(value, "id")) {
+								obj.id = parseId(location + "/id", value["id"], errors);
+							}
+
+							function parseValue(location, value, errors) {
 								if (type(value) != "string")
 									push(errors, [ location, "must be of type string" ]);
 
 								return value;
 							}
 
-							let success = 0, tryval, tryerr, vvalue = null, verrors = [];
-
-							tryerr = [];
-							tryval = parseVariant0(location, value, tryerr);
-							if (!length(tryerr)) {
-								if (type(vvalue) == "object" && type(tryval) == "object")
-									vvalue = { ...vvalue, ...tryval };
-								else
-									vvalue = tryval;
-
-								success++;
-							}
-							else {
-								push(verrors, join(" and\n", map(tryerr, err => "\t - " + err[1])));
+							if (exists(value, "value")) {
+								obj.value = parseValue(location + "/value", value["value"], errors);
 							}
 
-							tryerr = [];
-							tryval = parseVariant1(location, value, tryerr);
-							if (!length(tryerr)) {
-								if (type(vvalue) == "object" && type(tryval) == "object")
-									vvalue = { ...vvalue, ...tryval };
-								else
-									vvalue = tryval;
-
-								success++;
-							}
-							else {
-								push(verrors, join(" and\n", map(tryerr, err => "\t - " + err[1])));
-							}
-
-							if (success == 0) {
-								if (length(verrors))
-									push(errors, [ location, "must match at least one of the following constraints:\n" + join("\n- or -\n", verrors) ]);
-								else
-									push(errors, [ location, "must match only one variant" ]);
-								return null;
-							}
-
-							value = vvalue;
-
-							return value;
+							return obj;
 						}
 
-						if (exists(value, "value")) {
-							obj.value = parseValue(location + "/value", value["value"], errors);
-						}
+						if (type(value) != "object")
+							push(errors, [ location, "must be of type object" ]);
 
-						return obj;
+						return value;
 					}
 
-					if (type(value) != "object")
-						push(errors, [ location, "must be of type object" ]);
+					let success = 0, tryval, tryerr, vvalue = null, verrors = [];
+
+					tryerr = [];
+					tryval = parseVariant0(location, value, tryerr);
+					if (!length(tryerr)) {
+						if (type(vvalue) == "object" && type(tryval) == "object")
+							vvalue = { ...vvalue, ...tryval };
+						else
+							vvalue = tryval;
+
+						success++;
+					}
+					else {
+						push(verrors, join(" and\n", map(tryerr, err => "\t - " + err[1])));
+					}
+
+					tryerr = [];
+					tryval = parseVariant1(location, value, tryerr);
+					if (!length(tryerr)) {
+						if (type(vvalue) == "object" && type(tryval) == "object")
+							vvalue = { ...vvalue, ...tryval };
+						else
+							vvalue = tryval;
+
+						success++;
+					}
+					else {
+						push(verrors, join(" and\n", map(tryerr, err => "\t - " + err[1])));
+					}
+
+					tryerr = [];
+					tryval = parseVariant2(location, value, tryerr);
+					if (!length(tryerr)) {
+						if (type(vvalue) == "object" && type(tryval) == "object")
+							vvalue = { ...vvalue, ...tryval };
+						else
+							vvalue = tryval;
+
+						success++;
+					}
+					else {
+						push(verrors, join(" and\n", map(tryerr, err => "\t - " + err[1])));
+					}
+
+					if (success == 0) {
+						if (length(verrors))
+							push(errors, [ location, "must match at least one of the following constraints:\n" + join("\n- or -\n", verrors) ]);
+						else
+							push(errors, [ location, "must match only one variant" ]);
+						return null;
+					}
+
+					value = vvalue;
 
 					return value;
 				}

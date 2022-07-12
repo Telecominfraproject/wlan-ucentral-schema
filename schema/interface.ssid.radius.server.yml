@@ -28,32 +28,65 @@ properties:
       The additional Access-Request attributes that gets sent to the server.
     type: array
     items:
-      type: object
-      properties:
-        id:
-          type: integer
-          description:
-            The ID of the RADIUS attribute
-          maximum: 255
-          minimum: 1
-        value:
-          anyOf:
-          - type: integer
+      anyOf:
+      - type: object
+        properties:
+          vendor-id:
+            type: integer
+            description:
+              The ID of the vendor specific RADIUS attribute
+            maximum: 65535
+            minimum: 1
+          vendor-attributes:
+            type: array
+            items:
+              type: object
+              description:
+                The numeric RADIUS attribute value
+              properties:
+                id:
+                  type: integer
+                  description:
+                    The ID of the vendor specific RADIUS attribute
+                  maximum: 255
+                  minimum: 1
+                value:
+                  type: string
+                  description:
+                    The vendor specific RADIUS attribute value. This needs to be a hexadecimal string.
+      - type: object
+        properties:
+          id:
+            type: integer
+            description:
+              The ID of the RADIUS attribute
+            maximum: 255
+            minimum: 1
+          value:
+            type: integer
             description:
               The numeric RADIUS attribute value
             maximum: 4294967295
             minimum: 0
-          - type: string
+        examples:
+        - id: 27
+          value: 900
+        - id: 56
+          value: 1004
+      - type: object
+        properties:
+          id:
+            type: integer
+            description:
+              The ID of the RADIUS attribute
+            maximum: 255
+            minimum: 1
+          value:
+            type: string
             description:
               The RADIUS attribute value string
-      examples:
-      - id: 27
-        value: 900
-      - id: 32
-        value: My NAS ID
-      - id: 56
-        value: 1004
-      - id: 126
-        value: Example Operator
-    examples:
-    - 126:s:Operator
+        examples:
+        - id: 32
+          value: My NAS ID
+        - id: 126
+          value: Example Operator

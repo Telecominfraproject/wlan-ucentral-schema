@@ -236,6 +236,20 @@ add_list openvswitch.@ovs_bridge[-1].ports="{{ ifname }}"
 		return tlv;
 	}
 
+	function radius_request_attribute(request) {
+		if (request.id && type(request.value) == 'string')
+			return sprintf('%d:s:%s', request.id, request.value);
+		if (request.id && type(request.value) == 'int')
+			return sprintf('%d:d:%d', request.id, request.value);
+		if (request.vendor_id && request.vendor_attributes) {
+			let tlv = sprintf('26:x:%04x', request.vendor_id);
+			for (let vsa in request.vendor_attributes)
+				tlv += sprintf('%02x%02x', vsa.type, length(vsa.value)) + vsa.id;
+			return tlv;
+		}
+		return '';
+	}
+
 	let radius_gw_proxy = ssid.services && (index(ssid.services, "radius-gw-proxy") >= 0);
 %}
 
@@ -307,7 +321,7 @@ set wireless.{{ section }}.auth_server={{ radius_gw_proxy ? '127.0.0.1' : crypto
 set wireless.{{ section }}.auth_port={{ radius_gw_proxy ? 1812 : crypto.auth.port }}
 set wireless.{{ section }}.auth_secret={{ crypto.auth.secret }}
 {%     for (let request in crypto.auth.request_attribute): %}
-add_list wireless.{{ section }}.radius_auth_req_attr={{ s(request.id + ':' + request.value) }}
+add_list wireless.{{ section }}.radius_auth_req_attr={{ s(radius_request_attribute(request)) }}
 {%     endfor %}
 {%     if (radius_gw_proxy): %}
 add_list wireless.{{ section }}.radius_auth_req_attr={{ s(radius_proxy_tlv(crypto.auth.host, crypto.auth.port, name + '_' + n + '_' + count)) }}
@@ -322,7 +336,7 @@ set wireless.{{ section }}.acct_port={{ radius_gw_proxy ? 1813 : crypto.acct.por
 set wireless.{{ section }}.acct_secret={{ crypto.acct.secret }}
 set wireless.{{ section }}.acct_interval={{ crypto.acct.interval }}
 {%     for (let request in crypto.acct.request_attribute): %}
-add_list wireless.{{ section }}.radius_acct_req_attr={{ s(request.id + ':' + request.value) }}
+add_list wireless.{{ section }}.radius_acct_req_attr={{ s(radius_request_attribute(request)) }}
 {%     endfor %}
 {%     if (radius_gw_proxy): %}
 add_list wireless.{{ section }}.radius_acct_req_attr={{ s(radius_proxy_tlv(crypto.acct.host, crypto.acct.port, name + '_' + n + '_' + count)) }}
