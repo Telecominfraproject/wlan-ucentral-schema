@@ -40,3 +40,8 @@ properties:
     - optional
     - required
     default: disabled
+  key-caching:
+    description:
+      PMKSA created through EAP authentication and RSN preauthentication can be cached.
+    type: boolean
+    default: true

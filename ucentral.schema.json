@@ -1062,6 +1062,10 @@
                         "required"
                     ],
                     "default": "disabled"
+                },
+                "key-caching": {
+                    "type": "boolean",
+                    "default": true
                 }
             }
         },

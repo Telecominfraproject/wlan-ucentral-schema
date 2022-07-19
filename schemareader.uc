@@ -2544,6 +2544,20 @@ function instantiateInterfaceSsidEncryption(location, value, errors) {
 			obj.ieee80211w = "disabled";
 		}
 
+		function parseKeyCaching(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "key-caching")) {
+			obj.key_caching = parseKeyCaching(location + "/key-caching", value["key-caching"], errors);
+		}
+		else {
+			obj.key_caching = true;
+		}
+
 		return obj;
 	}
 
