@@ -266,6 +266,7 @@ set wireless.{{ section }}.ucentral_path={{ s(location) }}
 set wireless.{{ section }}.device={{ phy.section }}
 set wireless.{{ section }}.ifname={{ s(ifname) }}
 {%   if (ssid?.encryption?.proto == 'owe'): %}
+{%      ssid.hidden_ssid = 1 %}
 set wireless.{{ section }}.ifname={{ s(section) }}
 set wireless.{{ section }}.owe_transition_ifname={{ s('o' + section) }}
 {%   endif %}
