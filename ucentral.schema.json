@@ -1684,7 +1684,8 @@
                     "type": "boolean"
                 },
                 "unicast-conversion": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "default": true
                 },
                 "services": {
                     "type": "array",

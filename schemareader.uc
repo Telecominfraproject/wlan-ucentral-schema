@@ -4448,6 +4448,9 @@ function instantiateInterfaceSsid(location, value, errors) {
 		if (exists(value, "unicast-conversion")) {
 			obj.unicast_conversion = parseUnicastConversion(location + "/unicast-conversion", value["unicast-conversion"], errors);
 		}
+		else {
+			obj.unicast_conversion = true;
+		}
 
 		function parseServices(location, value, errors) {
 			if (type(value) == "array") {

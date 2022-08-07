@@ -77,6 +77,7 @@ properties:
     description:
       Convert multicast traffic to unicast on this BSS.
     type: boolean
+    default: true
   services:
     description:
       The services that shall be offered on this logical interface. These are
