@@ -106,7 +106,7 @@
 	}
 
 	function validate_encryption(phy) {
-		if ('6G' in phy.band && !(ssid?.encryption.proto in [ "wpa3", "wpa3-mixed", "wpa3-192", "sae", "sae-mixed" ])) {
+		if ('6G' in phy.band && !(ssid?.encryption.proto in [ "wpa3", "wpa3-mixed", "wpa3-192", "sae", "sae-mixed", "owe" ])) {
 			warn("Invalid encryption settings for 6G band");
 			return null;
 		}
