@@ -190,7 +190,7 @@
 				network,
 				openflow_prefix,
 			});
-			if (ssid?.encryption?.proto == 'owe') {
+			if (ssid?.encryption?.proto == 'owe-transition') {
 				ssid.encryption.proto = 'none';
 				include('interface/ssid.uc', {
 					location: location + '/ssids/' + i + '_owe',

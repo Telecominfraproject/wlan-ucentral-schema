@@ -2497,8 +2497,8 @@ function instantiateInterfaceSsidEncryption(location, value, errors) {
 			if (type(value) != "string")
 				push(errors, [ location, "must be of type string" ]);
 
-			if (!(value in [ "none", "owe", "psk", "psk2", "psk-mixed", "psk2-radius", "wpa", "wpa2", "wpa-mixed", "sae", "sae-mixed", "wpa3", "wpa3-192", "wpa3-mixed" ]))
-				push(errors, [ location, "must be one of \"none\", \"owe\", \"psk\", \"psk2\", \"psk-mixed\", \"psk2-radius\", \"wpa\", \"wpa2\", \"wpa-mixed\", \"sae\", \"sae-mixed\", \"wpa3\", \"wpa3-192\" or \"wpa3-mixed\"" ]);
+			if (!(value in [ "none", "owe", "owe-transition", "psk", "psk2", "psk-mixed", "psk2-radius", "wpa", "wpa2", "wpa-mixed", "sae", "sae-mixed", "wpa3", "wpa3-192", "wpa3-mixed" ]))
+				push(errors, [ location, "must be one of \"none\", \"owe\", \"owe-transition\", \"psk\", \"psk2\", \"psk-mixed\", \"psk2-radius\", \"wpa\", \"wpa2\", \"wpa-mixed\", \"sae\", \"sae-mixed\", \"wpa3\", \"wpa3-192\" or \"wpa3-mixed\"" ]);
 
 			return value;
 		}

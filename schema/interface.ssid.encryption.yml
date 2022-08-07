@@ -10,6 +10,7 @@ properties:
     enum:
     - none
     - owe
+    - owe-transition
     - psk
     - psk2
     - psk-mixed

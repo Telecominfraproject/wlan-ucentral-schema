@@ -128,7 +128,7 @@
 			};
 		}
 
-		if (ssid?.encryption?.proto in [ "owe" ])
+		if (ssid?.encryption?.proto in [ "owe", "owe-transition" ])
 			return {
 				proto: 'owe'
 			};
@@ -265,8 +265,9 @@ set wireless.{{ section }}=wifi-iface
 set wireless.{{ section }}.ucentral_path={{ s(location) }}
 set wireless.{{ section }}.device={{ phy.section }}
 set wireless.{{ section }}.ifname={{ s(ifname) }}
-{%   if (ssid?.encryption?.proto == 'owe'): %}
+{%   if (ssid?.encryption?.proto == 'owe-transition'): %}
 {%      ssid.hidden_ssid = 1 %}
+{%      ssid.name += '-OWE' %}
 set wireless.{{ section }}.ifname={{ s(section) }}
 set wireless.{{ section }}.owe_transition_ifname={{ s('o' + section) }}
 {%   endif %}
