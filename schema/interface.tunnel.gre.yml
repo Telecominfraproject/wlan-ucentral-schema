@@ -14,3 +14,9 @@ properties:
     type: string
     format: ipv4
     example: '192.168.100.1'
+  dhcp-healthcheck:
+    description:
+      Healthcheck will probe of the remote end replies to DHCP discovery without sending
+      a ACK.
+    type: boolean
+    default: false

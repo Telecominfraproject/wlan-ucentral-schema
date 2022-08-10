@@ -66,7 +66,7 @@ for (let iface in interfaces) {
 	let device = iface.l3_device;
 	let warnings = [];
 
-	if (dhcp[name] || (iface.data && iface.data.leasetime)) {
+	if (dhcp[name] || (iface.data && iface.data.leasetime) || cursor.get("network", iface.interface, 'dhcp_healthcheck')) {
 		let rc = system(['/usr/sbin/dhcpdiscover', '-i', device, '-t', '5']);
 		if (rc) {
 			health.dhcp = false;

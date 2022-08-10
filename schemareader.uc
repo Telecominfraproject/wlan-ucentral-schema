@@ -4814,6 +4814,20 @@ function instantiateInterfaceTunnelGre(location, value, errors) {
 			obj.peer_address = parsePeerAddress(location + "/peer-address", value["peer-address"], errors);
 		}
 
+		function parseDhcpHealthcheck(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "dhcp-healthcheck")) {
+			obj.dhcp_healthcheck = parseDhcpHealthcheck(location + "/dhcp-healthcheck", value["dhcp-healthcheck"], errors);
+		}
+		else {
+			obj.dhcp_healthcheck = false;
+		}
+
 		return obj;
 	}
 

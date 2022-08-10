@@ -34,3 +34,4 @@ add network device
 set network.@device[-1].name={{ s(name) }}
 set network.@device[-1].type='bridge'
 set network.@device[-1].ports='gre4t-gre{{ suffix }}'
+set network.@device[-1].dhcp_healthcheck='{{ interface.tunnel.dhcp_healthcheck }}'

@@ -1828,6 +1828,10 @@
                     "type": "string",
                     "format": "ipv4",
                     "example": "192.168.100.1"
+                },
+                "dhcp-healthcheck": {
+                    "type": "boolean",
+                    "default": false
                 }
             }
         },
