@@ -105,7 +105,6 @@
 		bridgedev = 'down';
 	let netdev = name;
 	let network = name;
-	let openflow_prefix;
 
 	// Determine the IPv4 and IPv6 configuration modes and figure out if we
 	// can set them both in a single interface (automatic) or whether we need
@@ -137,14 +136,7 @@
 	if (tunnel_proto in [ "mesh", "l2tp", "vxlan", "gre" ])
 		include("interface/" + tunnel_proto + ".uc", { interface, name, eth_ports, location, netdev, ipv4_mode, ipv6_mode, this_vid });
 
-	if (interface.captive) {
-		interface.type = 'bridge';
-		netdev = '';
-		delete interface.ipv6;
-	} else if ("open-flow" in interface.services && interface.role == "downstream") {
-		netdev = "gw0";
-		network = "";
-	} else if (!interface.ethernet && length(interface.ssids) == 1 && !tunnel_proto && !("vxlan-overlay" in interface.services)) {
+	if (!interface.ethernet && length(interface.ssids) == 1 && !tunnel_proto && !("vxlan-overlay" in interface.services)) {
 		if (interface.role == 'downstream')
 			interface.type = 'bridge';
 		netdev = '';
@@ -157,9 +149,6 @@
 
 	if (interface.role == "downstream" && "wireguard-overlay" in interface.services)
 		dest = 'unet';
-
-	if ("open-flow" in interface.services)
-		openflow_prefix = "ofwlan";
 
 	include("interface/common.uc", {
 		name, this_vid, netdev,
@@ -188,7 +177,6 @@
 				count,
 				name,
 				network,
-				openflow_prefix,
 			});
 			if (ssid?.encryption?.proto == 'owe-transition') {
 				ssid.encryption.proto = 'none';
@@ -198,7 +186,6 @@
 					count,
 					name,
 					network,
-					openflow_prefix,
 					owe: true,
 			});
 
@@ -215,13 +202,4 @@
 add network rule
 set network.@rule[-1].in='{{name}}'
 set network.@rule[-1].lookup='{{ routing_table.get('wireguard_overlay') }}'
-{% endif %}
-
-
-{% if (interface.role == "downstream" && "open-flow" in interface.services): %}
-{% for (let port in keys(eth_ports)): %}
-add openvswitch ovs_port;
-set openvswitch.@ovs_port[-1].bridge="br-ovs";
-set openvswitch.@ovs_port[-1].port="{{ port }}";
-{% endfor %}
 {% endif %}

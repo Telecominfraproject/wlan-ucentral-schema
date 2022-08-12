@@ -2288,44 +2288,6 @@
                 }
             }
         },
-        "service.open-flow": {
-            "type": "object",
-            "properties": {
-                "controller": {
-                    "type": "string",
-                    "format": "uc-ip",
-                    "example": "192.168.10.1"
-                },
-                "datapath-description": {
-                    "type": "string",
-                    "example": "Building 2, Floor 6, AP 2"
-                },
-                "mode": {
-                    "type": "string",
-                    "enum": [
-                        "pssl",
-                        "ptcp",
-                        "ssl",
-                        "tcp"
-                    ],
-                    "default": "ssl"
-                },
-                "port": {
-                    "type": "integer",
-                    "maximum": 65535,
-                    "default": 6653
-                },
-                "ca-certificate": {
-                    "type": "string"
-                },
-                "ssl-certificate": {
-                    "type": "string"
-                },
-                "private-key": {
-                    "type": "string"
-                }
-            }
-        },
         "service.data-plane": {
             "type": "object",
             "properties": {
@@ -2688,9 +2650,6 @@
                 },
                 "online-check": {
                     "$ref": "#/$defs/service.online-check"
-                },
-                "open-flow": {
-                    "$ref": "#/$defs/service.open-flow"
                 },
                 "data-plane": {
                     "$ref": "#/$defs/service.data-plane"

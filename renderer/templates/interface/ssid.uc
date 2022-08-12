@@ -200,17 +200,6 @@
 		return sprintf("%02d:%d:%d:0:0:0", info, ssid.pass_point.wan_metrics.downlink, ssid.pass_point.wan_metrics.uplink);
 	}
 
-	function openflow_ifname(n, count) {
-		if (!length(openflow_prefix))
-			return '';
-
-		let ifname = openflow_prefix + n + '_' + count;
-%}
-add_list openvswitch.@ovs_bridge[-1].ports="{{ ifname }}"
-{%
-		return ifname
-	}
-
 	let bss_mode = ssid.bss_mode;
 	if (ssid.bss_mode == "wds-ap")
 		bss_mode =  "ap";
@@ -259,7 +248,7 @@ add_list openvswitch.@ovs_bridge[-1].ports="{{ ifname }}"
 {%   let section = (owe ? 'o' : '' ) + basename; %}
 {%   let id = wiphy.allocate_ssid_section_id(phy) %}
 {%   let crypto = validate_encryption(phy); %}
-{%   let ifname = openflow_ifname(n, count) %}
+{%   let ifname = calculate_ifname(n, count) %}
 {%   if (!crypto) continue; %}
 set wireless.{{ section }}=wifi-iface
 set wireless.{{ section }}.ucentral_path={{ s(location) }}

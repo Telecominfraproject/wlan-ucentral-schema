@@ -6176,117 +6176,6 @@ function instantiateServiceOnlineCheck(location, value, errors) {
 	return value;
 }
 
-function instantiateServiceOpenFlow(location, value, errors) {
-	if (type(value) == "object") {
-		let obj = {};
-
-		function parseController(location, value, errors) {
-			if (type(value) == "string") {
-				if (!matchUcIp(value))
-					push(errors, [ location, "must be a valid IPv4 or IPv6 address" ]);
-
-			}
-
-			if (type(value) != "string")
-				push(errors, [ location, "must be of type string" ]);
-
-			return value;
-		}
-
-		if (exists(value, "controller")) {
-			obj.controller = parseController(location + "/controller", value["controller"], errors);
-		}
-
-		function parseDatapathDescription(location, value, errors) {
-			if (type(value) != "string")
-				push(errors, [ location, "must be of type string" ]);
-
-			return value;
-		}
-
-		if (exists(value, "datapath-description")) {
-			obj.datapath_description = parseDatapathDescription(location + "/datapath-description", value["datapath-description"], errors);
-		}
-
-		function parseMode(location, value, errors) {
-			if (type(value) != "string")
-				push(errors, [ location, "must be of type string" ]);
-
-			if (!(value in [ "pssl", "ptcp", "ssl", "tcp" ]))
-				push(errors, [ location, "must be one of \"pssl\", \"ptcp\", \"ssl\" or \"tcp\"" ]);
-
-			return value;
-		}
-
-		if (exists(value, "mode")) {
-			obj.mode = parseMode(location + "/mode", value["mode"], errors);
-		}
-		else {
-			obj.mode = "ssl";
-		}
-
-		function parsePort(location, value, errors) {
-			if (type(value) in [ "int", "double" ]) {
-				if (value > 65535)
-					push(errors, [ location, "must be lower than or equal to 65535" ]);
-
-			}
-
-			if (type(value) != "int")
-				push(errors, [ location, "must be of type integer" ]);
-
-			return value;
-		}
-
-		if (exists(value, "port")) {
-			obj.port = parsePort(location + "/port", value["port"], errors);
-		}
-		else {
-			obj.port = 6653;
-		}
-
-		function parseCaCertificate(location, value, errors) {
-			if (type(value) != "string")
-				push(errors, [ location, "must be of type string" ]);
-
-			return value;
-		}
-
-		if (exists(value, "ca-certificate")) {
-			obj.ca_certificate = parseCaCertificate(location + "/ca-certificate", value["ca-certificate"], errors);
-		}
-
-		function parseSslCertificate(location, value, errors) {
-			if (type(value) != "string")
-				push(errors, [ location, "must be of type string" ]);
-
-			return value;
-		}
-
-		if (exists(value, "ssl-certificate")) {
-			obj.ssl_certificate = parseSslCertificate(location + "/ssl-certificate", value["ssl-certificate"], errors);
-		}
-
-		function parsePrivateKey(location, value, errors) {
-			if (type(value) != "string")
-				push(errors, [ location, "must be of type string" ]);
-
-			return value;
-		}
-
-		if (exists(value, "private-key")) {
-			obj.private_key = parsePrivateKey(location + "/private-key", value["private-key"], errors);
-		}
-
-		return obj;
-	}
-
-	if (type(value) != "object")
-		push(errors, [ location, "must be of type object" ]);
-
-	return value;
-}
-
 function instantiateServiceDataPlane(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
@@ -7341,10 +7230,6 @@ function instantiateService(location, value, errors) {
 
 		if (exists(value, "online-check")) {
 			obj.online_check = instantiateServiceOnlineCheck(location + "/online-check", value["online-check"], errors);
-		}
-
-		if (exists(value, "open-flow")) {
-			obj.open_flow = instantiateServiceOpenFlow(location + "/open-flow", value["open-flow"], errors);
 		}
 
 		if (exists(value, "data-plane")) {

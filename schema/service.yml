@@ -25,8 +25,6 @@ properties:
     $ref: "https://ucentral.io/schema/v1/service/radius-proxy/"
   online-check:
     $ref: "https://ucentral.io/schema/v1/service/online-check/"
-  open-flow:
-    $ref: "https://ucentral.io/schema/v1/service/open-flow/"
   data-plane:
     $ref: "https://ucentral.io/schema/v1/service/data-plane/"
   wifi-steering:
