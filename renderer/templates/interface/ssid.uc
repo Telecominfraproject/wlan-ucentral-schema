@@ -444,7 +444,7 @@ set wireless.{{ section }}.iw_hessid={{ s(ssid.pass_point.hessid) }}
 add_list wireless.{{ section }}.iw_roaming_consortium={{ s(name) }}
 {%       endfor %}
 set wireless.{{ section }}.disable_dgaf={{ b(ssid.pass_point.disable_dgaf) }}
-set wireless.{{ section }}.hs20_release='1'
+set wireless.{{ section }}.hs20_release='3'
 set wireless.{{ section }}.iw_ipaddr_type_availability={{ s(sprintf("%02x", ssid.pass_point.ipaddr_type_availability)) }}
 {%       for (let name in ssid.pass_point.connection_capability): %}
 add_list wireless.{{ section }}.hs20_conn_capab={{ s(name) }}
