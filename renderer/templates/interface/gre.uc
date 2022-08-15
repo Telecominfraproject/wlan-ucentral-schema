@@ -30,8 +30,15 @@ if (ethernet.has_vlan(interface)) {
 include("common.uc", cfg);
 %}
 
+add firewall rule
+set firewall.@rule[-1].target='ACCEPT'
+set firewall.@rule[-1].src={{ s(name) }}
+set firewall.@rule[-1].family='ipv4'
+set firewall.@rule[-1].proto='47'
+set firewall.@rule[-1].name='Allow-GRE-{{ name }}'
+
 add network device
 set network.@device[-1].name={{ s(name) }}
 set network.@device[-1].type='bridge'
 set network.@device[-1].ports='gre4t-gre{{ suffix }}'
-set network.@device[-1].dhcp_healthcheck='{{ interface.tunnel.dhcp_healthcheck }}'
+set network.@device[-1].dhcp_healthcheck='{{ b(interface.tunnel.dhcp_healthcheck) }}'

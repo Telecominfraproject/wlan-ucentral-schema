@@ -63,7 +63,7 @@ for (let iface in interfaces) {
 	let health = {};
 	let ssid = {};
 	let radius = {};
-	let device = iface.l3_device;
+	let device = iface.l3_device || iface.interface;
 	let warnings = [];
 
 	if (dhcp[name] || (iface.data && iface.data.leasetime) || cursor.get("network", iface.interface, 'dhcp_healthcheck')) {
