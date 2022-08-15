@@ -241,6 +241,8 @@ cursor.foreach("network", "interface", function(d) {
 			iface.ipv6.leases = leases
 	}
 
+	let macs = [];
+
 	if (length(topology)) {
 		let clients = [];
 
@@ -266,8 +268,10 @@ cursor.foreach("network", "interface", function(d) {
 
 			client.ports = topo.fdb;
 			client.last_seen == topo.last_seen;
-			if (index(stats.types, 'clients') >= 0)
+			if (index(stats.types, 'clients') >= 0) {
 				push(clients, client);
+				push(macs, mac);
+			}
 		}
 
 		if (length(ipv4leases))
@@ -289,23 +293,34 @@ cursor.foreach("network", "interface", function(d) {
 				    !(name in vap.config.network) ||
 				    !wifiiface[vap.ifname])
 					continue;
-				let iface = wifiiface[vap.ifname];
+				let wif = wifiiface[vap.ifname];
 				let ssid = {
 					radio:{"$ref": sprintf("#/radios/%d", counter)},
 					phy: data.config.path
 				};
 				ssid.location = wireless[vap.section]?.ucentral_path || '';
-				ssid.ssid = iface.ssid;
-				ssid.mode = iface.mode;
-				ssid.bssid = iface.bssid;
+				ssid.ssid = wif.ssid;
+				ssid.mode = wif.mode;
+				ssid.bssid = wif.bssid;
 
 				if (length(stations[vap.ifname])) {
 					ssid.associations = stations[vap.ifname];
 					for (let assoc in ssid.associations) {
 						if (length(ip4leases[assoc.station]))
 			                                assoc.ipaddr_v4 = ip4leases[assoc.station];
-						else if (snoop && snoop[assoc.station])
+						else if (snoop && snoop[assoc.station]) {
 							assoc.ipaddr_v4 = snoop[assoc.station];
+							if (!(assoc.station in macs)) {
+								if (!iface.clients)
+									iface.clients = [];
+								let client = {
+									"mac": assoc.station,
+									"ipv4_addresses": [ snoop[assoc.station] ],
+									"ports": [ vap.ifname ]
+								};
+								push(iface.clients, client);
+							}
+						}
 					}
 				}
 

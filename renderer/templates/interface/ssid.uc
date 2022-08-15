@@ -248,7 +248,7 @@
 {%   let section = (owe ? 'o' : '' ) + basename; %}
 {%   let id = wiphy.allocate_ssid_section_id(phy) %}
 {%   let crypto = validate_encryption(phy); %}
-{%   let ifname = calculate_ifname(n, count) %}
+{%   let ifname = '' %}
 {%   if (!crypto) continue; %}
 set wireless.{{ section }}=wifi-iface
 set wireless.{{ section }}.ucentral_path={{ s(location) }}
