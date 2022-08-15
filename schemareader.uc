@@ -2372,123 +2372,6 @@ function instantiateInterfaceBroadBand(location, value, errors) {
 	return value;
 }
 
-function instantiateInterfaceCaptive(location, value, errors) {
-	if (type(value) == "object") {
-		let obj = {};
-
-		function parseGatewayName(location, value, errors) {
-			if (type(value) != "string")
-				push(errors, [ location, "must be of type string" ]);
-
-			return value;
-		}
-
-		if (exists(value, "gateway-name")) {
-			obj.gateway_name = parseGatewayName(location + "/gateway-name", value["gateway-name"], errors);
-		}
-		else {
-			obj.gateway_name = "uCentral - Captive Portal";
-		}
-
-		function parseGatewayFqdn(location, value, errors) {
-			if (type(value) == "string") {
-				if (!matchUcFqdn(value))
-					push(errors, [ location, "must be a valid fully qualified domain name" ]);
-
-			}
-
-			if (type(value) != "string")
-				push(errors, [ location, "must be of type string" ]);
-
-			return value;
-		}
-
-		if (exists(value, "gateway-fqdn")) {
-			obj.gateway_fqdn = parseGatewayFqdn(location + "/gateway-fqdn", value["gateway-fqdn"], errors);
-		}
-		else {
-			obj.gateway_fqdn = "ucentral.splash";
-		}
-
-		function parseMaxClients(location, value, errors) {
-			if (type(value) != "int")
-				push(errors, [ location, "must be of type integer" ]);
-
-			return value;
-		}
-
-		if (exists(value, "max-clients")) {
-			obj.max_clients = parseMaxClients(location + "/max-clients", value["max-clients"], errors);
-		}
-		else {
-			obj.max_clients = 32;
-		}
-
-		function parseUploadRate(location, value, errors) {
-			if (type(value) != "int")
-				push(errors, [ location, "must be of type integer" ]);
-
-			return value;
-		}
-
-		if (exists(value, "upload-rate")) {
-			obj.upload_rate = parseUploadRate(location + "/upload-rate", value["upload-rate"], errors);
-		}
-		else {
-			obj.upload_rate = 0;
-		}
-
-		function parseDownloadRate(location, value, errors) {
-			if (type(value) != "int")
-				push(errors, [ location, "must be of type integer" ]);
-
-			return value;
-		}
-
-		if (exists(value, "download-rate")) {
-			obj.download_rate = parseDownloadRate(location + "/download-rate", value["download-rate"], errors);
-		}
-		else {
-			obj.download_rate = 0;
-		}
-
-		function parseUploadQuota(location, value, errors) {
-			if (type(value) != "int")
-				push(errors, [ location, "must be of type integer" ]);
-
-			return value;
-		}
-
-		if (exists(value, "upload-quota")) {
-			obj.upload_quota = parseUploadQuota(location + "/upload-quota", value["upload-quota"], errors);
-		}
-		else {
-			obj.upload_quota = 0;
-		}
-
-		function parseDownloadQuota(location, value, errors) {
-			if (type(value) != "int")
-				push(errors, [ location, "must be of type integer" ]);
-
-			return value;
-		}
-
-		if (exists(value, "download-quota")) {
-			obj.download_quota = parseDownloadQuota(location + "/download-quota", value["download-quota"], errors);
-		}
-		else {
-			obj.download_quota = 0;
-		}
-
-		return obj;
-	}
-
-	if (type(value) != "object")
-		push(errors, [ location, "must be of type object" ]);
-
-	return value;
-}
-
 function instantiateInterfaceSsidEncryption(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
@@ -5050,10 +4933,6 @@ function instantiateInterface(location, value, errors) {
 			obj.broad_band = instantiateInterfaceBroadBand(location + "/broad-band", value["broad-band"], errors);
 		}
 
-		if (exists(value, "captive")) {
-			obj.captive = instantiateInterfaceCaptive(location + "/captive", value["captive"], errors);
-		}
-
 		function parseSsids(location, value, errors) {
 			if (type(value) == "array") {
 				return map(value, (item, i) => instantiateInterfaceSsid(location + "/" + i, item, errors));
@@ -7184,6 +7063,610 @@ function instantiateServiceWireguardOverlay(location, value, errors) {
 	return value;
 }
 
+function instantiateServiceCaptiveClick(location, value, errors) {
+	if (type(value) == "object") {
+		let obj = {};
+
+		function parseAuthMode(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			if (value != "click-to-continue")
+				push(errors, [ location, "must have value \"click-to-continue\"" ]);
+
+			return value;
+		}
+
+		if (exists(value, "auth-mode")) {
+			obj.auth_mode = parseAuthMode(location + "/auth-mode", value["auth-mode"], errors);
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
+
+	return value;
+}
+
+function instantiateServiceCaptiveRadius(location, value, errors) {
+	if (type(value) == "object") {
+		let obj = {};
+
+		function parseAuthMode(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			if (value != "radius")
+				push(errors, [ location, "must have value \"radius\"" ]);
+
+			return value;
+		}
+
+		if (exists(value, "auth-mode")) {
+			obj.auth_mode = parseAuthMode(location + "/auth-mode", value["auth-mode"], errors);
+		}
+
+		function parseAuthServer(location, value, errors) {
+			if (type(value) == "string") {
+				if (!matchUcHost(value))
+					push(errors, [ location, "must be a valid hostname or IP address" ]);
+
+			}
+
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "auth-server")) {
+			obj.auth_server = parseAuthServer(location + "/auth-server", value["auth-server"], errors);
+		}
+
+		function parseAuthPort(location, value, errors) {
+			if (type(value) in [ "int", "double" ]) {
+				if (value > 65535)
+					push(errors, [ location, "must be lower than or equal to 65535" ]);
+
+				if (value < 1024)
+					push(errors, [ location, "must be bigger than or equal to 1024" ]);
+
+			}
+
+			if (type(value) != "int")
+				push(errors, [ location, "must be of type integer" ]);
+
+			return value;
+		}
+
+		if (exists(value, "auth-port")) {
+			obj.auth_port = parseAuthPort(location + "/auth-port", value["auth-port"], errors);
+		}
+		else {
+			obj.auth_port = 1812;
+		}
+
+		function parseAuthSecret(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "auth-secret")) {
+			obj.auth_secret = parseAuthSecret(location + "/auth-secret", value["auth-secret"], errors);
+		}
+
+		function parseAcctServer(location, value, errors) {
+			if (type(value) == "string") {
+				if (!matchUcHost(value))
+					push(errors, [ location, "must be a valid hostname or IP address" ]);
+
+			}
+
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "acct-server")) {
+			obj.acct_server = parseAcctServer(location + "/acct-server", value["acct-server"], errors);
+		}
+
+		function parseAcctPort(location, value, errors) {
+			if (type(value) in [ "int", "double" ]) {
+				if (value > 65535)
+					push(errors, [ location, "must be lower than or equal to 65535" ]);
+
+				if (value < 1024)
+					push(errors, [ location, "must be bigger than or equal to 1024" ]);
+
+			}
+
+			if (type(value) != "int")
+				push(errors, [ location, "must be of type integer" ]);
+
+			return value;
+		}
+
+		if (exists(value, "acct-port")) {
+			obj.acct_port = parseAcctPort(location + "/acct-port", value["acct-port"], errors);
+		}
+		else {
+			obj.acct_port = 1812;
+		}
+
+		function parseAcctSecret(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "acct-secret")) {
+			obj.acct_secret = parseAcctSecret(location + "/acct-secret", value["acct-secret"], errors);
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
+
+	return value;
+}
+
+function instantiateServiceCaptiveCredentials(location, value, errors) {
+	if (type(value) == "object") {
+		let obj = {};
+
+		function parseAuthMode(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			if (value != "credentials")
+				push(errors, [ location, "must have value \"credentials\"" ]);
+
+			return value;
+		}
+
+		if (exists(value, "auth-mode")) {
+			obj.auth_mode = parseAuthMode(location + "/auth-mode", value["auth-mode"], errors);
+		}
+
+		function parseCredentials(location, value, errors) {
+			if (type(value) == "array") {
+				function parseItem(location, value, errors) {
+					if (type(value) == "object") {
+						let obj = {};
+
+						function parseUsername(location, value, errors) {
+							if (type(value) != "string")
+								push(errors, [ location, "must be of type string" ]);
+
+							return value;
+						}
+
+						if (exists(value, "username")) {
+							obj.username = parseUsername(location + "/username", value["username"], errors);
+						}
+
+						function parsePassword(location, value, errors) {
+							if (type(value) != "string")
+								push(errors, [ location, "must be of type string" ]);
+
+							return value;
+						}
+
+						if (exists(value, "password")) {
+							obj.password = parsePassword(location + "/password", value["password"], errors);
+						}
+
+						return obj;
+					}
+
+					if (type(value) != "object")
+						push(errors, [ location, "must be of type object" ]);
+
+					return value;
+				}
+
+				return map(value, (item, i) => parseItem(location + "/" + i, item, errors));
+			}
+
+			if (type(value) != "array")
+				push(errors, [ location, "must be of type array" ]);
+
+			return value;
+		}
+
+		if (exists(value, "credentials")) {
+			obj.credentials = parseCredentials(location + "/credentials", value["credentials"], errors);
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
+
+	return value;
+}
+
+function instantiateServiceCaptiveUam(location, value, errors) {
+	if (type(value) == "object") {
+		let obj = {};
+
+		function parseAuthMode(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			if (value != "uam")
+				push(errors, [ location, "must have value \"uam\"" ]);
+
+			return value;
+		}
+
+		if (exists(value, "auth-mode")) {
+			obj.auth_mode = parseAuthMode(location + "/auth-mode", value["auth-mode"], errors);
+		}
+
+		function parseUamPort(location, value, errors) {
+			if (type(value) in [ "int", "double" ]) {
+				if (value > 65535)
+					push(errors, [ location, "must be lower than or equal to 65535" ]);
+
+				if (value < 1024)
+					push(errors, [ location, "must be bigger than or equal to 1024" ]);
+
+			}
+
+			if (type(value) != "int")
+				push(errors, [ location, "must be of type integer" ]);
+
+			return value;
+		}
+
+		if (exists(value, "uam-port")) {
+			obj.uam_port = parseUamPort(location + "/uam-port", value["uam-port"], errors);
+		}
+		else {
+			obj.uam_port = 3990;
+		}
+
+		function parseUamSecret(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "uam-secret")) {
+			obj.uam_secret = parseUamSecret(location + "/uam-secret", value["uam-secret"], errors);
+		}
+
+		function parseUamServer(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "uam-server")) {
+			obj.uam_server = parseUamServer(location + "/uam-server", value["uam-server"], errors);
+		}
+
+		function parseNasid(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "nasid")) {
+			obj.nasid = parseNasid(location + "/nasid", value["nasid"], errors);
+		}
+
+		function parseNasmac(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "nasmac")) {
+			obj.nasmac = parseNasmac(location + "/nasmac", value["nasmac"], errors);
+		}
+
+		function parseAuthServer(location, value, errors) {
+			if (type(value) == "string") {
+				if (!matchUcHost(value))
+					push(errors, [ location, "must be a valid hostname or IP address" ]);
+
+			}
+
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "auth-server")) {
+			obj.auth_server = parseAuthServer(location + "/auth-server", value["auth-server"], errors);
+		}
+
+		function parseAuthPort(location, value, errors) {
+			if (type(value) in [ "int", "double" ]) {
+				if (value > 65535)
+					push(errors, [ location, "must be lower than or equal to 65535" ]);
+
+				if (value < 1024)
+					push(errors, [ location, "must be bigger than or equal to 1024" ]);
+
+			}
+
+			if (type(value) != "int")
+				push(errors, [ location, "must be of type integer" ]);
+
+			return value;
+		}
+
+		if (exists(value, "auth-port")) {
+			obj.auth_port = parseAuthPort(location + "/auth-port", value["auth-port"], errors);
+		}
+		else {
+			obj.auth_port = 1812;
+		}
+
+		function parseAuthSecret(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "auth-secret")) {
+			obj.auth_secret = parseAuthSecret(location + "/auth-secret", value["auth-secret"], errors);
+		}
+
+		function parseAcctServer(location, value, errors) {
+			if (type(value) == "string") {
+				if (!matchUcHost(value))
+					push(errors, [ location, "must be a valid hostname or IP address" ]);
+
+			}
+
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "acct-server")) {
+			obj.acct_server = parseAcctServer(location + "/acct-server", value["acct-server"], errors);
+		}
+
+		function parseAcctPort(location, value, errors) {
+			if (type(value) in [ "int", "double" ]) {
+				if (value > 65535)
+					push(errors, [ location, "must be lower than or equal to 65535" ]);
+
+				if (value < 1024)
+					push(errors, [ location, "must be bigger than or equal to 1024" ]);
+
+			}
+
+			if (type(value) != "int")
+				push(errors, [ location, "must be of type integer" ]);
+
+			return value;
+		}
+
+		if (exists(value, "acct-port")) {
+			obj.acct_port = parseAcctPort(location + "/acct-port", value["acct-port"], errors);
+		}
+		else {
+			obj.acct_port = 1812;
+		}
+
+		function parseAcctSecret(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "acct-secret")) {
+			obj.acct_secret = parseAcctSecret(location + "/acct-secret", value["acct-secret"], errors);
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
+
+	return value;
+}
+
+function instantiateServiceCaptive(location, value, errors) {
+	function parseVariant0(location, value, errors) {
+		function parseVariant0(location, value, errors) {
+			value = instantiateServiceCaptiveClick(location, value, errors);
+
+			return value;
+		}
+
+		function parseVariant1(location, value, errors) {
+			value = instantiateServiceCaptiveRadius(location, value, errors);
+
+			return value;
+		}
+
+		function parseVariant2(location, value, errors) {
+			value = instantiateServiceCaptiveCredentials(location, value, errors);
+
+			return value;
+		}
+
+		function parseVariant3(location, value, errors) {
+			value = instantiateServiceCaptiveUam(location, value, errors);
+
+			return value;
+		}
+
+		let success = 0, tryval, tryerr, vvalue = null, verrors = [];
+
+		tryerr = [];
+		tryval = parseVariant0(location, value, tryerr);
+		if (!length(tryerr)) {
+			if (type(vvalue) == "object" && type(tryval) == "object")
+				vvalue = { ...vvalue, ...tryval };
+			else
+				vvalue = tryval;
+
+			success++;
+		}
+		else {
+			push(verrors, join(" and\n", map(tryerr, err => "\t - " + err[1])));
+		}
+
+		tryerr = [];
+		tryval = parseVariant1(location, value, tryerr);
+		if (!length(tryerr)) {
+			if (type(vvalue) == "object" && type(tryval) == "object")
+				vvalue = { ...vvalue, ...tryval };
+			else
+				vvalue = tryval;
+
+			success++;
+		}
+		else {
+			push(verrors, join(" and\n", map(tryerr, err => "\t - " + err[1])));
+		}
+
+		tryerr = [];
+		tryval = parseVariant2(location, value, tryerr);
+		if (!length(tryerr)) {
+			if (type(vvalue) == "object" && type(tryval) == "object")
+				vvalue = { ...vvalue, ...tryval };
+			else
+				vvalue = tryval;
+
+			success++;
+		}
+		else {
+			push(verrors, join(" and\n", map(tryerr, err => "\t - " + err[1])));
+		}
+
+		tryerr = [];
+		tryval = parseVariant3(location, value, tryerr);
+		if (!length(tryerr)) {
+			if (type(vvalue) == "object" && type(tryval) == "object")
+				vvalue = { ...vvalue, ...tryval };
+			else
+				vvalue = tryval;
+
+			success++;
+		}
+		else {
+			push(verrors, join(" and\n", map(tryerr, err => "\t - " + err[1])));
+		}
+
+		if (success != 1) {
+			if (length(verrors))
+				push(errors, [ location, "must match exactly one of the following constraints:\n" + join("\n- or -\n", verrors) ]);
+			else
+				push(errors, [ location, "must match only one variant" ]);
+			return null;
+		}
+
+		value = vvalue;
+
+		return value;
+	}
+
+	function parseVariant1(location, value, errors) {
+		if (type(value) == "object") {
+			let obj = {};
+
+			function parseWalledGardenFqdn(location, value, errors) {
+				if (type(value) == "array") {
+					function parseItem(location, value, errors) {
+						if (type(value) != "string")
+							push(errors, [ location, "must be of type string" ]);
+
+						return value;
+					}
+
+					return map(value, (item, i) => parseItem(location + "/" + i, item, errors));
+				}
+
+				if (type(value) != "array")
+					push(errors, [ location, "must be of type array" ]);
+
+				return value;
+			}
+
+			if (exists(value, "walled-garden-fqdn")) {
+				obj.walled_garden_fqdn = parseWalledGardenFqdn(location + "/walled-garden-fqdn", value["walled-garden-fqdn"], errors);
+			}
+
+			return obj;
+		}
+
+		if (type(value) != "object")
+			push(errors, [ location, "must be of type object" ]);
+
+		return value;
+	}
+
+	let success = 0, tryval, tryerr, vvalue = null, verrors = [];
+
+	tryerr = [];
+	tryval = parseVariant0(location, value, tryerr);
+	if (!length(tryerr)) {
+		if (type(vvalue) == "object" && type(tryval) == "object")
+			vvalue = { ...vvalue, ...tryval };
+		else
+			vvalue = tryval;
+
+		success++;
+	}
+	else {
+		push(verrors, join(" and\n", map(tryerr, err => "\t - " + err[1])));
+	}
+
+	tryerr = [];
+	tryval = parseVariant1(location, value, tryerr);
+	if (!length(tryerr)) {
+		if (type(vvalue) == "object" && type(tryval) == "object")
+			vvalue = { ...vvalue, ...tryval };
+		else
+			vvalue = tryval;
+
+		success++;
+	}
+	else {
+		push(verrors, join(" and\n", map(tryerr, err => "\t - " + err[1])));
+	}
+
+	if (success != 2) {
+		if (length(verrors))
+			push(errors, [ location, "must match all of the following constraints:\n" + join("\n- or -\n", verrors) ]);
+		else
+			push(errors, [ location, "must match only one variant" ]);
+		return null;
+	}
+
+	value = vvalue;
+
+	return value;
+}
+
 function instantiateService(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
@@ -7254,6 +7737,10 @@ function instantiateService(location, value, errors) {
 
 		if (exists(value, "wireguard-overlay")) {
 			obj.wireguard_overlay = instantiateServiceWireguardOverlay(location + "/wireguard-overlay", value["wireguard-overlay"], errors);
+		}
+
+		if (exists(value, "captive")) {
+			obj.captive = instantiateServiceCaptive(location + "/captive", value["captive"], errors);
 		}
 
 		return obj;

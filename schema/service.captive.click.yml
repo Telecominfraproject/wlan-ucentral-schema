@@ -1,0 +1,10 @@
+description:
+  This section can be used to setup a captive portal on the AP with a
+  click-to-continue splash page.
+type: object
+properties:
+  auth-mode:
+    description:
+      This field must be set to 'click-to-continue'
+    type: string
+    const: click-to-continue

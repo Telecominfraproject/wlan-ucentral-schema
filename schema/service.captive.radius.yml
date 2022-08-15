@@ -1,0 +1,50 @@
+description:
+  This section can be used to setup a captive portal on the AP with a
+  click-to-continue splash page.
+type: object
+properties:
+  auth-mode:
+    description:
+      This field must be set to 'radius'
+    type: string
+    const: radius
+  auth-server:
+    description:
+       The URI of our Radius Authentication server.
+    type: string
+    format: uc-host
+    examples:
+    - 192.168.1.10
+  auth-port:
+    description:
+       The network port of our Radius Authentication server.
+    type: integer
+    maximum: 65535
+    minimum: 1024
+    default: 1812
+  auth-secret:
+    description:
+      The shared Radius authentication Authentication secret.
+    type: string
+    examples:
+    - secret
+  acct-server:
+    description:
+       The URI of our Radius Authentication server.
+    type: string
+    format: uc-host
+    examples:
+    - 192.168.1.10
+  acct-port:
+    description:
+       The network port of our Radius Authentication server.
+    type: integer
+    maximum: 65535
+    minimum: 1024
+    default: 1812
+  acct-secret:
+    description:
+      The shared Radius authentication Authentication secret.
+    type: string
+    examples:
+    - secret

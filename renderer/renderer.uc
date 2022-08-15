@@ -614,6 +614,22 @@ let services = {
 		return interfaces;
 	},
 
+	lookup_interfaces_by_ssids: function(service) {
+		let interfaces = [];
+
+		for (let interface in state.interfaces) {
+			if (!interface.ssids)
+				continue;
+			for (let ssid in interface.ssids) {
+				if (!ssid.services || index(ssid.services, service) < 0)
+					continue;
+				push(interfaces, interface);
+			}
+		}
+
+		return uniq(interfaces);
+	},
+
 	lookup_ssids: function(service) {
 		let ssids = [];
 
@@ -996,6 +1012,29 @@ let routing_table = {
 };
 
 /**
+ * @class uCentral.captive
+ * @classdesc
+ *
+ * The captive portal utility class allows assigning consecutive names to wifi-ifaces.
+ */
+
+/** @lends uCentral.captive.prototype */
+
+let captive = {
+	next: 0,
+
+	/**
+	 * Allocate a route table index for the given ID
+	 *
+	 * @param {string} id  The ID to lookup or reserve
+	 * @returns {number} The table number allocated for the given ID
+	 */
+	get: function() {
+		return this.next++;
+	}
+};
+
+/**
  * @class uCentral.latency
  * @classdesc
  *
@@ -1102,6 +1141,9 @@ return /** @lends uCentral.prototype */ {
 			/** @member {uCentral.routing_table} */
 			routing_table,
 			serial,
+
+			/** @member {uCentral.captive} */
+			captive,
 
 			/**
 			 * Emit a warning message.

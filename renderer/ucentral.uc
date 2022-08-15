@@ -21,7 +21,7 @@ function set_service_state(state) {
 		if (enable != state)
 			continue;
 		printf("%s %s\n", service, enable ? "starting" : "stopping");
-		system(sprintf("/etc/init.d/%s %s", service, enable ? "start" : "stop"));
+		system(sprintf("/etc/init.d/%s %s", service, enable ? "restart" : "stop"));
 	}
 	system("/etc/init.d/ucentral-wifi restart");
 	system("/etc/init.d/dnsmasq restart");

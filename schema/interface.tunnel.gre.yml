@@ -16,7 +16,7 @@ properties:
     example: '192.168.100.1'
   dhcp-healthcheck:
     description:
-      Healthcheck will probe of the remote end replies to DHCP discovery without sending
-      a ACK.
+      Healthcheck will probe if the remote peer replies to DHCP discovery without sending
+      an ACK.
     type: boolean
     default: false

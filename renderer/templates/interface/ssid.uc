@@ -239,6 +239,12 @@
 		return '';
 	}
 
+	function calculate_ifname() {
+		if ('captive' in ssid.services)
+			return 'wlancaptive' + captive.get();
+		return '';
+	}
+
 	let radius_gw_proxy = ssid.services && (index(ssid.services, "radius-gw-proxy") >= 0);
 %}
 
@@ -248,7 +254,7 @@
 {%   let section = (owe ? 'o' : '' ) + basename; %}
 {%   let id = wiphy.allocate_ssid_section_id(phy) %}
 {%   let crypto = validate_encryption(phy); %}
-{%   let ifname = '' %}
+{%   let ifname = calculate_ifname(n) %}
 {%   if (!crypto) continue; %}
 set wireless.{{ section }}=wifi-iface
 set wireless.{{ section }}.ucentral_path={{ s(location) }}

@@ -55,8 +55,6 @@ properties:
     $ref: "https://ucentral.io/schema/v1/interface/ipv6/"
   broad-band:
     $ref: "https://ucentral.io/schema/v1/interface/broad-band/"
-  captive:
-    $ref: "https://ucentral.io/schema/v1/interface/captive/"
   ssids:
     type: array
     items:

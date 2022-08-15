@@ -1,0 +1,14 @@
+allOf:
+  - oneOf:
+    - $ref: 'https://ucentral.io/schema/v1/service/captive/click/'
+    - $ref: 'https://ucentral.io/schema/v1/service/captive/radius/'
+    - $ref: 'https://ucentral.io/schema/v1/service/captive/credentials/'
+    - $ref: 'https://ucentral.io/schema/v1/service/captive/uam/'
+  - type: object
+    properties:
+      walled-garden-fqdn:
+        description:
+          The list of FQDNs that a non-authenticated client is allowed to connect to.
+        type: array
+        items:
+          type: string
