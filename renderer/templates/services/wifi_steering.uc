@@ -7,7 +7,7 @@
 # Wifi-Steering service configuration
 
 add usteer usteer
-set usteer.@usteer[-1].network='{{ s(name) }}'
+set usteer.@usteer[-1].network={{ s(name) }}
 set usteer.@usteer[-1].ipv6={{ b(wifi_steering.ipv6) }}
 set usteer.@usteer[-1].key={{ s(wifi_steering.key) }}
 set usteer.@usteer[-1].assoc_steering={{ b(wifi_steering.assoc_steering) }}
@@ -18,7 +18,7 @@ set usteer.@usteer[-1].load_kick_enabled={{ b(wifi_steering.load_kick_threshold)
 set usteer.@usteer[-1].load_kick_threshold={{ wifi_steering.load_kick_threshold }}
 set usteer.@usteer[-1].autochannel={{ b(wifi_steering.auto_channel) }}
 {% for (let ssid in ssids): %}
-add_list usteer.@usteer[-1].ssid_list={{ ssid.name }}
+add_list usteer.@usteer[-1].ssid_list={{ s(ssid.name) }}
 {% endfor %}
 
 add firewall rule
