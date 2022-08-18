@@ -116,6 +116,11 @@ properties:
     type: integer
     default: 20
     maximum: 10000
+  multi-band-operation:
+    description:
+      Multi Band Operation aka Wi-Fi Agile Multiband .... TODO
+    type: boolean
+    default: false
   encryption:
     $ref: "https://ucentral.io/schema/v1/interface/ssid/encryption/"
   multi-psk:

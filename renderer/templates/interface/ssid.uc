@@ -212,7 +212,7 @@
 		let radius_vendor = "26:x:0000e608" + // vendor element
 			"0113" + replace(radius_serial, /./g, (m) => sprintf("%02x", ord(m)));
 
-		let radius_ip = sprintf("%s:%s", server, port);
+		let radius_ip = sprintf("%s:%", server, port);
 		let radius_ip_len = length(radius_ip) + 2;
 		radius_vendor += "02" + sprintf("%02x", radius_ip_len) + replace(radius_ip, /./g, (m) => sprintf("%02x", ord(m)));
 		return radius_vendor;
@@ -245,6 +245,22 @@
 		return '';
 	}
 
+	function validate_multi_band_operation(phy) {
+		if (!ssid.multi_band_operation)
+			return 0;
+
+		if (ssid.encryption.proto in [ "psk2", "psk-mixed", "sae", "sae-mixed", "wpa3", "wpa3-192", "wpa3-mixed" ]) {
+			if (match_ieee80211w(phy) > 0) {
+				return 1;
+			} else {
+				warn("When WPA2 or higher is enabled, MBO requires Protected Management Frames to be enabled");
+				return 0;
+			}
+		} else {
+			return 1;
+		}
+	}
+
 	let radius_gw_proxy = ssid.services && (index(ssid.services, "radius-gw-proxy") >= 0);
 %}
 
@@ -255,11 +271,13 @@
 {%   let id = wiphy.allocate_ssid_section_id(phy) %}
 {%   let crypto = validate_encryption(phy); %}
 {%   let ifname = calculate_ifname(n) %}
+{%   let mbo = validate_multi_band_operation(phy); %}
 {%   if (!crypto) continue; %}
 set wireless.{{ section }}=wifi-iface
 set wireless.{{ section }}.ucentral_path={{ s(location) }}
 set wireless.{{ section }}.device={{ phy.section }}
 set wireless.{{ section }}.ifname={{ s(ifname) }}
+set wireless.{{ section }}.mbo={{ mbo }}
 {%   if (ssid?.encryption?.proto == 'owe-transition'): %}
 {%      ssid.hidden_ssid = 1 %}
 {%      ssid.name += '-OWE' %}

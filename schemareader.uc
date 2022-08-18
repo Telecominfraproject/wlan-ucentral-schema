@@ -4427,6 +4427,20 @@ function instantiateInterfaceSsid(location, value, errors) {
 			obj.fils_discovery_interval = 20;
 		}
 
+		function parseMultiBandOperation(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "multi-band-operation")) {
+			obj.multi_band_operation = parseMultiBandOperation(location + "/multi-band-operation", value["multi-band-operation"], errors);
+		}
+		else {
+			obj.multi_band_operation = false;
+		}
+
 		if (exists(value, "encryption")) {
 			obj.encryption = instantiateInterfaceSsidEncryption(location + "/encryption", value["encryption"], errors);
 		}
