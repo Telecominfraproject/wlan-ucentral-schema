@@ -2,6 +2,11 @@ description:
   This section can be used to setup a radius security proxy instance (radsecproxy).
 type: object
 properties:
+  proxy-secret:
+    description:
+      The radius secret used to communicate with the proxy.
+    type: string
+    default: secret
   realms:
     description:
       The various realms that we can proxy to.

@@ -11,7 +11,7 @@ add radsecproxy client
 set radsecproxy.@client[-1].name='client'
 set radsecproxy.@client[-1].host='localhost'
 set radsecproxy.@client[-1].type='udp'
-set radsecproxy.@client[-1].secret='secret'
+set radsecproxy.@client[-1].secret={{ s(radius_proxy.proxy_secret) }}
 
 {% for (idx, realm in radius_proxy.realms): %}
 
