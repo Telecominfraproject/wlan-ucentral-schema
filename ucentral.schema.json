@@ -2061,6 +2061,10 @@
         "service.radius-proxy": {
             "type": "object",
             "properties": {
+                "proxy-secret": {
+                    "type": "string",
+                    "default": "secret"
+                },
                 "realms": {
                     "type": "array",
                     "items": {
@@ -2748,6 +2752,10 @@
                             "items": {
                                 "type": "string"
                             }
+                        },
+                        "web-root": {
+                            "type": "string",
+                            "format": "uc-base64"
                         }
                     }
                 }

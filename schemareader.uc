@@ -5469,6 +5469,20 @@ function instantiateServiceRadiusProxy(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
 
+		function parseProxySecret(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "proxy-secret")) {
+			obj.proxy_secret = parseProxySecret(location + "/proxy-secret", value["proxy-secret"], errors);
+		}
+		else {
+			obj.proxy_secret = "secret";
+		}
+
 		function parseRealms(location, value, errors) {
 			if (type(value) == "array") {
 				function parseItem(location, value, errors) {
@@ -7613,6 +7627,23 @@ function instantiateServiceCaptive(location, value, errors) {
 
 			if (exists(value, "walled-garden-fqdn")) {
 				obj.walled_garden_fqdn = parseWalledGardenFqdn(location + "/walled-garden-fqdn", value["walled-garden-fqdn"], errors);
+			}
+
+			function parseWebRoot(location, value, errors) {
+				if (type(value) == "string") {
+					if (!matchUcBase64(value))
+						push(errors, [ location, "must be a valid base64 encoded data" ]);
+
+				}
+
+				if (type(value) != "string")
+					push(errors, [ location, "must be of type string" ]);
+
+				return value;
+			}
+
+			if (exists(value, "web-root")) {
+				obj.web_root = parseWebRoot(location + "/web-root", value["web-root"], errors);
 			}
 
 			return obj;

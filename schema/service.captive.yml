@@ -12,3 +12,8 @@ allOf:
         type: array
         items:
           type: string
+      web-root:
+        description:
+          A base64 encoded TAR file with the custom web-root.
+        type: string
+        format: uc-base64

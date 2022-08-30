@@ -1,17 +1,33 @@
-{% if (!services.is_present("spotfilter")) return %}
-{% let interfaces = services.lookup_interfaces_by_ssids("captive") %}
-{% let enable = length(interfaces) %}
-{% if (enable && enable > 1) {
+{%
+if (!services.is_present("spotfilter"))
+	return;
+let interfaces = services.lookup_interfaces_by_ssids("captive");
+let enable = length(interfaces);
+if (enable && enable > 1) {
 	warn('captive portal can only run on a single interface');
 	enable = false;
 
-} %}
-{% services.set_enabled("spotfilter", enable) %}
-{% if (!enable) return %}
+}
+services.set_enabled("spotfilter", enable);
+if (!enable)
+	return;
+
+if (!captive.web_root)
+	system('cp -r /www-uspot /tmp/ucentral/');
+else {
+	let fs = require('fs');
+	fs.mkdir('/tmp/ucentral/www-uspot');
+	let web_root = fs.open('/tmp/ucentral/web-root.tar', 'w');
+	web_root.write(b64dec(captive.web_root));
+	web_root.close();
+	system('tar x -C /tmp/ucentral/www-uspot -f /tmp/ucentral/web-root.tar');
+}
+%}
 
 # Captive Portal service configuration
 
 set uspot.config.auth_mode={{ s(captive.auth_mode) }}
+set uspot.config.web_root={{ b(captive.web_root) }}
 
 {% if (captive.auth_mode in [ 'radius', 'uam']): %}
 set uspot.radius.auth_server={{ s(captive.auth_server) }}
@@ -105,7 +121,7 @@ set uhttpd.@uhttpd[-1].http_keepalive='20'
 set uhttpd.@uhttpd[-1].tcp_keepalive='1'
 add_list uhttpd.@uhttpd[-1].listen_http='0.0.0.0:80'
 add_list uhttpd.@uhttpd[-1].listen_http='[::]:80'
-set uhttpd.@uhttpd[-1].home=/www-uspot
+set uhttpd.@uhttpd[-1].home=/tmp/ucentral/www-uspot
 add_list uhttpd.@uhttpd[-1].ucode_prefix='/hotspot=/usr/share/uspot/handler.uc'
 add_list uhttpd.@uhttpd[-1].ucode_prefix='/cpd=/usr/share/uspot/handler-cpd.uc'
 add_list uhttpd.@uhttpd[-1].ucode_prefix='/env=/usr/share/uspot/handler-env.uc'
@@ -126,6 +142,6 @@ set uhttpd.@uhttpd[-1].http_keepalive='20'
 set uhttpd.@uhttpd[-1].tcp_keepalive='1'
 add_list uhttpd.@uhttpd[-1].listen_http='0.0.0.0:{{ captive.uam_port }}'
 add_list uhttpd.@uhttpd[-1].listen_http='[::]:{{ captive.uam_port }}'
-set uhttpd.@uhttpd[-1].home=/www-uspot
+set uhttpd.@uhttpd[-1].home=/tmp/ucentral/www-uspot
 add_list uhttpd.@uhttpd[-1].ucode_prefix='/logon=/usr/share/uspot/handler-uam.uc'
 {% endif %}
