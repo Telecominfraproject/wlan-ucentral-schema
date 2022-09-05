@@ -115,7 +115,7 @@ properties:
       beacon used in 6GHz channels for passive BSS discovery.
     type: integer
     default: 20
-    maximum: 10000
+    maximum: 20
   encryption:
     $ref: "https://ucentral.io/schema/v1/interface/ssid/encryption/"
   multi-psk:

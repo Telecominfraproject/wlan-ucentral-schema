@@ -4409,8 +4409,8 @@ function instantiateInterfaceSsid(location, value, errors) {
 
 		function parseFilsDiscoveryInterval(location, value, errors) {
 			if (type(value) in [ "int", "double" ]) {
-				if (value > 10000)
-					push(errors, [ location, "must be lower than or equal to 10000" ]);
+				if (value > 20)
+					push(errors, [ location, "must be lower than or equal to 20" ]);
 
 			}
 

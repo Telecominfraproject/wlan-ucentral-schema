@@ -1682,7 +1682,7 @@
                 "fils-discovery-interval": {
                     "type": "integer",
                     "default": 20,
-                    "maximum": 10000
+                    "maximum": 20
                 },
                 "encryption": {
                     "$ref": "#/$defs/interface.ssid.encryption"
