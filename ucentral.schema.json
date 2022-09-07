@@ -1841,6 +1841,11 @@
                     "maximum": 4294967295,
                     "minimum": 0
                 },
+                "mtu": {
+                    "type": "integer",
+                    "maximum": 1500,
+                    "minimum": 1280
+                },
                 "services": {
                     "type": "array",
                     "items": {

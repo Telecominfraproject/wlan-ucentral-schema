@@ -31,6 +31,12 @@ properties:
     type: integer
     maximum: 4294967295
     minimum: 0
+  mtu:
+    description:
+      The MTU of this logical interface.
+    type: integer
+    maximum: 1500
+    minimum: 1280
   services:
     description:
       The services that shall be offered on this logical interface. These are

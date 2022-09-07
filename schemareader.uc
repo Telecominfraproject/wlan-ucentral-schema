@@ -4876,6 +4876,26 @@ function instantiateInterface(location, value, errors) {
 			obj.metric = parseMetric(location + "/metric", value["metric"], errors);
 		}
 
+		function parseMtu(location, value, errors) {
+			if (type(value) in [ "int", "double" ]) {
+				if (value > 1500)
+					push(errors, [ location, "must be lower than or equal to 1500" ]);
+
+				if (value < 1280)
+					push(errors, [ location, "must be bigger than or equal to 1280" ]);
+
+			}
+
+			if (type(value) != "int")
+				push(errors, [ location, "must be of type integer" ]);
+
+			return value;
+		}
+
+		if (exists(value, "mtu")) {
+			obj.mtu = parseMtu(location + "/mtu", value["mtu"], errors);
+		}
+
 		function parseServices(location, value, errors) {
 			if (type(value) == "array") {
 				function parseItem(location, value, errors) {
