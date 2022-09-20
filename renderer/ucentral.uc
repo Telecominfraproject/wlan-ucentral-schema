@@ -66,6 +66,7 @@ try {
 				  'rm -rf /tmp/config-shadow',
 				  'wifi',
 				  'reload_config',
+				  '/etc/init.d/ratelimit restart',
 				  '/etc/init.d/dnsmasq restart'])
 			system(cmd);
 
