@@ -52,6 +52,11 @@
 					 145, 149, 153, 157, 161, 165, 169, 173, 177, 181, 185, 189, 193, 197, 201, 205,
 					 209, 213, 217, 221, 225, 229, 233 ];
 
+	if (capab.country_code && capab.country_code != radio.country) {
+		warn("Overriding country code to %s", capab.country_code);
+		radio.country = capab.country_code;
+	}
+
 	function allowed_channel(radio) {
 		if (radio.channel_width == 20)
 			return true;

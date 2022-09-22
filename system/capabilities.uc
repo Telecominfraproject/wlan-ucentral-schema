@@ -39,6 +39,9 @@ for (let k, v in board.network) {
 if (length(macs))
 	capa.macaddr = macs;
 
+if (board.wifi?.country)
+	capa.country_code = board.wifi.country;
+
 if (board.system?.label_macaddr)
 	capa.label_macaddr = board.system?.label_macaddr;
 
