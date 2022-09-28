@@ -7244,6 +7244,20 @@ function instantiateServiceCaptiveRadius(location, value, errors) {
 			obj.acct_secret = parseAcctSecret(location + "/acct-secret", value["acct-secret"], errors);
 		}
 
+		function parseAcctInterval(location, value, errors) {
+			if (type(value) != "int")
+				push(errors, [ location, "must be of type integer" ]);
+
+			return value;
+		}
+
+		if (exists(value, "acct-interval")) {
+			obj.acct_interval = parseAcctInterval(location + "/acct-interval", value["acct-interval"], errors);
+		}
+		else {
+			obj.acct_interval = 600;
+		}
+
 		return obj;
 	}
 
@@ -7517,6 +7531,31 @@ function instantiateServiceCaptiveUam(location, value, errors) {
 			obj.acct_secret = parseAcctSecret(location + "/acct-secret", value["acct-secret"], errors);
 		}
 
+		function parseAcctInterval(location, value, errors) {
+			if (type(value) != "int")
+				push(errors, [ location, "must be of type integer" ]);
+
+			return value;
+		}
+
+		if (exists(value, "acct-interval")) {
+			obj.acct_interval = parseAcctInterval(location + "/acct-interval", value["acct-interval"], errors);
+		}
+		else {
+			obj.acct_interval = 600;
+		}
+
+		function parseSsid(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "ssid")) {
+			obj.ssid = parseSsid(location + "/ssid", value["ssid"], errors);
+		}
+
 		return obj;
 	}
 
@@ -7664,6 +7703,20 @@ function instantiateServiceCaptive(location, value, errors) {
 
 			if (exists(value, "web-root")) {
 				obj.web_root = parseWebRoot(location + "/web-root", value["web-root"], errors);
+			}
+
+			function parseIdleTimeout(location, value, errors) {
+				if (type(value) != "int")
+					push(errors, [ location, "must be of type integer" ]);
+
+				return value;
+			}
+
+			if (exists(value, "idle-timeout")) {
+				obj.idle_timeout = parseIdleTimeout(location + "/idle-timeout", value["idle-timeout"], errors);
+			}
+			else {
+				obj.idle_timeout = 600;
 			}
 
 			return obj;

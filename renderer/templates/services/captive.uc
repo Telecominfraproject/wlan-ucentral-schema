@@ -28,6 +28,7 @@ else {
 
 set uspot.config.auth_mode={{ s(captive.auth_mode) }}
 set uspot.config.web_root={{ b(captive.web_root) }}
+set uspot.config.idle_timeout={{ captive.idle_timeout }}
 
 {% if (captive.auth_mode in [ 'radius', 'uam']): %}
 set uspot.radius.auth_server={{ s(captive.auth_server) }}
@@ -36,6 +37,7 @@ set uspot.radius.auth_secret={{ s(captive.auth_secret) }}
 set uspot.radius.acct_server={{ s(captive.acct_server) }}
 set uspot.radius.acct_port={{ s(captive.acct_port) }}
 set uspot.radius.acct_secret={{ s(captive.acct_secret) }}
+set uspot.radius.acct_interval={{ captive.acct_interval }}
 {% endif %}
 
 {% if (captive.auth_mode == 'uam'): %}
@@ -44,6 +46,7 @@ set uspot.uam.uam_secret={{ s(captive.uam_secret) }}
 set uspot.uam.uam_server={{ s(captive.uam_server) }}
 set uspot.uam.nasid={{ s(captive.nasid) }}
 set uspot.uam.nasmac={{ s(captive.nasmac || serial) }}
+set uspot.uam.ssid={{ s(captive.ssid) }}
 
 {%
 let math = require('math');
@@ -144,4 +147,5 @@ add_list uhttpd.@uhttpd[-1].listen_http='0.0.0.0:{{ captive.uam_port }}'
 add_list uhttpd.@uhttpd[-1].listen_http='[::]:{{ captive.uam_port }}'
 set uhttpd.@uhttpd[-1].home=/tmp/ucentral/www-uspot
 add_list uhttpd.@uhttpd[-1].ucode_prefix='/logon=/usr/share/uspot/handler-uam.uc'
+add_list uhttpd.@uhttpd[-1].ucode_prefix='/logoff=/usr/share/uspot/handler-uam.uc'
 {% endif %}

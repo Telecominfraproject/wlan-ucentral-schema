@@ -17,3 +17,8 @@ allOf:
           A base64 encoded TAR file with the custom web-root.
         type: string
         format: uc-base64
+      idle-timeout:
+        description:
+          How long may a client be idle before getting removed.
+        type: integer
+        default: 600

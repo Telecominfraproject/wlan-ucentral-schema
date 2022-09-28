@@ -72,3 +72,12 @@ properties:
     type: string
     examples:
     - secret
+  acct-interval:
+    description:
+       The timeout used for interim messages.
+    type: integer
+    default: 600
+  ssid:
+    description:
+      The name of the SSID that shall be sent as part of the UAM redirect.
+    type: string

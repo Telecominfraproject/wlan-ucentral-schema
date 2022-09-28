@@ -48,3 +48,8 @@ properties:
     type: string
     examples:
     - secret
+  acct-interval:
+    description:
+       The timeout used for interim messages.
+    type: integer
+    default: 600

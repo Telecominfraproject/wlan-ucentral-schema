@@ -2640,6 +2640,10 @@
                     "examples": [
                         "secret"
                     ]
+                },
+                "acct-interval": {
+                    "type": "integer",
+                    "default": 600
                 }
             }
         },
@@ -2728,6 +2732,13 @@
                     "examples": [
                         "secret"
                     ]
+                },
+                "acct-interval": {
+                    "type": "integer",
+                    "default": 600
+                },
+                "ssid": {
+                    "type": "string"
                 }
             }
         },
@@ -2761,6 +2772,10 @@
                         "web-root": {
                             "type": "string",
                             "format": "uc-base64"
+                        },
+                        "idle-timeout": {
+                            "type": "integer",
+                            "default": 600
                         }
                     }
                 }

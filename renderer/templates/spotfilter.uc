@@ -14,7 +14,7 @@ let config = {
 	config: {
 		default_class: 0,
 		default_dns_class: 1,
-		client_autoremove: 0,
+		client_autoremove: false,
 		class: [
 			{
 				index: 0,
