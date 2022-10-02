@@ -58,7 +58,7 @@ if (broadband.protocol == "static") {
 		addressing: "static",
 		subnet: broadband['ipv4-address'],
 		gateway: broadband['ipv4-gateway'],
-		"use-dns": broadband['use-dns'],
+		use_dns: broadband['use-dns'],
 	};
 }
 
