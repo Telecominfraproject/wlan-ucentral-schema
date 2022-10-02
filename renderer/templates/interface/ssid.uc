@@ -241,7 +241,7 @@
 
 	function calculate_ifname() {
 		if ('captive' in ssid.services)
-			return 'wlancaptive' + captive.get();
+			return 'wlanc' + captive.get();
 		return '';
 	}
 

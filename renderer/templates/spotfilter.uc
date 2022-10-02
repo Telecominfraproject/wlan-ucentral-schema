@@ -37,7 +37,7 @@ let config = {
 };
 
 for (let id = 0; id < captive.next; id++)
-	push(config.devices, 'wlancaptive' + id);
+	push(config.devices, 'wlanc' + id);
 
 for (let fqdn in state.services.captive.walled_garden_fqdn)
 	push(config.config.whitelist[0].hosts, fqdn);
