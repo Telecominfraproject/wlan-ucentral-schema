@@ -3,7 +3,7 @@
 {% let enable = (wifi_steering.mode == 'local' && length(ssids)) %}
 {% services.set_enabled("usteer", enable) %}
 {% if (!enable) return %}
-{% let name = ethernet.find_interface("upstream", 0) %}
+{% let name = wifi_steering.mode == 'local' ? ethernet.find_interface("upstream", 0) : '' %}
 # Wifi-Steering service configuration
 
 add usteer usteer

@@ -2287,7 +2287,7 @@
                     "type": "string",
                     "enum": [
                         "local",
-                        "cloud"
+                        "none"
                     ],
                     "examples": [
                         "local"

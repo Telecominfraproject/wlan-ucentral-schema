@@ -6166,8 +6166,8 @@ function instantiateServiceWifiSteering(location, value, errors) {
 			if (type(value) != "string")
 				push(errors, [ location, "must be of type string" ]);
 
-			if (!(value in [ "local", "cloud" ]))
-				push(errors, [ location, "must be one of \"local\" or \"cloud\"" ]);
+			if (!(value in [ "local", "none" ]))
+				push(errors, [ location, "must be one of \"local\" or \"none\"" ]);
 
 			return value;
 		}
