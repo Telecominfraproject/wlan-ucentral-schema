@@ -47,6 +47,7 @@ set uspot.uam.uam_server={{ s(captive.uam_server) }}
 set uspot.uam.nasid={{ s(captive.nasid) }}
 set uspot.uam.nasmac={{ s(captive.nasmac || serial) }}
 set uspot.uam.ssid={{ s(captive.ssid) }}
+set uspot.uam.mac_format={{ s(captive.mac_format) }}
 
 {%
 let math = require('math');

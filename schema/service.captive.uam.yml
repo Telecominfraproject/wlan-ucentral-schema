@@ -81,3 +81,14 @@ properties:
     description:
       The name of the SSID that shall be sent as part of the UAM redirect.
     type: string
+  mac-format:
+    description:
+      Defines the format used to send the MAC address inside AAA frames.
+    type: string
+    enum:
+    - aabbccddeeff
+    - aa-bb-cc-dd-ee-ff
+    - aa:bb:cc:dd:ee:ff
+    - AABBCCDDEEFF
+    - AA:BB:CC:DD:EE:FF
+    - AA-BB-CC-DD-EE-FF

@@ -7556,6 +7556,20 @@ function instantiateServiceCaptiveUam(location, value, errors) {
 			obj.ssid = parseSsid(location + "/ssid", value["ssid"], errors);
 		}
 
+		function parseMacFormat(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			if (!(value in [ "aabbccddeeff", "aa-bb-cc-dd-ee-ff", "aa:bb:cc:dd:ee:ff", "AABBCCDDEEFF", "AA:BB:CC:DD:EE:FF", "AA-BB-CC-DD-EE-FF" ]))
+				push(errors, [ location, "must be one of \"aabbccddeeff\", \"aa-bb-cc-dd-ee-ff\", \"aa:bb:cc:dd:ee:ff\", \"AABBCCDDEEFF\", \"AA:BB:CC:DD:EE:FF\" or \"AA-BB-CC-DD-EE-FF\"" ]);
+
+			return value;
+		}
+
+		if (exists(value, "mac-format")) {
+			obj.mac_format = parseMacFormat(location + "/mac-format", value["mac-format"], errors);
+		}
+
 		return obj;
 	}
 

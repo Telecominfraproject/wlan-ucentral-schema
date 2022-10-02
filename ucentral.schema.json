@@ -2739,6 +2739,17 @@
                 },
                 "ssid": {
                     "type": "string"
+                },
+                "mac-format": {
+                    "type": "string",
+                    "enum": [
+                        "aabbccddeeff",
+                        "aa-bb-cc-dd-ee-ff",
+                        "aa:bb:cc:dd:ee:ff",
+                        "AABBCCDDEEFF",
+                        "AA:BB:CC:DD:EE:FF",
+                        "AA-BB-CC-DD-EE-FF"
+                    ]
                 }
             }
         },
