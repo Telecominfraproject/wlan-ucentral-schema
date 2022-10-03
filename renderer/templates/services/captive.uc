@@ -9,6 +9,7 @@ if (enable && enable > 1) {
 
 }
 services.set_enabled("spotfilter", enable);
+services.set_enabled("uspot", enable);
 if (!enable)
 	return;
 
