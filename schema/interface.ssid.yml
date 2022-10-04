@@ -136,6 +136,8 @@ properties:
     $ref: "https://ucentral.io/schema/v1/interface/ssid/pass-point/"
   quality-thresholds:
     $ref: "https://ucentral.io/schema/v1/interface/ssid/quality-thresholds/"
+  access-control-list:
+    $ref: "https://ucentral.io/schema/v1/interface/ssid/acl/"
   hostapd-bss-raw:
     description:
       This array allows passing raw hostapd.conf lines.

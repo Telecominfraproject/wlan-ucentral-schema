@@ -389,6 +389,13 @@ set wireless.{{ section }}.maxassoc={{ ssid.maximum_clients }}
 set wireless.{{ section }}.ratelimit=1
 {%     endif %}
 
+{%     if (ssid.access_control_list?.mode): %}
+set wireless.{{ section }}.macfilter={{ s(ssid.access_control_list.mode) }}
+{%       for (let mac in ssid.access_control_list.mac_address): %}
+add_list wireless.{{ section }}.maclist={{ s(mac) }}
+{%       endfor %}
+{%     endif %}
+
 {%     if (ssid.rrm): %}
 set wireless.{{ section }}.ieee80211k={{ b(ssid.rrm.neighbor_reporting) }}
 set wireless.{{ section }}.rnr={{ b(ssid.rrm.reduced_neighbor_reporting) }}

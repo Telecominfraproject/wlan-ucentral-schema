@@ -1586,6 +1586,25 @@
                 }
             }
         },
+        "interface.ssid.acl": {
+            "type": "object",
+            "properties": {
+                "mode": {
+                    "type": "string",
+                    "enum": [
+                        "allow",
+                        "deny"
+                    ]
+                },
+                "mac-address": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "format": "uc-mac"
+                    }
+                }
+            }
+        },
         "interface.ssid": {
             "type": "object",
             "properties": {
@@ -1713,6 +1732,9 @@
                 },
                 "quality-thresholds": {
                     "$ref": "#/$defs/interface.ssid.quality-thresholds"
+                },
+                "access-control-list": {
+                    "$ref": "#/$defs/interface.ssid.acl"
                 },
                 "hostapd-bss-raw": {
                     "type": "array",

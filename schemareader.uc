@@ -4157,6 +4157,61 @@ function instantiateInterfaceSsidQualityThresholds(location, value, errors) {
 	return value;
 }
 
+function instantiateInterfaceSsidAcl(location, value, errors) {
+	if (type(value) == "object") {
+		let obj = {};
+
+		function parseMode(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			if (!(value in [ "allow", "deny" ]))
+				push(errors, [ location, "must be one of \"allow\" or \"deny\"" ]);
+
+			return value;
+		}
+
+		if (exists(value, "mode")) {
+			obj.mode = parseMode(location + "/mode", value["mode"], errors);
+		}
+
+		function parseMacAddress(location, value, errors) {
+			if (type(value) == "array") {
+				function parseItem(location, value, errors) {
+					if (type(value) == "string") {
+						if (!matchUcMac(value))
+							push(errors, [ location, "must be a valid MAC address" ]);
+
+					}
+
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				return map(value, (item, i) => parseItem(location + "/" + i, item, errors));
+			}
+
+			if (type(value) != "array")
+				push(errors, [ location, "must be of type array" ]);
+
+			return value;
+		}
+
+		if (exists(value, "mac-address")) {
+			obj.mac_address = parseMacAddress(location + "/mac-address", value["mac-address"], errors);
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
+
+	return value;
+}
+
 function instantiateInterfaceSsid(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
@@ -4472,6 +4527,10 @@ function instantiateInterfaceSsid(location, value, errors) {
 
 		if (exists(value, "quality-thresholds")) {
 			obj.quality_thresholds = instantiateInterfaceSsidQualityThresholds(location + "/quality-thresholds", value["quality-thresholds"], errors);
+		}
+
+		if (exists(value, "access-control-list")) {
+			obj.access_control_list = instantiateInterfaceSsidAcl(location + "/access-control-list", value["access-control-list"], errors);
 		}
 
 		function parseHostapdBssRaw(location, value, errors) {

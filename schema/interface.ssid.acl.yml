@@ -1,0 +1,18 @@
+description:
+  The MAC ACL that defines which clients are allowed or denied to associations.
+type: object
+properties:
+  mode:
+    description:
+      Defines if this is an allow or deny list.
+    type: string
+    enum:
+    - allow
+    - deny
+  mac-address:
+    description:
+      Association requests will be denied if the rssi is below this threshold.
+    type: array
+    items:
+      type: string
+      format: uc-mac
