@@ -22,3 +22,7 @@ allOf:
           How long may a client be idle before getting removed.
         type: integer
         default: 600
+      session-timeout:
+        description:
+          How long may a client be idle before getting removed.
+        type: integer

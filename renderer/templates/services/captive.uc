@@ -30,6 +30,7 @@ else {
 set uspot.config.auth_mode={{ s(captive.auth_mode) }}
 set uspot.config.web_root={{ b(captive.web_root) }}
 set uspot.config.idle_timeout={{ captive.idle_timeout }}
+set uspot.config.session_timeout={{ captive.session_timeout }}
 
 {% if (captive.auth_mode in [ 'radius', 'uam']): %}
 set uspot.radius.auth_server={{ s(captive.auth_server) }}

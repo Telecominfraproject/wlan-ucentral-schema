@@ -7817,6 +7817,17 @@ function instantiateServiceCaptive(location, value, errors) {
 				obj.idle_timeout = 600;
 			}
 
+			function parseSessionTimeout(location, value, errors) {
+				if (type(value) != "int")
+					push(errors, [ location, "must be of type integer" ]);
+
+				return value;
+			}
+
+			if (exists(value, "session-timeout")) {
+				obj.session_timeout = parseSessionTimeout(location + "/session-timeout", value["session-timeout"], errors);
+			}
+
 			return obj;
 		}
 

@@ -2816,6 +2816,9 @@
                         "idle-timeout": {
                             "type": "integer",
                             "default": 600
+                        },
+                        "session-timeout": {
+                            "type": "integer"
                         }
                     }
                 }
