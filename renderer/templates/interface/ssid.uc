@@ -258,6 +258,7 @@
 {%   if (!crypto) continue; %}
 set wireless.{{ section }}=wifi-iface
 set wireless.{{ section }}.ucentral_path={{ s(location) }}
+set wireless.{{ section }}.uci_section={{ s(section) }}
 set wireless.{{ section }}.device={{ phy.section }}
 set wireless.{{ section }}.ifname={{ s(ifname) }}
 {%   if (ssid?.encryption?.proto == 'owe-transition'): %}
