@@ -10,3 +10,12 @@ properties:
     description:
       Association requests will be denied if the rssi is below this threshold.
     type: integer
+  client-kick-rssi:
+    description:
+      Clients will get kicked if their SNR drops below this value.
+    type: integer
+  client-kick-ban-time:
+    description:
+      The duration that a client is banned from re-joining after it was kicked.
+    type: integer
+    default: 0

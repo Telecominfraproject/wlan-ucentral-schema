@@ -4148,6 +4148,31 @@ function instantiateInterfaceSsidQualityThresholds(location, value, errors) {
 			obj.association_request_rssi = parseAssociationRequestRssi(location + "/association-request-rssi", value["association-request-rssi"], errors);
 		}
 
+		function parseClientKickRssi(location, value, errors) {
+			if (type(value) != "int")
+				push(errors, [ location, "must be of type integer" ]);
+
+			return value;
+		}
+
+		if (exists(value, "client-kick-rssi")) {
+			obj.client_kick_rssi = parseClientKickRssi(location + "/client-kick-rssi", value["client-kick-rssi"], errors);
+		}
+
+		function parseClientKickBanTime(location, value, errors) {
+			if (type(value) != "int")
+				push(errors, [ location, "must be of type integer" ]);
+
+			return value;
+		}
+
+		if (exists(value, "client-kick-ban-time")) {
+			obj.client_kick_ban_time = parseClientKickBanTime(location + "/client-kick-ban-time", value["client-kick-ban-time"], errors);
+		}
+		else {
+			obj.client_kick_ban_time = 0;
+		}
+
 		return obj;
 	}
 

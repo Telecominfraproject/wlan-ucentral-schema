@@ -1583,6 +1583,13 @@
                 },
                 "association-request-rssi": {
                     "type": "integer"
+                },
+                "client-kick-rssi": {
+                    "type": "integer"
+                },
+                "client-kick-ban-time": {
+                    "type": "integer",
+                    "default": 0
                 }
             }
         },
