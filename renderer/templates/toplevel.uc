@@ -102,6 +102,7 @@
 			[replace(name, '-', '_')]: config
 		});
 	}
+	services.set_enabled("usteer2", true);
 
 	if (state?.services?.captive)
 		include('spotfilter.uc');
