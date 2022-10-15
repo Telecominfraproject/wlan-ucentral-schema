@@ -87,6 +87,7 @@
 				proto: ssid.encryption.proto,
 				auth: ssid.radius.authentication,
 				acct: ssid.radius.accounting,
+				health: ssid.radius.health || {},
 				dyn_auth: ssid.radius?.dynamic_authorization,
 				radius: ssid.radius
 			};
@@ -121,6 +122,7 @@
 					auth: ssid.radius.authentication,
 					acct: ssid.radius.accounting,
 					dyn_auth: ssid.radius?.dynamic_authorization,
+					health: ssid.radius.health || {},
 					radius: ssid.radius
 				};
 			return {
@@ -342,6 +344,11 @@ add_list wireless.{{ section }}.radius_acct_req_attr={{ s(radius_proxy_tlv(crypt
 {%     else %}
 add_list wireless.{{ section }}.radius_acct_req_attr={{ s(radius_vendor_tlv(crypto.acct.host, crypto.acct.port)) }}
 {%     endif %}
+{%   endif %}
+
+{%   if (crypto.health): %}
+set wireless.{{ section }}.health_username={{ s(crypto.health.username) }}
+set wireless.{{ section }}.health_password={{ s(crypto.health.password) }}
 {%   endif %}
 
 {%   if (crypto.dyn_auth): %}

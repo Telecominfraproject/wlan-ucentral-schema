@@ -63,3 +63,5 @@ properties:
             maximum: 600
             minimum: 60
             default: 60
+  health:
+    $ref: "https://ucentral.io/schema/v1/interface/ssid/radius/health/"

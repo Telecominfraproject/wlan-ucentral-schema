@@ -1,0 +1,12 @@
+description:
+  The credentials used when health check probes this radius server.
+type: object
+properties:
+  username:
+    description:
+      The username that gets used when doing a healthcheck on this radius server.
+    type: string
+  password:
+    description:
+      The password that gets used when doing a healthcheck on this radius server.
+    type: string

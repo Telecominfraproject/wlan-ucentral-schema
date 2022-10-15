@@ -17,9 +17,11 @@ state = {
 let ctx = ubus.connect();
 let interfaces = ctx.call("network.interface", "dump").interface;
 let cursor = uci.cursor();
+cursor.load("health");
 cursor.load("dhcp");
 cursor.load("network");
 cursor.load("wireless");
+let config = cursor.get_all("health", "config");
 let dhcp = cursor.get_all("dhcp");
 let wifi_config = cursor.get_all("wireless");
 let wifi_state = require('wifi.iface');
@@ -32,7 +34,7 @@ function find_ssid(ssid) {
 	return 1;
 }
 
-function radius_probe(server, port, secret)
+function radius_probe(server, port, secret, user, pass)
 {
 	let f = fs.open("/tmp/radius.conf", "w");
 	if (f) {
@@ -50,7 +52,7 @@ function radius_probe(server, port, secret)
 		f.write(sprintf("%s %s\n", server, secret));
 		f.close();
 	}
-	return system(['/usr/sbin/radiusprobe']);
+	return system(['/usr/sbin/radiusprobe', user, pass]);
 }
 
 for (let iface in interfaces) {
@@ -66,7 +68,15 @@ for (let iface in interfaces) {
 	let device = iface.l3_device || iface.interface;
 	let warnings = [];
 
-	if (dhcp[name] || (iface.data && iface.data.leasetime) || cursor.get("network", iface.interface, 'dhcp_healthcheck')) {
+	let probe_dhcp = cursor.get("network", iface.interface, 'dhcp_healthcheck') || false;
+
+	if (dhcp[name]?.leasetime && +config.dhcp_local)
+		probe_dhcp = true;
+
+	if (iface?.data.leasetime && +config.dhcp_remote)
+		probe_dhcp = true;
+
+	if (probe_dhcp) {
 		let rc = system(['/usr/sbin/dhcpdiscover', '-i', device, '-t', '5']);
 		if (rc) {
 			health.dhcp = false;
@@ -74,27 +84,36 @@ for (let iface in interfaces) {
 		}
 	}
 
-	let dns = iface["dns-server"];
-	if (!length(dns) && iface["ipv4-address"] && iface["ipv4-address"][0])
-		dns = [ iface["ipv4-address"][0]["address"] ];
+	let probe_dns = false;
 
-	for (let ip in dns) {
-		let rc = system(['/usr/sbin/dnsprobe', '-s', ip]);
+	if (length(iface["dns-server"]) && +config.dns_remote)
+		probe_dns = true;
 
-		if (rc) {
-			health.dns = false;
-			push(warnings, sprintf("DNS %s is not reachable", ip));
+	if (dhcp[name]?.dns_service && +config.dns_local)
+                probe_dns = true;
+
+	if (probe_dns) {
+		let dns = iface["dns-server"];
+		if (!length(dns) && iface["ipv4-address"] && iface["ipv4-address"][0])
+			dns = [ iface["ipv4-address"][0]["address"] ];
+
+		for (let ip in dns) {
+			let rc = system(['/usr/sbin/dnsprobe', '-s', ip]);
+
+			if (rc) {
+				health.dns = false;
+				push(warnings, sprintf("DNS %s is not reachable", ip));
+			}
 		}
 	}
-
 
 	for (let k, iface in wifi_config) {
 		if (iface[".type"] != "wifi-iface" || iface.network != name)
 			continue;
 		if (find_ssid(iface.ssid))
 			ssid[iface.ssid] = false;
-		if (iface.auth_server && iface.auth_port && iface.auth_secret && !iface.radius_gw_proxy)
-			if (radius_probe(iface.auth_server, iface.auth_port, iface.auth_secret)) {
+		if (iface.auth_server && iface.auth_port && iface.auth_secret && iface.health_username && iface.health_password && !iface.radius_gw_proxy)
+			if (radius_probe(iface.auth_server, iface.auth_port, iface.auth_secret, iface.health_username, iface.health_password)) {
 				radius[iface.ssid] = false;
 				push(warnings, sprintf("Radius %s:%s is not reachable", iface.auth_server, iface.auth_port));
 			}

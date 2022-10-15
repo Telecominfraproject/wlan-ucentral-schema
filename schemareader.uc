@@ -3184,6 +3184,41 @@ function instantiateInterfaceSsidRadiusServer(location, value, errors) {
 	return value;
 }
 
+function instantiateInterfaceSsidRadiusHealth(location, value, errors) {
+	if (type(value) == "object") {
+		let obj = {};
+
+		function parseUsername(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "username")) {
+			obj.username = parseUsername(location + "/username", value["username"], errors);
+		}
+
+		function parsePassword(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "password")) {
+			obj.password = parsePassword(location + "/password", value["password"], errors);
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
+
+	return value;
+}
+
 function instantiateInterfaceSsidRadius(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
@@ -3451,6 +3486,10 @@ function instantiateInterfaceSsidRadius(location, value, errors) {
 
 		if (exists(value, "accounting")) {
 			obj.accounting = parseAccounting(location + "/accounting", value["accounting"], errors);
+		}
+
+		if (exists(value, "health")) {
+			obj.health = instantiateInterfaceSsidRadiusHealth(location + "/health", value["health"], errors);
 		}
 
 		return obj;
@@ -7181,6 +7220,75 @@ function instantiateServiceWireguardOverlay(location, value, errors) {
 	return value;
 }
 
+function instantiateServiceHealthCheck(location, value, errors) {
+	if (type(value) == "object") {
+		let obj = {};
+
+		function parseDhcpLocal(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "dhcp-local")) {
+			obj.dhcp_local = parseDhcpLocal(location + "/dhcp-local", value["dhcp-local"], errors);
+		}
+		else {
+			obj.dhcp_local = true;
+		}
+
+		function parseDhcpRemote(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "dhcp-remote")) {
+			obj.dhcp_remote = parseDhcpRemote(location + "/dhcp-remote", value["dhcp-remote"], errors);
+		}
+		else {
+			obj.dhcp_remote = false;
+		}
+
+		function parseDnsLocal(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "dns-local")) {
+			obj.dns_local = parseDnsLocal(location + "/dns-local", value["dns-local"], errors);
+		}
+		else {
+			obj.dns_local = true;
+		}
+
+		function parseDnsRemote(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "dns-remote")) {
+			obj.dns_remote = parseDnsRemote(location + "/dns-remote", value["dns-remote"], errors);
+		}
+		else {
+			obj.dns_remote = true;
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
+
+	return value;
+}
+
 function instantiateServiceCaptiveClick(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
@@ -7950,6 +8058,10 @@ function instantiateService(location, value, errors) {
 
 		if (exists(value, "wireguard-overlay")) {
 			obj.wireguard_overlay = instantiateServiceWireguardOverlay(location + "/wireguard-overlay", value["wireguard-overlay"], errors);
+		}
+
+		if (exists(value, "health-check")) {
+			obj.health_check = instantiateServiceHealthCheck(location + "/health-check", value["health-check"], errors);
 		}
 
 		if (exists(value, "captive")) {
