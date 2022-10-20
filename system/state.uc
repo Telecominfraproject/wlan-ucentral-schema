@@ -268,7 +268,7 @@ cursor.foreach("network", "interface", function(d) {
 				client.ipv6_addresses = topo["ipv6"];
 
 			client.ports = topo.fdb;
-			client.last_seen == topo.last_seen;
+			client.last_seen = topo.last_seen;
 			if (index(stats.types, 'clients') >= 0) {
 				push(clients, client);
 				push(macs, mac);
