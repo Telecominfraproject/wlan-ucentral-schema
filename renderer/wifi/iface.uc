@@ -36,6 +36,8 @@ function freq2channel(freq) {
 		return (freq - 4000) / 5;
 	else if(freq >= 56160 + 2160 * 1 && freq <= 56160 + 2160 * 6)
 		return (freq - 56160) / 2160;
+	else if (freq >= 5955 && freq <= 7115)
+		return (freq - 5950) / 5;
 	else
 		return (freq - 5000) / 5;
 }
