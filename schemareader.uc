@@ -8082,6 +8082,12 @@ function instantiateMetricsStatistics(location, value, errors) {
 		let obj = {};
 
 		function parseInterval(location, value, errors) {
+			if (type(value) in [ "int", "double" ]) {
+				if (value < 60)
+					push(errors, [ location, "must be bigger than or equal to 60" ]);
+
+			}
+
 			if (type(value) != "int")
 				push(errors, [ location, "must be of type integer" ]);
 

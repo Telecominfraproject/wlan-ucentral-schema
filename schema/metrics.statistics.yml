@@ -6,6 +6,7 @@ properties:
     description:
       The reporting interval defined in seconds.
     type: integer
+    minimum: 60
   types:
     description:
       A list of names of subsystems that shall be reported periodically.
