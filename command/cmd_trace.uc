@@ -27,10 +27,12 @@ if (!match(args.interface, /^[^\/]+$/) || (args.interface != "any" && !fs.stat("
 let duration = +args.duration || 0;
 let packets = +args.packets || 0;
 let filename = sprintf("/tmp/pcap-%s-%d", serial, time());
+let sys = ctx.call('system', 'info');
 
 let command =	[
 	'tcpdump_timeout',
 	duration,
+	'-C', sys.memory.free / 4,
 	'-W', '1',
 	'-w', filename,
 	'-i', args.interface
