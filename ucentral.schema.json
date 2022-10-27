@@ -2630,27 +2630,6 @@
                 }
             }
         },
-        "service.health-check": {
-            "type": "object",
-            "properties": {
-                "dhcp-local": {
-                    "type": "boolean",
-                    "default": true
-                },
-                "dhcp-remote": {
-                    "type": "boolean",
-                    "default": false
-                },
-                "dns-local": {
-                    "type": "boolean",
-                    "default": true
-                },
-                "dns-remote": {
-                    "type": "boolean",
-                    "default": true
-                }
-            }
-        },
         "service.captive.click": {
             "type": "object",
             "properties": {
@@ -2913,9 +2892,6 @@
                 "wireguard-overlay": {
                     "$ref": "#/$defs/service.wireguard-overlay"
                 },
-                "health-check": {
-                    "$ref": "#/$defs/service.health-check"
-                },
                 "captive": {
                     "$ref": "#/$defs/service.captive"
                 }
@@ -2947,6 +2923,22 @@
                 "interval": {
                     "type": "integer",
                     "minimum": 60
+                },
+                "dhcp-local": {
+                    "type": "boolean",
+                    "default": true
+                },
+                "dhcp-remote": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "dns-local": {
+                    "type": "boolean",
+                    "default": true
+                },
+                "dns-remote": {
+                    "type": "boolean",
+                    "default": true
                 }
             }
         },

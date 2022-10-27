@@ -7220,75 +7220,6 @@ function instantiateServiceWireguardOverlay(location, value, errors) {
 	return value;
 }
 
-function instantiateServiceHealthCheck(location, value, errors) {
-	if (type(value) == "object") {
-		let obj = {};
-
-		function parseDhcpLocal(location, value, errors) {
-			if (type(value) != "bool")
-				push(errors, [ location, "must be of type boolean" ]);
-
-			return value;
-		}
-
-		if (exists(value, "dhcp-local")) {
-			obj.dhcp_local = parseDhcpLocal(location + "/dhcp-local", value["dhcp-local"], errors);
-		}
-		else {
-			obj.dhcp_local = true;
-		}
-
-		function parseDhcpRemote(location, value, errors) {
-			if (type(value) != "bool")
-				push(errors, [ location, "must be of type boolean" ]);
-
-			return value;
-		}
-
-		if (exists(value, "dhcp-remote")) {
-			obj.dhcp_remote = parseDhcpRemote(location + "/dhcp-remote", value["dhcp-remote"], errors);
-		}
-		else {
-			obj.dhcp_remote = false;
-		}
-
-		function parseDnsLocal(location, value, errors) {
-			if (type(value) != "bool")
-				push(errors, [ location, "must be of type boolean" ]);
-
-			return value;
-		}
-
-		if (exists(value, "dns-local")) {
-			obj.dns_local = parseDnsLocal(location + "/dns-local", value["dns-local"], errors);
-		}
-		else {
-			obj.dns_local = true;
-		}
-
-		function parseDnsRemote(location, value, errors) {
-			if (type(value) != "bool")
-				push(errors, [ location, "must be of type boolean" ]);
-
-			return value;
-		}
-
-		if (exists(value, "dns-remote")) {
-			obj.dns_remote = parseDnsRemote(location + "/dns-remote", value["dns-remote"], errors);
-		}
-		else {
-			obj.dns_remote = true;
-		}
-
-		return obj;
-	}
-
-	if (type(value) != "object")
-		push(errors, [ location, "must be of type object" ]);
-
-	return value;
-}
-
 function instantiateServiceCaptiveClick(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
@@ -8060,10 +7991,6 @@ function instantiateService(location, value, errors) {
 			obj.wireguard_overlay = instantiateServiceWireguardOverlay(location + "/wireguard-overlay", value["wireguard-overlay"], errors);
 		}
 
-		if (exists(value, "health-check")) {
-			obj.health_check = instantiateServiceHealthCheck(location + "/health-check", value["health-check"], errors);
-		}
-
 		if (exists(value, "captive")) {
 			obj.captive = instantiateServiceCaptive(location + "/captive", value["captive"], errors);
 		}
@@ -8151,6 +8078,62 @@ function instantiateMetricsHealth(location, value, errors) {
 
 		if (exists(value, "interval")) {
 			obj.interval = parseInterval(location + "/interval", value["interval"], errors);
+		}
+
+		function parseDhcpLocal(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "dhcp-local")) {
+			obj.dhcp_local = parseDhcpLocal(location + "/dhcp-local", value["dhcp-local"], errors);
+		}
+		else {
+			obj.dhcp_local = true;
+		}
+
+		function parseDhcpRemote(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "dhcp-remote")) {
+			obj.dhcp_remote = parseDhcpRemote(location + "/dhcp-remote", value["dhcp-remote"], errors);
+		}
+		else {
+			obj.dhcp_remote = false;
+		}
+
+		function parseDnsLocal(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "dns-local")) {
+			obj.dns_local = parseDnsLocal(location + "/dns-local", value["dns-local"], errors);
+		}
+		else {
+			obj.dns_local = true;
+		}
+
+		function parseDnsRemote(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "dns-remote")) {
+			obj.dns_remote = parseDnsRemote(location + "/dns-remote", value["dns-remote"], errors);
+		}
+		else {
+			obj.dns_remote = true;
 		}
 
 		return obj;

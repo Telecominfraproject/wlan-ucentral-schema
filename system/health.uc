@@ -21,7 +21,7 @@ cursor.load("health");
 cursor.load("dhcp");
 cursor.load("network");
 cursor.load("wireless");
-let config = cursor.get_all("health", "config");
+let config = cursor.get_all("ustats", "health");
 let dhcp = cursor.get_all("dhcp");
 let wifi_config = cursor.get_all("wireless");
 let wifi_state = require('wifi.iface');
