@@ -423,8 +423,8 @@ set wireless.{{ section }}.r1kh={{ s(ssid.roaming.pmk_r1_key_holder) }}
 {%     endif %}
 
 {%     if (ssid.quality_thresholds): %}
-set wireless.{{ section }}.rssi_reject_assoc_rssi={{ ssid.quality_thresholds.association_request_rssi }}
-set wireless.{{ section }}.rssi_ignore_probe_request={{ ssid.quality_thresholds.probe_request_rssi }}
+set wireless.{{ phy.section }}.rssi_reject_assoc_rssi={{ ssid.quality_thresholds.association_request_rssi }}
+set wireless.{{ phy.section }}.rssi_ignore_probe_request={{ ssid.quality_thresholds.probe_request_rssi }}
 set usteer2.{{ section }}=ssid
 set usteer2.{{ section }}.client_kick_rssi={{ ssid.quality_thresholds.client_kick_rssi }}
 set usteer2.{{ section }}.client_kick_ban_time={{ ssid.quality_thresholds.client_kick_ban_time }}
