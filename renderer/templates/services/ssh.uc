@@ -1,8 +1,17 @@
-{% let interfaces = services.lookup_interfaces("ssh") %}
-{% let enable = length(interfaces) %}
-{% services.set_enabled("dropbear", enable) %}
-{% if (!enable) return %}
-{% files.add_named("/etc/dropbear/authorized_keys", join("\n", ssh.authorized_keys || []) + "\n") %}
+{%
+let interfaces = services.lookup_interfaces("ssh");
+let enable = length(interfaces);
+
+if (restrict.ssh && enable) {
+	warn('SSH is restricted');
+	enable = false;
+}
+
+services.set_enabled("dropbear", enable);
+if (!enable)
+	return;
+files.add_named("/etc/dropbear/authorized_keys", join("\n", ssh.authorized_keys || []) + "\n");
+%}
 
 # SSH service configuration
 

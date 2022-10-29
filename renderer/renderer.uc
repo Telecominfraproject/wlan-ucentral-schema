@@ -12,6 +12,9 @@ let conn = ubus ? ubus.connect() : null;
 let capabfile = fs.open("/etc/ucentral/capabilities.json", "r");
 let capab = capabfile ? json(capabfile.read("all")) : null;
 
+let restrictfile = fs.open("/etc/ucentral/restrictions.json", "r");
+let restrict = restrictfile ? json(restrictfile.read("all")) : {};
+
 let serial = cursor.get("ucentral", "config", "serial");
 
 assert(cursor, "Unable to instantiate uci");
@@ -1087,6 +1090,7 @@ return /** @lends uCentral.prototype */ {
 			location: '/',
 			cursor,
 			capab,
+			restrict,
 
 			/** @member {uCentral.files} */
 			files,

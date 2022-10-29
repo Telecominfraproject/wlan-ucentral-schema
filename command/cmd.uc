@@ -4,6 +4,8 @@ let uci = require("uci");
 let ubus = require("ubus");
 let capabfile = fs.open("/etc/ucentral/capabilities.json", "r");
 let capab = json(capabfile.read("all"));
+let restrictfile = fs.open("/etc/ucentral/restrictions.json", "r");
+let restrict = restrictfile ? json(restrictfile.read("all")) : null;
 let cmdfile = fs.open(ARGV[0], "r");
 let cmd = json(cmdfile.read("all"));
 let id = ARGV[1];
@@ -50,6 +52,7 @@ let scope = {
 	cursor: uci.cursor(),
 	ctx,
 	fs,
+	restrict,
 
 	/* log helper */
 	log,

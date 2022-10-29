@@ -33,6 +33,23 @@ else if (!validation_result.valid) {
 	return;
 }
 
+function verify_signature(file, signature) {
+
+	return true;
+}
+
+if (restrict.sysupgrade) {
+	if (!verify_signature(image_path, args.signature)) {
+		result_json({
+			"error": 2,
+			"text": "Invalid signature",
+			"resultCode": -1
+		});
+
+		return;
+	}
+}
+
 let archive_cmdline = [
 	'tar', 'czf', '/tmp/sysupgrade.tgz',
 	'/etc/config/ucentral'
@@ -42,7 +59,7 @@ let files = [
 		"/etc/ucentral/cas.pem", "/etc/ucentral/cert.pem",
 		"/etc/ucentral/redirector.json", "/etc/ucentral/dev-id",
 		"/etc/ucentral/key.pem", "/etc/config/ucentral",
-		"/etc/ucentral/profile.json"
+		"/etc/ucentral/profile.json", "/etc/ucentral/restrictions.json"
 ];
 for (let f in files)
 	if (fs.stat(f))
