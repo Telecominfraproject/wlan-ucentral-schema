@@ -36,6 +36,11 @@ properties:
     enum:
     - half
     - full
+  enabled:
+    description:
+      This allows forcing the port to down state by default.
+    type: boolean
+    default: true
   services:
     description:
       The services that shall be offered on this L2 interface.

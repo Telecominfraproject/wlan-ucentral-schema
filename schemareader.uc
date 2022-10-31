@@ -447,6 +447,20 @@ function instantiateEthernet(location, value, errors) {
 			obj.duplex = parseDuplex(location + "/duplex", value["duplex"], errors);
 		}
 
+		function parseEnabled(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "enabled")) {
+			obj.enabled = parseEnabled(location + "/enabled", value["enabled"], errors);
+		}
+		else {
+			obj.enabled = true;
+		}
+
 		function parseServices(location, value, errors) {
 			if (type(value) == "array") {
 				function parseItem(location, value, errors) {

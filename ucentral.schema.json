@@ -237,6 +237,10 @@
                         "full"
                     ]
                 },
+                "enabled": {
+                    "type": "boolean",
+                    "default": true
+                },
                 "services": {
                     "type": "array",
                     "items": {
