@@ -160,6 +160,7 @@ for (let radio, data in wifistatus) {
 	radio.phy = data.config.path;
 	if (wifiphy[data.config.path] && wifiphy[data.config.path].temperature)
 		radio.temperature = wifiphy[data.config.path].temperature;
+	radio.band = wifiphy[data.config.path].band;
 	push(state.radios, radio);
 }
 if (!length(state.radios))
