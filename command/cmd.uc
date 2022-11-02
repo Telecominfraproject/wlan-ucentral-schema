@@ -4,8 +4,14 @@ let uci = require("uci");
 let ubus = require("ubus");
 let capabfile = fs.open("/etc/ucentral/capabilities.json", "r");
 let capab = json(capabfile.read("all"));
-let restrictfile = fs.open("/etc/ucentral/restrictions.json", "r");
-let restrict = restrictfile ? json(restrictfile.read("all")) : null;
+let pipe = fs.popen('fw_printenv developer');
+let developer = replace(pipe.read("all"), '\n', '');
+pipe.close();
+let restrict = {};
+if (developer != 'developer=1') {
+	let restrictfile = fs.open("/etc/ucentral/restrictions.json", "r");
+	restrict = restrictfile ? json(restrictfile.read("all")) : {};
+}
 let cmdfile = fs.open(ARGV[0], "r");
 let cmd = json(cmdfile.read("all"));
 let id = ARGV[1];
