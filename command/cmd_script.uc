@@ -1,41 +1,64 @@
-/*let args = {
-        "type": "shell",
-        "script": "echo foo\n sleep 10\n",
-        "timeout": 2
-};
+function validate_signature() {
+	if (!args.signature)
+		return false;
 
-let args = {
-        "type": "ucode",
-        "script": "printf('this is ucode')",
-        "timeout": 20
-};*/
+	return true;
+}
 
 let uloop = require('uloop');
 let fs = require('fs');
 let result;
 let abort;
+let decoded = b64dec(args.script);
+
+if (!decoded) {
+	result_json({
+		"error": 2,
+		"result": "invalid base64"
+	});
+	return;
+}
 
 let script = fs.open("/tmp/script.cmd", "w");
-switch (args.type) {
-case "shell":
-        script.write("#!/bin/sh\n");
-        break;
-case "ucode":
-	script.write("#!/usr/bin/ucode\n");
-        break;
-}
-script.write(args.script);
+script.write(decoded);
 script.close();
 fs.chmod("/tmp/script.cmd", 700);
+
+if (restrict.commands && !validate_signature()) {
+	result_json({
+		"error": 3,
+		"result": "invalid signature"
+	});
+	return;
+}
+
+let out = '';
+if (args.uri) {
+	result_json({ error: 0, result: 'pending'});
+	out = `/tmp/bundle.${id}.tar.gz`;
+}
 
 uloop.init();
 
 let t = uloop.task(
         function(pipe) {
-                let stdout = fs.popen("/tmp/script.cmd");
-                let result = stdout.read("all");
-                let error = stdout.close();
-                return { result, error };
+		switch (args.type) {
+		case 'bundle':
+			let bundle = require('bundle');
+			bundle.init(id);
+			try {
+				include('/tmp/script.cmd', { bundle });
+			} catch(e) {
+				//e.stacktrace[0].context
+			};
+			bundle.complete();
+			return;
+		default:
+			let stdout = fs.popen("/tmp/script.cmd " + out);
+			let result = stdout.read("all");
+			let error = stdout.close();
+			return { result, error };
+		}
         },
 
         function(res) {
@@ -53,12 +76,13 @@ if (args.timeout)
 
 uloop.run();
 
-
 if (abort)
         result = {
                 "error": 255,
                 "result": "timed out"
         };
 
-printf("%.J\n", result);
-result_json(result);
+if (args.uri)
+	ctx.call("ucentral", "upload", {file: out, uri: args.uri, uuid: args.serial});
+else
+	result_json(result);
