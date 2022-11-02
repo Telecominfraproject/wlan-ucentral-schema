@@ -7707,6 +7707,23 @@ function instantiateServiceCaptiveUam(location, value, errors) {
 			obj.mac_format = parseMacFormat(location + "/mac-format", value["mac-format"], errors);
 		}
 
+		function parseFinalRedirectUrl(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			if (!(value in [ "default", "uam" ]))
+				push(errors, [ location, "must be one of \"default\" or \"uam\"" ]);
+
+			return value;
+		}
+
+		if (exists(value, "final-redirect-url")) {
+			obj.final_redirect_url = parseFinalRedirectUrl(location + "/final-redirect-url", value["final-redirect-url"], errors);
+		}
+		else {
+			obj.final_redirect_url = "default";
+		}
+
 		return obj;
 	}
 

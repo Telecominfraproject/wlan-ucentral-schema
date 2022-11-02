@@ -2797,6 +2797,14 @@
                         "AA:BB:CC:DD:EE:FF",
                         "AA-BB-CC-DD-EE-FF"
                     ]
+                },
+                "final-redirect-url": {
+                    "type": "string",
+                    "enum": [
+                        "default",
+                        "uam"
+                    ],
+                    "default": "default"
                 }
             }
         },

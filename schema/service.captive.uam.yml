@@ -92,3 +92,12 @@ properties:
     - AABBCCDDEEFF
     - AA:BB:CC:DD:EE:FF
     - AA-BB-CC-DD-EE-FF
+  final-redirect-url:
+    description:
+      Define the behaviour off the final redirect. Default will honour "userurl" and fallback to "local".
+      Alternatively it is possible to force a redirect to the "UAM" or "local" URL.
+    type: string
+    enum:
+    - default
+    - uam
+    default: default
