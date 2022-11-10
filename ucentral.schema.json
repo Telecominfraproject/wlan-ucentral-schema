@@ -463,12 +463,6 @@
                     "maximum": 65535,
                     "minimum": 15
                 },
-                "dtim-period": {
-                    "type": "integer",
-                    "default": 2,
-                    "maximum": 255,
-                    "minimum": 1
-                },
                 "maximum-clients": {
                     "type": "integer",
                     "example": 64
@@ -1705,6 +1699,12 @@
                             "wifi-steering"
                         ]
                     }
+                },
+                "dtim-period": {
+                    "type": "integer",
+                    "default": 2,
+                    "maximum": 255,
+                    "minimum": 1
                 },
                 "maximum-clients": {
                     "type": "integer",

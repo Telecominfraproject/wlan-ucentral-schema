@@ -1006,29 +1006,6 @@ function instantiateRadio(location, value, errors) {
 			obj.beacon_interval = 100;
 		}
 
-		function parseDtimPeriod(location, value, errors) {
-			if (type(value) in [ "int", "double" ]) {
-				if (value > 255)
-					push(errors, [ location, "must be lower than or equal to 255" ]);
-
-				if (value < 1)
-					push(errors, [ location, "must be bigger than or equal to 1" ]);
-
-			}
-
-			if (type(value) != "int")
-				push(errors, [ location, "must be of type integer" ]);
-
-			return value;
-		}
-
-		if (exists(value, "dtim-period")) {
-			obj.dtim_period = parseDtimPeriod(location + "/dtim-period", value["dtim-period"], errors);
-		}
-		else {
-			obj.dtim_period = 2;
-		}
-
 		function parseMaximumClients(location, value, errors) {
 			if (type(value) != "int")
 				push(errors, [ location, "must be of type integer" ]);
@@ -4488,6 +4465,29 @@ function instantiateInterfaceSsid(location, value, errors) {
 
 		if (exists(value, "services")) {
 			obj.services = parseServices(location + "/services", value["services"], errors);
+		}
+
+		function parseDtimPeriod(location, value, errors) {
+			if (type(value) in [ "int", "double" ]) {
+				if (value > 255)
+					push(errors, [ location, "must be lower than or equal to 255" ]);
+
+				if (value < 1)
+					push(errors, [ location, "must be bigger than or equal to 1" ]);
+
+			}
+
+			if (type(value) != "int")
+				push(errors, [ location, "must be of type integer" ]);
+
+			return value;
+		}
+
+		if (exists(value, "dtim-period")) {
+			obj.dtim_period = parseDtimPeriod(location + "/dtim-period", value["dtim-period"], errors);
+		}
+		else {
+			obj.dtim_period = 2;
 		}
 
 		function parseMaximumClients(location, value, errors) {

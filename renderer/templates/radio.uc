@@ -153,7 +153,6 @@ set wireless.{{ phy.section }}.channel={{ match_channel(phy, radio) }}
 set wireless.{{ phy.section }}.txantenna={{ match_mimo(phy.tx_ant, radio.mimo) }}
 set wireless.{{ phy.section }}.rxantenna={{ match_mimo(phy.rx_ant, radio.mimo) }}
 set wireless.{{ phy.section }}.beacon_int={{ radio.beacon_interval }}
-set wireless.{{ phy.section }}.dtim_period={{ radio.dtim_period }}
 set wireless.{{ phy.section }}.country={{ s(radio.country) }}
 set wireless.{{ phy.section }}.require_mode={{ s(match_require_mode(radio.require_mode)) }}
 set wireless.{{ phy.section }}.txpower={{ radio.tx_power }}
