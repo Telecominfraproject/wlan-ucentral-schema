@@ -17,12 +17,12 @@ function parse_bitrate(info) {
 	else if (info.vht_mcs) {
 		rate.vht = true;
 		rate.mcs = info.vht_mcs;
-		rate.nss = info.vht_mcs;
+		rate.nss = info.vht_nss;
 	}
 	else if (info.he_mcs) {
 		rate.he = true;
 		rate.mcs = info.he_mcs;
-		rate.nss = info.he_mcs;
+		rate.nss = info.he_nss;
 		rate.he_gi = info.he_gi;
 		rate.he_dcm = info.he_dcm;
 	}
