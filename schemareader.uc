@@ -4857,6 +4857,64 @@ function instantiateInterfaceTunnelGre(location, value, errors) {
 	return value;
 }
 
+function instantiateInterfaceTunnelGre6(location, value, errors) {
+	if (type(value) == "object") {
+		let obj = {};
+
+		function parseProto(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			if (value != "gre6")
+				push(errors, [ location, "must have value \"gre6\"" ]);
+
+			return value;
+		}
+
+		if (exists(value, "proto")) {
+			obj.proto = parseProto(location + "/proto", value["proto"], errors);
+		}
+
+		function parsePeerAddress(location, value, errors) {
+			if (type(value) == "string") {
+				if (!matchIpv6(value))
+					push(errors, [ location, "must be a valid IPv6 address" ]);
+
+			}
+
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "peer-address")) {
+			obj.peer_address = parsePeerAddress(location + "/peer-address", value["peer-address"], errors);
+		}
+
+		function parseDhcpHealthcheck(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "dhcp-healthcheck")) {
+			obj.dhcp_healthcheck = parseDhcpHealthcheck(location + "/dhcp-healthcheck", value["dhcp-healthcheck"], errors);
+		}
+		else {
+			obj.dhcp_healthcheck = false;
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
+
+	return value;
+}
+
 function instantiateInterfaceTunnel(location, value, errors) {
 	function parseVariant0(location, value, errors) {
 		value = instantiateInterfaceTunnelMesh(location, value, errors);
@@ -4878,6 +4936,12 @@ function instantiateInterfaceTunnel(location, value, errors) {
 
 	function parseVariant3(location, value, errors) {
 		value = instantiateInterfaceTunnelGre(location, value, errors);
+
+		return value;
+	}
+
+	function parseVariant4(location, value, errors) {
+		value = instantiateInterfaceTunnelGre6(location, value, errors);
 
 		return value;
 	}
@@ -4928,6 +4992,20 @@ function instantiateInterfaceTunnel(location, value, errors) {
 
 	tryerr = [];
 	tryval = parseVariant3(location, value, tryerr);
+	if (!length(tryerr)) {
+		if (type(vvalue) == "object" && type(tryval) == "object")
+			vvalue = { ...vvalue, ...tryval };
+		else
+			vvalue = tryval;
+
+		success++;
+	}
+	else {
+		push(verrors, join(" and\n", map(tryerr, err => "\t - " + err[1])));
+	}
+
+	tryerr = [];
+	tryval = parseVariant4(location, value, tryerr);
 	if (!length(tryerr)) {
 		if (type(vvalue) == "object" && type(tryval) == "object")
 			vvalue = { ...vvalue, ...tryval };

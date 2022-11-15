@@ -1848,6 +1848,24 @@
                 }
             }
         },
+        "interface.tunnel.gre6": {
+            "type": "object",
+            "properties": {
+                "proto": {
+                    "type": "string",
+                    "const": "gre6"
+                },
+                "peer-address": {
+                    "type": "string",
+                    "format": "ipv6",
+                    "example": "2405:200:802:600:61::1"
+                },
+                "dhcp-healthcheck": {
+                    "type": "boolean",
+                    "default": false
+                }
+            }
+        },
         "interface.tunnel": {
             "oneOf": [
                 {
@@ -1861,6 +1879,9 @@
                 },
                 {
                     "$ref": "#/$defs/interface.tunnel.gre"
+                },
+                {
+                    "$ref": "#/$defs/interface.tunnel.gre6"
                 }
             ]
         },

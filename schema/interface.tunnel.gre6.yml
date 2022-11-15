@@ -1,0 +1,22 @@
+description:
+  This Object defines the properties of a GREv6 tunnel.
+type: object
+properties:
+  proto:
+    description:
+      This field must be set to gre6.
+    type: string
+    const: gre6
+  peer-address:
+    description:
+      This is the IPv6 address of the remote host, that the GRE tunnel shall be
+      established with.
+    type: string
+    format: ipv6
+    example: '2405:200:802:600:61::1'
+  dhcp-healthcheck:
+    description:
+      Healthcheck will probe if the remote peer replies to DHCP discovery without sending
+      an ACK.
+    type: boolean
+    default: false

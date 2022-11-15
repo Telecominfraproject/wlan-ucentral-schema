@@ -16,6 +16,9 @@ add_list network.@bridge-vlan[-1].ports={{ name }}_vx
 {% if (interface.tunnel?.proto == "gre"): %}
 add_list network.@bridge-vlan[-1].ports=gre4t-gre.{{ interface.vlan.id }}
 {% endif %}
+{% if (interface.tunnel?.proto == "gre6"): %}
+add_list network.@bridge-vlan[-1].ports=gre6t-greip6.{{ interface.vlan.id }}
+{% endif %}
 {% if ('vxlan-overlay' in interface.services): %}
 add_list network.@bridge-vlan[-1].ports=vx-unet
 {% endif %}
