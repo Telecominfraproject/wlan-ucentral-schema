@@ -133,7 +133,7 @@
 	}
 
 	// tunnel interfaces need additional sections
-	if (tunnel_proto in [ "mesh", "l2tp", "vxlan", "gre" ])
+	if (tunnel_proto in [ "mesh", "l2tp", "vxlan", "gre", "gre6" ])
 		include("interface/" + tunnel_proto + ".uc", { interface, name, eth_ports, location, netdev, ipv4_mode, ipv6_mode, this_vid });
 
 	if (!interface.ethernet && length(interface.ssids) == 1 && !tunnel_proto && !("vxlan-overlay" in interface.services)) {
@@ -143,7 +143,7 @@
 	} else if (tunnel_proto == 'vxlan') {
 		netdev = '@' + name + '_vx';
 		interface.type = 'bridge';
-	} else if (tunnel_proto != 'gre')
+	} else if (tunnel_proto != 'gre' && tunnel_proto != 'gre6')
 		// anything else requires a bridge-vlan
 		include("interface/bridge-vlan.uc", { interface, name, eth_ports, this_vid, bridgedev });
 

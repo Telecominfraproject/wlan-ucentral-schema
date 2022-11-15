@@ -3,3 +3,4 @@ oneOf:
  - $ref: 'https://ucentral.io/schema/v1/interface/tunnel/vxlan/'
  - $ref: 'https://ucentral.io/schema/v1/interface/tunnel/l2tp/'
  - $ref: 'https://ucentral.io/schema/v1/interface/tunnel/gre/'
+ - $ref: 'https://ucentral.io/schema/v1/interface/tunnel/gre6/'
