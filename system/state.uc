@@ -299,7 +299,8 @@ cursor.foreach("network", "interface", function(d) {
 				let wif = wifiiface[vap.ifname];
 				let ssid = {
 					radio:{"$ref": sprintf("#/radios/%d", counter)},
-					phy: data.config.path
+					phy: data.config.path,
+					band: uc(data.config.band)
 				};
 				ssid.location = wireless[vap.section]?.ucentral_path || '';
 				ssid.ssid = wif.ssid;
