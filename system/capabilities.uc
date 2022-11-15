@@ -9,8 +9,11 @@ let fs = require("fs");
 let boardfile = fs.open("/etc/board.json", "r");
 let board = json(boardfile.read("all"));
 boardfile.close();
+let restrictfile = fs.open("/etc/ucentral/restrictions.json", "r");
 
 capa = {};
+if (restrictfile)
+	capa.restrictions = json(restrictfile.read("all")) || {};
 ctx = ubus.connect();
 let wifi = require("wifi.phy");
 capa.compatible = replace(board.model.id, ',', '_');
