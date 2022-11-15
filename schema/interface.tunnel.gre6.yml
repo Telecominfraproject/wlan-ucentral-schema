@@ -12,7 +12,7 @@ properties:
       This is the IPv6 address of the remote host, that the GRE tunnel shall be
       established with.
     type: string
-    format: ipv4
+    format: ipv6
     example: '2405:200:802:600:61::1'
   dhcp-healthcheck:
     description:
