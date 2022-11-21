@@ -1,15 +1,9 @@
-function validate_signature() {
-	if (!args.signature)
-		return false;
-
-	return true;
-}
-
 let uloop = require('uloop');
 let fs = require('fs');
 let result;
 let abort;
 let decoded = b64dec(args.script);
+let signature = require('signature');
 
 if (!decoded) {
 	result_json({
@@ -24,7 +18,7 @@ script.write(decoded);
 script.close();
 fs.chmod("/tmp/script.cmd", 700);
 
-if (restrict.commands && !validate_signature()) {
+if (restrict.commands && !signature.verify("/tmp/script.cmd", args.signature)) {
 	result_json({
 		"error": 3,
 		"result": "invalid signature"

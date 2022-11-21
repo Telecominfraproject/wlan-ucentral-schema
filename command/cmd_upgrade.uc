@@ -33,13 +33,9 @@ else if (!validation_result.valid) {
 	return;
 }
 
-function verify_signature(file, signature) {
-
-	return true;
-}
-
 if (restrict.sysupgrade) {
-	if (!verify_signature(image_path, args.signature)) {
+	let signature = require('signature');
+	if (!signature.verify(image_path, args.signature)) {
 		result_json({
 			"error": 2,
 			"text": "Invalid signature",
