@@ -162,4 +162,5 @@ add_list uhttpd.@uhttpd[-1].listen_http='[::]:{{ captive.uam_port }}'
 set uhttpd.@uhttpd[-1].home=/tmp/ucentral/www-uspot
 add_list uhttpd.@uhttpd[-1].ucode_prefix='/logon=/usr/share/uspot/handler-uam.uc'
 add_list uhttpd.@uhttpd[-1].ucode_prefix='/logoff=/usr/share/uspot/handler-uam.uc'
+add_list uhttpd.@uhttpd[-1].ucode_prefix='/logout=/usr/share/uspot/handler-uam.uc'
 {% endif %}
