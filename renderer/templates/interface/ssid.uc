@@ -392,6 +392,7 @@ set wireless.{{ section }}.uapsd={{ b(ssid.power_save) }}
 set wireless.{{ section }}.rts_threshold={{ ssid.rts_threshold }}
 set wireless.{{ section }}.multicast_to_unicast_all={{ b(ssid.unicast_conversion) }}
 set wireless.{{ section }}.maxassoc={{ ssid.maximum_clients }}
+set wireless.{{ section }}.maxassoc_ignore_probe={{ b(ssid.maximum_clients_no_probe) }}
 set wireless.{{ section }}.dtim_period={{ ssid.dtim_period }}
 
 {%     if (ssid.rate_limit): %}

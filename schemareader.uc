@@ -4501,6 +4501,20 @@ function instantiateInterfaceSsid(location, value, errors) {
 			obj.maximum_clients = parseMaximumClients(location + "/maximum-clients", value["maximum-clients"], errors);
 		}
 
+		function parseMaximumClientsNoProbe(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "maximum-clients-no-probe")) {
+			obj.maximum_clients_no_probe = parseMaximumClientsNoProbe(location + "/maximum-clients-no-probe", value["maximum-clients-no-probe"], errors);
+		}
+		else {
+			obj.maximum_clients_no_probe = false;
+		}
+
 		function parseProxyArp(location, value, errors) {
 			if (type(value) != "bool")
 				push(errors, [ location, "must be of type boolean" ]);

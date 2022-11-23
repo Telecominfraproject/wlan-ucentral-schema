@@ -1710,6 +1710,10 @@
                     "type": "integer",
                     "example": 64
                 },
+                "maximum-clients-no-probe": {
+                    "type": "boolean",
+                    "default": false
+                },
                 "proxy-arp": {
                     "type": "boolean",
                     "default": true

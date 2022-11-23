@@ -101,6 +101,11 @@ properties:
       Set the maximum number of clients that may connect to this VAP.
     type: integer
     example: 64
+  maximum-clients-no-probe:
+    description:
+      Ignore probe requests if maximum-clients has been reached.
+    type: boolean
+    default: false
   proxy-arp:
     description:
       Proxy ARP is the technique in which the host router, answers ARP requests
