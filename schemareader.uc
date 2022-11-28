@@ -1017,6 +1017,17 @@ function instantiateRadio(location, value, errors) {
 			obj.maximum_clients = parseMaximumClients(location + "/maximum-clients", value["maximum-clients"], errors);
 		}
 
+		function parseMaximumClientsIgnoreProbe(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "maximum-clients-ignore-probe")) {
+			obj.maximum_clients_ignore_probe = parseMaximumClientsIgnoreProbe(location + "/maximum-clients-ignore-probe", value["maximum-clients-ignore-probe"], errors);
+		}
+
 		if (exists(value, "rates")) {
 			obj.rates = instantiateRadioRates(location + "/rates", value["rates"], errors);
 		}

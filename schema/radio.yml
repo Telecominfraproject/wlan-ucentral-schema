@@ -126,6 +126,10 @@ properties:
       value is accumulative for all attached VAP interfaces.
     type: integer
     example: 64
+  maximum-clients-ignore-probe:
+    description:
+      Ignore probe requests if maximum-clients was reached.
+    type: boolean
   rates:
     $ref: "https://ucentral.io/schema/v1/radio/rates/"
   he-settings:

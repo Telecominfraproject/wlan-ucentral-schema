@@ -467,6 +467,9 @@
                     "type": "integer",
                     "example": 64
                 },
+                "maximum-clients-ignore-probe": {
+                    "type": "boolean"
+                },
                 "rates": {
                     "$ref": "#/$defs/radio.rates"
                 },
