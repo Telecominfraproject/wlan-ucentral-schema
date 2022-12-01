@@ -76,7 +76,9 @@ if (abort)
                 "result": "timed out"
         };
 
-if (args.uri)
+if (args.uri) {
 	ctx.call("ucentral", "upload", {file: out, uri: args.uri, uuid: args.serial});
-else
+	result_json({ error: 0,
+		      result: 'done'});
+} else
 	result_json(result);
