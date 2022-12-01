@@ -2,23 +2,28 @@ let uloop = require('uloop');
 let fs = require('fs');
 let result;
 let abort;
-let decoded = b64dec(args.script);
 let signature = require('signature');
+if (args.type == 'diagnostic') {
+	system('cp /usr/share/ucentral/diagnostic.uc /tmp/script.cmd');
+} else {
+	let decoded = b64dec(args.script);
+	if (!decoded) {
+		result_json({
+			"error": 2,
+			"result": "invalid base64"
+		});
+		return;
+	}
 
-if (!decoded) {
-	result_json({
-		"error": 2,
-		"result": "invalid base64"
-	});
-	return;
+	let script = fs.open("/tmp/script.cmd", "w");
+	script.write(decoded);
+	script.close();
+	fs.chmod("/tmp/script.cmd", 700);
 }
 
-let script = fs.open("/tmp/script.cmd", "w");
-script.write(decoded);
-script.close();
-fs.chmod("/tmp/script.cmd", 700);
-
-if (restrict.commands && !signature.verify("/tmp/script.cmd", args.signature)) {
+if (args.type != 'diagnostic' &&
+    restrict.commands &&
+    !signature.verify("/tmp/script.cmd", args.signature)) {
 	result_json({
 		"error": 3,
 		"result": "invalid signature"
@@ -37,6 +42,7 @@ uloop.init();
 let t = uloop.task(
         function(pipe) {
 		switch (args.type) {
+		case 'diagnostic':
 		case 'bundle':
 			let bundle = require('bundle');
 			bundle.init(id);
@@ -81,4 +87,4 @@ if (args.uri) {
 	result_json({ error: 0,
 		      result: 'done'});
 } else
-	result_json(result);
+	result_json(result || { result: 255, error: 'unknown'});
