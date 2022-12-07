@@ -60,7 +60,9 @@
 	if (length(restrict.country) && !(radio.country in restrict.country))
 		die("Country code is restricted");
 
-	function allowed_channel(radio) {
+	function allowed_channel(phy, radio) {
+		if (restrict.dfs && radio.channel in phy.dfs_channels)
+			return false;
 		if (radio.channel_width == 20)
 			return true;
 		if (!channel_list[radio.channel_width])
@@ -77,7 +79,7 @@
 		if (!wanted_channel || wanted_channel == "auto")
 			return 0;
 
-		if (index(phy.band, "5G") >= 0 && !allowed_channel(radio)) {
+		if (index(phy.band, "5G") >= 0 && !allowed_channel(phy, radio)) {
 			warn("Selected radio does not support requested channel %d, falling back to ACS",
 				wanted_channel);
 			return 0;
@@ -137,7 +139,7 @@
 		return modes[require_mode] || '';
 	}
 
-	if (restrict.dfs && radio.allow_dfs) {
+	if (restrict.dfs && radio.allow_dfs && radio.band == "5G") {
 		warn('DFS is restricted.');
 		radio.allow_dfs = false;
 	}
