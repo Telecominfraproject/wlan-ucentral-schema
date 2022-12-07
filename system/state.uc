@@ -39,6 +39,7 @@ let wifistatus = ctx.call("network.wireless", "status");
 let wifiphy = require('wifi.phy');
 let wifiiface = require('wifi.iface');
 let stations = require('wifi.station');
+let survey = require('wifi.survey');
 let ports = ctx.call("topology", "port", { delta });
 let poe = ctx.call("poe", "info");
 let gps = ctx.call("gps", "info");
@@ -154,7 +155,6 @@ for (let radio, data in wifistatus) {
 	radio.frequency = vap.frequency;
 	radio.channel_width = vap.ch_width;
 	radio.tx_power = vap.tx_power;
-	let survey = ctx.call('wifi', 'survey', { 'channel': radio.channel[0] });
 	for (let k, v in survey)
 		radio[k] = v;
 	delete radio.in_use;
