@@ -309,7 +309,6 @@ cursor.foreach("network", "interface", function(d) {
 				ssid.mode = wif.mode;
 				ssid.bssid = wif.bssid;
 				ssid.frequency = wif.frequency;
-
 				if (length(stations[vap.ifname])) {
 					ssid.associations = stations[vap.ifname];
 					for (let assoc in ssid.associations) {
@@ -332,9 +331,7 @@ cursor.foreach("network", "interface", function(d) {
 				}
 
 				ssid.iface = vap.ifname;
-				ssid.counters = ports[vap.ifname].stats;
-				if (!ssid.counters)
-					delete ssid.counters;
+				ssid.counters = ports[vap.ifname].counters || {};
 
 				push(ssids, ssid);
 			}
