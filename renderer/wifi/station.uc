@@ -72,8 +72,9 @@ function iface_assoclist(wif) {
 			tx_failed: +sta.sta_info?.tx_failed,
 			rx_rate: parse_bitrate(sta.sta_info?.rx_bitrate || {}),
 			tx_rate: parse_bitrate(sta.sta_info?.tx_bitrate || {}),
-			tid_stats: sta.sta_info?.tid_stats || [],
 		};
+		if (global.tid_stats)
+			assoc.tid_stats = sta.sta_info?.tid_stats || [];
 		push(assocdev, assoc);
 	};
 	return assocdev;

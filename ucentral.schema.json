@@ -2947,7 +2947,8 @@
                         "enum": [
                             "ssids",
                             "lldp",
-                            "clients"
+                            "clients",
+                            "tid-stats"
                         ]
                     }
                 }

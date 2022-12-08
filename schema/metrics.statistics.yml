@@ -17,3 +17,4 @@ properties:
         - ssids
         - lldp
         - clients
+        - tid-stats

@@ -32,6 +32,8 @@ let delta = 1;
 if (telemetry)
 	delta = 0;
 
+global.tid_stats = (index(stats.types, 'tid-stats') >= 0);
+
 /* load state data */
 let ipv6leases = ctx.call("dhcp", "ipv6leases");
 let topology = ctx.call("topology", "mac");

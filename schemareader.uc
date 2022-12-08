@@ -8151,8 +8151,8 @@ function instantiateMetricsStatistics(location, value, errors) {
 					if (type(value) != "string")
 						push(errors, [ location, "must be of type string" ]);
 
-					if (!(value in [ "ssids", "lldp", "clients" ]))
-						push(errors, [ location, "must be one of \"ssids\", \"lldp\" or \"clients\"" ]);
+					if (!(value in [ "ssids", "lldp", "clients", "tid-stats" ]))
+						push(errors, [ location, "must be one of \"ssids\", \"lldp\", \"clients\" or \"tid-stats\"" ]);
 
 					return value;
 				}

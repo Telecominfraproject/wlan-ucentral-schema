@@ -119,6 +119,7 @@ add firewall rule
 set firewall.@rule[-1].name='Allow-pre-captive-{{ name }}'
 set firewall.@rule[-1].src='{{ name }}'
 set firewall.@rule[-1].dest='{{ ethernet.find_interface("upstream", interface.vlan.id) }}'
+set firewall.@rule[-1].proto='any'
 set firewall.@rule[-1].target='DROP'
 set firewall.@rule[-1].mark='1/127'
 {%   endif %}
