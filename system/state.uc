@@ -386,6 +386,7 @@ if (length(captive)) {
 			bytes_ul: val.bytes_ul || 0,
 			packets_dl: val.packets_dl || 0,
 			bytes_dl: val.bytes_dl || 0,
+			username: val?.data?.radius?.request?.username || '',
 		};
 	}
 	state.captive = res;
