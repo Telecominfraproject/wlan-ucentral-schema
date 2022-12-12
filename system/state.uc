@@ -153,7 +153,8 @@ for (let radio, data in wifistatus) {
 		continue;
 
 	let radio = {};
-	radio.channel = vap.channel;
+	radio.channel = vap.channel[0];
+	radio.channels = vap.channel;
 	radio.frequency = vap.frequency;
 	radio.channel_width = vap.ch_width;
 	radio.tx_power = vap.tx_power;
