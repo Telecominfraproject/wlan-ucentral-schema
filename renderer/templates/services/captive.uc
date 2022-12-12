@@ -122,6 +122,18 @@ set firewall.@rule[-1].dest='{{ ethernet.find_interface("upstream", interface.vl
 set firewall.@rule[-1].proto='any'
 set firewall.@rule[-1].target='DROP'
 set firewall.@rule[-1].mark='1/127'
+
+add firewall include
+set firewall.@include[-1].type=restore
+set firewall.@include[-1].family=ipv4
+set firewall.@include[-1].path='/usr/share/uspot/firewall.ipt'
+set firewall.@include[-1].reload=1
+
+add firewall include
+set firewall.@include[-1].type=restore
+set firewall.@include[-1].family=ipv6
+set firewall.@include[-1].path='/usr/share/uspot/firewall.ipt'
+set firewall.@include[-1].reload=1
 {%   endif %}
 {% endfor %}
 
