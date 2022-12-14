@@ -154,12 +154,14 @@ for (let radio, data in wifistatus) {
 
 	let radio = {};
 	radio.channel = vap.channel[0];
-	radio.channels = vap.channel;
-	radio.frequency = vap.frequency;
+	radio.channels = uniq(vap.channel);
+	radio.frequency = uniq(vap.frequency);
 	radio.channel_width = vap.ch_width;
 	radio.tx_power = vap.tx_power;
-	for (let k, v in survey)
-		radio[k] = v;
+	radio.survey = [];
+	for (let k, v in survey.survey)
+		if (v.frequency in radio.frequency)
+			push(radio.survey, v);
 	delete radio.in_use;
 	radio.phy = data.config.path;
 	if (wifiphy[data.config.path] && wifiphy[data.config.path].temperature)
@@ -180,6 +182,8 @@ cursor.foreach("network", "interface", function(d) {
 		return;
 	if (!d.ucentral_path)
 		return;
+	let role = split(name, /[[:digit:]]/);
+	let aggregate = {};
 
 	let iface = { name, location: d.ucentral_path, ipv4:{}, ipv6:{} };
 	let ipv4leases = [];
@@ -309,7 +313,7 @@ cursor.foreach("network", "interface", function(d) {
 				ssid.ssid = wif.ssid;
 				ssid.mode = wif.mode;
 				ssid.bssid = wif.bssid;
-				ssid.frequency = wif.frequency;
+				ssid.frequency = uniq(wif.frequency);
 				if (length(stations[vap.ifname])) {
 					ssid.associations = stations[vap.ifname];
 					for (let assoc in ssid.associations) {
@@ -334,6 +338,10 @@ cursor.foreach("network", "interface", function(d) {
 				ssid.iface = vap.ifname;
 				ssid.counters = ports[vap.ifname].counters || {};
 
+				if (role[0] == 'up')
+					for (let k, v in ssid.counters)
+						aggregate[k] = (aggregate[k] || 0) + v;
+
 				push(ssids, ssid);
 			}
 			counter++;
@@ -342,8 +350,22 @@ cursor.foreach("network", "interface", function(d) {
 			iface.ssids = ssids;
 	}
 
-	if (length(ports) && length(ports[name]) && length(ports[name].counters))
-		iface.counters = ports[name].counters;
+	iface.counters = ports[name].counters;
+
+	if (role[0] == 'up') {
+		iface['counters-aggregate'] = { ...iface.counters };
+		iface['counters-aggregate'].rx_packets += aggregate.tx_packets || 0;
+		iface['counters-aggregate'].tx_packets += aggregate.rx_packets || 0;
+		iface['counters-aggregate'].rx_bytes += aggregate.tx_bytes || 0;
+		iface['counters-aggregate'].tx_bytes += aggregate.rx_bytes || 0;
+		iface['counters-aggregate'].rx_errors += aggregate.tx_errors || 0;
+		iface['counters-aggregate'].tx_errors += aggregate.rx_errors || 0;
+		iface['counters-aggregate'].rx_dropped += aggregate.tx_dropped || 0;
+		iface['counters-aggregate'].tx_dropped += aggregate.rx_dropped || 0;
+		iface['counters-aggregate'].multicast += aggregate.multicast || 0;
+		iface['counters-aggregate'].collisions += aggregate.collisions || 0;
+	}
+
 	if (!length(iface.ipv4))
 		delete iface.ipv4;
 	if (!length(iface.ipv6))
@@ -432,6 +454,7 @@ if (length(capab.network)) {
 				state.speed = +sysfs_net(iface, "speed");
 				state.duplex = sysfs_net(iface, "duplex");
 			}
+			state.counters = ports[iface].counters || {};
 			link[link_name][iface] = state;
 
 			let lldp_neigh = [];
