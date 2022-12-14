@@ -314,23 +314,26 @@ cursor.foreach("network", "interface", function(d) {
 				ssid.mode = wif.mode;
 				ssid.bssid = wif.bssid;
 				ssid.frequency = uniq(wif.frequency);
-				if (length(stations[vap.ifname])) {
-					ssid.associations = stations[vap.ifname];
-					for (let assoc in ssid.associations) {
-						if (length(ip4leases[assoc.station]))
-			                                assoc.ipaddr_v4 = ip4leases[assoc.station];
-						else if (snoop && snoop[assoc.station]) {
-							assoc.ipaddr_v4 = snoop[assoc.station];
-							if (!(assoc.station in macs)) {
-								if (!iface.clients)
-									iface.clients = [];
-								let client = {
-									"mac": assoc.station,
-									"ipv4_addresses": [ snoop[assoc.station] ],
-									"ports": [ vap.ifname ]
-								};
-								push(iface.clients, client);
-							}
+				for (let k, v in stations) {
+					let vlan = split(k, '-v');
+					if (vlan[0] != vap.ifname)
+						continue;
+					ssid.associations = [ ...(ssid.associations || []), ...v ];
+				}
+				for (let assoc in ssid.associations) {
+					if (length(ip4leases[assoc.station]))
+			                           assoc.ipaddr_v4 = ip4leases[assoc.station];
+					else if (snoop && snoop[assoc.station]) {
+				 		assoc.ipaddr_v4 = snoop[assoc.station];
+						if (!(assoc.station in macs)) {
+							if (!iface.clients)
+								iface.clients = [];
+							let client = {
+								"mac": assoc.station,
+								"ipv4_addresses": [ snoop[assoc.station] ],
+								"ports": [ vap.ifname ]
+							};
+							push(iface.clients, client);
 						}
 					}
 				}
