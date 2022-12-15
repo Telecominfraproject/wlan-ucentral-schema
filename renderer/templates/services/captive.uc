@@ -51,6 +51,7 @@ set uspot.uam.nasmac={{ s(captive.nasmac || serial) }}
 set uspot.uam.ssid={{ s(captive.ssid) }}
 set uspot.uam.mac_format={{ s(captive.mac_format) }}
 set uspot.uam.final_redirect_url={{ s(captive.final_redirect_url) }}
+set uspot.uam.mac_auth={{ b(captive.mac_auth) }}
 
 {%
 let math = require('math');

@@ -7809,8 +7809,19 @@ function instantiateServiceCaptiveUam(location, value, errors) {
 		if (exists(value, "final-redirect-url")) {
 			obj.final_redirect_url = parseFinalRedirectUrl(location + "/final-redirect-url", value["final-redirect-url"], errors);
 		}
+
+		function parseMacAuth(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "mac-auth")) {
+			obj.mac_auth = parseMacAuth(location + "/mac-auth", value["mac-auth"], errors);
+		}
 		else {
-			obj.final_redirect_url = "default";
+			obj.mac_auth = "default";
 		}
 
 		return obj;

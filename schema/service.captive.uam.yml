@@ -100,4 +100,8 @@ properties:
     enum:
     - default
     - uam
+  mac-auth:
+    description:
+      Try to authenticate new clients using macauth.
+    type: boolean
     default: default
