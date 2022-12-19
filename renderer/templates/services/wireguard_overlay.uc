@@ -72,7 +72,11 @@ if (vxlan) {
 	if (wireguard_overlay?.vxlan?.isolate ?? true)
 		cfg.services['l2-tunnel'].config.forward_ports = [ "gateway" ];
 }
-files.add_named('/tmp/unet.json', cfg);
+
+system('rm /tmp/unet.*.json');
+let filename = '/tmp/unet.' + time() + '.json';
+
+files.add_named(filename, cfg);
 
 include('../interface/firewall.uc', { name: 'unet', ipv4_mode: true, ipv6_mode: true, interface: { role: 'upstream' }, networks: [ 'unet' ] });
 %}
@@ -82,7 +86,7 @@ include('../interface/firewall.uc', { name: 'unet', ipv4_mode: true, ipv6_mode: 
 set network.unet=interface
 set network.unet.proto=unet
 set network.unet.device=unet
-set network.unet.file='/tmp/unet.json'
+set network.unet.file={{ s(filename) }}
 set network.unet.key={{ s(wireguard_overlay.private_key) }}
 set network.unet.domain=unet
 set network.unet.ip4table='{{ routing_table.get('wireguard_overlay') }}'
