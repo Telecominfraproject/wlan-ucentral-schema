@@ -4859,6 +4859,20 @@ function instantiateInterfaceTunnelGre(location, value, errors) {
 			obj.dhcp_healthcheck = false;
 		}
 
+		function parseDontFragment(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "dont-fragment")) {
+			obj.dont_fragment = parseDontFragment(location + "/dont-fragment", value["dont-fragment"], errors);
+		}
+		else {
+			obj.dont_fragment = false;
+		}
+
 		return obj;
 	}
 

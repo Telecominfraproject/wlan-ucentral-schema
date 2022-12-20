@@ -20,3 +20,8 @@ properties:
       an ACK.
     type: boolean
     default: false
+  dont-fragment:
+    description:
+       Set “Don't Fragment” flag on encapsulated packets.
+    type: boolean
+    default: false

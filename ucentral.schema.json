@@ -1848,6 +1848,10 @@
                 "dhcp-healthcheck": {
                     "type": "boolean",
                     "default": false
+                },
+                "dont-fragment": {
+                    "type": "boolean",
+                    "default": false
                 }
             }
         },
