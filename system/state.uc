@@ -457,7 +457,8 @@ if (length(capab.network)) {
 				state.speed = +sysfs_net(iface, "speed");
 				state.duplex = sysfs_net(iface, "duplex");
 			}
-			state.counters = ports[iface].counters || {};
+			if (ports[iface].counters)
+				state.counters = ports[iface].counters;
 			link[link_name][iface] = state;
 
 			let lldp_neigh = [];
