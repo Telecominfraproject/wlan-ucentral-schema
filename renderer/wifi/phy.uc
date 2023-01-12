@@ -56,17 +56,33 @@ function lookup_paths() {
 	}
 }
 
+function get_hwmon(phy) {
+	let hwmon = fs.glob(sprintf('/sys/class/ieee80211/%s/hwmon*/temp*_input', phy));
+	if (!hwmon)
+		return 0;
+	let file = fs.open(hwmon[0], 'r');
+	if (!file)
+		return 0;
+	let temp = +file.read('all');
+	file.close();
+	return temp;
+}
+
 function lookup_phys() {
 	lookup_paths();
 
 	let phys = phy_get();
 	let ret = {};
 	for (let phy in phys) {
-		let path = paths['phy' + phy.wiphy];
+		let phyname = 'phy' + phy.wiphy;
+		let path = paths[phyname];
 		if (!path)
 			continue;
 
 		let p = {};
+		let temp = get_hwmon('phy' + phy.wiphy);
+		if (temp)
+			p.temperature = temp / 1000;
 
 		p.tx_ant = phy.wiphy_antenna_tx;
 		p.rx_ant = phy.wiphy_antenna_rx;
