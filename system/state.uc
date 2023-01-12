@@ -147,6 +147,27 @@ state.unit.memory.buffered = system.memory.buffered;
 for (let l = 0; l < 3; l++)
 	state.unit.load[l] /= 65535.0;
 
+let thermal = fs.glob('/sys/class/thermal/thermal_zone*/temp');
+if (length(thermal) > 0) {
+	let temps = [];
+	for (let t in thermal) {
+		let file = fs.open(t, 'r');
+		if (!file)
+			continue;
+		let temp = +file.read('all');
+		file.close();
+		push(temps, temp);
+	}
+	if (length(temps) > 0) {
+		let avg = 0;
+		temps = sort(temps);
+		for (let t in temps)
+			avg += t;
+		avg /= length(temps);
+		state.unit.temperature = [ avg, temps[-1] ];
+	}
+}
+
 /* wifi radios */
 for (let radio, data in wifistatus) {
 	if (!length(data.interfaces))
