@@ -339,7 +339,8 @@ cursor.foreach("network", "interface", function(d) {
 				}
 
 				ssid.iface = vap.ifname;
-				ssid.counters = ports[vap.ifname].counters || {};
+				if (ports[vap.ifname]?.counters)
+					ssid.counters = ports[vap.ifname].counters || {};
 
 				if (role[0] == 'up')
 					for (let k, v in ssid.counters)
@@ -353,7 +354,7 @@ cursor.foreach("network", "interface", function(d) {
 			iface.ssids = ssids;
 	}
 
-	iface.counters = ports[name].counters;
+	iface.counters = ports[name]?.counters || {};
 
 	if (role[0] == 'up') {
 		iface['counters-aggregate'] = { ...iface.counters };
@@ -457,7 +458,7 @@ if (length(capab.network)) {
 				state.speed = +sysfs_net(iface, "speed");
 				state.duplex = sysfs_net(iface, "duplex");
 			}
-			if (ports[iface].counters)
+			if (ports[iface]?.counters)
 				state.counters = ports[iface].counters;
 			link[link_name][iface] = state;
 
