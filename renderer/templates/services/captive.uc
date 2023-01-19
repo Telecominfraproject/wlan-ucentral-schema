@@ -23,6 +23,15 @@ else {
 	web_root.close();
 	system('tar x -C /tmp/ucentral/www-uspot -f /tmp/ucentral/web-root.tar');
 }
+
+if (captive.radius_gw_proxy)
+	services.set_enabled("radius-gw-proxy", true);
+
+function radius_proxy_tlv(server, port, name) {
+	let tlv = replace(serial, /^(..)(..)(..)(..)(..)(..)$/, "$1$2$3$4$5$6") + sprintf(":%s:%s:%s", server, port, name);
+	return tlv;
+}
+
 %}
 
 # Captive Portal service configuration
@@ -33,11 +42,22 @@ set uspot.config.idle_timeout={{ captive.idle_timeout }}
 set uspot.config.session_timeout={{ captive.session_timeout }}
 
 {% if (captive.auth_mode in [ 'radius', 'uam']): %}
+{%   if (captive.radius_gw_proxy): %}
+set uspot.radius.auth_server='127.0.0.1'
+set uspot.radius.auth_port='1812'
+set uspot.radius.auth_proxy={{ s(radius_proxy_tlv(captive.auth_server, captive.auth_port, 'captive')) }}
+{%     if (captive.acct_server): %}
+set uspot.radius.acct_server='127.0.0.1'
+set uspot.radius.acct_port='1813'
+set uspot.radius.acct_proxy={{ s(radius_proxy_tlv(captive.acct_server, captive.acct_port, 'captive')) }}
+{%     endif %}
+{%   else %}
 set uspot.radius.auth_server={{ s(captive.auth_server) }}
 set uspot.radius.auth_port={{ s(captive.auth_port) }}
-set uspot.radius.auth_secret={{ s(captive.auth_secret) }}
 set uspot.radius.acct_server={{ s(captive.acct_server) }}
 set uspot.radius.acct_port={{ s(captive.acct_port) }}
+{%   endif %}
+set uspot.radius.auth_secret={{ s(captive.auth_secret) }}
 set uspot.radius.acct_secret={{ s(captive.acct_secret) }}
 set uspot.radius.acct_interval={{ captive.acct_interval }}
 {% endif %}

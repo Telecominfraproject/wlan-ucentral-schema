@@ -2836,6 +2836,10 @@
                 "mac-auth": {
                     "type": "boolean",
                     "default": "default"
+                },
+                "radius-gw-proxy": {
+                    "type": "boolean",
+                    "default": false
                 }
             }
         },

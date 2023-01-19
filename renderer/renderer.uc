@@ -604,7 +604,8 @@ let services = {
 	state: {},
 
 	set_enabled: function(name, state) {
-		this.state[name] = state ? true : false;
+		if (!this.state[name])
+			this.state[name] = state ? true : false;
 	},
 
 	is_present: function(name) {

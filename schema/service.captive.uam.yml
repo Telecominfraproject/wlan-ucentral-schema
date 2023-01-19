@@ -105,3 +105,8 @@ properties:
       Try to authenticate new clients using macauth.
     type: boolean
     default: default
+  radius-gw-proxy:
+    description:
+      Tunnel all radius traffic via the radius-gw-proxy.
+    type: boolean
+    default: false

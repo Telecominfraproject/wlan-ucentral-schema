@@ -7838,6 +7838,20 @@ function instantiateServiceCaptiveUam(location, value, errors) {
 			obj.mac_auth = "default";
 		}
 
+		function parseRadiusGwProxy(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "radius-gw-proxy")) {
+			obj.radius_gw_proxy = parseRadiusGwProxy(location + "/radius-gw-proxy", value["radius-gw-proxy"], errors);
+		}
+		else {
+			obj.radius_gw_proxy = false;
+		}
+
 		return obj;
 	}
 
