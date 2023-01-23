@@ -45,6 +45,9 @@ let survey = require('wifi.survey');
 let ports = ctx.call("topology", "port", { delta });
 let poe = ctx.call("poe", "info");
 let gps = ctx.call("gps", "info");
+let devstats = ctx.call('udevstats', 'dump');
+let devices = ctx.call("network.device", "status");
+
 let lldp = [];
 let wireless = cursor.get_all("wireless");
 let snoop = ctx.call("dhcpsnoop", "dump");
@@ -172,6 +175,20 @@ for (let radio, data in wifistatus) {
 if (!length(state.radios))
 	delete state.radios;
 
+
+function iface_add_counters(counters, vlan, port) {
+	if (!devstats[port])
+		return;
+	for (let k, vid in devstats[port]) {
+		if (vid.vid != vlan)
+			continue;
+		counters.tx_bytes += vid.tx.bytes;
+		counters.tx_packets += vid.tx.packets;
+		counters.rx_bytes += vid.rx.bytes;
+		counters.rx_packets += vid.rx.packets;
+	}
+}
+
 /* interfaces */
 cursor.load("network");
 cursor.foreach("network", "interface", function(d) {
@@ -182,8 +199,9 @@ cursor.foreach("network", "interface", function(d) {
 		return;
 	if (!d.ucentral_path)
 		return;
-	let role = split(name, /[[:digit:]]/);
-	let aggregate = {};
+	let role = split(name, /[[:digit:]]/)[0];
+	let vlan = split(name, 'v')[1];
+	let iface_port;
 
 	let iface = { name, location: d.ucentral_path, ipv4:{}, ipv6:{} };
 	let ipv4leases = [];
@@ -195,10 +213,8 @@ cursor.foreach("network", "interface", function(d) {
 	if (!length(status))
 		return;
 
-	let device = ctx.call("network.device", "status", { name });
-
-	if (device && length(device["bridge-members"]))
-		iface.ports = device["bridge-members"];
+	if (devices && length(devices[role]["bridge-members"]))
+		iface_ports = devices[role]["bridge-members"];
 	iface.uptime = status.uptime || 0;
 
 	if (length(status["ipv4-address"])) {
@@ -342,10 +358,6 @@ cursor.foreach("network", "interface", function(d) {
 				if (ports[vap.ifname]?.counters)
 					ssid.counters = ports[vap.ifname].counters || {};
 
-				if (role[0] == 'up')
-					for (let k, v in ssid.counters)
-						aggregate[k] = (aggregate[k] || 0) + v;
-
 				push(ssids, ssid);
 			}
 			counter++;
@@ -355,19 +367,14 @@ cursor.foreach("network", "interface", function(d) {
 	}
 
 	iface.counters = ports[name]?.counters || {};
+	if (role == 'up') {
+		iface.counters.rx_bytes = 0;
+		iface.counters.tx_bytes = 0;
+		iface.counters.rx_packets = 0;
+		iface.counters.tx_packets = 0;
+		for (let port in iface_ports)
+			iface_add_counters(iface.counters, vlan, port); 
 
-	if (role[0] == 'up') {
-		iface['counters-aggregate'] = { ...iface.counters };
-		iface['counters-aggregate'].rx_packets += aggregate.tx_packets || 0;
-		iface['counters-aggregate'].tx_packets += aggregate.rx_packets || 0;
-		iface['counters-aggregate'].rx_bytes += aggregate.tx_bytes || 0;
-		iface['counters-aggregate'].tx_bytes += aggregate.rx_bytes || 0;
-		iface['counters-aggregate'].rx_errors += aggregate.tx_errors || 0;
-		iface['counters-aggregate'].tx_errors += aggregate.rx_errors || 0;
-		iface['counters-aggregate'].rx_dropped += aggregate.tx_dropped || 0;
-		iface['counters-aggregate'].tx_dropped += aggregate.rx_dropped || 0;
-		iface['counters-aggregate'].multicast += aggregate.multicast || 0;
-		iface['counters-aggregate'].collisions += aggregate.collisions || 0;
 	}
 
 	if (!length(iface.ipv4))

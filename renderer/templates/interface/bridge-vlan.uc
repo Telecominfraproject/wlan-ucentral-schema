@@ -30,3 +30,11 @@ set network.@device[-1].type=8021q
 set network.@device[-1].name={{ name }}
 set network.@device[-1].ifname={{ bridgedev }}
 set network.@device[-1].vid={{ this_vid }}
+
+{% if (interface.role == 'upstream'): %}
+{%  for (let port in keys(eth_ports)): %}
+set udevstats.{{ port }}=device
+set udevstats.{{ port }}.name={{ s(port) }}
+add_list udevstats.{{ port }}.vlan={{ s(interface.vlan.id || 0) }}
+{%  endfor %}
+{% endif %}
