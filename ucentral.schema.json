@@ -2870,6 +2870,13 @@
                                 "type": "string"
                             }
                         },
+                        "walled-garden-ipaddr": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "format": "uc-ip"
+                            }
+                        },
                         "web-root": {
                             "type": "string",
                             "format": "uc-base64"

@@ -30,7 +30,8 @@ let config = {
 		whitelist: [
                         {
                                 "class": 1,
-                                "hosts": [ ]
+                                "hosts": [ ],
+				"address": [],
                         }
                 ]
 	}
@@ -41,6 +42,9 @@ for (let id = 0; id < captive.next; id++)
 
 for (let fqdn in state.services.captive.walled_garden_fqdn)
 	push(config.config.whitelist[0].hosts, fqdn);
+
+for (let ipaddr in state.services.captive.walled_garden_ipaddr)
+	push(config.config.whitelist[0].address, ipaddr);
 
 let fs = require('fs');
 let file = fs.open('/tmp/spotfilter.json', 'w');

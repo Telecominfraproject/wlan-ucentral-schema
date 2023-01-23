@@ -7984,6 +7984,34 @@ function instantiateServiceCaptive(location, value, errors) {
 				obj.walled_garden_fqdn = parseWalledGardenFqdn(location + "/walled-garden-fqdn", value["walled-garden-fqdn"], errors);
 			}
 
+			function parseWalledGardenIpaddr(location, value, errors) {
+				if (type(value) == "array") {
+					function parseItem(location, value, errors) {
+						if (type(value) == "string") {
+							if (!matchUcIp(value))
+								push(errors, [ location, "must be a valid IPv4 or IPv6 address" ]);
+
+						}
+
+						if (type(value) != "string")
+							push(errors, [ location, "must be of type string" ]);
+
+						return value;
+					}
+
+					return map(value, (item, i) => parseItem(location + "/" + i, item, errors));
+				}
+
+				if (type(value) != "array")
+					push(errors, [ location, "must be of type array" ]);
+
+				return value;
+			}
+
+			if (exists(value, "walled-garden-ipaddr")) {
+				obj.walled_garden_ipaddr = parseWalledGardenIpaddr(location + "/walled-garden-ipaddr", value["walled-garden-ipaddr"], errors);
+			}
+
 			function parseWebRoot(location, value, errors) {
 				if (type(value) == "string") {
 					if (!matchUcBase64(value))

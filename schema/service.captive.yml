@@ -12,6 +12,13 @@ allOf:
         type: array
         items:
           type: string
+      walled-garden-ipaddr:
+        description:
+          The list of IP addresses that a non-authenticated client is allowed to connect to.
+        type: array
+        items:
+          type: string
+          format: uc-ip
       web-root:
         description:
           A base64 encoded TAR file with the custom web-root.
