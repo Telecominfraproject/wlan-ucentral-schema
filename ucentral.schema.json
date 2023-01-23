@@ -3040,6 +3040,31 @@
                 }
             }
         },
+        "metrics.telemetry": {
+            "type": "object",
+            "properties": {
+                "interval": {
+                    "type": "integer"
+                },
+                "types": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "metrics.realtime": {
+            "type": "object",
+            "properties": {
+                "types": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "metrics": {
             "type": "object",
             "properties": {
@@ -3054,6 +3079,12 @@
                 },
                 "dhcp-snooping": {
                     "$ref": "#/$defs/metrics.dhcp-snooping"
+                },
+                "telemetry": {
+                    "$ref": "#/$defs/metrics.telemetry"
+                },
+                "realtime": {
+                    "$ref": "#/$defs/metrics.realtime"
                 }
             }
         },

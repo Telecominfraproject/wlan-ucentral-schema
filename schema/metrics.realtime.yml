@@ -1,0 +1,10 @@
+description:
+  Configure the realtime events that get sent to the cloud.
+type: object
+properties:
+  types:
+    description:
+      The event types that get added to telemetry.
+    type: array
+    items:
+      type: string

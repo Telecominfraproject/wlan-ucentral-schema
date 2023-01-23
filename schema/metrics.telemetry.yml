@@ -1,0 +1,14 @@
+description:
+  Configure the unsolicitated telemetry stream.
+type: object
+properties:
+  interval:
+    description:
+      The reporting interval defined in seconds.
+    type: integer
+  types:
+    description:
+      The event types that get added to telemetry.
+    type: array
+    items:
+      type: string

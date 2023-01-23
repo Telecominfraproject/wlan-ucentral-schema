@@ -1,4 +1,6 @@
 {%
+	let fs = require('fs');
+
 	// reject the config if there is no valid upstream configuration
 	if (!state.uuid) {
 		warn('Configuration must contain a valid UUID. Rejecting whole file');
@@ -65,10 +67,21 @@
 	if (!state.metrics)
 		state.metrics = {};
 
+	let file = fs.open('/etc/events.json', 'r');
+	let events = [];
+	if (file) {
+		try {
+			events = json(file.read('all'));
+		} catch(e) {
+
+		}
+		file.close();
+	}
 	for (let metric in services.lookup_metrics())
 		tryinclude('metric/' + metric + '.uc', {
 			location: '/metric/' + metric,
-			[metric]: state.metrics[metric] || {}
+			[metric]: state.metrics[metric] || {},
+			events
 		});
 
 	if (state.switch)

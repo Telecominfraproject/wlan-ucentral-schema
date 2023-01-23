@@ -8408,6 +8408,87 @@ function instantiateMetricsDhcpSnooping(location, value, errors) {
 	return value;
 }
 
+function instantiateMetricsTelemetry(location, value, errors) {
+	if (type(value) == "object") {
+		let obj = {};
+
+		function parseInterval(location, value, errors) {
+			if (type(value) != "int")
+				push(errors, [ location, "must be of type integer" ]);
+
+			return value;
+		}
+
+		if (exists(value, "interval")) {
+			obj.interval = parseInterval(location + "/interval", value["interval"], errors);
+		}
+
+		function parseTypes(location, value, errors) {
+			if (type(value) == "array") {
+				function parseItem(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				return map(value, (item, i) => parseItem(location + "/" + i, item, errors));
+			}
+
+			if (type(value) != "array")
+				push(errors, [ location, "must be of type array" ]);
+
+			return value;
+		}
+
+		if (exists(value, "types")) {
+			obj.types = parseTypes(location + "/types", value["types"], errors);
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
+
+	return value;
+}
+
+function instantiateMetricsRealtime(location, value, errors) {
+	if (type(value) == "object") {
+		let obj = {};
+
+		function parseTypes(location, value, errors) {
+			if (type(value) == "array") {
+				function parseItem(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				return map(value, (item, i) => parseItem(location + "/" + i, item, errors));
+			}
+
+			if (type(value) != "array")
+				push(errors, [ location, "must be of type array" ]);
+
+			return value;
+		}
+
+		if (exists(value, "types")) {
+			obj.types = parseTypes(location + "/types", value["types"], errors);
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
+
+	return value;
+}
+
 function instantiateMetrics(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
@@ -8426,6 +8507,14 @@ function instantiateMetrics(location, value, errors) {
 
 		if (exists(value, "dhcp-snooping")) {
 			obj.dhcp_snooping = instantiateMetricsDhcpSnooping(location + "/dhcp-snooping", value["dhcp-snooping"], errors);
+		}
+
+		if (exists(value, "telemetry")) {
+			obj.telemetry = instantiateMetricsTelemetry(location + "/telemetry", value["telemetry"], errors);
+		}
+
+		if (exists(value, "realtime")) {
+			obj.realtime = instantiateMetricsRealtime(location + "/realtime", value["realtime"], errors);
 		}
 
 		return obj;
