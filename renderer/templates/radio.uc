@@ -34,6 +34,7 @@
 			}
 		}
 
+		warn("Selected radio does not support any HT modes");
 		die("Selected radio does not support any HT modes");
 	}
 
@@ -57,8 +58,10 @@
 		radio.country = capab.country_code;
 	}
 
-	if (length(restrict.country) && !(radio.country in restrict.country))
+	if (length(restrict.country) && !(radio.country in restrict.country)) {
+		warn("Country code is restricted");
 		die("Country code is restricted");
+	}
 
 	function allowed_channel(phy, radio) {
 		if (restrict.dfs && radio.channel in phy.dfs_channels)
