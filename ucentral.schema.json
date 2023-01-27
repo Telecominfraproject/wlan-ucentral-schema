@@ -2892,6 +2892,24 @@
                 }
             ]
         },
+        "service.gps": {
+            "type": "object",
+            "properties": {
+                "adjust-time": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "baud-rate": {
+                    "type": "integer",
+                    "enum": [
+                        2400,
+                        4800,
+                        9600,
+                        19200
+                    ]
+                }
+            }
+        },
         "service": {
             "type": "object",
             "properties": {
@@ -2948,6 +2966,9 @@
                 },
                 "captive": {
                     "$ref": "#/$defs/service.captive"
+                },
+                "gps": {
+                    "$ref": "#/$defs/service.gps"
                 }
             }
         },

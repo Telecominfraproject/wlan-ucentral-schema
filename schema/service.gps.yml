@@ -1,0 +1,18 @@
+description:
+  This section can be used to configure a GPS dongle
+type: object
+properties:
+  adjust-time:
+    description:
+      Adjust the systems clock upon a successful GPS lock.
+    type: boolean
+    default: false
+  baud-rate:
+    description:
+      The baudrate used by the attached GPS dongle
+    type: integer
+    enum:
+    - 2400
+    - 4800
+    - 9600
+    - 19200

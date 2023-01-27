@@ -8106,6 +8106,47 @@ function instantiateServiceCaptive(location, value, errors) {
 	return value;
 }
 
+function instantiateServiceGps(location, value, errors) {
+	if (type(value) == "object") {
+		let obj = {};
+
+		function parseAdjustTime(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "adjust-time")) {
+			obj.adjust_time = parseAdjustTime(location + "/adjust-time", value["adjust-time"], errors);
+		}
+		else {
+			obj.adjust_time = false;
+		}
+
+		function parseBaudRate(location, value, errors) {
+			if (type(value) != "int")
+				push(errors, [ location, "must be of type integer" ]);
+
+			if (!(value in [ 2400, 4800, 9600, 19200 ]))
+				push(errors, [ location, "must be one of 2400, 4800, 9600 or 19200" ]);
+
+			return value;
+		}
+
+		if (exists(value, "baud-rate")) {
+			obj.baud_rate = parseBaudRate(location + "/baud-rate", value["baud-rate"], errors);
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
+
+	return value;
+}
+
 function instantiateService(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
@@ -8180,6 +8221,10 @@ function instantiateService(location, value, errors) {
 
 		if (exists(value, "captive")) {
 			obj.captive = instantiateServiceCaptive(location + "/captive", value["captive"], errors);
+		}
+
+		if (exists(value, "gps")) {
+			obj.gps = instantiateServiceGps(location + "/gps", value["gps"], errors);
 		}
 
 		return obj;
