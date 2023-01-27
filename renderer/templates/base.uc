@@ -3,6 +3,8 @@ let roles = (state.switch && state.switch.loop_detection &&
 	     state.switch.loop_detection.roles) ?
 			state.switch.loop_detection.roles : [];
 
+services.set_enabled("ustpd", length(roles));
+
 function loop_detect(role) {
 	return (index(roles, role) >= 0) ? 1 : 0;
 }
