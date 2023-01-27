@@ -2,11 +2,14 @@
 let wireguard = length(services.lookup_interfaces("wireguard-overlay"));
 let vxlan = length(services.lookup_interfaces("vxlan-overlay"));
 
-if (!wireguard && !vxlan)
+if (!wireguard && !vxlan) {
+	services.set_enabled("unetd", false);
 	return;
+}
 
 if (wireguard + vlxan > 1) {
 	warn('only a single wireguard/vxlan-overlay is allowed\n');
+	services.set_enabled("unetd", false);
 	return;
 }
 
@@ -14,8 +17,11 @@ if (!wireguard_overlay.root_node.key ||
     !wireguard_overlay.root_node.endpoint ||
     !wireguard_overlay.root_node.ipaddr) {
 	warn('root node is not configured correctly\n');
+	services.set_enabled("unetd", false);
 	return;
 }
+
+services.set_enabled("unetd", true);
 
 let ips = [];
 

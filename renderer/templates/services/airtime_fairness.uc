@@ -1,7 +1,5 @@
 {%
-let enable = airtime_fairness;
-if (!services.is_present("atfpolicy"))
-	return;
+let enable = length(airtime_fairness);
 services.set_enabled("atfpolicy", enable);
 if (!enable)
 	return;
