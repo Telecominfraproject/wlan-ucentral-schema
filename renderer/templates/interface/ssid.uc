@@ -68,31 +68,54 @@
 	}
 
 	function validate_encryption_ap() {
-		if (ssid.encryption.proto in [ "wpa", "wpa2", "wpa-mixed", "wpa3", "wpa3-mixed", "wpa3-192", "psk2-radius" ] &&
-		    ssid.radius && ssid.radius.local &&
-		    length(certificates))
+
+		// Only use radius if we're in one of the following protocols
+		if (!ssid.encryption.proto in [ "wpa", "wpa2", "wpa-mixed", "wpa3", "wpa3-mixed", "wpa3-192", "psk2-radius" ]) {
+			warn("Can't find any valid encryption settings");
+			return false;
+		}
+
+		if (ssid.radius && ssid.radius.local && length(certificates))
 			return {
 				proto: ssid.encryption.proto,
 				eap_local: ssid.radius.local,
 				eap_user: "/tmp/ucentral/" + replace(location, "/", "_") + ".eap_user"
 			};
 
+		let result = { proto: ssid.encryption.proto };
+		let validEnryption = false;
+		if (ssid.radius && ssid.radius.authentication &&
+			ssid.radius.authentication.host &&
+			ssid.radius.authentication.port &&
+			ssid.radius.authentication.secret) {
+				validEnryption = true;
+				result.auth = ssid.radius.authentication;
+				result.acct = ssid.radius.accounting;
+				result.dyn_auth = ssid.radius?.dynamic_authorization;
+				result.radius = ssid.radius;
+		}
 
-		if (ssid.encryption.proto in [ "wpa", "wpa2", "wpa-mixed", "wpa3", "wpa3-mixed", "wpa3-192", "psk2-radius" ] &&
-		    ssid.radius && ssid.radius.authentication &&
-		    ssid.radius.authentication.host &&
-		    ssid.radius.authentication.port &&
-		    ssid.radius.authentication.secret)
-			return {
-				proto: ssid.encryption.proto,
-				auth: ssid.radius.authentication,
-				acct: ssid.radius.accounting,
-				health: ssid.radius.health || {},
-				dyn_auth: ssid.radius?.dynamic_authorization,
-				radius: ssid.radius
-			};
-		warn("Can't find any valid encryption settings");
-		return false;
+		if (ssid.radius && ssid.radius.authentication_secondary &&
+			ssid.radius.authentication_secondary.host &&
+			ssid.radius.authentication_secondary.port &&
+			ssid.radius.authentication_secondary.secret) {
+				validEnryption = true;
+				result.auth_secondary = ssid.radius.authentication_secondary;
+		}
+
+		if (ssid.radius && ssid.radius.accounting_secondary &&
+			ssid.radius.accounting_secondary.host &&
+			ssid.radius.accounting_secondary.port &&
+			ssid.radius.accounting_secondary.secret) {
+				validEnryption = true;
+				result.acct_secondary = ssid.radius.accounting_secondary;
+		}
+		if (validEnryption) {
+			return result;
+		} else {
+			warn("Can't find any valid encryption settings");
+			return false;
+		}
 	}
 
 	function validate_encryption_sta() {
@@ -113,21 +136,36 @@
 		}
 
 		if (!ssid.encryption || ssid.encryption.proto in [ "none" ]) {
-			if (ssid.radius?.authentication?.mac_filter &&
-			    ssid.radius.authentication?.host &&
-			    ssid.radius.authentication?.port &&
-			    ssid.radius.authentication?.secret)
-				return {
-					proto: 'none',
-					auth: ssid.radius.authentication,
-					acct: ssid.radius.accounting,
-					dyn_auth: ssid.radius?.dynamic_authorization,
-					health: ssid.radius.health || {},
-					radius: ssid.radius
-				};
-			return {
+			let result = {
 				proto: 'none'
 			};
+
+			// Make sure we've got a primary configuration for both accounting and authentication radius servers
+			if (ssid.radius?.authentication?.mac_filter &&
+				ssid.radius.authentication?.host &&
+				ssid.radius.authentication?.port &&
+				ssid.radius.authentication?.secret) {
+					result.auth = ssid.radius.authentication;
+					result.acct = ssid.radius?.accounting;
+					result.dyn_auth = ssid.radius?.dynamic_authorization;
+					result.radius = ssid.radius;
+			}
+
+			// Check for a backup authentication radius server and set it if properly configured
+			if (ssid.radius?.authentication_secondary?.host &&
+				ssid.radius.authentication_secondary?.port &&
+				ssid.radius.authentication_secondary?.secret) {
+					result.auth_secondary = ssid.radius.authentication_secondary;
+			}
+
+			// Check for a backup accounting radius server and set it if properly configured
+			if (ssid.radius?.accounting_secondary?.host &&
+				ssid.radius.accounting_secondary?.port &&
+				ssid.radius.accounting_secondary?.secret) {
+					result.acct_secondary = ssid.radius.accounting_secondary
+			}
+
+			return result;
 		}
 
 		if (ssid?.encryption?.proto in [ "owe", "owe-transition" ])
@@ -279,6 +317,24 @@ set wireless.{{ section }}.mesh_id={{ s(ssid.name) }}
 set wireless.{{ section }}.mesh_fwding=0
 set wireless.{{ section }}.network=batman_mesh
 set wireless.{{ section }}.mcast_rate=24000
+{%   endif %}
+
+{%   if (crypto.auth_secondary): %}
+set wireless.{{ section }}.auth_server_secondary={{ crypto.auth_secondary.host }}
+set wireless.{{ section }}.auth_port_secondary={{ crypto.auth_secondary.port }}
+set wireless.{{ section }}.auth_secret_secondary={{ crypto.auth_secondary.secret }}
+{%     for (let request in crypto.auth_secondary.request_attribute): %}
+add_list wireless.{{ section }}.radius_auth_req_attr={{ s(request.id + ':s:' + request.value) }}
+{%     endfor %}
+{%   endif %}
+
+{%   if (crypto.acct_secondary): %}
+set wireless.{{ section }}.acct_server_secondary={{ crypto.acct_secondary.host }}
+set wireless.{{ section }}.acct_port_secondary={{ crypto.acct_secondary.port }}
+set wireless.{{ section }}.acct_secret_secondary={{ crypto.acct_secondary.secret }}
+{%     for (let request in crypto.acct_secondary.request_attribute): %}
+add_list wireless.{{ section }}.radius_acct_req_attr={{ s(request.id + ':s:' + request.value) }}
+{%     endfor %}
 {%   endif %}
 
 {%   if (index([ 'ap', 'sta' ], bss_mode) >= 0): %}

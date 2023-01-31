@@ -1368,6 +1368,40 @@
                         }
                     ]
                 },
+                "authentication-secondary": {
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/interface.ssid.radius.server"
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "mac-filter": {
+                                    "type": "boolean",
+                                    "default": false
+                                }
+                            }
+                        }
+                    ]
+                },
+                "accounting-secondary": {
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/interface.ssid.radius.server"
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "interval": {
+                                    "type": "integer",
+                                    "maximum": 600,
+                                    "minimum": 60,
+                                    "default": 60
+                                }
+                            }
+                        }
+                    ]
+                },
                 "health": {
                     "$ref": "#/$defs/interface.ssid.radius.health"
                 }

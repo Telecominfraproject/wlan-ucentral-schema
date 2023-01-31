@@ -63,5 +63,27 @@ properties:
             maximum: 600
             minimum: 60
             default: 60
+  authentication-secondary:
+    allOf:
+      - $ref: "https://ucentral.io/schema/v1/interface/ssid/radius/server/"
+      - type: object
+        properties:
+          mac-filter:
+            description:
+              Should the radius server be used for MAC address ACL.
+            type: boolean
+            default: false
+  accounting-secondary:
+    allOf:
+      - $ref: "https://ucentral.io/schema/v1/interface/ssid/radius/server/"
+      - type: object
+        properties:
+          interval:
+            description:
+              The interim accounting update interval. This value is defined in seconds.
+            type: integer
+            maximum: 600
+            minimum: 60
+            default: 60
   health:
     $ref: "https://ucentral.io/schema/v1/interface/ssid/radius/health/"
