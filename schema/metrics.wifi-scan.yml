@@ -1,0 +1,8 @@
+description:
+  Define the behaviour of the periodic wifi scanning interface.
+type: object
+properties:
+  interval:
+    description:
+      The periodicity at which the scan shall be performed.
+    type: integer

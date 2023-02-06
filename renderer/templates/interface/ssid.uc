@@ -126,7 +126,8 @@
 					radius: ssid.radius
 				};
 			return {
-				proto: 'none'
+				proto: 'none',
+				dyn_auth: ssid.radius?.dynamic_authorization,
 			};
 		}
 

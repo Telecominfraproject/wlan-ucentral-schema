@@ -8453,6 +8453,30 @@ function instantiateMetricsDhcpSnooping(location, value, errors) {
 	return value;
 }
 
+function instantiateMetricsWifiScan(location, value, errors) {
+	if (type(value) == "object") {
+		let obj = {};
+
+		function parseInterval(location, value, errors) {
+			if (type(value) != "int")
+				push(errors, [ location, "must be of type integer" ]);
+
+			return value;
+		}
+
+		if (exists(value, "interval")) {
+			obj.interval = parseInterval(location + "/interval", value["interval"], errors);
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
+
+	return value;
+}
+
 function instantiateMetricsTelemetry(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
@@ -8552,6 +8576,10 @@ function instantiateMetrics(location, value, errors) {
 
 		if (exists(value, "dhcp-snooping")) {
 			obj.dhcp_snooping = instantiateMetricsDhcpSnooping(location + "/dhcp-snooping", value["dhcp-snooping"], errors);
+		}
+
+		if (exists(value, "wifi-scan")) {
+			obj.wifi_scan = instantiateMetricsWifiScan(location + "/wifi-scan", value["wifi-scan"], errors);
 		}
 
 		if (exists(value, "telemetry")) {

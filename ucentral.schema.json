@@ -3061,6 +3061,14 @@
                 }
             }
         },
+        "metrics.wifi-scan": {
+            "type": "object",
+            "properties": {
+                "interval": {
+                    "type": "integer"
+                }
+            }
+        },
         "metrics.telemetry": {
             "type": "object",
             "properties": {
@@ -3100,6 +3108,9 @@
                 },
                 "dhcp-snooping": {
                     "$ref": "#/$defs/metrics.dhcp-snooping"
+                },
+                "wifi-scan": {
+                    "$ref": "#/$defs/metrics.wifi-scan"
                 },
                 "telemetry": {
                     "$ref": "#/$defs/metrics.telemetry"
