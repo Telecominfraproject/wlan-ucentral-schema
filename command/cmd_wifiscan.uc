@@ -1,4 +1,4 @@
-let verbose = args?.verbose ? true : false;
+let verbose = args?.verbose == null ? true : args.verbose;
 let active = args?.active ? true : false;
 let bandwidth = args?.bandwidth || 0;
 let override_dfs = args?.override_dfs ? true : false;
@@ -194,14 +194,17 @@ function wifi_scan() {
 			bss = bss.bss;
 			let res = {
 				bssid: bss.bssid,
-				tsf: +bss.tsf,
 				frequency: +bss.frequency,
 				channel: frequency_to_channel(+bss.frequency),
 				signal: +bss.signal_mbm / 100,
-				last_seen: +bss.seen_ms_ago,
-				capability: +bss.capability,
-				ies: [],
 			};
+			if (verbose) {
+				res.tsf = +bss.tsf;
+				res.last_seen = +bss.seen_ms_ago;
+				res.capability = +bss.capability;
+				res.ies = [];
+			}
+
 
 			for (let ie in bss.beacon_ies) {
 				switch (ie.type) {
@@ -209,16 +212,20 @@ function wifi_scan() {
 					res.ssid = ie.data;
 					break;
 				case 114:
-					res.meshid = ie.data;
+					if (verbose)
+						res.meshid = ie.data;
 					break;
 				case 0x3d:
-					res.ht_oper = b64enc(ie.data);
+					if (verbose)
+						res.ht_oper = b64enc(ie.data);
 					break;
 				case 0xc0:
-					res.vht_oper = b64enc(ie.data);
+					if (verbose)
+						res.vht_oper = b64enc(ie.data);
 					break;
 				default:
-					push(res.ies, { type: ie.type, data: b64enc(ie.data) });
+					if (verbose)
+						push(res.ies, { type: ie.type, data: b64enc(ie.data) });
 					break;
 				}
 			}
@@ -235,6 +242,14 @@ function wifi_scan() {
 }
 
 let scan = wifi_scan();
+
+if (args.periodic) {
+	ctx.call('ucentral', 'send', {
+		method: 'wifiscan',
+		params: { scan }
+	});
+	return;
+}
 
 result_json({
 	error: 0,
