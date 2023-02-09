@@ -1,9 +1,13 @@
 type: array
 description:
-  An array containing the runtime state of all logical interfaces.items:
+  An array containing the runtime state of all logical interfaces.items
 items:
   type: object
   properties:
+    location:
+      type: string
+      description:
+        The json-schema path within the configuration where this logical interface is located.
     uptime:
       type: number
       description:
@@ -17,11 +21,6 @@ items:
       type: string
       description:
         The upstream NTP server being used by this interface.
-    ipv4_leasetime:
-      type: number
-      description:
-        This is the leasetime if the IPv4 address of this logical interface was
-        acquired via DHCPv4.
     dns_servers:
       type: array
       description:
@@ -29,17 +28,16 @@ items:
         domain name resolution.
       items:
         type: string
-    ipv4_addresses:
-      $ref: "https://ucentral.io/state/v1/interface/ipv4-address/"
-    ipv4_leases:
-      $ref: "https://ucentral.io/state/v1/interface/ipv4-lease/"
+    ipv4:
+      $ref: "https://ucentral.io/state/v1/interface/ipv4/"
     ipv6_addresses:
       $ref: "https://ucentral.io/state/v1/interface/ipv6-address/"
     ipv6_leases:
       $ref: "https://ucentral.io/state/v1/interface/ipv6-lease/"
+    clientss:
+      $ref: "https://ucentral.io/state/v1/interface/clients/"
     counters:
       $ref: "https://ucentral.io/state/v1/interface/counter/"
     ssids:
       $ref: "https://ucentral.io/state/v1/interface/ssid/"
-    lldp_neighbours:
-      $ref: "https://ucentral.io/state/v1/interface/lldp/"
+

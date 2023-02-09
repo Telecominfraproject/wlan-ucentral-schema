@@ -26,7 +26,22 @@ properties:
         type: number
         description:
           The total amount of memory.
+      cached:
+        type: number
+        description:
+          The total amount of cached memory.
+      buffered:
+        type: number
+        description:
+          The total amount of buffered memory.
   uptime:
     type: number
     description:
-      The number of seconds since the unit last booted..
+      The number of seconds since the unit last booted.
+  temperature:
+    description:
+      The average and maximum thermal reading from the CPU.
+    type: array
+    items:
+      type: number
+

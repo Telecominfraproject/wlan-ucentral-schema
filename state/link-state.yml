@@ -1,0 +1,21 @@
+type: object
+description:
+  A list of all LLDP peers that this logical interface is connected to.
+properties:
+  carrier:
+    type: boolean
+    description:
+      The physical interfaces carrier state.
+  speed:
+    type: number
+    description:
+      The speed of the physical link.
+  duplex: 
+    type: string
+    description:
+      The physical links duplex mode.
+    enum:
+    - full
+    - half
+  counters:
+    $ref: "https://ucentral.io/state/v1/interface/counter/"

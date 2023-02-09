@@ -1,0 +1,16 @@
+type: object
+description:
+  This section describes the GPS location of the device.
+properties:
+  latitude:
+    type: number
+    description:
+      The latitude in WGS84.
+  longitude:
+    type: number
+    description:
+      The longitude in WGS84.
+  elevation:
+    type: number
+    description:
+      The elevation above sea level in meters.

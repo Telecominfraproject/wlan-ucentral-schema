@@ -1,7 +1,0 @@
-type: array
-description:
-  The list of IPv4 addresses being used by this logical interface.
-items:
-    type: string
-    description:
-      An IPv4 addreess.

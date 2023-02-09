@@ -1,0 +1,21 @@
+type: object
+properties:
+  addresses:
+    type: array
+    description:
+      The list of IPv4 addresses being used by this logical interface.
+    items:
+      type: string
+      description:
+        An IPv4 addreess.
+  leasetime:
+    type: number
+    description:
+      This is the leasetime if the IPv4 address of this logical interface was
+      acquired via DHCPv4.
+  dhcp_server:
+    type: string
+    description:
+      The IPv4 address of the DHCPv4 server that assigned the active lease.
+  leases:
+    $ref: "https://ucentral.io/state/v1/interface/ipv4-lease/"

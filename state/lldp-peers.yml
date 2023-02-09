@@ -14,7 +14,7 @@ items:
       type: string
       description:
         The chassis description that our neighbour is announcing.
-    id:
+    mac: 
       type: string
       description:
         The chassis ID/MAC that our neighbour is announcing.

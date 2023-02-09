@@ -9,10 +9,26 @@ items:
       type: string
       description:
         The BSSID used by this BSS instance.
+    location:
+      type: string
+      description:
+        The json-schema path within the configuration where this logical interface is located.
+    phy:
+      type: string
+      description:
+        The unique path identifying the radio
+    band:
+      description:
+        The wireless band that the radio is currently operating on.
+      type: string
     ssid:
       type: string
       description:
         The SSID that we are broadcasting or connecting to.
+    iface:
+      type: string
+      description:
+        The physical network device used.
     mode:
       type: string
       description:
@@ -30,5 +46,13 @@ items:
       properties:
         ref:
           type: string
+    frequency:
+      description:
+        The list of all frequencies that the radio is currently operating on.
+      type: array
+      items:
+        type: number
     associations:
       $ref: "https://ucentral.io/state/v1/interface/ssid/association/"
+    counters:
+      $ref: "https://ucentral.io/state/v1/interface/counter/"

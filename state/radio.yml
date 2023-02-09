@@ -5,6 +5,22 @@ description:
 items:
   type: object
   properties:
+    channel:
+      description:
+        The primary channel that the radio is currently operating on.
+      type: number
+    channels:
+      description:
+        The list of all channels that the radio is currently operating on.
+      type: array
+      items:
+        type: number
+    frequency:
+      description:
+        The list of all frequencies that the radio is currently operating on.
+      type: array
+      items:
+        type: number
     channel_width:
       type: number
       description:
@@ -15,14 +31,21 @@ items:
       - 80
       - 160
       - 320
-    frequencies:
-      type: array
-      description:
-        The list of channels frquencies, that the unit is currently operating
-        on. Anything other than 20MHz will list several frequencies here.
-      items:
-        type: number
     tx_power:
       type: number
       description:
         The currently configure TX power of the radio in dBm.
+    phy:
+      type: string
+      description:
+        The unique path identifying the radio
+    band:
+      description:
+        The wireless band that the radio is currently operating on.
+      type: array
+      items:
+        type: string
+    temperature:
+      description:
+        The current temperature of the Wireless radio.
+      type: number

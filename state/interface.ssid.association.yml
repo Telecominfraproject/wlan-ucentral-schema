@@ -80,6 +80,12 @@ items:
             type: number
           chwidth:
             type: number
+          he:
+            type: boolean
+          he_gi:
+            type: number
+          he_dcm:
+            type: number
     tx_rate:
       type: array
       items:
@@ -95,6 +101,12 @@ items:
           nss:
             type: number
           chwidth:
+            type: number
+          he:
+            type: boolean
+          he_gi:
+            type: number
+          he_dcm:
             type: number
     tid_stats:
        type: array

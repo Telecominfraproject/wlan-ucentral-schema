@@ -103,12 +103,12 @@ try {
 			if (length(chassis.name))
 				peer.name = chassis.name[0].value;
 
-			if (length(chassis.mgmt_ip)) {
+			if (length(chassis['mgmt-ip'])) {
 				let ipaddr = [];
 
 				for (let ip in chassis["mgmt-ip"])
 					push(ipaddr, ip.value);
-				peer.ips = ips;
+				peer.management_ips = ips;
 			}
 
 			if (length(chassis.capability)) {
@@ -180,7 +180,7 @@ for (let radio, data in wifistatus) {
 	radio.channel = vap.channel[0];
 	radio.channels = uniq(vap.channel);
 	radio.frequency = uniq(vap.frequency);
-	radio.channel_width = vap.ch_width;
+	radio.channel_width = +vap.ch_width;
 	radio.tx_power = vap.tx_power;
 	radio.survey = [];
 	for (let k, v in survey.survey)

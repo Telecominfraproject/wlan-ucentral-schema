@@ -1,7 +1,6 @@
 type: object
 description:
-  This section contains the traffic counters of the logical interface. Entries
-  that have a value of 0 will not be included.
+  This section contains the traffic counters of the logical interface.
 properties:
   collisions:
     type: number
