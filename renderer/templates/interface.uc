@@ -197,6 +197,9 @@
 	if (interface.captive)
 		include('interface/captive.uc', { name });
 %}
+{% if (tunnel_proto == 'mesh'): %}
+set network.{{ name }}.batman=1
+{% endif %}
 
 {% if (interface.role == "downstream" && "wireguard-overlay" in interface.services): %}
 add network rule

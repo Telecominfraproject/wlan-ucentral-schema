@@ -34,10 +34,12 @@ items:
       $ref: "https://ucentral.io/state/v1/interface/ipv6-address/"
     ipv6_leases:
       $ref: "https://ucentral.io/state/v1/interface/ipv6-lease/"
-    clientss:
+    clients:
       $ref: "https://ucentral.io/state/v1/interface/clients/"
     counters:
       $ref: "https://ucentral.io/state/v1/interface/counter/"
+    mesh-path:
+      $ref: "https://ucentral.io/state/v1/interface/mesh-path/"
     ssids:
       $ref: "https://ucentral.io/state/v1/interface/ssid/"
 

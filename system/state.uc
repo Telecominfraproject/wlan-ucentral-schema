@@ -32,7 +32,7 @@ let delta = 1;
 if (telemetry)
 	delta = 0;
 
-global.tid_stats = (index(stats.types, 'tid-stats') >= 0);
+global.tid_stats = (index(stats.types, 'tid-stats') > 0);
 
 /* load state data */
 let ipv6leases = ctx.call("dhcp", "ipv6leases");
@@ -42,6 +42,7 @@ let wifiphy = require('wifi.phy');
 let wifiiface = require('wifi.iface');
 let stations = require('wifi.station');
 let survey = require('wifi.survey');
+let mesh = require('wifi.mesh');
 let ports = ctx.call("topology", "port", { delta });
 let poe = ctx.call("poe", "info");
 let gps = ctx.call("gps", "info");
@@ -210,6 +211,14 @@ function iface_add_counters(counters, vlan, port) {
 	}
 }
 
+function is_mesh(net, wif) {
+	if (!net.batman)
+		return false;
+	if (wif.mode != 'mesh')
+		return false;
+	return true;
+}
+
 /* interfaces */
 cursor.load("network");
 cursor.foreach("network", "interface", function(d) {
@@ -337,17 +346,18 @@ cursor.foreach("network", "interface", function(d) {
 			for (let k, vap in data.interfaces) {
 				if (!length(vap.config) ||
 				    !length(vap.config.network) ||
-				    !(name in vap.config.network) ||
 				    !wifiiface[vap.ifname])
 					continue;
 				let wif = wifiiface[vap.ifname];
+				if (!(name in vap.config.network) && !is_mesh(d, wif))
+					continue;
 				let ssid = {
 					radio:{"$ref": sprintf("#/radios/%d", counter)},
 					phy: data.config.path,
 					band: uc(data.config.band)
 				};
 				ssid.location = wireless[vap.section]?.ucentral_path || '';
-				ssid.ssid = wif.ssid;
+				ssid.ssid = wif.ssid || vap.config.mesh_id;
 				ssid.mode = wif.mode;
 				ssid.bssid = wif.bssid;
 				ssid.frequency = uniq(wif.frequency);
@@ -378,7 +388,10 @@ cursor.foreach("network", "interface", function(d) {
 				ssid.iface = vap.ifname;
 				if (ports[vap.ifname]?.counters)
 					ssid.counters = ports[vap.ifname].counters || {};
-
+				if (is_mesh(d, wif)) {
+					ssid.counters = ports['batman_mesh'].counters;
+					ssid['mesh-path'] = mesh[vap.ifname];
+				}
 				push(ssids, ssid);
 			}
 			counter++;
