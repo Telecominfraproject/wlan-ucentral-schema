@@ -527,7 +527,7 @@ let msg = {
 };
 
 if (telemetry) {
-	ctx.call("ucentral", "event", { "event": "state", "payload": msg });
+	ctx.call("ucentral", "telemetry", { "event": "state", "payload": msg });
 	let f = fs.open("/tmp/ucentral.telemetry", "w");
 	if (f) {
 		f.write(msg);
