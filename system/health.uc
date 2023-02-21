@@ -103,7 +103,7 @@ for (let iface in interfaces) {
 
 			if (rc) {
 				health.dns = false;
-				push(warnings, sprintf(`DNS ${ip} is not reachable`);
+				push(warnings, `DNS ${ip} is not reachable`);
 				ctx.call('event', 'event',  { object: 'health', verb: 'dns', payload: { iface: name, error: `DNS ${ip} is not reachable.` }});
 			}
 		}
