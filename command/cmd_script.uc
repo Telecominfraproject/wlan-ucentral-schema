@@ -82,7 +82,10 @@ if (abort)
                 "result": "timed out"
         };
 
-if (args.uri) {
+if (!fs.stat(out)) {
+	result_json({ error: 1,
+		      result: 'script did not generate any output'});
+} else if (args.uri) {
 	ctx.call("ucentral", "upload", {file: out, uri: args.uri, uuid: args.serial});
 	result_json({ error: 0,
 		      result: 'done'});
