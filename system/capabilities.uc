@@ -20,7 +20,7 @@ if (restrictfile) {
 	let developer = replace(pipe.read("all"), '\n', '');
 	pipe.close();
 	if (developer == 'developer=1')
-		capa.restrictions.developer = true;
+		capa.developer = true;
 }
 ctx = ubus.connect();
 let wifi = require("wifi.phy");
