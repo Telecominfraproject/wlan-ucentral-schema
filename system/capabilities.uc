@@ -11,7 +11,9 @@ let board = json(boardfile.read("all"));
 boardfile.close();
 let restrictfile = fs.open("/etc/ucentral/restrictions.json", "r");
 
-capa = {};
+capa = {
+	'secure-rtty': true
+};
 if (restrictfile) {
 	capa.restrictions = json(restrictfile.read("all")) || {};
 	let pipe = fs.popen('fw_printenv developer');
