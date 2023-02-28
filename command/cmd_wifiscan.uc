@@ -246,7 +246,7 @@ let scan = wifi_scan();
 if (args.periodic) {
 	ctx.call('ucentral', 'send', {
 		method: 'wifiscan',
-		params: { scan }
+		params: { data: scan }
 	});
 	return;
 }
