@@ -3066,6 +3066,12 @@
             "properties": {
                 "interval": {
                     "type": "integer"
+                },
+                "verbose": {
+                    "type": "boolean"
+                },
+                "information-elements": {
+                    "type": "boolean"
                 }
             }
         },

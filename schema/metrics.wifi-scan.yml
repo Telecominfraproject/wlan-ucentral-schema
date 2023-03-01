@@ -6,3 +6,11 @@ properties:
     description:
       The periodicity at which the scan shall be performed.
     type: integer
+  verbose:
+    description:
+      Add capabilities, v/ht_oper, ... to the resulting scan info.
+    type: boolean
+  information-elements:
+    description:
+      Add all IEs to the resulting scan info.
+    type: boolean

@@ -230,6 +230,8 @@ function wifi_scan() {
 				}
 			}
 
+			if (args.periodic && !args.information_elements)
+				delete res.ies;
 			push(scan, res);
 		}
 		if (scan_iface) {

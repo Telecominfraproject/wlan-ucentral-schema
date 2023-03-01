@@ -8468,6 +8468,28 @@ function instantiateMetricsWifiScan(location, value, errors) {
 			obj.interval = parseInterval(location + "/interval", value["interval"], errors);
 		}
 
+		function parseVerbose(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "verbose")) {
+			obj.verbose = parseVerbose(location + "/verbose", value["verbose"], errors);
+		}
+
+		function parseInformationElements(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "information-elements")) {
+			obj.information_elements = parseInformationElements(location + "/information-elements", value["information-elements"], errors);
+		}
+
 		return obj;
 	}
 
