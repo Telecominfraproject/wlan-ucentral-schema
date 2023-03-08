@@ -1,5 +1,5 @@
 description:
-  Configure the unsolicitated telemetry stream.
+  Configure the unsolicited telemetry stream.
 type: object
 properties:
   interval:
@@ -12,3 +12,17 @@ properties:
     type: array
     items:
       type: string
+      enum:
+      - ssh
+      - health
+      - health.dns
+      - health.dhcp
+      - health.radius
+      - health.memory
+      - client
+      - client.join
+      - client.leave
+      - client.key-mismatch
+      - wifi
+      - wifi.start
+      - wifi.stop

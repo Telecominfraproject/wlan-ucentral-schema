@@ -1,0 +1,14 @@
+type: object
+description:
+  This section contains info about connected mesh nodes.
+properties:
+  destiination:
+    type: string
+  next_hop:
+    type: string
+  metric:
+    type: number
+  expire:
+    type: number
+  hop_count:
+    type: number

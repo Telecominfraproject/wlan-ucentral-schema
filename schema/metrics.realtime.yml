@@ -8,3 +8,17 @@ properties:
     type: array
     items:
       type: string
+      enum:
+      - ssh
+      - health
+      - health.dns
+      - health.dhcp
+      - health.radius
+      - health.memory
+      - client
+      - client.join
+      - client.leave
+      - client.key-mismatch
+      - wifi
+      - wifi.start
+      - wifi.stop

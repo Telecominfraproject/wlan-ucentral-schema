@@ -8520,6 +8520,9 @@ function instantiateMetricsTelemetry(location, value, errors) {
 					if (type(value) != "string")
 						push(errors, [ location, "must be of type string" ]);
 
+					if (!(value in [ "ssh", "health", "health.dns", "health.dhcp", "health.radius", "health.memory", "client", "client.join", "client.leave", "client.key-mismatch", "wifi", "wifi.start", "wifi.stop" ]))
+						push(errors, [ location, "must be one of \"ssh\", \"health\", \"health.dns\", \"health.dhcp\", \"health.radius\", \"health.memory\", \"client\", \"client.join\", \"client.leave\", \"client.key-mismatch\", \"wifi\", \"wifi.start\" or \"wifi.stop\"" ]);
+
 					return value;
 				}
 
@@ -8554,6 +8557,9 @@ function instantiateMetricsRealtime(location, value, errors) {
 				function parseItem(location, value, errors) {
 					if (type(value) != "string")
 						push(errors, [ location, "must be of type string" ]);
+
+					if (!(value in [ "ssh", "health", "health.dns", "health.dhcp", "health.radius", "health.memory", "client", "client.join", "client.leave", "client.key-mismatch", "wifi", "wifi.start", "wifi.stop" ]))
+						push(errors, [ location, "must be one of \"ssh\", \"health\", \"health.dns\", \"health.dhcp\", \"health.radius\", \"health.memory\", \"client\", \"client.join\", \"client.leave\", \"client.key-mismatch\", \"wifi\", \"wifi.start\" or \"wifi.stop\"" ]);
 
 					return value;
 				}
