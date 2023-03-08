@@ -8,3 +8,7 @@ properties:
     type: array
     items:
       type: string
+      enum:
+        - client.join
+        - client.leave
+        - client.key-mismatch
