@@ -98,9 +98,12 @@ try {
 			    !length(chassis.descr))
 				continue;
 			peer.mac = chassis.id[0].value;
-			peer.port = iface.name;
+			peer.ifname = iface.name;
 			peer.description = chassis.descr[0].value;
-
+			if (iface?.port[0]?.id[0]?.value && iface?.port[0]?.descr[0]?.value) {
+				peer.port_id = iface.port[0].id[0].value;
+				peer.port_descr = iface.port[0].descr[0].value;
+			}
 			if (length(chassis.name))
 				peer.name = chassis.name[0].value;
 
@@ -109,7 +112,7 @@ try {
 
 				for (let ip in chassis["mgmt-ip"])
 					push(ipaddr, ip.value);
-				peer.management_ips = ips;
+				peer.management_ips = ipaddr;
 			}
 
 			if (length(chassis.capability)) {
@@ -505,8 +508,10 @@ if (length(capab.network)) {
 
 			let lldp_neigh = [];
 			for (let l in lldp)
-				if (l.port == iface)
+				if (l.ifname == iface) {
+					delete l.ifname;
 					push(lldp_neigh, l);
+				}
 			if (length(lldp_neigh))
 				lldp_peers[link_name][iface] = lldp_neigh;
 
