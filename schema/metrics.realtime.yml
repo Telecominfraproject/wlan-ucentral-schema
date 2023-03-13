@@ -22,3 +22,8 @@ properties:
       - wifi
       - wifi.start
       - wifi.stop
+      - wired
+      - wired.carrier-up
+      - wired.carrier-down
+      - unit
+      - unit.boot-up

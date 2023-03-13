@@ -3098,7 +3098,12 @@
                             "client.key-mismatch",
                             "wifi",
                             "wifi.start",
-                            "wifi.stop"
+                            "wifi.stop",
+                            "wired",
+                            "wired.carrier-up",
+                            "wired.carrier-down",
+                            "unit",
+                            "unit.boot-up"
                         ]
                     }
                 }
@@ -3124,7 +3129,12 @@
                             "client.key-mismatch",
                             "wifi",
                             "wifi.start",
-                            "wifi.stop"
+                            "wifi.stop",
+                            "wired",
+                            "wired.carrier-up",
+                            "wired.carrier-down",
+                            "unit",
+                            "unit.boot-up"
                         ]
                     }
                 }
