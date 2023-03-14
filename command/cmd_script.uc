@@ -82,7 +82,7 @@ if (abort)
                 "result": "timed out"
         };
 
-if (!fs.stat(out)) {
+if (args.uri && !fs.stat(out)) {
 	result_json({ error: 1,
 		      result: 'script did not generate any output'});
 } else if (args.uri) {
