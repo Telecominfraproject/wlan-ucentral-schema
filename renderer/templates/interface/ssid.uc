@@ -510,7 +510,8 @@ set ratelimit.@rate[-1].ssid={{ s(ssid.name) }}
 set ratelimit.@rate[-1].ingress={{ ssid.rate_limit.ingress_rate }}
 set ratelimit.@rate[-1].egress={{ ssid.rate_limit.egress_rate }}
 {%     endif %}
-{%     for (let psk in ssid.multi_psk): %}
+{%     for (let i = length(ssid.multi_psk); i > 0; i--): %}
+{%       let psk = ssid.multi_psk[i - 1]; %}
 {%       if (!psk.key) continue %}
 
 add wireless wifi-station
