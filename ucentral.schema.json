@@ -1201,6 +1201,32 @@
                         "secret"
                     ]
                 },
+                "secondary": {
+                    "type": "object",
+                    "properties": {
+                        "host": {
+                            "type": "string",
+                            "format": "uc-host",
+                            "examples": [
+                                "192.168.1.10"
+                            ]
+                        },
+                        "port": {
+                            "type": "integer",
+                            "maximum": 65535,
+                            "minimum": 1024,
+                            "examples": [
+                                1812
+                            ]
+                        },
+                        "secret": {
+                            "type": "string",
+                            "examples": [
+                                "secret"
+                            ]
+                        }
+                    }
+                },
                 "request-attribute": {
                     "type": "array",
                     "items": {

@@ -23,6 +23,32 @@ properties:
     type: string
     examples:
     - secret
+  secondary:
+    description:
+      Definition of the secondary/failsafe radius server.
+    type: object
+    properties:
+      host:
+        description:
+           The URI of our Radius server.
+        type: string
+        format: uc-host
+        examples:
+        - 192.168.1.10
+      port:
+        description:
+          The network port of our Radius server.
+        type: integer
+        maximum: 65535
+        minimum: 1024
+        examples:
+        - 1812
+      secret:
+        description:
+          The shared Radius authentication secret.
+        type: string
+        examples:
+        - secret
   request-attribute:
     description:
       The additional Access-Request attributes that gets sent to the server.

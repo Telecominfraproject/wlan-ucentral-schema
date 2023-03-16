@@ -330,6 +330,11 @@ add_list wireless.{{ section }}.radius_auth_req_attr={{ s(radius_proxy_tlv(crypt
 {%     else %}
 add_list wireless.{{ section }}.radius_auth_req_attr={{ s(radius_vendor_tlv(crypto.auth.host, crypto.auth.port)) }}
 {%     endif %}
+{%     if (crypto.auth.secondary): %}
+set wireless.{{ section }}.auth_server_secondary={{ crypto.auth.secondary.host }}
+set wireless.{{ section }}.auth_port_secondary={{ crypto.auth.secondary.port }}
+set wireless.{{ section }}.auth_secret_secondary={{ crypto.auth.secondary.secret }}
+{%     endif %}
 {%   endif %}
 
 {%   if (crypto.acct): %}
@@ -344,6 +349,11 @@ add_list wireless.{{ section }}.radius_acct_req_attr={{ s(radius_request_attribu
 add_list wireless.{{ section }}.radius_acct_req_attr={{ s(radius_proxy_tlv(crypto.acct.host, crypto.acct.port, name + '_' + n + '_' + count)) }}
 {%     else %}
 add_list wireless.{{ section }}.radius_acct_req_attr={{ s(radius_vendor_tlv(crypto.acct.host, crypto.acct.port)) }}
+{%     endif %}
+{%     if (crypto.acct.secondary): %}
+set wireless.{{ section }}.acct_server_secondary={{ crypto.acct.secondary.host }}
+set wireless.{{ section }}.acct_port_secondary={{ crypto.acct.secondary.port }}
+set wireless.{{ section }}.acct_secret_secondary={{ crypto.acct.secondary.secret }}
 {%     endif %}
 {%   endif %}
 

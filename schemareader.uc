@@ -2915,6 +2915,71 @@ function instantiateInterfaceSsidRadiusServer(location, value, errors) {
 			obj.secret = parseSecret(location + "/secret", value["secret"], errors);
 		}
 
+		function parseSecondary(location, value, errors) {
+			if (type(value) == "object") {
+				let obj = {};
+
+				function parseHost(location, value, errors) {
+					if (type(value) == "string") {
+						if (!matchUcHost(value))
+							push(errors, [ location, "must be a valid hostname or IP address" ]);
+
+					}
+
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "host")) {
+					obj.host = parseHost(location + "/host", value["host"], errors);
+				}
+
+				function parsePort(location, value, errors) {
+					if (type(value) in [ "int", "double" ]) {
+						if (value > 65535)
+							push(errors, [ location, "must be lower than or equal to 65535" ]);
+
+						if (value < 1024)
+							push(errors, [ location, "must be bigger than or equal to 1024" ]);
+
+					}
+
+					if (type(value) != "int")
+						push(errors, [ location, "must be of type integer" ]);
+
+					return value;
+				}
+
+				if (exists(value, "port")) {
+					obj.port = parsePort(location + "/port", value["port"], errors);
+				}
+
+				function parseSecret(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "secret")) {
+					obj.secret = parseSecret(location + "/secret", value["secret"], errors);
+				}
+
+				return obj;
+			}
+
+			if (type(value) != "object")
+				push(errors, [ location, "must be of type object" ]);
+
+			return value;
+		}
+
+		if (exists(value, "secondary")) {
+			obj.secondary = parseSecondary(location + "/secondary", value["secondary"], errors);
+		}
+
 		function parseRequestAttribute(location, value, errors) {
 			if (type(value) == "array") {
 				function parseItem(location, value, errors) {
