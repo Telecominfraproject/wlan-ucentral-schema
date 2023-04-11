@@ -159,6 +159,8 @@ if (length(thermal) > 0) {
 		if (!file)
 			continue;
 		let temp = +file.read('all');
+		if (temp > 1000)
+			temp /= 1000;
 		file.close();
 		push(temps, temp);
 	}
