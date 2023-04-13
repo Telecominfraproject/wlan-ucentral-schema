@@ -249,28 +249,41 @@
 		return '';
 	}
 
-	function calculate_ifname() {
+	function calculate_ifname(name) {
 		if ('captive' in ssid.services)
-			return 'wlanc' + captive.get();
+			return 'wlanc' + captive.get(name);
 		return '';
 	}
 
 	let radius_gw_proxy = ssid.services && (index(ssid.services, "radius-gw-proxy") >= 0);
+
+	if ('captive' in ssid.services && !ssid.captive)
+		ssid.captive = state?.services?.captive || {};
+
+	if (ssid.captive)
+		include("captive.uc", {
+			section: name + '_' + count,
+			config: ssid.captive
+		});
 %}
 
 # Wireless configuration
 {% for (let n, phy in phys): %}
-{%   let basename = name + '_' + n + '_' + count; %}
-{%   let section = (owe ? 'o' : '' ) + basename; %}
+{%   let basename = name + '_' + count; %}
+{%   let ssidname = basename + '_' + n + '_' + count; %}
+{%   let section = (owe ? 'o' : '' ) + ssidname; %}
 {%   let id = wiphy.allocate_ssid_section_id(phy) %}
 {%   let crypto = validate_encryption(phy); %}
-{%   let ifname = calculate_ifname(n) %}
+{%   let ifname = calculate_ifname(basename) %}
 {%   if (!crypto) continue; %}
 set wireless.{{ section }}=wifi-iface
 set wireless.{{ section }}.ucentral_path={{ s(location) }}
 set wireless.{{ section }}.uci_section={{ s(section) }}
 set wireless.{{ section }}.device={{ phy.section }}
+{%   if ('captive' in ssid.services): %}
 set wireless.{{ section }}.ifname={{ s(ifname) }}
+set uspot.devices.{{ ifname }}={{ basename }}
+{%   endif %}
 {%   if (ssid?.encryption?.proto == 'owe-transition'): %}
 {%      ssid.hidden_ssid = 1 %}
 {%      ssid.name += '-OWE' %}
@@ -279,7 +292,7 @@ set wireless.{{ section }}.owe_transition_ifname={{ s('o' + section) }}
 {%   endif %}
 {%   if (owe): %}
 set wireless.{{ section }}.ifname={{ s(section) }}
-set wireless.{{ section }}.owe_transition_ifname={{ s(basename) }}
+set wireless.{{ section }}.owe_transition_ifname={{ s(ssidname) }}
 {%   endif %}
 {%   if (bss_mode == 'mesh'): %}
 set wireless.{{ section }}.mode={{ bss_mode }}

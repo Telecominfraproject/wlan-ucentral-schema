@@ -990,6 +990,8 @@ let routing_table = {
 /** @lends uCentral.captive.prototype */
 
 let captive = {
+	interfaces: {},
+
 	next: 0,
 
 	/**
@@ -998,9 +1000,19 @@ let captive = {
 	 * @param {string} id  The ID to lookup or reserve
 	 * @returns {number} The table number allocated for the given ID
 	 */
-	get: function() {
-		return this.next++;
-	}
+	get: function(name) {
+		let iface = this.next++;
+		push(this.interfaces[name].iface, iface);
+		return iface;
+	},
+
+	/**
+	 * Add an interface
+	 */
+	interface: function(name, config) {
+		this.interfaces[name] = config;
+		this.interfaces[name].iface = [];
+	},
 };
 
 /**

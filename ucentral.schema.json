@@ -1672,6 +1672,236 @@
                 }
             }
         },
+        "service.captive.click": {
+            "type": "object",
+            "properties": {
+                "auth-mode": {
+                    "type": "string",
+                    "const": "click-to-continue"
+                }
+            }
+        },
+        "service.captive.radius": {
+            "type": "object",
+            "properties": {
+                "auth-mode": {
+                    "type": "string",
+                    "const": "radius"
+                },
+                "auth-server": {
+                    "type": "string",
+                    "format": "uc-host",
+                    "examples": [
+                        "192.168.1.10"
+                    ]
+                },
+                "auth-port": {
+                    "type": "integer",
+                    "maximum": 65535,
+                    "minimum": 1024,
+                    "default": 1812
+                },
+                "auth-secret": {
+                    "type": "string",
+                    "examples": [
+                        "secret"
+                    ]
+                },
+                "acct-server": {
+                    "type": "string",
+                    "format": "uc-host",
+                    "examples": [
+                        "192.168.1.10"
+                    ]
+                },
+                "acct-port": {
+                    "type": "integer",
+                    "maximum": 65535,
+                    "minimum": 1024,
+                    "default": 1812
+                },
+                "acct-secret": {
+                    "type": "string",
+                    "examples": [
+                        "secret"
+                    ]
+                },
+                "acct-interval": {
+                    "type": "integer",
+                    "default": 600
+                }
+            }
+        },
+        "service.captive.credentials": {
+            "type": "object",
+            "properties": {
+                "auth-mode": {
+                    "type": "string",
+                    "const": "credentials"
+                },
+                "credentials": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "username": {
+                                "type": "string"
+                            },
+                            "password": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "service.captive.uam": {
+            "type": "object",
+            "properties": {
+                "auth-mode": {
+                    "type": "string",
+                    "const": "uam"
+                },
+                "uam-port": {
+                    "type": "integer",
+                    "maximum": 65535,
+                    "minimum": 1024,
+                    "default": 3990
+                },
+                "uam-secret": {
+                    "type": "string"
+                },
+                "uam-server": {
+                    "type": "string"
+                },
+                "nasid": {
+                    "type": "string"
+                },
+                "nasmac": {
+                    "type": "string"
+                },
+                "auth-server": {
+                    "type": "string",
+                    "format": "uc-host",
+                    "examples": [
+                        "192.168.1.10"
+                    ]
+                },
+                "auth-port": {
+                    "type": "integer",
+                    "maximum": 65535,
+                    "minimum": 1024,
+                    "default": 1812
+                },
+                "auth-secret": {
+                    "type": "string",
+                    "examples": [
+                        "secret"
+                    ]
+                },
+                "acct-server": {
+                    "type": "string",
+                    "format": "uc-host",
+                    "examples": [
+                        "192.168.1.10"
+                    ]
+                },
+                "acct-port": {
+                    "type": "integer",
+                    "maximum": 65535,
+                    "minimum": 1024,
+                    "default": 1812
+                },
+                "acct-secret": {
+                    "type": "string",
+                    "examples": [
+                        "secret"
+                    ]
+                },
+                "acct-interval": {
+                    "type": "integer",
+                    "default": 600
+                },
+                "ssid": {
+                    "type": "string"
+                },
+                "mac-format": {
+                    "type": "string",
+                    "enum": [
+                        "aabbccddeeff",
+                        "aa-bb-cc-dd-ee-ff",
+                        "aa:bb:cc:dd:ee:ff",
+                        "AABBCCDDEEFF",
+                        "AA:BB:CC:DD:EE:FF",
+                        "AA-BB-CC-DD-EE-FF"
+                    ]
+                },
+                "final-redirect-url": {
+                    "type": "string",
+                    "enum": [
+                        "default",
+                        "uam"
+                    ]
+                },
+                "mac-auth": {
+                    "type": "boolean",
+                    "default": "default"
+                },
+                "radius-gw-proxy": {
+                    "type": "boolean",
+                    "default": false
+                }
+            }
+        },
+        "service.captive": {
+            "allOf": [
+                {
+                    "oneOf": [
+                        {
+                            "$ref": "#/$defs/service.captive.click"
+                        },
+                        {
+                            "$ref": "#/$defs/service.captive.radius"
+                        },
+                        {
+                            "$ref": "#/$defs/service.captive.credentials"
+                        },
+                        {
+                            "$ref": "#/$defs/service.captive.uam"
+                        }
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "walled-garden-fqdn": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "walled-garden-ipaddr": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "format": "uc-ip"
+                            }
+                        },
+                        "web-root": {
+                            "type": "string",
+                            "format": "uc-base64"
+                        },
+                        "idle-timeout": {
+                            "type": "integer",
+                            "default": 600
+                        },
+                        "session-timeout": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            ]
+        },
         "interface.ssid": {
             "type": "object",
             "properties": {
@@ -1815,6 +2045,9 @@
                 },
                 "access-control-list": {
                     "$ref": "#/$defs/interface.ssid.acl"
+                },
+                "captive": {
+                    "$ref": "#/$defs/service.captive"
                 },
                 "hostapd-bss-raw": {
                     "type": "array",
@@ -2713,236 +2946,6 @@
                     }
                 }
             }
-        },
-        "service.captive.click": {
-            "type": "object",
-            "properties": {
-                "auth-mode": {
-                    "type": "string",
-                    "const": "click-to-continue"
-                }
-            }
-        },
-        "service.captive.radius": {
-            "type": "object",
-            "properties": {
-                "auth-mode": {
-                    "type": "string",
-                    "const": "radius"
-                },
-                "auth-server": {
-                    "type": "string",
-                    "format": "uc-host",
-                    "examples": [
-                        "192.168.1.10"
-                    ]
-                },
-                "auth-port": {
-                    "type": "integer",
-                    "maximum": 65535,
-                    "minimum": 1024,
-                    "default": 1812
-                },
-                "auth-secret": {
-                    "type": "string",
-                    "examples": [
-                        "secret"
-                    ]
-                },
-                "acct-server": {
-                    "type": "string",
-                    "format": "uc-host",
-                    "examples": [
-                        "192.168.1.10"
-                    ]
-                },
-                "acct-port": {
-                    "type": "integer",
-                    "maximum": 65535,
-                    "minimum": 1024,
-                    "default": 1812
-                },
-                "acct-secret": {
-                    "type": "string",
-                    "examples": [
-                        "secret"
-                    ]
-                },
-                "acct-interval": {
-                    "type": "integer",
-                    "default": 600
-                }
-            }
-        },
-        "service.captive.credentials": {
-            "type": "object",
-            "properties": {
-                "auth-mode": {
-                    "type": "string",
-                    "const": "credentials"
-                },
-                "credentials": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "username": {
-                                "type": "string"
-                            },
-                            "password": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "service.captive.uam": {
-            "type": "object",
-            "properties": {
-                "auth-mode": {
-                    "type": "string",
-                    "const": "uam"
-                },
-                "uam-port": {
-                    "type": "integer",
-                    "maximum": 65535,
-                    "minimum": 1024,
-                    "default": 3990
-                },
-                "uam-secret": {
-                    "type": "string"
-                },
-                "uam-server": {
-                    "type": "string"
-                },
-                "nasid": {
-                    "type": "string"
-                },
-                "nasmac": {
-                    "type": "string"
-                },
-                "auth-server": {
-                    "type": "string",
-                    "format": "uc-host",
-                    "examples": [
-                        "192.168.1.10"
-                    ]
-                },
-                "auth-port": {
-                    "type": "integer",
-                    "maximum": 65535,
-                    "minimum": 1024,
-                    "default": 1812
-                },
-                "auth-secret": {
-                    "type": "string",
-                    "examples": [
-                        "secret"
-                    ]
-                },
-                "acct-server": {
-                    "type": "string",
-                    "format": "uc-host",
-                    "examples": [
-                        "192.168.1.10"
-                    ]
-                },
-                "acct-port": {
-                    "type": "integer",
-                    "maximum": 65535,
-                    "minimum": 1024,
-                    "default": 1812
-                },
-                "acct-secret": {
-                    "type": "string",
-                    "examples": [
-                        "secret"
-                    ]
-                },
-                "acct-interval": {
-                    "type": "integer",
-                    "default": 600
-                },
-                "ssid": {
-                    "type": "string"
-                },
-                "mac-format": {
-                    "type": "string",
-                    "enum": [
-                        "aabbccddeeff",
-                        "aa-bb-cc-dd-ee-ff",
-                        "aa:bb:cc:dd:ee:ff",
-                        "AABBCCDDEEFF",
-                        "AA:BB:CC:DD:EE:FF",
-                        "AA-BB-CC-DD-EE-FF"
-                    ]
-                },
-                "final-redirect-url": {
-                    "type": "string",
-                    "enum": [
-                        "default",
-                        "uam"
-                    ]
-                },
-                "mac-auth": {
-                    "type": "boolean",
-                    "default": "default"
-                },
-                "radius-gw-proxy": {
-                    "type": "boolean",
-                    "default": false
-                }
-            }
-        },
-        "service.captive": {
-            "allOf": [
-                {
-                    "oneOf": [
-                        {
-                            "$ref": "#/$defs/service.captive.click"
-                        },
-                        {
-                            "$ref": "#/$defs/service.captive.radius"
-                        },
-                        {
-                            "$ref": "#/$defs/service.captive.credentials"
-                        },
-                        {
-                            "$ref": "#/$defs/service.captive.uam"
-                        }
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "walled-garden-fqdn": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        },
-                        "walled-garden-ipaddr": {
-                            "type": "array",
-                            "items": {
-                                "type": "string",
-                                "format": "uc-ip"
-                            }
-                        },
-                        "web-root": {
-                            "type": "string",
-                            "format": "uc-base64"
-                        },
-                        "idle-timeout": {
-                            "type": "integer",
-                            "default": 600
-                        },
-                        "session-timeout": {
-                            "type": "integer"
-                        }
-                    }
-                }
-            ]
         },
         "service.gps": {
             "type": "object",

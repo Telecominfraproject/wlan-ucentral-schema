@@ -117,8 +117,7 @@
 	}
 	services.set_enabled("usteer2", true);
 
-	if (state?.services?.captive)
-		include('spotfilter.uc');
+	include('spotfilter.uc');
 
 	if (state.config_raw)
 		include("config_raw.uc", { location: '/config_raw', config_raw: state.config_raw });
