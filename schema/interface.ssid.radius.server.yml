@@ -116,3 +116,18 @@ properties:
           value: My NAS ID
         - id: 126
           value: Example Operator
+      - type: object
+        properties:
+          id:
+            type: integer
+            description:
+              The ID of the RADIUS attribute
+            maximum: 255
+            minimum: 1
+          hex-value:
+            type: string
+            description:
+              The RADIUS attribute value string
+        examples:
+        - id: 32
+          value: 0a0b0c0d

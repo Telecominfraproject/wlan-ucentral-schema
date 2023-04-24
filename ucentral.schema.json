@@ -1304,6 +1304,25 @@
                                         "value": "Example Operator"
                                     }
                                 ]
+                            },
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "id": {
+                                        "type": "integer",
+                                        "maximum": 255,
+                                        "minimum": 1
+                                    },
+                                    "hex-value": {
+                                        "type": "string"
+                                    }
+                                },
+                                "examples": [
+                                    {
+                                        "id": 32,
+                                        "value": "0a0b0c0d"
+                                    }
+                                ]
                             }
                         ]
                     }

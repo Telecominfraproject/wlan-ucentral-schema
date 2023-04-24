@@ -229,6 +229,8 @@
 	}
 
 	function radius_request_attribute(request) {
+		if (request.id && request.hex_value)
+			return sprintf('%d:x:%s', request.id, request.hex_value);
 		if (request.id && type(request.value) == 'string')
 			return sprintf('%d:s:%s', request.id, request.value);
 		if (request.id && type(request.value) == 'int')
