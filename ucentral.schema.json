@@ -6,6 +6,10 @@
         "uuid": {
             "type": "integer"
         },
+        "public_ip_lookup": {
+            "type": "string",
+            "format": "uc-fqdn"
+        },
         "unit": {
             "$ref": "#/$defs/unit"
         },

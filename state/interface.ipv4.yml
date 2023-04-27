@@ -8,6 +8,10 @@ properties:
       type: string
       description:
         An IPv4 addreess.
+  public_ip:
+    type: string
+    description:
+      The public IP address of internet connection.
   leasetime:
     type: number
     description:
