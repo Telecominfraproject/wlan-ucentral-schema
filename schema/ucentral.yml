@@ -7,6 +7,11 @@ properties:
     description:
       The unique ID of the configuration. This is the unix timestamp of when the config was created.
     type: integer
+  public_ip_lookup: 
+    description:
+      The fqdn to retrieve public ip of internet connection. 
+    type: string
+    format: uc-fqdn
   unit:
     $ref: "https://ucentral.io/schema/v1/unit/"
   globals:
