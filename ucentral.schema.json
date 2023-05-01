@@ -1792,7 +1792,14 @@
                     "$ref": "#/$defs/interface.ssid.rate-limit"
                 },
                 "roaming": {
-                    "$ref": "#/$defs/interface.ssid.roaming"
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/interface.ssid.roaming"
+                        },
+                        {
+                            "type": "boolean"
+                        }
+                    ]
                 },
                 "radius": {
                     "$ref": "#/$defs/interface.ssid.radius"

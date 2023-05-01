@@ -53,6 +53,11 @@
 		return;
 	}
 
+	if (type(ssid.roaming) == 'bool')
+		ssid.roaming = {
+			message_exchange: true
+		};
+
 	if (ssid.roaming && ssid.encryption.proto in [ "wpa", "psk", "none" ]) {
 		delete ssid.roaming;
 		warn("Roaming requires wpa2 or later");

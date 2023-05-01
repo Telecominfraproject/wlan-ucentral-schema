@@ -136,7 +136,12 @@ properties:
   rate-limit:
     $ref: "https://ucentral.io/schema/v1/interface/ssid/rate-limit/"
   roaming:
-    $ref: "https://ucentral.io/schema/v1/interface/ssid/roaming/"
+    anyOf:
+      - $ref: "https://ucentral.io/schema/v1/interface/ssid/roaming/"
+      - description:
+          Enable 802.11r Fast Roaming for this BSS. This will enable "auto" mode
+          which will work for most scenarios.
+        type: boolean
   radius:
     $ref: "https://ucentral.io/schema/v1/interface/ssid/radius/"
   certificates:
