@@ -9,6 +9,12 @@ properties:
       1, 5 and 15 minutes.
     items:
       type: number
+  cpu_load:
+    type: array
+    description:
+      This array hold the total and per core load in percentage.
+    items:
+      type: number
   localtime:
     type: number
     description:

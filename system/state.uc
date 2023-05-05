@@ -184,6 +184,56 @@ if (length(thermal) > 0) {
 	}
 }
 
+/* cpu load */
+let fs = require('fs');
+
+function sum(arr) {
+	let rv = 0;
+
+	for (let val in arr)
+		rv += +val;
+	return rv;
+}
+
+function cpu_stats() {
+	let proc = fs.open('/proc/stat', 'r');
+	let stats;
+
+	if (proc) {
+		let line;
+		stats = [];
+		while (line = proc.read('line')) {
+			let cols = split(replace(trim(line), '  ', ' '), ' ');
+			if (!wildcard(cols[0], 'cpu*'))
+				continue;
+			shift(cols);
+			push(stats, [ sum(cols), +cols[2] ]);
+		}
+		proc.close();
+	}
+	return stats;
+}
+
+let last;
+let file = fs.open('/tmp/cpu_load', 'r');
+if (file) {
+	last = json(file.read('all'));
+	file.close();
+}
+
+let now = cpu_stats();
+if (now && last) {
+	state.unit.cpu_load = []; 
+	for (let i = 0; i < length(now); i++)
+		//printf('CPU%s %3d\%\n', i ? i : ' ', 100 * (now[i][1] - last[i][1]) / (now[i][0] - last[i][0]));
+		push(state.unit.cpu_load, 100 * (now[i][1] - last[i][1]) / (now[i][0] - last[i][0]));
+}
+file = fs.open('/tmp/cpu_load', 'w');
+if (file) {
+	file.write(now);
+	file.close();
+}
+
 /* wifi radios */
 for (let radio, data in wifistatus) {
 	if (!length(data.interfaces))
