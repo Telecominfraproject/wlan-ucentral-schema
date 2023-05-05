@@ -35,11 +35,11 @@ if (telemetry)
 let public_ip_file  = "/tmp/public_ip";
 let public_ip = "";
 if (cfg.public_ip_lookup) {
-        if(!fs.access(public_ip_file))
-                let result = system(sprintf("/usr/bin/curl -m 3 %s -o %s", cfg.public_ip_lookup, public_ip_file));
-        let online_file = fs.open(public_ip_file);
-        public_ip = online_file.read("all") || '';
-        online_file.close();
+	if (!fs.access(public_ip_file))
+		system(sprintf("/usr/bin/curl -m 3 %s -o %s", cfg.public_ip_lookup, public_ip_file));
+	let online_file = fs.open(public_ip_file);
+	public_ip = online_file.read("all") || '';
+	online_file.close();
 }
 
 global.tid_stats = (index(stats.types, 'tid-stats') > 0);
