@@ -6424,6 +6424,20 @@ function instantiateServiceRtty(location, value, errors) {
 			obj.token = parseToken(location + "/token", value["token"], errors);
 		}
 
+		function parseMutualTls(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "mutual-tls")) {
+			obj.mutual_tls = parseMutualTls(location + "/mutual-tls", value["mutual-tls"], errors);
+		}
+		else {
+			obj.mutual_tls = true;
+		}
+
 		return obj;
 	}
 
