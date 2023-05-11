@@ -204,6 +204,8 @@ function cpu_stats() {
 		stats = [];
 		while (line = proc.read('line')) {
 			let cols = split(replace(trim(line), '  ', ' '), ' ');
+			if (cols[0] == 'btime')
+				state.unit.boottime = +cols[1];
 			if (!wildcard(cols[0], 'cpu*'))
 				continue;
 			shift(cols);
