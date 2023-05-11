@@ -47,7 +47,7 @@ if (restrict.upgrade) {
 }
 
 let archive_cmdline = [
-	'tar', 'czf', '/tmp/sysupgrade.tgz',
+	'tar', 'czf', '/upgrade.tgz',
 	'/etc/config/ucentral'
 ];
 
@@ -79,7 +79,7 @@ if (rc != 0) {
 }
 
 let sysupgrade_cmdline = sprintf("sysupgrade %s %s",
-				 args.keep_redirector ? "-f /tmp/sysupgrade.tgz" : "-n",
+				 args.keep_redirector ? "-f /upgrade.tgz" : "-n",
 				 image_path);
 
 warn("Upgrading firmware\n");
