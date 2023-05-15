@@ -282,7 +282,7 @@ set wireless.{{ section }}.uci_section={{ s(section) }}
 set wireless.{{ section }}.device={{ phy.section }}
 {%   if ('captive' in ssid.services): %}
 set wireless.{{ section }}.ifname={{ s(ifname) }}
-set uspot.devices.{{ ifname }}={{ basename }}
+add_list uspot.{{ basename}}.ifname={{ ifname }}
 {%   endif %}
 {%   if (ssid?.encryption?.proto == 'owe-transition'): %}
 {%      ssid.hidden_ssid = 1 %}
