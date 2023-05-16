@@ -482,10 +482,11 @@ cursor.foreach("network", "interface", function(d) {
 					ssid['mesh-path'] = mesh[vap.ifname];
 				}
 				if (dyn_vlans[vap.ifname]) {
-					ssid.vlan_ifaces = {};
+					ssid.vlan_ifaces = [];
 					for (let vlan in dyn_vlans[vap.ifname]) {
-						push(dyn_vids, +split(vlan, '-v')[1]);
-						ssid.vlan_ifaces[vlan] = ports[vlan]?.counters || {}
+						let vid = +split(vlan, '-v')[1];
+						push(dyn_vids, vid);
+						push(ssid.vlan_ifaces, { ...(ports[vlan]?.counters || {}), ...{ vid} });
 					}
 				}
 				push(ssids, ssid);
