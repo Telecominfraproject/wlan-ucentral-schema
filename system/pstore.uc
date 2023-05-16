@@ -13,7 +13,9 @@ function move_to_json(src, dst) {
 	fd.close();
 	fs.unlink(src);
 	let fd = fs.open(dst, "w");
-	fd.write({crashlog: lines});
+	let msg = {};
+	msg[fs.basename(dst)] = lines;
+	fd.write(msg);
 	fd.close();
 	print(lines);
 }

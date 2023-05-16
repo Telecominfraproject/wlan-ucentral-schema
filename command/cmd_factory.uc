@@ -40,6 +40,8 @@ if (length(args) && args.keep_redirector) {
 	push(reset_cmdline, '-k');
 }
 
+include('reboot_cause.uc', { reason: 'factory' });
+
 let rc = system(reset_cmdline);
 
 if (rc != 0)

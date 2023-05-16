@@ -78,6 +78,8 @@ if (rc != 0) {
 	return;
 }
 
+include('reboot_cause.uc', { reason: 'upgrade' });
+
 let sysupgrade_cmdline = sprintf("sysupgrade %s %s",
 				 args.keep_redirector ? "-f /upgrade.tgz" : "-n",
 				 image_path);
