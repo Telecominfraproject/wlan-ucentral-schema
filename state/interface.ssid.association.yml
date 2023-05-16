@@ -18,6 +18,10 @@ items:
       type: string
       description:
         The MAC address of the station.
+    dynamic_vlan:
+      type: number
+      description:
+        The VID in case the association is on a dynamic VLAN.
     rssi:
       type: number
       description:

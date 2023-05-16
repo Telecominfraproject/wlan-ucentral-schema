@@ -286,6 +286,23 @@ function is_mesh(net, wif) {
 	return true;
 }
 
+let idx = 0;
+let dyn_vlans = {};
+let dyn_vids = [];
+for (let k, vlan in devices.up['bridge-vlans']) {
+	if (vlan.id >= 4000)
+		continue;
+	let wlan = [];
+	for (let port in vlan.ports) {
+		let dev = split(port, '-v');
+		if (+dev[1] != vlan.id)
+			continue;
+		if (!dyn_vlans[dev[0]])
+			dyn_vlans[dev[0]] = [];
+		push(dyn_vlans[dev[0]], port);
+	}
+}
+
 /* interfaces */
 cursor.load("network");
 cursor.foreach("network", "interface", function(d) {
@@ -434,6 +451,9 @@ cursor.foreach("network", "interface", function(d) {
 					let vlan = split(k, '-v');
 					if (vlan[0] != vap.ifname)
 						continue;
+					if (vlan[1])
+						for (let k, assoc in v)
+							assoc.dynamic_vlan = +vlan[1];
 					ssid.associations = [ ...(ssid.associations || []), ...v ];
 				}
 				for (let assoc in ssid.associations) {
@@ -461,6 +481,13 @@ cursor.foreach("network", "interface", function(d) {
 					ssid.counters = ports['batman_mesh'].counters;
 					ssid['mesh-path'] = mesh[vap.ifname];
 				}
+				if (dyn_vlans[vap.ifname]) {
+					ssid.vlan_ifaces = {};
+					for (let vlan in dyn_vlans[vap.ifname]) {
+						push(dyn_vids, +split(vlan, '-v')[1]);
+						ssid.vlan_ifaces[vlan] = ports[vlan]?.counters || {}
+					}
+				}
 				push(ssids, ssid);
 			}
 			counter++;
@@ -485,6 +512,31 @@ cursor.foreach("network", "interface", function(d) {
 	if (!length(iface.ipv6))
 		delete iface.ipv6;
 });
+
+dyn_vids = uniq(dyn_vids);
+if (length(dyn_vids)) {
+	state.dynamic_vlans = [];
+	for (let id in dyn_vids) {
+		let dyn = {
+			vid: id,
+			tx_bytes: 0,
+			tx_packets: 0,
+			rx_bytes: 0,
+			rx_packets: 0
+		};
+		for (let k, dev in devstats) {
+			for (let k, vid in dev) {
+				if (vid.vid != id)
+					continue;
+				dyn.tx_bytes += vid.tx.bytes;
+				dyn.tx_packets += vid.tx.packets;
+				dyn.rx_bytes += vid.rx.bytes;
+				dyn.rx_packets += vid.rx.packets;
+			}		
+		}
+		push(state.dynamic_vlans, dyn);
+	}
+}
 
 if (length(poe)) {
 	state.poe = {};

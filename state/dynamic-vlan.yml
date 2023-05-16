@@ -1,0 +1,22 @@
+type: object
+description:
+  This section contains the traffic counters of the logical interface.
+properties:
+  vid:
+    type: number
+  rx_bytes:
+    type: number
+    description:
+      The number of bytes received.
+  rx_packets:
+    type: number
+    description:
+      The number of packets received.
+  tx_bytes:
+    type: number
+    description:
+      The number of bytes transmitted.
+  tx_packets:
+    type: number
+    description:
+      The number of packets transmitted.

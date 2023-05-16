@@ -29,6 +29,14 @@ items:
       type: string
       description:
         The physical network device used.
+    vlan_ifaces:
+      description:
+        The list of dynamic vlan interfaces.
+      type: object
+      patternProperties:
+        ^wlan-v:
+          type: object
+          $ref: "https://ucentral.io/state/v1/interface/counter/"
     mode:
       type: string
       description:

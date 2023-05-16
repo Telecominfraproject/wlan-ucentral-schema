@@ -35,6 +35,10 @@ properties:
         patternProperties:
           "^(eth|lan|wan)[0-9]*$":
             $ref: "https://ucentral.io/state/v1/lldp-peers/"
+  dynamic_vlans:
+    type: array
+    items:
+      $ref: "https://ucentral.io/state/v1/dynamic-vlan/"
   link-state:
     type: object
     properties:
