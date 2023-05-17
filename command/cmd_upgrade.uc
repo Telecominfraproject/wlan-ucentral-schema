@@ -86,5 +86,6 @@ let sysupgrade_cmdline = sprintf("sysupgrade %s %s",
 
 warn("Upgrading firmware\n");
 
+system("touch /ucentral.upgrade");
 system("(sleep 10; /etc/init.d/network stop; " + sysupgrade_cmdline + ")&");
 system("/etc/init.d/ucentral stop");
