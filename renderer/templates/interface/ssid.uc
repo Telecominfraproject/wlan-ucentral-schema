@@ -283,6 +283,7 @@ set wireless.{{ section }}.device={{ phy.section }}
 {%   if ('captive' in ssid.services): %}
 set wireless.{{ section }}.ifname={{ s(ifname) }}
 add_list uspot.{{ basename}}.ifname={{ ifname }}
+add_list bridger.defaults[0].blacklist={{ ifname }}
 {%   endif %}
 {%   if (ssid?.encryption?.proto == 'owe-transition'): %}
 {%      ssid.hidden_ssid = 1 %}
