@@ -21,6 +21,8 @@ if (restrictfile) {
 	pipe.close();
 	if (developer == 'developer=1')
 		capa.developer = true;
+	else
+		capa.developer = false;
 }
 ctx = ubus.connect();
 let wifi = require("wifi.phy");
