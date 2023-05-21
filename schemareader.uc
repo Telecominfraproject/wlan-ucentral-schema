@@ -1343,45 +1343,6 @@ function instantiateInterfaceIpv4Dhcp(location, value, errors) {
 			obj.lease_time = "6h";
 		}
 
-		function parseRelayServer(location, value, errors) {
-			if (type(value) == "string") {
-				if (!matchIpv4(value))
-					push(errors, [ location, "must be a valid IPv4 address" ]);
-
-			}
-
-			if (type(value) != "string")
-				push(errors, [ location, "must be of type string" ]);
-
-			return value;
-		}
-
-		if (exists(value, "relay-server")) {
-			obj.relay_server = parseRelayServer(location + "/relay-server", value["relay-server"], errors);
-		}
-
-		function parseCircuitIdFormat(location, value, errors) {
-			if (type(value) != "string")
-				push(errors, [ location, "must be of type string" ]);
-
-			return value;
-		}
-
-		if (exists(value, "circuit-id-format")) {
-			obj.circuit_id_format = parseCircuitIdFormat(location + "/circuit-id-format", value["circuit-id-format"], errors);
-		}
-
-		function parseRemoteIdFormat(location, value, errors) {
-			if (type(value) != "string")
-				push(errors, [ location, "must be of type string" ]);
-
-			return value;
-		}
-
-		if (exists(value, "remote-id-format")) {
-			obj.remote_id_format = parseRemoteIdFormat(location + "/remote-id-format", value["remote-id-format"], errors);
-		}
-
 		return obj;
 	}
 

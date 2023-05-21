@@ -607,26 +607,6 @@
                     "type": "string",
                     "format": "uc-timeout",
                     "default": "6h"
-                },
-                "relay-server": {
-                    "type": "string",
-                    "format": "ipv4",
-                    "example": "192.168.2.1"
-                },
-                "circuit-id-format": {
-                    "type": "string",
-                    "example": [
-                        "\\{Interface\\}:\\{VLAN-Id\\}:\\{SSID\\}:\\{Model\\}:\\{Name\\}:\\{AP-MAC\\}:\\{Location\\}",
-                        "\\{AP-MAC\\};\\{SSID\\};\\{Crypto\\}",
-                        "\\{Name\\} \\{ESSID\\}"
-                    ]
-                },
-                "remote-id-format": {
-                    "type": "string",
-                    "example": [
-                        "\\{Client-MAC-hex\\} \\{SSID\\}",
-                        "\\{AP-MAC-hex\\} \\{SSID\\}"
-                    ]
                 }
             }
         },

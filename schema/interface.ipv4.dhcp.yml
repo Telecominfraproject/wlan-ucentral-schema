@@ -20,35 +20,3 @@ properties:
     type: string
     format: uc-timeout
     default: 6h
-  relay-server:
-    description:
-      Start a L2 DHCP relay in this logical interface and use this
-      IPv4 addr as the upstream server.
-    type: string
-    format: ipv4
-    example: 192.168.2.1
-  circuit-id-format:
-    description:
-      This option selects what info shall be contained within a relayed
-      frames circuit ID. The string passed in has placeholders that are
-      placed inside a bracket pair "{}". Any text not contained within
-      brackets will be included as freetext.
-      Valid placeholders are "Name, Model, Location, Interface, VLAN-Id,
-      SSID, Crypto, AP-MAC, AP-MAC-Hex, Client-MAC, Client-MAC-Hex"
-    type: string
-    example:
-    - \{Interface\}:\{VLAN-Id\}:\{SSID\}:\{Model\}:\{Name\}:\{AP-MAC\}:\{Location\}
-    - \{AP-MAC\};\{SSID\};\{Crypto\}
-    - \{Name\} \{ESSID\}
-  remote-id-format:
-    description:
-      This option selects what info shall be contained within a relayed
-      frames remote ID. The string passed in has placeholders that are
-      placed inside a bracket pair "{}". Any text not contained within
-      brackets will be included as freetext.
-      Valid placeholders are "VLAN-Id, SSID, AP-MAC, AP-MAC-Hex, Client-MAC,
-      Client-MAC-Hex"
-    type: string
-    example:
-    - \{Client-MAC-hex\} \{SSID\}
-    - \{AP-MAC-hex\} \{SSID\}

@@ -2,25 +2,6 @@
 {% let dhcp = ipv4.dhcp || { ignore: 1 } %}
 {% let dhcpv6 = ipv6.dhcpv6 || {} %}
 
-# DHCP/DHCPv6 server configuration on {{ name }}
-{% if (dhcp.relay_server): %}
-{%   dhcp_relay.init() %}
-add dhcp relay
-set dhcp.@relay[-1].server_addr={{s(dhcp.relay_server)}}
-set dhcp.@relay[-1].local_addr={{ s(split(ipv4.subnet, "/")[0]) }}
-set dhcp.@relay[-1].interface='{{ s(ethernet.find_interface("upstream", 0)) }}'
-set dhcp.@relay[-1].suboption1={{ s(dhcp_relay.replace(dhcp.circuit_id_format || '')) }}
-set dhcp.@relay[-1].suboption2={{ s(dhcp_relay.replace(dhcp.remote_id_format || '')) }}
-
-set firewall.dhcp_relay=rule
-set firewall.dhcp_relay.name='Allow-DHCP-Relay'
-set firewall.dhcp_relay.src='{{ s(ethernet.find_interface("upstream", 0)) }}'
-set firewall.dhcp_relay.dest_port='67'
-set firewall.dhcp_relay.family='ipv4'
-set firewall.dhcp_relay.proto='udp'
-set firewall.dhcp_relay.target='ACCEPT'
-{% endif %}
-
 set dhcp.{{ name }}=dhcp
 set dhcp.{{ name }}.interface={{ s(ethernet.calculate_ipv4_name(interface)) }}
 set dhcp.{{ name }}.start={{ dhcp.lease_first }}
