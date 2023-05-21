@@ -5292,6 +5292,20 @@ function instantiateInterfaceSsid(location, value, errors) {
 			obj.isolate_clients = parseIsolateClients(location + "/isolate-clients", value["isolate-clients"], errors);
 		}
 
+		function parseStrictIsolation(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "strict-isolation")) {
+			obj.strict_isolation = parseStrictIsolation(location + "/strict-isolation", value["strict-isolation"], errors);
+		}
+		else {
+			obj.strict_isolation = false;
+		}
+
 		function parsePowerSave(location, value, errors) {
 			if (type(value) != "bool")
 				push(errors, [ location, "must be of type boolean" ]);

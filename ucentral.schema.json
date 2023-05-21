@@ -1958,6 +1958,10 @@
                 "isolate-clients": {
                     "type": "boolean"
                 },
+                "strict-isolation": {
+                    "type": "boolean",
+                    "default": false
+                },
                 "power-save": {
                     "type": "boolean"
                 },

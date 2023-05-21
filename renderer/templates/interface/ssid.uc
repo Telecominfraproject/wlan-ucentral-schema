@@ -265,6 +265,8 @@
 			section: name + '_' + count,
 			config: ssid.captive
 		});
+	if (ssid.strict_isolation)
+		services.set_enabled("bridger", true);
 %}
 
 # Wireless configuration
@@ -425,6 +427,7 @@ set wireless.{{ section }}.rts_threshold={{ ssid.rts_threshold }}
 set wireless.{{ section }}.multicast_to_unicast={{ b(ssid.unicast_conversion) }}
 set wireless.{{ section }}.maxassoc={{ ssid.maximum_clients }}
 set wireless.{{ section }}.dtim_period={{ ssid.dtim_period }}
+set wireless.{{ section }}.strict_isolation={{ b(ssid.strict_isolation) }}
 
 {%     if (ssid.rate_limit): %}
 set wireless.{{ section }}.ratelimit=1
