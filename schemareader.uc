@@ -8320,6 +8320,58 @@ function instantiateServiceGps(location, value, errors) {
 	return value;
 }
 
+function instantiateServiceDhcpRelay(location, value, errors) {
+	if (type(value) == "object") {
+		let obj = {};
+
+		function parseSelectPorts(location, value, errors) {
+			if (type(value) == "array") {
+				function parseItem(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				return map(value, (item, i) => parseItem(location + "/" + i, item, errors));
+			}
+
+			if (type(value) != "array")
+				push(errors, [ location, "must be of type array" ]);
+
+			return value;
+		}
+
+		if (exists(value, "select-ports")) {
+			obj.select_ports = parseSelectPorts(location + "/select-ports", value["select-ports"], errors);
+		}
+
+		function parseRelayServer(location, value, errors) {
+			if (type(value) == "string") {
+				if (!matchUcIp(value))
+					push(errors, [ location, "must be a valid IPv4 or IPv6 address" ]);
+
+			}
+
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "relay-server")) {
+			obj.relay_server = parseRelayServer(location + "/relay-server", value["relay-server"], errors);
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
+
+	return value;
+}
+
 function instantiateService(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
@@ -8398,6 +8450,10 @@ function instantiateService(location, value, errors) {
 
 		if (exists(value, "gps")) {
 			obj.gps = instantiateServiceGps(location + "/gps", value["gps"], errors);
+		}
+
+		if (exists(value, "dhcp-relay")) {
+			obj.dhcp_relay = instantiateServiceDhcpRelay(location + "/dhcp-relay", value["dhcp-relay"], errors);
 		}
 
 		return obj;

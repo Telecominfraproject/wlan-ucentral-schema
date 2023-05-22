@@ -696,46 +696,6 @@ let services = {
 };
 
 /**
- * @class uCentral.dhcp_relay
- * @classdesc
- *
- * The DHCP relay utility class encapsulates logic required for configuring
- * DHCP relay information.
- */
-
-/** @lends uCentral.dhcp_relay.prototype */
-
-let dhcp_relay = {
-	state: {
-		"AP-MAC": "%a",
-		"AP-MAC-Hex": "%A",
-		"Client-MAC": "%c",
-		"Client-MAC-Hex": "%C",
-		"Interface": "%i"
-	},
-
-	init: function() {
-		cursor.load("system");
-
-		let system = cursor.get_all("system", "@system[-1]");
-		this.state.Name = (system && system.hostname) ? system.hostname : "unknown";
-		this.state.Location = (system && system.notes) ? system.notes : "unknown";
-		this.state["VLAN-Id"] = interface.vlan.id;
-		this.state.Model = capab.compatible || "unknown";
-		this.state.SSID = (interface.ssids && interface.ssids[0].name) ? interface.ssids[0].name : "unknown";
-		this.state.Crypto = "unknown";
-	},
-
-	replace: function(str) {
-		let subst = this.state;
-
-		return replace(str, /\{([^{}]+)\}/g, (m, var) => {
-    			return subst[var] || 'unknown';
-		});
-	}
-};
-
-/**
  * @class uCentral.local_profile
  * @classdesc
  *
@@ -1100,9 +1060,6 @@ return /** @lends uCentral.prototype */ {
 
 			/** @member {uCentral.services} */
 			services,
-
-			/** @member {uCentral.dhcp_relay} */
-			dhcp_relay,
 
 			/** @member {uCentral.local_profile} */
 			local_profile,

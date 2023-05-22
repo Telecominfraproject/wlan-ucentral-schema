@@ -2957,6 +2957,21 @@
                 }
             }
         },
+        "service.dhcp-relay": {
+            "type": "object",
+            "properties": {
+                "select-ports": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "relay-server": {
+                    "type": "string",
+                    "format": "uc-ip"
+                }
+            }
+        },
         "service": {
             "type": "object",
             "properties": {
@@ -3016,6 +3031,9 @@
                 },
                 "gps": {
                     "$ref": "#/$defs/service.gps"
+                },
+                "dhcp-relay": {
+                    "$ref": "#/$defs/service.dhcp-relay"
                 }
             }
         },
