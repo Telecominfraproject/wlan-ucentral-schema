@@ -1,6 +1,5 @@
 description:
-  This section can be used to define eBPF and cBPF blobs that shall be
-  loaded for virtual data-planes and SDN.
+  Define the vlans on which the dhcp shall be relayed.
 type: object
 properties:
   select-ports:
@@ -10,8 +9,19 @@ properties:
     type: array
     items:
       type: string
-  relay-server:
+  vlans:
     description:
-      The unicast target DHCP pool server where frames get relayed to.
-    type: string
-    format: uc-ip
+      The list of all vlans
+    type: array
+    items:
+      type: object
+      properties:
+        vlan:
+          description:
+            The vlan id.
+          type: number
+        relay-server:
+          description:
+            The unicast target DHCP pool server where frames get relayed to.
+          type: string
+          format: uc-ip

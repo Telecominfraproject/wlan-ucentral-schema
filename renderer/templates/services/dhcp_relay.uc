@@ -22,12 +22,13 @@ set firewall.dhcp_relay.target='ACCEPT'
 
 set dhcprelay.relay=bridge
 set dhcprelay.relay.name=up
-{% for (let iface in interfaces):
-	if (iface.vlan?.id) %}
-add_list dhcprelay.relay.vlans={{ iface.vlan.id }}
+{% for (let vlan in dhcp_relay.vlans||[]): %}
+add_list dhcprelay.relay.vlans={{ vlan.vlan }}
 {% endfor %}
 {% for (let port in ports): %}
 add_list dhcprelay.relay.upstream={{ port }}
 {% endfor %}
-set dhcprelay.config=config
-set dhcprelay.config.server={{ s(dhcp_relay.relay_server) }}
+{% for (let vlan in dhcp_relay.vlans||[]): %}
+set dhcprelay.vlan{{vlan.vlan}}=config
+set dhcprelay.vlan{{vlan.vlan}}.server={{ s(vlan.relay_server) }}
+{% endfor %}

@@ -8346,21 +8346,60 @@ function instantiateServiceDhcpRelay(location, value, errors) {
 			obj.select_ports = parseSelectPorts(location + "/select-ports", value["select-ports"], errors);
 		}
 
-		function parseRelayServer(location, value, errors) {
-			if (type(value) == "string") {
-				if (!matchUcIp(value))
-					push(errors, [ location, "must be a valid IPv4 or IPv6 address" ]);
+		function parseVlans(location, value, errors) {
+			if (type(value) == "array") {
+				function parseItem(location, value, errors) {
+					if (type(value) == "object") {
+						let obj = {};
 
+						function parseVlan(location, value, errors) {
+							if (!(type(value) in [ "int", "double" ]))
+								push(errors, [ location, "must be of type number" ]);
+
+							return value;
+						}
+
+						if (exists(value, "vlan")) {
+							obj.vlan = parseVlan(location + "/vlan", value["vlan"], errors);
+						}
+
+						function parseRelayServer(location, value, errors) {
+							if (type(value) == "string") {
+								if (!matchUcIp(value))
+									push(errors, [ location, "must be a valid IPv4 or IPv6 address" ]);
+
+							}
+
+							if (type(value) != "string")
+								push(errors, [ location, "must be of type string" ]);
+
+							return value;
+						}
+
+						if (exists(value, "relay-server")) {
+							obj.relay_server = parseRelayServer(location + "/relay-server", value["relay-server"], errors);
+						}
+
+						return obj;
+					}
+
+					if (type(value) != "object")
+						push(errors, [ location, "must be of type object" ]);
+
+					return value;
+				}
+
+				return map(value, (item, i) => parseItem(location + "/" + i, item, errors));
 			}
 
-			if (type(value) != "string")
-				push(errors, [ location, "must be of type string" ]);
+			if (type(value) != "array")
+				push(errors, [ location, "must be of type array" ]);
 
 			return value;
 		}
 
-		if (exists(value, "relay-server")) {
-			obj.relay_server = parseRelayServer(location + "/relay-server", value["relay-server"], errors);
+		if (exists(value, "vlans")) {
+			obj.vlans = parseVlans(location + "/vlans", value["vlans"], errors);
 		}
 
 		return obj;

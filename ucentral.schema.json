@@ -2966,9 +2966,20 @@
                         "type": "string"
                     }
                 },
-                "relay-server": {
-                    "type": "string",
-                    "format": "uc-ip"
+                "vlans": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "vlan": {
+                                "type": "number"
+                            },
+                            "relay-server": {
+                                "type": "string",
+                                "format": "uc-ip"
+                            }
+                        }
+                    }
                 }
             }
         },
