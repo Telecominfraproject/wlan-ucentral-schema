@@ -64,10 +64,10 @@ try {
 		for (let cmd in [ 'uci -c /tmp/config-shadow commit',
 				  'cp /tmp/config-shadow/* /etc/config/',
 				  'rm -rf /tmp/config-shadow',
-				  'wifi',
 				  'reload_config',
 				  '/etc/init.d/ratelimit restart',
-				  '/etc/init.d/dnsmasq restart'])
+				  '/etc/init.d/dnsmasq restart',
+				  'ubus call hostapd multi_psk'])
 			system(cmd);
 
 		if (!custom_config) {

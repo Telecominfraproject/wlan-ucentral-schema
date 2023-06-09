@@ -528,6 +528,7 @@ add_list wireless.{{ section }}.hs20_conn_capab={{ s(name) }}
 {%       endfor %}
 set wireless.{{ section }}.hs20_wan_metrics={{ s(get_hs20_wan_metrics()) }}
 {%     endif %}
+set wireless.{{ section }}.wpa_psk_file='/var/run/{{ section }}.psk' 
 
 {% include("wmm.uc", { section }); %}
 
@@ -557,16 +558,23 @@ set ratelimit.@rate[-1].ssid={{ s(ssid.name) }}
 set ratelimit.@rate[-1].ingress={{ ssid.rate_limit.ingress_rate }}
 set ratelimit.@rate[-1].egress={{ ssid.rate_limit.egress_rate }}
 {%     endif %}
-{%     for (let i = length(ssid.multi_psk); i > 0; i--): %}
-{%       let psk = ssid.multi_psk[i - 1]; %}
-{%       if (!psk.key) continue %}
 
-add wireless wifi-station
-set wireless.@wifi-station[-1].iface={{ s(section) }}
-set wireless.@wifi-station[-1].mac={{ psk.mac }}
-set wireless.@wifi-station[-1].key={{ psk.key }}
-set wireless.@wifi-station[-1].vid={{ psk.vlan_id }}
-{%     endfor %}
+
+
+{%
+	let fs = require('fs');	
+	let file = fs.open('/var/run/' + section + '.psk', 'w');
+	for (let i = length(ssid.multi_psk); i > 0; i--) {
+		let psk = ssid.multi_psk[i - 1];
+	 	if (!psk.key) continue;
+		if (psk.vlan_id)
+			file.write('vlanid=' + psk.vlan_id + ' ');
+		file.write(psk.mac || '00:00:00:00:00:00');
+		file.write(' ' + psk.key + '\n');
+	}
+	file.close()
+ %}
+
 {%   else %}
 
 # STA specific settings
