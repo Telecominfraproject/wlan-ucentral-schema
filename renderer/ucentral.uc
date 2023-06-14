@@ -91,9 +91,10 @@ catch (e) {
 let ubus = require("ubus").connect();
 
 if (inputjson.uuid && inputjson.uuid > 1 && !custom_config) {
+	let text = [ 'Success', 'Rejects', 'Failed' ];
 	let status = {
 		error,
-		text: error ? "Failed" : "Success",
+		text: text[error] || "Failed",
 	};
 	if (length(logs))
 		status.rejected = logs;
@@ -103,4 +104,6 @@ if (inputjson.uuid && inputjson.uuid > 1 && !custom_config) {
 		id: +ARGV[1] || 0,
 		status,
 	});
+	if (error > 1)
+		exit(1);
 }
