@@ -33,6 +33,7 @@ set network.@device[-1].vid={{ this_vid }}
 
 {% if (interface.role == 'upstream'): %}
 {%  for (let port in keys(eth_ports)): %}
+{%    if (!interface.vlan.id) continue; %}
 add udevstats device
 set udevstats.@device[-1].name={{ s(port) }}
 add_list udevstats.@device[-1].vlan={{ s(interface.vlan.id || 0) }}
