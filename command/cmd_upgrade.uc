@@ -33,7 +33,7 @@ else if (!validation_result.valid) {
 	return;
 }
 
-if (restrict.upgrade) {
+if (restrict.sysupgrade) {
 	let signature = require('signature');
 	if (!signature.verify(image_path, args.FWsignature)) {
 		result_json({
