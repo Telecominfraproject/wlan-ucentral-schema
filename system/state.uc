@@ -271,10 +271,10 @@ function iface_add_counters(counters, vlan, port) {
 	for (let k, vid in devstats[port]) {
 		if (vid.vid != vlan)
 			continue;
-		counters.tx_bytes += vid.tx.bytes;
-		counters.tx_packets += vid.tx.packets;
-		counters.rx_bytes += vid.rx.bytes;
-		counters.rx_packets += vid.rx.packets;
+		counters.tx_bytes += vid.tx?.bytes || 0;
+		counters.tx_packets += vid.tx?.packets || 0;
+		counters.rx_bytes += vid.rx?.bytes || 0;
+		counters.rx_packets += vid.rx?.packets || 0;
 	}
 }
 
