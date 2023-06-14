@@ -209,7 +209,7 @@ function cpu_stats() {
 			if (!wildcard(cols[0], 'cpu*'))
 				continue;
 			shift(cols);
-			push(stats, [ sum(cols), +cols[2] ]);
+			push(stats, [ sum(cols), +cols[3] ]);
 		}
 		proc.close();
 	}
@@ -228,7 +228,7 @@ if (now && last) {
 	state.unit.cpu_load = []; 
 	for (let i = 0; i < length(now); i++)
 		//printf('CPU%s %3d\%\n', i ? i : ' ', 100 * (now[i][1] - last[i][1]) / (now[i][0] - last[i][0]));
-		push(state.unit.cpu_load, 100 * (now[i][1] - last[i][1]) / (now[i][0] - last[i][0]));
+		push(state.unit.cpu_load, 100 - (100 * (now[i][1] - last[i][1]) / (now[i][0] - last[i][0])));
 }
 file = fs.open('/tmp/cpu_load', 'w');
 if (file) {
