@@ -123,4 +123,5 @@
 		include("config_raw.uc", { location: '/config_raw', config_raw: state.config_raw });
 
 	latency.write();
+	services.set_enabled("bridger", false);
 %}
