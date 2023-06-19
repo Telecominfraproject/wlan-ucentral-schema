@@ -31,6 +31,7 @@ try {
 			  'mkdir /tmp/ucentral',
 			  'rm /tmp/dnsmasq.conf',
 			  '/etc/init.d/uhealth stop',
+			  '/etc/init.d/spotfilter stop',
 			  'touch /tmp/ucentral.health',
 			  'touch /tmp/dnsmasq.conf' ])
 		system(cmd);
