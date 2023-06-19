@@ -5253,18 +5253,18 @@ function instantiateInterfaceSsid(location, value, errors) {
 			obj.isolate_clients = parseIsolateClients(location + "/isolate-clients", value["isolate-clients"], errors);
 		}
 
-		function parseStrictIsolation(location, value, errors) {
+		function parseStrictForwarding(location, value, errors) {
 			if (type(value) != "bool")
 				push(errors, [ location, "must be of type boolean" ]);
 
 			return value;
 		}
 
-		if (exists(value, "strict-isolation")) {
-			obj.strict_isolation = parseStrictIsolation(location + "/strict-isolation", value["strict-isolation"], errors);
+		if (exists(value, "strict-forwarding")) {
+			obj.strict_forwarding = parseStrictForwarding(location + "/strict-forwarding", value["strict-forwarding"], errors);
 		}
 		else {
-			obj.strict_isolation = false;
+			obj.strict_forwarding = false;
 		}
 
 		function parsePowerSave(location, value, errors) {

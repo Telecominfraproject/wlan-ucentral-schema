@@ -59,7 +59,7 @@ properties:
     description:
       Isolates wireless clients from each other on this BSS.
     type: boolean
-  strict-isolation:
+  strict-forwarding:
     description:
       Isolate the BSS from all other members on the bridge apart from the first wired port.
     type: boolean

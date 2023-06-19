@@ -1938,7 +1938,7 @@
                 "isolate-clients": {
                     "type": "boolean"
                 },
-                "strict-isolation": {
+                "strict-forwarding": {
                     "type": "boolean",
                     "default": false
                 },
