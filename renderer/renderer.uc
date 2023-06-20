@@ -970,7 +970,9 @@ let captive = {
 	 * Add an interface
 	 */
 	interface: function(name, config) {
-		this.interfaces[name] = config;
+		this.interfaces[name] = {};
+		for (let k, v in config)
+			this.interfaces[name][k] = v;
 		this.interfaces[name].iface = [];
 	},
 };
