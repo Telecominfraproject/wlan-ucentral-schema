@@ -54,8 +54,8 @@ set uspot.{{ section }}.acct_secret={{ s(config.acct_secret) }}
 set uspot.{{ section }}.acct_interval={{ config.acct_interval }}
 {% endif %}
 
-{% if (captive.auth_mode == 'credentials'): %}
-{%   for (let cred in captive.credentials): %}
+{% if (config.auth_mode == 'credentials'): %}
+{%   for (let cred in config.credentials): %}
 add uspot credentials
 set uspot.@credentials[-1].username={{ s(cred.username) }}
 set uspot.@credentials[-1].password={{ s(cred.password) }}
