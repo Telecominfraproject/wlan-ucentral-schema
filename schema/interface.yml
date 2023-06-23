@@ -47,6 +47,15 @@ properties:
       examples:
       - ssh
       - lldp
+  vlan-awareness:
+    description:
+      Setup additional VLANs inside the bridge
+    type: object
+    properties:
+      first:
+        type: integer
+      last:
+        type: integer     
   vlan:
     $ref: "https://ucentral.io/schema/v1/interface/vlan/"
   bridge:

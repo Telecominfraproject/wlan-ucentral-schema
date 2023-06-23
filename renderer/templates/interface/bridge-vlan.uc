@@ -31,6 +31,17 @@ set network.@device[-1].name={{ name }}
 set network.@device[-1].ifname={{ bridgedev }}
 set network.@device[-1].vid={{ this_vid }}
 
+{% if (interface.vlan_awareness?.first): %}
+{%   let vlan = interface.vlan_awareness.first;
+     if (interface.vlan_awareness.last)
+	     vlan += '-' + interface.vlan_awareness.last; %}
+{%   for (let port in keys(eth_ports)): %}
+add network device
+set network.@device[-1].name={{ port }}
+set network.@device[-1].vlan={{ vlan }}
+{%   endfor %}
+{% endif %}
+
 {% if (interface.role == 'upstream'): %}
 {%  for (let port in keys(eth_ports)): %}
 {%    if (!interface.vlan.id) continue; %}

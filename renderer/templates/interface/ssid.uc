@@ -416,6 +416,14 @@ set wireless.{{ section }}.priv_key_pwd={{ s(certificates.private_key_password) 
 set wireless.{{ section }}.identity='uCentral'
 {%   endif %}
 
+{% if (interface.vlan_awareness?.first): %}
+{%   let vlan = interface.vlan_awareness.first;
+     if (interface.vlan_awareness.last)
+	     vlan += '-' + interface.vlan_awareness.last; %}
+set wireless.{{ section }}.network_vlan={{ vlan }}
+{% endif %}
+
+
 # AP specific setings
 {%   if (bss_mode == 'ap'): %}
 set wireless.{{ section }}.proxy_arp={{ b(length(network) ? ssid.proxy_arp : false) }}
@@ -432,6 +440,7 @@ set wireless.{{ section }}.strict_forwardingn={{ b(ssid.strict_forwardingn) }}
 {%     if (interface?.vlan.id): %}
 set wireless.{{ section }}.vlan_id={{ interface.vlan.id }}
 {%     endif %}
+
 
 {%     if (ssid.rate_limit): %}
 set wireless.{{ section }}.ratelimit=1

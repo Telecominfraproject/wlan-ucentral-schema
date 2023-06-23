@@ -6086,6 +6086,45 @@ function instantiateInterface(location, value, errors) {
 			obj.services = parseServices(location + "/services", value["services"], errors);
 		}
 
+		function parseVlanAwareness(location, value, errors) {
+			if (type(value) == "object") {
+				let obj = {};
+
+				function parseFirst(location, value, errors) {
+					if (type(value) != "int")
+						push(errors, [ location, "must be of type integer" ]);
+
+					return value;
+				}
+
+				if (exists(value, "first")) {
+					obj.first = parseFirst(location + "/first", value["first"], errors);
+				}
+
+				function parseLast(location, value, errors) {
+					if (type(value) != "int")
+						push(errors, [ location, "must be of type integer" ]);
+
+					return value;
+				}
+
+				if (exists(value, "last")) {
+					obj.last = parseLast(location + "/last", value["last"], errors);
+				}
+
+				return obj;
+			}
+
+			if (type(value) != "object")
+				push(errors, [ location, "must be of type object" ]);
+
+			return value;
+		}
+
+		if (exists(value, "vlan-awareness")) {
+			obj.vlan_awareness = parseVlanAwareness(location + "/vlan-awareness", value["vlan-awareness"], errors);
+		}
+
 		if (exists(value, "vlan")) {
 			obj.vlan = instantiateInterfaceVlan(location + "/vlan", value["vlan"], errors);
 		}
