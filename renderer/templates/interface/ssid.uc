@@ -265,7 +265,7 @@
 			section: name + '_' + count,
 			config: ssid.captive
 		});
-	if (ssid.strict_forwardingn)
+	if (ssid.strict_forwarding)
 		services.set_enabled("bridger", true);
 %}
 
@@ -435,7 +435,7 @@ set wireless.{{ section }}.rts_threshold={{ ssid.rts_threshold }}
 set wireless.{{ section }}.multicast_to_unicast={{ b(ssid.unicast_conversion) }}
 set wireless.{{ section }}.maxassoc={{ ssid.maximum_clients }}
 set wireless.{{ section }}.dtim_period={{ ssid.dtim_period }}
-set wireless.{{ section }}.strict_forwardingn={{ b(ssid.strict_forwardingn) }}
+set wireless.{{ section }}.strict_forwarding={{ b(ssid.strict_forwarding) }}
 
 {%     if (interface?.vlan.id): %}
 set wireless.{{ section }}.vlan_id={{ interface.vlan.id }}
