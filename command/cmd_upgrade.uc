@@ -35,7 +35,7 @@ else if (!validation_result.valid) {
 
 if (restrict.sysupgrade) {
 	let signature = require('signature');
-	if (!signature.verify(image_path, args.FWsignature)) {
+	if (!signature.verify(image_path, args.signature)) {
 		result_json({
 			"error": 2,
 			"text": "Invalid signature",
