@@ -40,6 +40,12 @@ add network device
 set network.@device[-1].name={{ port }}
 set network.@device[-1].vlan={{ vlan }}
 {%   endfor %}
+{%   if (interface.role == 'upstream'): %}
+set network.up.vlan={{ vlan }}
+{%   endif %}
+{%   if (interface.role == 'downstream'): %}
+set network.down.vlan={{ vlan }}
+{%   endif %}
 {% endif %}
 
 {% if (interface.role == 'upstream'): %}

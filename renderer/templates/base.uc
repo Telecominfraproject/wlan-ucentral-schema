@@ -17,18 +17,18 @@ set network.loopback.proto='static'
 set network.loopback.ipaddr='127.0.0.1'
 set network.loopback.netmask='255.0.0.0'
 
-add network device
-set network.@device[-1].name=up
-set network.@device[-1].type=bridge
-set network.@device[-1].stp={{ loop_detect("upstream") }}
-set network.@device[-1].igmp_snooping='1'
+set network.up=device
+set network.up.name=up
+set network.up.type=bridge
+set network.up.stp={{ loop_detect("upstream") }}
+set network.up.igmp_snooping='1'
 
 {% if (capab.platform != "switch"): %}
-add network device
-set network.@device[-1].name=down
-set network.@device[-1].type=bridge
-set network.@device[-1].stp={{ loop_detect("downstream") }}
-set network.@device[-1].igmp_snooping='1'
+set network.down=device
+set network.down.name=down
+set network.down.type=bridge
+set network.down.stp={{ loop_detect("downstream") }}
+set network.down.igmp_snooping='1'
 
 {% endif %}
 set network.up_none=interface
