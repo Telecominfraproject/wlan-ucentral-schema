@@ -604,8 +604,12 @@ let services = {
 	state: {},
 
 	set_enabled: function(name, state) {
-		if (!this.state[name])
-			this.state[name] = state ? true : false;
+		if (!this.state[name]) {
+			if (state == 'early')
+				this.state[name] = 'early';
+			else
+				this.state[name] = state ? true : false;
+		}
 	},
 
 	is_present: function(name) {

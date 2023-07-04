@@ -266,7 +266,7 @@
 			config: ssid.captive
 		});
 	if (ssid.strict_forwarding)
-		services.set_enabled("bridger", true);
+		services.set_enabled("bridger", 'early');
 %}
 
 # Wireless configuration

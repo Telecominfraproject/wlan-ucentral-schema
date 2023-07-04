@@ -21,7 +21,7 @@ function set_service_state(state) {
 		if (enable != state)
 			continue;
 		printf("%s %s\n", service, enable ? "starting" : "stopping");
-		system(sprintf("/etc/init.d/%s %s", service, enable ? "restart" : "stop"));
+		system(sprintf("/etc/init.d/%s %s", service, (enable || enable == 'early') ? "restart" : "stop"));
 	}
 	system("/etc/init.d/dnsmasq restart");
 }
@@ -63,8 +63,12 @@ try {
 
 		for (let cmd in [ 'uci -c /tmp/config-shadow commit',
 				  'cp /tmp/config-shadow/* /etc/config/',
-				  'rm -rf /tmp/config-shadow',
-				  'wifi',
+				  'rm -rf /tmp/config-shadow'])
+			system(cmd);
+
+		set_service_state('early');
+
+		for (let cmd in [ 'wifi',
 				  'reload_config',
 				  '/etc/init.d/ratelimit restart',
 				  '/etc/init.d/dnsmasq restart'])
