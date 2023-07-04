@@ -19,9 +19,7 @@
 			return [ mode, mode_weight[m[1]] * (m[2] == "80+80" ? 159 : +m[2]) ];
 		}), (a, b) => (b[1] - a[1])), i => i[0]);
 		supported_phy_modes = filter(supported_phy_modes, mode =>
-			!((index(phy.band, "2G") >= 0 && mode == "VHT80") ||
-			(index(phy.band, "5G") >= 0 && (mode == "VHT160" || mode == "VHT80+80")) ||
-			(index(phy.band, "5G") >= 0 && (mode == "HE160" || mode == "HE80+80"))));
+			!(index(phy.band, "2G") >= 0 && mode == "VHT80"));
 		if (wanted_mode in supported_phy_modes)
 			return wanted_mode;
 
@@ -39,7 +37,8 @@
 	}
 
 	let channel_list = {
-		"80": [ 36,  52, 100, 116, 132, 149 ],
+		"160": [ 36, 100, 149 ],
+		"80": [ 36, 52, 100, 116, 132, 149 ],
 		"40": [ 36, 44, 52, 60, 100, 108,
 			116, 124, 132, 140, 149, 157, 165, 173,
 			184, 192 ]
