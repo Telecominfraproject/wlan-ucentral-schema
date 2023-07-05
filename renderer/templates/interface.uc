@@ -46,6 +46,11 @@
 		return;
 	}
 
+	// reject static config that has no subnet
+	if (interface.role == 'upstream' && interface.ipv4?.addressing == 'static')
+		if (!interface.ipv4?.subnet || !interface.ipv4?.dns || !interface.ipv4?.gateway)
+			die('invalid static interface settings');
+
 	// resolve auto prefixes
 	if (wildcard(interface.ipv4?.subnet, 'auto/*')) {
 		try {
