@@ -56,3 +56,10 @@ set udevstats.@device[-1].name={{ s(port) }}
 add_list udevstats.@device[-1].vlan={{ s(interface.vlan.id || 0) }}
 {%  endfor %}
 {% endif %}
+
+{% if (interface.vlan.id && swconfig): %}
+add network switch_vlan
+set network.@switch_vlan[-1].device={{ s(swconfig.name) }}
+set network.@switch_vlan[-1].vlan={{ s(this_vid) }}
+set network.@switch_vlan[-1].ports={{s(swconfig.ports)}}
+{% endif %}

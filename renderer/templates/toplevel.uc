@@ -50,6 +50,26 @@
 		if (!interface.vlan.id)
 			interface.vlan.dyn_id = next_free_vid();
 
+	/* dynamically assign vlans to all swconfig ports */
+	let swconfig = false;
+	for (let k, port in ethernet.ports) {
+		if (port.swconfig == null)
+			continue;
+		port.vlan = next_free_vid();
+		port.switch = capab.switch_ports[port.netdev];
+		port.netdev += '.' + port.vlan;
+		swconfig = true;
+	}
+
+	if (swconfig) {
+		ethernet.swconfig = {};
+		for (let k, port in ethernet.ports) {
+			if (!port.switch)
+				continue;
+			ethernet.swconfig[port.netdev] = port;
+		}
+	}
+
 	include('base.uc');
 
 	if (state.unit)

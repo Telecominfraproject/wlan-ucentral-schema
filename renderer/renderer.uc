@@ -101,10 +101,16 @@ function discover_ports() {
 	for (let role, spec in capab.network) {
 		for (let i, ifname in spec) {
 			role = uc(role);
-			push(roles[role] = roles[role] || [], {
-				netdev: ifname,
+			let netdev = split(ifname, ':');
+			let port = {
+				netdev: netdev[0],
 				index: i
-			});
+			};
+			if (netdev[1]) {
+				port.swconfig = netdev[1];
+				port.swdev = split(ifname, ':')[0];
+			}
+			push(roles[role] = roles[role] || [], port);
 		}
 	}
 
@@ -131,7 +137,6 @@ function discover_ports() {
 
 	return rv;
 }
-
 
 /**
  * @class uCentral.wiphy
@@ -335,7 +340,7 @@ let ethernet = {
 		return matched;
 	},
 
-	lookup_by_interface_vlan: function(interface) {
+	lookup_by_interface_vlan: function(interface, raw) {
 		// Gather the glob patterns in all `ethernet: [ { select-ports: ... }]` specs,
 		// dedup them and turn them into one global regular expression pattern, then
 		// match this pattern against all known system ethernet ports, remember the
@@ -343,7 +348,47 @@ let ethernet = {
 		let globs = {};
 		map(interface.ethernet, eth => map(eth.select_ports, glob => globs[glob] = eth.vlan_tag));
 
-		return this.lookup(globs);
+		let lookup = this.lookup(globs);
+		if (raw)
+			return lookup;
+
+		let rv = {};
+		for (let k, v in lookup) {
+			/* tagged swconfig downstream ports are not allowed */
+			if (interface.role == 'downstream') {
+				if (this.swconfig && this.swconfig[k].switch && v == 'tagged')
+					warn('%s:%d - vlan tagging on downstream swconfig ports is not supported', this.swconfig[k].switch.name, this.swconfig[k].swconfig);
+				else
+					rv[k] = v;
+				continue;
+			}
+			/* resolve upstream vlans on swconfig ports */
+			if (this.swconfig && interface.role == 'upstream' && interface.vlan.id && this.swconfig[k].switch && v != 'un-tagged') {
+				rv[split(k, '.')[0] + '.' + interface.vlan.id] = 'un-tagged';
+				continue;
+			}
+			rv[k] = v;
+		}
+		return rv;
+	},
+
+	switch_by_interface_vlan: function(interface, raw) {
+		let ports = this.lookup_by_interface_vlan(interface, true);
+		let rv = { ports: "" };
+		let cpu_port = 0;
+		for (let port, tag in ports) {
+			if (!this.swconfig || !this.swconfig[port]?.switch) continue;
+			rv.name = this.swconfig[port].switch.name;
+			cpu_port = this.swconfig[port].switch.port;
+			rv.ports += ' ' + this.swconfig[port].swconfig;
+			if (tag != 'un-tagged')
+				rv.ports += 't';
+		}
+		if (!rv.name)
+			return null;
+		rv.ports = cpu_port + 't' + rv.ports;
+
+		return rv;
 	},
 
 	lookup_by_interface_spec: function(interface) {

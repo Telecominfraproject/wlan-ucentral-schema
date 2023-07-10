@@ -93,6 +93,9 @@
 	// Gather related BSS modes and ethernet ports.
 	let bss_modes = map(interface.ssids, ssid => ssid.bss_mode);
 	let eth_ports = ethernet.lookup_by_interface_vlan(interface);
+	let swconfig;
+	if (interface.role == 'upstream')
+		swconfig = ethernet.switch_by_interface_vlan(interface);
 
 	// If at least one station mode SSID is part of this interface then we must
 	// not bridge at all. Having any other SSID or any number of matching ethernet
@@ -133,7 +136,7 @@
 	//
 
 	if (interface.broad_band) {
-		include("interface/broadband.uc", { interface, name, location, eth_ports });
+		include("interface/broadband.uc", { interface, name, location, eth_ports, raw_ports });
 		return;
 	}
 
@@ -150,7 +153,7 @@
 		interface.type = 'bridge';
 	} else if (tunnel_proto != 'gre' && tunnel_proto != 'gre6')
 		// anything else requires a bridge-vlan
-		include("interface/bridge-vlan.uc", { interface, name, eth_ports, this_vid, bridgedev });
+		include("interface/bridge-vlan.uc", { interface, name, eth_ports, this_vid, bridgedev, swconfig });
 
 	if (interface.role == "downstream" && "wireguard-overlay" in interface.services)
 		dest = 'unet';

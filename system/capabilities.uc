@@ -36,13 +36,48 @@ else if (length(wifi))
 else
 	capa.platform = "unknown";
 
+if (board.switch) {
+	capa.switch = [];
+	capa.switch_ports = {};
+	for (let name, s in board.switch) {
+		let device = { name, lan: [], wan: [] };
+		let netdev;
+		for (let p in s.ports) {
+			if (p.device) {
+				netdev = p.device;
+				device.port = p.num;
+			} else if (device[p.role]) {
+				push(device[p.role], p.num)
+			}
+		}
+		if (!length(device.lan))
+			delete device.lan;
+		if (!length(device.wan))
+			delete device.wan;
+		if (netdev)
+			capa.switch_ports[netdev] = device;
+		push(capa.switch, { name, enable: s.enable, reset: s.reset });
+	}
+}
+
+function swconfig_ports(device, role) {
+	let netdev = split(device, '.')[0];
+	let switch_dev = capa.switch_ports[netdev];
+	if (!switch_dev || !switch_dev[role])
+		return [ device ];
+	let rv = [];
+	for (let port in switch_dev[role])
+		push(rv, netdev + ':' + port);
+	return rv;
+}
+
 capa.network = {};
 macs = {};
 for (let k, v in board.network) {
 	if (v.ports)
 		capa.network[k] = v.ports;
 	if (v.device)
-		capa.network[k] = [v.device];
+		capa.network[k] = swconfig_ports(v.device, k);
 	if (v.ifname)
 		capa.network[k] = split(replace(v.ifname, /^ */, ''), " ");
 	if (v.macaddr)
@@ -58,8 +93,6 @@ if (board.wifi?.country)
 if (board.system?.label_macaddr)
 	capa.label_macaddr = board.system?.label_macaddr;
 
-if (board.switch)
-	capa.switch = board.switch;
 if (length(wifi))
 	capa.wifi = wifi;
 
