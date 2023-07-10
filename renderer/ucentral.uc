@@ -68,8 +68,7 @@ try {
 
 		set_service_state('early');
 
-		for (let cmd in [ 'wifi',
-				  'reload_config',
+		for (let cmd in [ 'reload_config',
 				  '/etc/init.d/ratelimit restart',
 				  '/etc/init.d/dnsmasq restart'])
 			system(cmd);
