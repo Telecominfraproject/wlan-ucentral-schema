@@ -21,6 +21,53 @@ let state = {
 	interfaces: []
 };
 
+function discover_ports() {
+	let roles = {};
+
+	/* Derive ethernet port names and roles from default config */
+	for (let role, spec in capab.network) {
+		for (let i, ifname in spec) {
+			role = uc(role);
+			push(roles[role] = roles[role] || [], {
+				netdev: ifname,
+				index: i
+			});
+		}
+	}
+
+	/* Sort ports in each role group according to their index, then normalize
+	 * names into uppercase role name with 1-based index suffix in case of multiple
+	 * ports or just uppercase role name in case of single ports */
+	let rv = {};
+
+	for (let role, ports in roles) {
+		switch (length(ports)) {
+		case 0:
+			break;
+
+		case 1:
+			rv[role] = ports[0];
+			break;
+
+		default:
+			map(sort(ports, (a, b) => (a.index - b.index)), (port, i) => {
+				rv[role + (i + 1)] = port;
+			});
+		}
+	}
+
+	return rv;
+}
+
+let select_ports = discover_ports();
+
+function lookup_port(netdev) {
+	for (let k, v in select_ports)
+		if (v.netdev == netdev)
+			return k;
+	return 'unknown';
+}
+
 /* find out what telemetry we should gather */
 let stats;
 if (!length(stats)) {
@@ -408,7 +455,9 @@ cursor.foreach("network", "interface", function(d) {
 			if (length(topo["ipv6"]))
 				client.ipv6_addresses = topo["ipv6"];
 
-			client.ports = topo.fdb;
+			client.ports = [];
+			for (let k in topo.fdb)
+				push(client.ports, lookup_port(k));
 			client.last_seen = topo.last_seen;
 			if (index(stats.types, 'clients') >= 0) {
 				push(clients, client);
@@ -615,6 +664,7 @@ if (length(capab.network)) {
 		for (let iface in capab.network[name]) {
 			let state = {};
 			let lldp_state = {};
+			let name = lookup_port(iface);
 
 			state.carrier = +sysfs_net(iface, "carrier");
 			if (state.carrier) {
@@ -623,7 +673,7 @@ if (length(capab.network)) {
 			}
 			if (ports[iface]?.counters)
 				state.counters = ports[iface].counters;
-			link[link_name][iface] = state;
+			link[link_name][name] = state;
 
 			let lldp_neigh = [];
 			for (let l in lldp)
@@ -632,7 +682,7 @@ if (length(capab.network)) {
 					push(lldp_neigh, l);
 				}
 			if (length(lldp_neigh))
-				lldp_peers[link_name][iface] = lldp_neigh;
+				lldp_peers[link_name][name] = lldp_neigh;
 
 		}
 	}
