@@ -1,9 +1,0 @@
-{
-	"tests": {
-		"fwtool_signature": true,
-		"fwtool_device_match": true
-	},
-	"valid": true,
-	"forceable": true,
-	"allow_backup": true
-}

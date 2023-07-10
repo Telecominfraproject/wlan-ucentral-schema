@@ -1,6 +1,0 @@
-[
-	"renderer/templates/metric/dhcp_snooping.uc",
-	"renderer/templates/metric/health.uc",
-	"renderer/templates/metric/statistics.uc",
-	"renderer/templates/metric/wifi_frames.uc"
-]
