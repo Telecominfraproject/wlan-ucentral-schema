@@ -88,7 +88,7 @@ if (length(macs))
 	capa.macaddr = macs;
 
 if (board.wifi?.country)
-	capa.country_code = board.wifi.country;
+	capa.country_code = split(board.wifi.country, ' ');
 
 if (board.system?.label_macaddr)
 	capa.label_macaddr = board.system?.label_macaddr;
