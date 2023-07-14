@@ -357,13 +357,13 @@ let ethernet = {
 			/* tagged swconfig downstream ports are not allowed */
 			if (interface.role == 'downstream') {
 				if (this.swconfig && this.swconfig[k].switch && v == 'tagged')
-					warn('%s:%d - vlan tagging on downstream swconfig ports is not supported', this.swconfig[k].switch.name, this.swconfig[k].swconfig);
+					warn('%s:%d - vlan tagging on downstream swconfig ports is not supported', this.swconfig[k]?.switch.name, this.swconfig[k].swconfig);
 				else
 					rv[k] = v;
 				continue;
 			}
 			/* resolve upstream vlans on swconfig ports */
-			if (this.swconfig && interface.role == 'upstream' && interface.vlan.id && this.swconfig[k].switch && v != 'un-tagged') {
+			if (this.swconfig && interface.role == 'upstream' && interface.vlan.id && this.swconfig[k]?.switch && v != 'un-tagged') {
 				rv[split(k, '.')[0] + '.' + interface.vlan.id] = 'un-tagged';
 				continue;
 			}
