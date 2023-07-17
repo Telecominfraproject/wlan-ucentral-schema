@@ -191,6 +191,52 @@
                 }
             }
         },
+        "interface.ssid.encryption": {
+            "type": "object",
+            "properties": {
+                "proto": {
+                    "type": "string",
+                    "enum": [
+                        "none",
+                        "owe",
+                        "owe-transition",
+                        "psk",
+                        "psk2",
+                        "psk-mixed",
+                        "psk2-radius",
+                        "wpa",
+                        "wpa2",
+                        "wpa-mixed",
+                        "sae",
+                        "sae-mixed",
+                        "wpa3",
+                        "wpa3-192",
+                        "wpa3-mixed"
+                    ],
+                    "examples": [
+                        "psk2"
+                    ]
+                },
+                "key": {
+                    "type": "string",
+                    "maxLength": 63,
+                    "minLength": 8
+                },
+                "ieee80211w": {
+                    "type": "string",
+                    "enum": [
+                        "disabled",
+                        "optional",
+                        "required"
+                    ],
+                    "default": "disabled"
+                },
+                "key-caching": {
+                    "type": "boolean",
+                    "default": true
+                }
+            }
+        },
         "definitions": {
             "type": "object",
             "properties": {
@@ -974,52 +1020,6 @@
                     "$ref": "#/$defs/interface.broad-band.pppoe"
                 }
             ]
-        },
-        "interface.ssid.encryption": {
-            "type": "object",
-            "properties": {
-                "proto": {
-                    "type": "string",
-                    "enum": [
-                        "none",
-                        "owe",
-                        "owe-transition",
-                        "psk",
-                        "psk2",
-                        "psk-mixed",
-                        "psk2-radius",
-                        "wpa",
-                        "wpa2",
-                        "wpa-mixed",
-                        "sae",
-                        "sae-mixed",
-                        "wpa3",
-                        "wpa3-192",
-                        "wpa3-mixed"
-                    ],
-                    "examples": [
-                        "psk2"
-                    ]
-                },
-                "key": {
-                    "type": "string",
-                    "maxLength": 63,
-                    "minLength": 8
-                },
-                "ieee80211w": {
-                    "type": "string",
-                    "enum": [
-                        "disabled",
-                        "optional",
-                        "required"
-                    ],
-                    "default": "disabled"
-                },
-                "key-caching": {
-                    "type": "boolean",
-                    "default": true
-                }
-            }
         },
         "interface.ssid.multi-psk": {
             "type": "object",

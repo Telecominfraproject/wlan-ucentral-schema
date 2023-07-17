@@ -11,5 +11,5 @@ properties:
       by the corresponding property name.
     patternProperties:
       ".+":
-        $ref: "#/$defs/interface.ssid.encryption"
+        $ref: "https://ucentral.io/schema/v1/interface/ssid/encryption/"
         additionalProperties: false
