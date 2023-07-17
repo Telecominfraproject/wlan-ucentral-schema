@@ -369,6 +369,84 @@ function instantiateGlobals(location, value, errors) {
 	return value;
 }
 
+function instantiateInterfaceSsidEncryption(location, value, errors) {
+	if (type(value) == "object") {
+		let obj = {};
+
+		function parseProto(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			if (!(value in [ "none", "owe", "owe-transition", "psk", "psk2", "psk-mixed", "psk2-radius", "wpa", "wpa2", "wpa-mixed", "sae", "sae-mixed", "wpa3", "wpa3-192", "wpa3-mixed" ]))
+				push(errors, [ location, "must be one of \"none\", \"owe\", \"owe-transition\", \"psk\", \"psk2\", \"psk-mixed\", \"psk2-radius\", \"wpa\", \"wpa2\", \"wpa-mixed\", \"sae\", \"sae-mixed\", \"wpa3\", \"wpa3-192\" or \"wpa3-mixed\"" ]);
+
+			return value;
+		}
+
+		if (exists(value, "proto")) {
+			obj.proto = parseProto(location + "/proto", value["proto"], errors);
+		}
+
+		function parseKey(location, value, errors) {
+			if (type(value) == "string") {
+				if (length(value) > 63)
+					push(errors, [ location, "must be at most 63 characters long" ]);
+
+				if (length(value) < 8)
+					push(errors, [ location, "must be at least 8 characters long" ]);
+
+			}
+
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "key")) {
+			obj.key = parseKey(location + "/key", value["key"], errors);
+		}
+
+		function parseIeee80211w(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			if (!(value in [ "disabled", "optional", "required" ]))
+				push(errors, [ location, "must be one of \"disabled\", \"optional\" or \"required\"" ]);
+
+			return value;
+		}
+
+		if (exists(value, "ieee80211w")) {
+			obj.ieee80211w = parseIeee80211w(location + "/ieee80211w", value["ieee80211w"], errors);
+		}
+		else {
+			obj.ieee80211w = "disabled";
+		}
+
+		function parseKeyCaching(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "key-caching")) {
+			obj.key_caching = parseKeyCaching(location + "/key-caching", value["key-caching"], errors);
+		}
+		else {
+			obj.key_caching = true;
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
+
+	return value;
+}
+
 function instantiateDefinitions(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
@@ -2331,84 +2409,6 @@ function instantiateInterfaceBroadBand(location, value, errors) {
 	}
 
 	value = vvalue;
-
-	return value;
-}
-
-function instantiateInterfaceSsidEncryption(location, value, errors) {
-	if (type(value) == "object") {
-		let obj = {};
-
-		function parseProto(location, value, errors) {
-			if (type(value) != "string")
-				push(errors, [ location, "must be of type string" ]);
-
-			if (!(value in [ "none", "owe", "owe-transition", "psk", "psk2", "psk-mixed", "psk2-radius", "wpa", "wpa2", "wpa-mixed", "sae", "sae-mixed", "wpa3", "wpa3-192", "wpa3-mixed" ]))
-				push(errors, [ location, "must be one of \"none\", \"owe\", \"owe-transition\", \"psk\", \"psk2\", \"psk-mixed\", \"psk2-radius\", \"wpa\", \"wpa2\", \"wpa-mixed\", \"sae\", \"sae-mixed\", \"wpa3\", \"wpa3-192\" or \"wpa3-mixed\"" ]);
-
-			return value;
-		}
-
-		if (exists(value, "proto")) {
-			obj.proto = parseProto(location + "/proto", value["proto"], errors);
-		}
-
-		function parseKey(location, value, errors) {
-			if (type(value) == "string") {
-				if (length(value) > 63)
-					push(errors, [ location, "must be at most 63 characters long" ]);
-
-				if (length(value) < 8)
-					push(errors, [ location, "must be at least 8 characters long" ]);
-
-			}
-
-			if (type(value) != "string")
-				push(errors, [ location, "must be of type string" ]);
-
-			return value;
-		}
-
-		if (exists(value, "key")) {
-			obj.key = parseKey(location + "/key", value["key"], errors);
-		}
-
-		function parseIeee80211w(location, value, errors) {
-			if (type(value) != "string")
-				push(errors, [ location, "must be of type string" ]);
-
-			if (!(value in [ "disabled", "optional", "required" ]))
-				push(errors, [ location, "must be one of \"disabled\", \"optional\" or \"required\"" ]);
-
-			return value;
-		}
-
-		if (exists(value, "ieee80211w")) {
-			obj.ieee80211w = parseIeee80211w(location + "/ieee80211w", value["ieee80211w"], errors);
-		}
-		else {
-			obj.ieee80211w = "disabled";
-		}
-
-		function parseKeyCaching(location, value, errors) {
-			if (type(value) != "bool")
-				push(errors, [ location, "must be of type boolean" ]);
-
-			return value;
-		}
-
-		if (exists(value, "key-caching")) {
-			obj.key_caching = parseKeyCaching(location + "/key-caching", value["key-caching"], errors);
-		}
-		else {
-			obj.key_caching = true;
-		}
-
-		return obj;
-	}
-
-	if (type(value) != "object")
-		push(errors, [ location, "must be of type object" ]);
 
 	return value;
 }
