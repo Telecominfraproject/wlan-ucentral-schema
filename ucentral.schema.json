@@ -731,7 +731,8 @@
                     "type": "string",
                     "enum": [
                         "dynamic",
-                        "static"
+                        "static",
+                        "none"
                     ],
                     "examples": [
                         "static"

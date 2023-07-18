@@ -1618,8 +1618,8 @@ function instantiateInterfaceIpv4(location, value, errors) {
 			if (type(value) != "string")
 				push(errors, [ location, "must be of type string" ]);
 
-			if (!(value in [ "dynamic", "static" ]))
-				push(errors, [ location, "must be one of \"dynamic\" or \"static\"" ]);
+			if (!(value in [ "dynamic", "static", "none" ]))
+				push(errors, [ location, "must be one of \"dynamic\", \"static\" or \"none\"" ]);
 
 			return value;
 		}
