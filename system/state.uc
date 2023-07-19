@@ -336,7 +336,7 @@ function is_mesh(net, wif) {
 let idx = 0;
 let dyn_vlans = {};
 let dyn_vids = [];
-for (let k, vlan in devices.up['bridge-vlans']) {
+if (devices?.up) for (let k, vlan in devices.up['bridge-vlans']) {
 	if (vlan.id >= 4000)
 		continue;
 	let wlan = [];
