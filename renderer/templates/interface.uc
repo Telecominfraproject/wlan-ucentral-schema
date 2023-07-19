@@ -48,7 +48,7 @@
 
 	// reject static config that has no subnet
 	if (interface.role == 'upstream' && interface.ipv4?.addressing == 'static')
-		if (!interface.ipv4?.subnet || !interface.ipv4?.dns || !interface.ipv4?.gateway)
+		if (!interface.ipv4?.subnet || !interface.ipv4?.use_dns || !interface.ipv4?.gateway)
 			die('invalid static interface settings');
 
 	// resolve auto prefixes
