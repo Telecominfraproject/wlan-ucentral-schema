@@ -7606,6 +7606,28 @@ function instantiateServiceQualityOfService(location, value, errors) {
 			obj.bulk_detection = parseBulkDetection(location + "/bulk-detection", value["bulk-detection"], errors);
 		}
 
+		function parseServices(location, value, errors) {
+			if (type(value) == "array") {
+				function parseItem(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				return map(value, (item, i) => parseItem(location + "/" + i, item, errors));
+			}
+
+			if (type(value) != "array")
+				push(errors, [ location, "must be of type array" ]);
+
+			return value;
+		}
+
+		if (exists(value, "services")) {
+			obj.services = parseServices(location + "/services", value["services"], errors);
+		}
+
 		function parseClassifier(location, value, errors) {
 			if (type(value) == "array") {
 				function parseItem(location, value, errors) {

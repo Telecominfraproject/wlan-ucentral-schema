@@ -37,6 +37,42 @@ for (let class in quality_of_service.classifier) {
 				   fqdn.suffix_matching ? "*." : "", fqdn.fqdn,
 				   fqdn.reclassify ? "" : "+", class.dscp));
 }
+
+if (quality_of_service.services) {
+	let inputfile = fs.open('/usr/share/ucentral/qos.json', "r");
+	let db = json(inputfile.read("all"));
+
+	for (let k, v in db.classes) {
+%}
+set qosify.{{ k }}=class
+set qosify.{{ k }}.ingress={{ s(v.ingress) }}
+set qosify.{{ k }}.egress={{ s(v.egress) }}
+set qosify.{{ k }}.bulk_trigger_pps={{ s(v.bulk_pps) }}
+set qosify.{{ k }}.bulk_trigger_timeout={{ s(v.bulk_timeout) }}
+set qosify.{{ k }}.dscp_bulk={{ s(v.bulk_dscp) }}
+{%
+	}
+
+	let rules = [];
+	let all = 'all' in quality_of_service.services;
+	for (let k, v in db.services)
+		if (all || (k in quality_of_service.services))
+			for (let uses in v.uses)
+				push(quality_of_service.services, uses);
+	for (let k, v in db.services)
+		if (all || (k in quality_of_service.services)) {
+			for (let port in v.tcp)
+				push(rules, 'tcp:' + port + ' ' + v.classifier);
+			for (let port in v.udp)
+				push(rules, 'udp:' + port + ' ' + v.classifier);
+			for (let dns in v.fqdn)
+				push(rules, 'dns:' + dns + ' ' + v.classifier);
+		}
+
+	for (let rule in uniq(rules))
+		file.write(rule + '\n');
+}
+
 file.close();
 %}
 

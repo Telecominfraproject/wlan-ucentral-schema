@@ -39,6 +39,12 @@ properties:
           The required PPS rate that will cause a flow to be classified as bulk.
         type: number
         default: 0
+  services:
+    description:
+      A list of predefined named services that shall be classified according to the communities DB.
+    type: array
+    items:
+      type: string
   classifier:
     description:
       A list of classifiers. Each classifier will map certain traffic to specific ToS/DSCP

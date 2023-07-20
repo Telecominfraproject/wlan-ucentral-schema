@@ -1,0 +1,153 @@
+{
+	"classes": {
+		"network_services": {
+			"ingress": "CS3",
+			"eggress": "CS3",
+			"bulk-pps": 100,
+			"bulk-timeout": 5,
+			"bulk-dscp": "CS0"
+		},
+
+		"conferencing": {
+			"source": "https://support.zoom.us/hc/en-us/articles/207368756-Using-QoS-DSCP-Marking",
+			"ingress": "EF",
+			"egress": "EF"
+		},
+
+		"telephony": {
+			"source": "https://support.zoom.us/hc/en-us/articles/207368756-Using-QoS-DSCP-Marking",
+			"ingress": "EF",
+			"egress": "EF"
+		},
+		
+		"streaming": {
+			"ingress": "AF41",
+			"egress": "AF41"
+		},
+
+		"browsing": {
+			"ingress": "CS0",
+			"egress": "CS0"
+		}
+	},
+
+	"services": {
+		"networking": {
+			"classifier": "network_services",
+			"tcp": [ 22, 123, 53, 5353 ],
+			"udp": [ 53, 5353 ]
+		},
+
+		"browsing": {
+			"classifier": "browsing",
+			"tcp": [ 80, 443 ],
+			"udp": [ 80, 443 ]
+		},
+
+		"youtube": {
+			"source": "https://services.google.com/fh/files/blogs/enabling_remote_working_with_hangouts_meet_quick_deployment_guide.pdf",
+			"classifier": "streaming",
+			"fqdn": [ "*.googlevideo.com", "*.youtube-nocookie.com", "*.ytimg.com" ],
+			"uses": [ "rtmp" ]
+		},
+
+		"netflix": {
+			"source": "https://www.netify.ai/resources/applications/netflix",
+			"classifier": "streaming",
+			"fqdn": [ "*.nflxvideo.com", "*.nflxvideo.net" ]
+		},
+
+		"amazon-prime": {
+			"source": "https://www.netify.ai/resources/applications/amazon-prime",
+			"classifier": "streaming",
+			"fqdn": [
+				"*aiv-cdn.net", "*aiv-delivery.net", "*amazonvideo.com", "*atv-ext.amazon.com", "*atv-ext-eu.amazon.com",
+				"atv-ext-fe.amazon.com", "atv-ps.amazon.com", "atv-ps-eu.amazon.com", "atv-ps-eu.amazon.co.uk",
+				"atv-ps-fe.amazon.co.jp", "atv-ps-fe.amazon.com", "primevideo.com", "pv-cdn.net", "video.a2z.com"
+			]
+		},
+
+		"disney-plus": {
+			"source": "https://www.netify.ai/resources/applications/disney-plus",
+			"classifier": "streaming",
+			"fqdn": [
+				"*disneyplus.com", "*disneyplus.disney.co.jp", "*disney-plus.net", "*disneystreaming.service-now.com",
+				"*disney-vod-na-west-1.top.comcast.net", "*dssott.com"
+			]
+		},
+
+		"hbo": {
+			"source": "https://www.netify.ai/resources/applications/hbo",
+			"classifier": "streaming",
+			"fqdn": [
+				"*hbo.com", "*hbogoasia.com", "*hbogoasia.id", "*hbogoasia.ph", "*hbogo.com", "*hbogo.co.th", "*hbogo.eu", "*hbomaxcdn.com",
+				"*hbomax.com", "*hbomax-images.warnermediacdn.com", "*hbonow.com", "maxgo.com"
+			]
+		},
+
+		"rtmp": {
+			"comment": "RTMP (YouTube Live, Twitch, Vimeo and LinkedIn Live)",
+			"classifier": "streaming",
+			"tcp": [ "1935-1936", 2396, 2935 ]
+		},
+
+		"stun": {
+			"comment": "STUN (Session Traversal Utilities for NAT)",
+			"classifier": "conferencing",
+			"udp": [ "3478-3497" ]
+		},
+
+		"zoom": {
+			"source": "https://support.zoom.us/hc/en-us/articles/201362683-Zoom-network-firewall-or-proxy-server-settings",
+			"classifier": "conferencing",
+			"fqdn": [ "*zoom.us" ],
+			"tcp": [ "8801-8802" ],
+			"udp": [ "8801-8810" ],
+			"uses": [ "stun" ]
+		},
+
+		"facetime": {
+			"source": "https://support.apple.com/en-us/HT202078",
+			"classifier": "conferencing",
+			"udp": [ "16384-16387", "16393-16402" ]
+		},
+
+		"webex": {
+			"source": "https://help.webex.com/en-us/article/WBX264/How-Do-I-Allow-Webex-Meetings-Traffic-on-My-Network?#id_135400",
+			"classifier": "conferencing",
+			"tcp": [ 5004 ],
+			"udp": [ 9000 ]
+		},
+
+		"jitsi": {
+			"source": "https://jitsi.github.io/handbook/docs/devops-guide/devops-guide-quickstart/#setup-and-configure-your-firewall",
+			"classifier": "conferencing",
+			"tcp": [ 5349 ],
+			"udp": [ 10000 ],
+			"uses": [ "stun" ]
+		},
+
+		"google-meet": {
+			"source": "https://services.google.com/fh/files/blogs/enabling_remote_working_with_hangouts_meet_quick_deployment_guide.pdf",
+			"classifier": "conferencing",
+			"udp": [ "19302-19309" ]
+		},
+
+		"teams": {
+			"source": "https://learn.microsoft.com/en-us/microsoft-365/enterprise/urls-and-ip-address-ranges?view=o365-worldwide#skype-for-business-online-and-microsoft-teams",
+			"classifier": "conferencing",
+			"uses": [ "stun" ]
+		},
+
+		"voip": {
+			"classifier": "telephony",
+			"tcp": [ "5060-5061" ],
+			"udp": [ "5060-5061" ]
+		},
+
+		"vowifi": {
+			"classifier": "telephony",
+			"udp": [ 500, 4500 ]
+		}
+	}
+}

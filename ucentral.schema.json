@@ -2747,6 +2747,12 @@
                         }
                     }
                 },
+                "services": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "classifier": {
                     "type": "array",
                     "items": {
