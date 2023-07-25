@@ -37,3 +37,21 @@ properties:
       The device shall create a random root password and tell the gateway about it.
     type: boolean
     default: false
+  beacon-advertisement:
+    description:
+      The TIP vendor IEs that shall be added to beacons
+    type: object
+    properties:
+      device-name:
+        description:
+          Add an IE containing the device's name to beacons.
+        type: boolean
+      device-serial:
+        description:
+          Add an IE containing the device's serial to beacons.
+        type: boolean
+      network-id:
+        description:
+          A provider specific ID for the network/venue that the device is part of.
+        type: integer
+

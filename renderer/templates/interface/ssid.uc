@@ -267,6 +267,23 @@
 		});
 	if (ssid.strict_forwarding)
 		services.set_enabled("bridger", 'early');
+
+	ssid.vendor_elements ??= '';
+
+	if (ssid.tip_information_element) {
+		if (state.unit?.beacon_advertisement) {
+			if (state.unit.beacon_advertisement.device_serial)
+				ssid.vendor_elements += 'dd1048d01701' + replace(serial, /./g, (m) => sprintf("%02x", ord(m)));
+			if (state.unit.beacon_advertisement.device_name && state.unit.name)
+				ssid.vendor_elements += 'dd' + sprintf('%02x', 4 + length(state.unit.name)) + '48d01702' + replace(state.unit.name, /./g, (m) => sprintf("%02x", ord(m)));
+			if (state.unit.beacon_advertisement.network_id) {
+				let id = sprintf('%d', state.unit.beacon_advertisement.network_id);
+				ssid.vendor_elements += 'dd' + sprintf('%02x', 4 + length(id)) + '48d01703' + replace(id, /./g, (m) => sprintf("%02x", ord(m)));                
+			}
+		} else {
+			ssid.vendor_elements += 'dd0348d017';
+		}
+	}
 %}
 
 # Wireless configuration
@@ -313,9 +330,6 @@ set wireless.{{ section }}.bssid={{ ssid.bssid }}
 set wireless.{{ section }}.wds='{{ b(match_wds()) }}'
 set wireless.{{ section }}.wpa_disable_eapol_key_retries='{{ b(ssid.wpa_disable_eapol_key_retries) }}'
 set wireless.{{ section }}.vendor_elements='{{ ssid.vendor_elements }}'
-{%   if (ssid.tip_information_element): %}
-set wireless.{{ section }}.vendor_elements='dd0348d017'
-{%   endif %}
 set wireless.{{ section }}.disassoc_low_ack='{{ b(ssid.disassoc_low_ack) }}'
 set wireless.{{ section }}.auth_cache='{{ b(ssid.encryption?.key_caching) }}'
 {%   endif %}

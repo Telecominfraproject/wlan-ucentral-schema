@@ -160,6 +160,56 @@ function instantiateUnit(location, value, errors) {
 			obj.random_password = false;
 		}
 
+		function parseBeaconAdvertisement(location, value, errors) {
+			if (type(value) == "object") {
+				let obj = {};
+
+				function parseDeviceName(location, value, errors) {
+					if (type(value) != "bool")
+						push(errors, [ location, "must be of type boolean" ]);
+
+					return value;
+				}
+
+				if (exists(value, "device-name")) {
+					obj.device_name = parseDeviceName(location + "/device-name", value["device-name"], errors);
+				}
+
+				function parseDeviceSerial(location, value, errors) {
+					if (type(value) != "bool")
+						push(errors, [ location, "must be of type boolean" ]);
+
+					return value;
+				}
+
+				if (exists(value, "device-serial")) {
+					obj.device_serial = parseDeviceSerial(location + "/device-serial", value["device-serial"], errors);
+				}
+
+				function parseNetworkId(location, value, errors) {
+					if (type(value) != "int")
+						push(errors, [ location, "must be of type integer" ]);
+
+					return value;
+				}
+
+				if (exists(value, "network-id")) {
+					obj.network_id = parseNetworkId(location + "/network-id", value["network-id"], errors);
+				}
+
+				return obj;
+			}
+
+			if (type(value) != "object")
+				push(errors, [ location, "must be of type object" ]);
+
+			return value;
+		}
+
+		if (exists(value, "beacon-advertisement")) {
+			obj.beacon_advertisement = parseBeaconAdvertisement(location + "/beacon-advertisement", value["beacon-advertisement"], errors);
+		}
+
 		return obj;
 	}
 

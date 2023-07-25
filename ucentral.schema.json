@@ -83,6 +83,20 @@
                 "random-password": {
                     "type": "boolean",
                     "default": false
+                },
+                "beacon-advertisement": {
+                    "type": "object",
+                    "properties": {
+                        "device-name": {
+                            "type": "boolean"
+                        },
+                        "device-serial": {
+                            "type": "boolean"
+                        },
+                        "network-id": {
+                            "type": "integer"
+                        }
+                    }
                 }
             }
         },
