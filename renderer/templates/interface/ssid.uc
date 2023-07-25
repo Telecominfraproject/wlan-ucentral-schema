@@ -313,6 +313,9 @@ set wireless.{{ section }}.bssid={{ ssid.bssid }}
 set wireless.{{ section }}.wds='{{ b(match_wds()) }}'
 set wireless.{{ section }}.wpa_disable_eapol_key_retries='{{ b(ssid.wpa_disable_eapol_key_retries) }}'
 set wireless.{{ section }}.vendor_elements='{{ ssid.vendor_elements }}'
+{%   if (ssid.tip_information_element): %}
+set wireless.{{ section }}.vendor_elements='dd0348d017'
+{%   endif %}
 set wireless.{{ section }}.disassoc_low_ack='{{ b(ssid.disassoc_low_ack) }}'
 set wireless.{{ section }}.auth_cache='{{ b(ssid.encryption?.key_caching) }}'
 {%   endif %}

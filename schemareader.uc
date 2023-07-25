@@ -5418,6 +5418,20 @@ function instantiateInterfaceSsid(location, value, errors) {
 			obj.vendor_elements = parseVendorElements(location + "/vendor-elements", value["vendor-elements"], errors);
 		}
 
+		function parseTipInformationElement(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "tip-information-element")) {
+			obj.tip_information_element = parseTipInformationElement(location + "/tip-information-element", value["tip-information-element"], errors);
+		}
+		else {
+			obj.tip_information_element = true;
+		}
+
 		function parseFilsDiscoveryInterval(location, value, errors) {
 			if (type(value) in [ "int", "double" ]) {
 				if (value > 20)

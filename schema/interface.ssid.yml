@@ -123,6 +123,11 @@ properties:
       This option allows embedding custom vendor specific IEs inside the beacons of
       a BSS in AP mode.
     type: string
+  tip-information-element:
+    decription:
+      The device will broadcast the TIP vendor IE inside its beacons if this option is enabled.
+    type: boolean
+    default: true
   fils-discovery-interval:
     description:
       The maximum interval for FILS discovery announcement frames. This is a condensed
