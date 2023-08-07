@@ -9056,6 +9056,20 @@ function newUCentralState(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
 
+		function parseStrict(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "strict")) {
+			obj.strict = parseStrict(location + "/strict", value["strict"], errors);
+		}
+		else {
+			obj.strict = false;
+		}
+
 		function parseUuid(location, value, errors) {
 			if (type(value) != "int")
 				push(errors, [ location, "must be of type integer" ]);

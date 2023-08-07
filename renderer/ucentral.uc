@@ -40,11 +40,16 @@ try {
 
 	let batch = state ? renderer.render(state, logs) : "";
 
+	if (state.strict && length(logs)) {
+		push(logs, 'Rejecting config due to strict-mode validation');
+		state = null;
+	}
+
 	fs.stdout.write("Log messages:\n" + join("\n", logs) + "\n\n");
 
-	fs.stdout.write("UCI batch output:\n" + batch + "\n");
-
 	if (state) {
+		fs.stdout.write("UCI batch output:\n" + batch + "\n");
+
 		let outputjson = fs.open("/tmp/ucentral.uci", "w");
 		outputjson.write(batch);
 		outputjson.close();
@@ -82,7 +87,7 @@ try {
 	} else {
 		error = 1;
 	}
-	if (!length(batch))
+	if (!length(batch) || !state)
 		error = 2;
 	else if (length(logs))
 		error = 1;

@@ -3,6 +3,11 @@ $schema: http://json-schema.org/draft-07/schema#
 description: OpenWrt uCentral schema
 type: object
 properties:
+  strict:
+    description:
+      The device will reject any configuration that causes warnings if strict mode is enabled.
+    type: boolean
+    default: false
   uuid:
     description:
       The unique ID of the configuration. This is the unix timestamp of when the config was created.
