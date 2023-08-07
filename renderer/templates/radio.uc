@@ -125,6 +125,19 @@
 		}
 		let use_ant = (m[1] * m[2] - 1) || 1;
 
+		if (shift == 4)
+			switch(use_ant) {
+			case 0x1:
+				use_ant = 0x8;
+				break;
+			case 0x3:
+				use_ant = 0xc;
+				break;
+			case 0x7:
+				use_ant = 0xe;
+				break;
+			}
+
 		if (!use_ant || (use_ant << shift) > available_ant) {
 			warn("Invalid or unsupported MIMO mode %s specified, falling back to %d",
 				wanted_mimo || 'none', available_ant);
