@@ -86,6 +86,8 @@ function lookup_phys() {
 
 		p.tx_ant = phy.wiphy_antenna_tx;
 		p.rx_ant = phy.wiphy_antenna_rx;
+		p.tx_ant_avail = phy.wiphy_antenna_avail_tx;
+		p.rx_ant_avail = phy.wiphy_antenna_avail_rx;
 		p.frequencies = [];
 		p.channels = [];
 		p.dfs_channels = [];
