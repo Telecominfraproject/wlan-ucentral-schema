@@ -281,7 +281,7 @@
 				ssid.vendor_elements += 'dd' + sprintf('%02x', 4 + length(id)) + '48d01703' + replace(id, /./g, (m) => sprintf("%02x", ord(m)));                
 			}
 		} else {
-			ssid.vendor_elements += 'dd0348d017';
+			ssid.vendor_elements += 'dd0448d01700';
 		}
 	}
 %}
