@@ -123,7 +123,10 @@
 
 			return available_ant;
 		}
-		let use_ant = (m[1] * m[2] - 1) || 1;
+
+		let use_ant = 0;
+		for (let i = 0; i < m[1]; i++)
+			use_ant += 1 << i;
 
 		if (shift == 4)
 			switch(use_ant) {
