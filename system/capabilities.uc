@@ -62,7 +62,7 @@ if (board.switch) {
 
 function swconfig_ports(device, role) {
 	let netdev = split(device, '.')[0];
-	let switch_dev = capa.switch_ports[netdev];
+	let switch_dev = capa.switch_ports ? capa.switch_ports[netdev] : null;
 	if (!switch_dev || !switch_dev[role])
 		return [ device ];
 	let rv = [];
