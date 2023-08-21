@@ -25,7 +25,7 @@ const frequency_list_5g = { '3': [ 5180, 5260, 5500, 5580, 5660, 5745 ],
 				 5825, 5845, 5865, 5885 ],
 };
 const frequency_offset = { '80': 30, '40': 10 };
-const frequency_width = { '80': 3, '40': 20, '20': 1 };
+const frequency_width = { '80': 3, '40': 2, '20': 1 };
 const IFTYPE_STATION = 2;
 const IFTYPE_AP = 3;
 const IFTYPE_MESH = 7;
