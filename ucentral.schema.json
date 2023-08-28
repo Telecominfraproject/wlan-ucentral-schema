@@ -2436,6 +2436,24 @@
                     "type": "boolean",
                     "default": false
                 },
+                "mode": {
+                    "type": "string",
+                    "enum": [
+                        "radius",
+                        "user"
+                    ]
+                },
+                "port-filter": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "examples": [
+                            {
+                                "LAN1": null
+                            }
+                        ]
+                    }
+                },
                 "server-certificate": {
                     "type": "string"
                 },
@@ -2446,6 +2464,77 @@
                     "type": "array",
                     "items": {
                         "$ref": "#/$defs/interface.ssid.radius.local-user"
+                    }
+                },
+                "radius": {
+                    "type": "object",
+                    "properties": {
+                        "nas-identifier": {
+                            "type": "string"
+                        },
+                        "auth-server-addr": {
+                            "type": "string",
+                            "format": "uc-host",
+                            "examples": [
+                                "192.168.1.10"
+                            ]
+                        },
+                        "auth-server-port": {
+                            "type": "integer",
+                            "maximum": 65535,
+                            "minimum": 1024,
+                            "examples": [
+                                1812
+                            ]
+                        },
+                        "auth-server-secret": {
+                            "type": "string",
+                            "examples": [
+                                "secret"
+                            ]
+                        },
+                        "acct-server-addr": {
+                            "type": "string",
+                            "format": "uc-host",
+                            "examples": [
+                                "192.168.1.10"
+                            ]
+                        },
+                        "acct-server-port": {
+                            "type": "integer",
+                            "maximum": 65535,
+                            "minimum": 1024,
+                            "examples": [
+                                1813
+                            ]
+                        },
+                        "acct-server-secret": {
+                            "type": "string",
+                            "examples": [
+                                "secret"
+                            ]
+                        },
+                        "coa-server-addr": {
+                            "type": "string",
+                            "format": "uc-host",
+                            "examples": [
+                                "192.168.1.10"
+                            ]
+                        },
+                        "coa-server-port": {
+                            "type": "integer",
+                            "maximum": 65535,
+                            "minimum": 1024,
+                            "examples": [
+                                1814
+                            ]
+                        },
+                        "coa-server-secret": {
+                            "type": "string",
+                            "examples": [
+                                "secret"
+                            ]
+                        }
                     }
                 }
             }

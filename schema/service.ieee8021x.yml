@@ -12,6 +12,21 @@ properties:
       ignore all other certificate options in this section.
     type: boolean
     default: false
+  mode:
+    description:
+      This field must be set to 'radius or user'
+    type: string
+    enum:
+    - radius
+    - user
+  port-filter:
+    description:
+      Specifies a list of ports that we want to filter.
+    type: array
+    items:
+      type: string
+      examples:
+              - LAN1:
   server-certificate:
     description:
        The local servers certificate.
@@ -26,3 +41,77 @@ properties:
     type: array
     items:
       $ref: "https://ucentral.io/schema/v1/interface/ssid/radius/local-user/"
+  radius:
+    description:
+      Specifies the information about radius account authentication and accounting
+    type: object
+    properties:
+      nas-identifier:
+        description:
+          NAS-Identifier string for RADIUS messages. When used, this should be unique
+          to the NAS within the scope of the RADIUS server.
+        type: string
+      auth-server-addr:
+        description:
+          The URI of our Radius server.
+        type: string
+        format: uc-host
+        examples:
+          - 192.168.1.10
+      auth-server-port:
+        description:
+          The network port of our Radius server.
+        type: integer
+        maximum: 65535
+        minimum: 1024
+        examples:
+          - 1812
+      auth-server-secret:
+        description:
+          The shared Radius authentication secret.
+        type: string
+        examples:
+          - secret
+      acct-server-addr:
+        description:
+          The URI of our Radius server.
+        type: string
+        format: uc-host
+        examples:
+          - 192.168.1.10
+      acct-server-port:
+        description:
+          The network port of our Radius server.
+        type: integer
+        maximum: 65535
+        minimum: 1024
+        examples:
+          - 1813
+      acct-server-secret:
+        description:
+          The shared Radius accounting secret.
+        type: string
+        examples:
+          - secret
+      coa-server-addr:
+        description:
+          The URI of our Radius server.
+        type: string
+        format: uc-host
+        examples:
+          - 192.168.1.10
+      coa-server-port:
+        description:
+          The network port of our Radius server.
+        type: integer
+        maximum: 65535
+        minimum: 1024
+        examples:
+          - 1814
+      coa-server-secret:
+        description:
+          The shared Radius accounting secret.
+        type: string
+        examples:
+          - secret
+
