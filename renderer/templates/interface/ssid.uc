@@ -72,6 +72,11 @@
 		certificates.private_key = certs.key;
 	}
 
+	if (ssid.radius?.dynamic_authorization && 'radius-gw-proxy' in ssid.services) {
+		ssid.radius.dynamic_authorization.host = '127.0.0.1';
+		ssid.radius.dynamic_authorization.port = 3799;
+	}
+
 	function validate_encryption_ap() {
 		if (ssid.encryption.proto in [ "wpa", "wpa2", "wpa-mixed", "wpa3", "wpa3-mixed", "wpa3-192", "psk2-radius" ] &&
 		    ssid.radius && ssid.radius.local &&
