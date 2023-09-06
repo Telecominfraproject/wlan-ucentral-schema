@@ -553,6 +553,10 @@ set wireless.{{ section }}.hs20_wan_metrics={{ s(get_hs20_wan_metrics()) }}
 
 {% include("wmm.uc", { section }); %}
 
+{% if (length(ssid.multi_psk)): %}
+set wireless.{{ section }}.reassociation_deadline=3000
+{% endif %}
+
 
 {%     if (ssid.pass_point): %}
 {%       for (let id, icon in ssid.pass_point.icons): %}
