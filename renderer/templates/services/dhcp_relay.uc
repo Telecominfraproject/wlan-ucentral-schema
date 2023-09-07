@@ -31,4 +31,6 @@ add_list dhcprelay.relay.upstream={{ port }}
 {% for (let vlan in dhcp_relay.vlans||[]): %}
 set dhcprelay.vlan{{vlan.vlan}}=config
 set dhcprelay.vlan{{vlan.vlan}}.server={{ s(vlan.relay_server) }}
+set dhcprelay.vlan{{vlan.vlan}}.circuit_id={{ s(vlan?.circuit_id_format) }}
+set dhcprelay.vlan{{vlan.vlan}}.remote_id={{ s(vlan?.remote_id_format) }}
 {% endfor %}
