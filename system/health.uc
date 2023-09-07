@@ -4,11 +4,6 @@ let fs = require('fs');
 let uci = require('uci');
 let ubus = require('ubus');
 
-if (length(fs.stat('/tmp/ucentral.health')))
-	sleep(75000);
-
-fs.unlink('/tmp/ucentral.health');
-
 state = {
 	unit: {},
 	interfaces: {}

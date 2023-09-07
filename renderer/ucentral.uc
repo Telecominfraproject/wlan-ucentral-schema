@@ -6,6 +6,7 @@ push(REQUIRE_SEARCH_PATH,
 let schemareader = require("schemareader");
 let renderer = require("renderer");
 let fs = require("fs");
+let ubus = require("ubus").connect();
 
 let inputfile = fs.open(ARGV[0], "r");
 let inputjson = json(inputfile.read("all"));
@@ -30,9 +31,7 @@ try {
 	for (let cmd in [ 'rm -rf /tmp/ucentral',
 			  'mkdir /tmp/ucentral',
 			  'rm /tmp/dnsmasq.conf',
-			  '/etc/init.d/uhealth stop',
 			  '/etc/init.d/spotfilter stop',
-			  'touch /tmp/ucentral.health',
 			  'touch /tmp/dnsmasq.conf' ])
 		system(cmd);
 
@@ -73,6 +72,8 @@ try {
 
 		set_service_state('early');
 
+		ubus.call('state', 'reload');
+
 		for (let cmd in [ 'reload_config',
 				  '/etc/init.d/ratelimit restart',
 				  '/etc/init.d/dnsmasq restart'])
@@ -96,8 +97,6 @@ catch (e) {
 	error = 2;
 	warn("Fatal error while generating UCI: ", e, "\n", e.stacktrace[0].context, "\n");
 }
-
-let ubus = require("ubus").connect();
 
 if (inputjson.uuid && inputjson.uuid > 1 && !custom_config) {
 	let text = [ 'Success', 'Rejects', 'Failed' ];
