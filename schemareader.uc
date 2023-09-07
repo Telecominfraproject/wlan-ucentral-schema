@@ -8713,6 +8713,40 @@ function instantiateServiceDhcpRelay(location, value, errors) {
 							obj.relay_server = parseRelayServer(location + "/relay-server", value["relay-server"], errors);
 						}
 
+						function parseCircuitIdFormat(location, value, errors) {
+							if (type(value) != "string")
+								push(errors, [ location, "must be of type string" ]);
+
+							if (!(value in [ "vlan-id", "ap-mac", "ssid" ]))
+								push(errors, [ location, "must be one of \"vlan-id\", \"ap-mac\" or \"ssid\"" ]);
+
+							return value;
+						}
+
+						if (exists(value, "circuit-id-format")) {
+							obj.circuit_id_format = parseCircuitIdFormat(location + "/circuit-id-format", value["circuit-id-format"], errors);
+						}
+						else {
+							obj.circuit_id_format = "vlan-id";
+						}
+
+						function parseRemoteIdFormat(location, value, errors) {
+							if (type(value) != "string")
+								push(errors, [ location, "must be of type string" ]);
+
+							if (!(value in [ "vlan-id", "ap-mac", "ssid" ]))
+								push(errors, [ location, "must be one of \"vlan-id\", \"ap-mac\" or \"ssid\"" ]);
+
+							return value;
+						}
+
+						if (exists(value, "remote-id-format")) {
+							obj.remote_id_format = parseRemoteIdFormat(location + "/remote-id-format", value["remote-id-format"], errors);
+						}
+						else {
+							obj.remote_id_format = "ap-mac";
+						}
+
 						return obj;
 					}
 

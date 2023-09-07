@@ -3107,6 +3107,24 @@
                             "relay-server": {
                                 "type": "string",
                                 "format": "uc-ip"
+                            },
+                            "circuit-id-format": {
+                                "type": "string",
+                                "enum": [
+                                    "vlan-id",
+                                    "ap-mac",
+                                    "ssid"
+                                ],
+                                "default": "vlan-id"
+                            },
+                            "remote-id-format": {
+                                "type": "string",
+                                "enum": [
+                                    "vlan-id",
+                                    "ap-mac",
+                                    "ssid"
+                                ],
+                                "default": "ap-mac"
                             }
                         }
                     }

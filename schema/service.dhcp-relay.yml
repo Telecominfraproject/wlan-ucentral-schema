@@ -25,3 +25,23 @@ properties:
             The unicast target DHCP pool server where frames get relayed to.
           type: string
           format: uc-ip
+        circuit-id-format:
+          description:
+            This option selects what info shall be contained within a relayed
+            frame's circuit ID.
+          type: string
+          enum:
+          - vlan-id
+          - ap-mac
+          - ssid
+          default: vlan-id
+        remote-id-format:
+          description:
+            This option selects what info shall be contained within a relayed
+            frame's remote ID.
+          type: string
+          enum:
+          - vlan-id
+          - ap-mac
+          - ssid
+          default: ap-mac
