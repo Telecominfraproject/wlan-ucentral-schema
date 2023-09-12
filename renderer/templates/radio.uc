@@ -193,7 +193,8 @@ set wireless.{{ phy.section }}.multiple_bssid={{ b(radio.he_settings.multiple_bs
 set wireless.{{ phy.section }}.ema={{ b(radio.he_settings.ema) }}
 {%  endif %}
 {%  if (radio.rates): %}
-set wireless.{{ phy.section }}.basic_rate={{ radio.rates.multicast }}
+set wireless.{{ phy.section }}.basic_rate={{ radio.rates.beacon }}
+set wireless.{{ phy.section }}.mcast_rate={{ radio.rates.multicast }}
 {%  endif %}
 {%  for (let raw in radio.hostapd_iface_raw): %}
 add_list wireless.{{ phy.section }}.hostapd_options={{ s(raw) }}
