@@ -48,7 +48,9 @@ set ieee8021x.@network[-1].network={{ name }}
 add_list ieee8021x.@network[-1].ports={{ s(port) }}
 {%  endfor %}
 {%  for (let port in ethernet.lookup_by_interface_spec(interface, ieee8021x.port_filter)): %}
-{%	if (length(ports) && port in ports) continue; %}
+{%	if (length(ports) && port in ports) continue;
+	port = replace(port, '.', '_');
+%}
 set network.{{ port }}=device
 set network.@device[-1].name={{ s(port) }}
 set network.@device[-1].auth='1'
