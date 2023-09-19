@@ -76,7 +76,8 @@ try {
 
 		for (let cmd in [ 'reload_config',
 				  '/etc/init.d/ratelimit restart',
-				  '/etc/init.d/dnsmasq restart'])
+				  '/etc/init.d/dnsmasq restart',
+				  'ubus call state reload'])
 			system(cmd);
 
 		if (!custom_config) {

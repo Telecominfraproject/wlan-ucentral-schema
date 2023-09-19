@@ -1,5 +1,4 @@
 {%
-	services.set_enabled("uhealth", true);
 	if (!health)
 		return;
 %}
