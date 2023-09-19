@@ -45,6 +45,13 @@ let handlers = {
 				return false;
 		return true;
 	},
+
+	// ubus call usteer2 command '{"action": "neighbors", "neighbors": [ [ "00:11:22:33:44:55", "OpenWifi", "34efb6af48b1af4900005301070603010300" ], [ "aa:bb:cc:dd:ee:ff", "OpenWifi2", "34efb6af48b1af4900005301070603010300" ] ] }'
+	neighbors: function(params) {
+		if (!params.neighbors)
+			return false;
+		return true;
+	}
 };
 
 if (type(args.actions) != 'array')
