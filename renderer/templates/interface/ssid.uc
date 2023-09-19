@@ -147,10 +147,25 @@
 			};
 
 		if (ssid.encryption.proto in [ "psk", "psk2", "psk-mixed", "sae", "sae-mixed" ] &&
-		    ssid.encryption.key)
+		    ssid.encryption.key) {
+			if (ssid.radius?.authentication?.mac_filter &&
+			    ssid.radius.authentication?.host &&
+			    ssid.radius.authentication?.port &&
+			    ssid.radius.authentication?.secret)
+				return {
+					proto: ssid.encryption.proto,
+					key: ssid.encryption.key,
+					auth: ssid.radius.authentication,
+					acct: ssid.radius.accounting,
+					dyn_auth: ssid.radius?.dynamic_authorization,
+					health: ssid.radius.health || {},
+					radius: ssid.radius
+				};
+
 			return {
 				proto: ssid.encryption.proto,
 				key: ssid.encryption.key
+			};
 		};
 
 		switch(ssid.bss_mode) {
