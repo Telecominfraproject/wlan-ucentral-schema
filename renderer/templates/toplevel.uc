@@ -7,6 +7,8 @@
 		die('Configuration must contain a valid UUID. Rejecting whole file');
 	}
 
+	include('admin_ui.uc');
+
 	// reject the config if there is no valid upstream configuration
 	let upstream;
 	for (let i, interface in state.interfaces) {

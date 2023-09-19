@@ -1,0 +1,19 @@
+type: object
+properties:
+  wifi-ssid:
+    description:
+      The name of the admin ssid.
+    type: string
+    default: Maverick
+    maxLength: 32
+    minLength: 1
+  wifi-key:
+    description:
+      The Pre Shared Key (PSK) that is used for encryption on the BSS.
+    type: string
+    maxLength: 63
+    minLength: 8
+  offline-trigger:
+    description:
+      The admin-ui will be spawned when this offline threshold was exceeded.
+    type: number

@@ -426,7 +426,8 @@ let ethernet = {
 
 	calculate_name: function(interface) {
 		let vid = interface.vlan.id;
-
+		if (interface.admin_ui)
+			return 'admin_ui';
 		return (interface.role == 'upstream' ? 'up' : 'down') + interface.index + 'v' + vid;
 	},
 

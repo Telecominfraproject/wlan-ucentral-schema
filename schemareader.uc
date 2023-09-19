@@ -8778,6 +8778,73 @@ function instantiateServiceDhcpRelay(location, value, errors) {
 	return value;
 }
 
+function instantiateServiceAdminUi(location, value, errors) {
+	if (type(value) == "object") {
+		let obj = {};
+
+		function parseWifiSsid(location, value, errors) {
+			if (type(value) == "string") {
+				if (length(value) > 32)
+					push(errors, [ location, "must be at most 32 characters long" ]);
+
+				if (length(value) < 1)
+					push(errors, [ location, "must be at least 1 characters long" ]);
+
+			}
+
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "wifi-ssid")) {
+			obj.wifi_ssid = parseWifiSsid(location + "/wifi-ssid", value["wifi-ssid"], errors);
+		}
+		else {
+			obj.wifi_ssid = "Maverick";
+		}
+
+		function parseWifiKey(location, value, errors) {
+			if (type(value) == "string") {
+				if (length(value) > 63)
+					push(errors, [ location, "must be at most 63 characters long" ]);
+
+				if (length(value) < 8)
+					push(errors, [ location, "must be at least 8 characters long" ]);
+
+			}
+
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "wifi-key")) {
+			obj.wifi_key = parseWifiKey(location + "/wifi-key", value["wifi-key"], errors);
+		}
+
+		function parseOfflineTrigger(location, value, errors) {
+			if (!(type(value) in [ "int", "double" ]))
+				push(errors, [ location, "must be of type number" ]);
+
+			return value;
+		}
+
+		if (exists(value, "offline-trigger")) {
+			obj.offline_trigger = parseOfflineTrigger(location + "/offline-trigger", value["offline-trigger"], errors);
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
+
+	return value;
+}
+
 function instantiateService(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
@@ -8860,6 +8927,10 @@ function instantiateService(location, value, errors) {
 
 		if (exists(value, "dhcp-relay")) {
 			obj.dhcp_relay = instantiateServiceDhcpRelay(location + "/dhcp-relay", value["dhcp-relay"], errors);
+		}
+
+		if (exists(value, "admin-ui")) {
+			obj.admin_ui = instantiateServiceAdminUi(location + "/admin-ui", value["admin-ui"], errors);
 		}
 
 		return obj;

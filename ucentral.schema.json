@@ -3131,6 +3131,25 @@
                 }
             }
         },
+        "service.admin-ui": {
+            "type": "object",
+            "properties": {
+                "wifi-ssid": {
+                    "type": "string",
+                    "default": "Maverick",
+                    "maxLength": 32,
+                    "minLength": 1
+                },
+                "wifi-key": {
+                    "type": "string",
+                    "maxLength": 63,
+                    "minLength": 8
+                },
+                "offline-trigger": {
+                    "type": "number"
+                }
+            }
+        },
         "service": {
             "type": "object",
             "properties": {
@@ -3193,6 +3212,9 @@
                 },
                 "dhcp-relay": {
                     "$ref": "#/$defs/service.dhcp-relay"
+                },
+                "admin-ui": {
+                    "$ref": "#/$defs/service.admin-ui"
                 }
             }
         },
