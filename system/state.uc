@@ -71,8 +71,8 @@ function lookup_port(netdev) {
 /* find out what telemetry we should gather */
 let stats;
 if (!length(stats)) {
-	cursor.load("ustats");
-	stats = cursor.get_all("ustats", "stats");
+	cursor.load("state");
+	stats = cursor.get_all("state", "stats");
 }
 
 let delta = 1;
