@@ -30,6 +30,8 @@
 		],
 	};
 
+	if (admin_ui.wifi_bands)
+		interface.ssids[0].wifi_bands = admin_ui.wifi_bands;
 	if (admin_ui.wifi_key) {
 		interface.ssids[0].encryption.proto = 'psk2';
 		interface.ssids[0].encryption.key = admin_ui.wifi_key;

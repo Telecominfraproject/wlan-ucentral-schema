@@ -8825,6 +8825,31 @@ function instantiateServiceAdminUi(location, value, errors) {
 			obj.wifi_key = parseWifiKey(location + "/wifi-key", value["wifi-key"], errors);
 		}
 
+		function parseWifiBands(location, value, errors) {
+			if (type(value) == "array") {
+				function parseItem(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					if (!(value in [ "2G", "5G", "5G-lower", "5G-upper", "6G" ]))
+						push(errors, [ location, "must be one of \"2G\", \"5G\", \"5G-lower\", \"5G-upper\" or \"6G\"" ]);
+
+					return value;
+				}
+
+				return map(value, (item, i) => parseItem(location + "/" + i, item, errors));
+			}
+
+			if (type(value) != "array")
+				push(errors, [ location, "must be of type array" ]);
+
+			return value;
+		}
+
+		if (exists(value, "wifi-bands")) {
+			obj.wifi_bands = parseWifiBands(location + "/wifi-bands", value["wifi-bands"], errors);
+		}
+
 		function parseOfflineTrigger(location, value, errors) {
 			if (!(type(value) in [ "int", "double" ]))
 				push(errors, [ location, "must be of type number" ]);

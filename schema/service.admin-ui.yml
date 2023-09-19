@@ -13,6 +13,19 @@ properties:
     type: string
     maxLength: 63
     minLength: 8
+  wifi-bands:
+    description:
+      The band that the SSID should be broadcasted on. The configuration layer
+      will use the first matching band.
+    type: array
+    items:
+      type: string
+      enum:
+      - 2G
+      - 5G
+      - 5G-lower
+      - 5G-upper
+      - 6G
   offline-trigger:
     description:
       The admin-ui will be spawned when this offline threshold was exceeded.
