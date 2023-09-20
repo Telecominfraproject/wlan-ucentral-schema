@@ -54,8 +54,8 @@ let archive_cmdline = [
 let files = [
 		"/etc/ucentral/cas.pem", "/etc/ucentral/cert.pem",
 		"/etc/ucentral/redirector.json", "/etc/ucentral/dev-id",
-		"/etc/ucentral/key.pem", "/etc/config/ucentral",
-		"/etc/ucentral/profile.json", "/etc/ucentral/restrictions.json"
+		"/etc/ucentral/key.pem", "/etc/ucentral/gateway.json",
+		"/etc/ucentral/profile.json", "/etc/ucentral/restrictions.json",
 ];
 for (let f in files)
 	if (fs.stat(f))
