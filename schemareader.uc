@@ -9419,23 +9419,6 @@ function newUCentralState(location, value, errors) {
 			obj.uuid = parseUuid(location + "/uuid", value["uuid"], errors);
 		}
 
-		function parsePublic_ip_lookup(location, value, errors) {
-			if (type(value) == "string") {
-				if (!matchUcFqdn(value))
-					push(errors, [ location, "must be a valid fully qualified domain name" ]);
-
-			}
-
-			if (type(value) != "string")
-				push(errors, [ location, "must be of type string" ]);
-
-			return value;
-		}
-
-		if (exists(value, "public_ip_lookup")) {
-			obj.public_ip_lookup = parsePublic_ip_lookup(location + "/public_ip_lookup", value["public_ip_lookup"], errors);
-		}
-
 		if (exists(value, "unit")) {
 			obj.unit = instantiateUnit(location + "/unit", value["unit"], errors);
 		}

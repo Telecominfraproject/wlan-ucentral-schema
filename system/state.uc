@@ -79,16 +79,6 @@ let delta = 1;
 if (telemetry)
 	delta = 0;
 
-let public_ip_file  = "/tmp/public_ip";
-let public_ip = "";
-if (cfg.public_ip_lookup) {
-	if (!fs.access(public_ip_file))
-		system(sprintf("/usr/bin/curl -m 3 %s -o %s", cfg.public_ip_lookup, public_ip_file));
-	let online_file = fs.open(public_ip_file);
-	public_ip = online_file.read("all") || '';
-	online_file.close();
-}
-
 global.tid_stats = (index(stats.types, 'tid-stats') > 0);
 
 /* load state data */
@@ -385,8 +375,6 @@ cursor.foreach("network", "interface", function(d) {
 			push(ipv4, sprintf("%s/%d", a.address, a.mask));
 
 		iface.ipv4.addresses = ipv4;
-		if( cfg.public_ip_lookup && length(public_ip))
-                        iface.ipv4.public_ip = public_ip;
 	}
 
 	if (length(status["ipv6-address"])) {
