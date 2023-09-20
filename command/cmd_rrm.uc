@@ -63,6 +63,6 @@ for (let action in args.actions) {
 	if (!handlers[action.action] || !handlers[action.action](action))
 		continue;
 	action.event = true;
-	let result = ctx.call('usteer2', 'command', action);
+	let result = ctx.call('rrm', 'command', action);
 	log(result);
 }
