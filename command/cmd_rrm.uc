@@ -17,8 +17,6 @@ let handlers = {
 	beacon_request: function(params) {
 		if (!params.addr)
 			return false;
-		if (!params.channel && !params.ssid)
-			return false;
 		return true;
 	},
 
