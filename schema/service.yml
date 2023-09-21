@@ -45,3 +45,5 @@ properties:
     $ref: 'https://ucentral.io/schema/v1/service/dhcp-relay/'
   admin-ui:
     $ref: 'https://ucentral.io/schema/v1/service/admin-ui/'
+  rrm:
+    $ref: 'https://ucentral.io/schema/v1/service/rrm/'

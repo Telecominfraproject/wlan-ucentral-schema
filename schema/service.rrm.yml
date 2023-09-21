@@ -1,0 +1,13 @@
+description:
+  This section describes the band steering behaviour of the unit.
+type: object
+properties:
+  beacon-request-assoc:
+    description:
+      Tell stations to send a beacon request scan when they associate.
+    type: boolean
+    default: true
+  station-stats-interval:
+    description:
+      Periodically send station statistics every N seconds.
+    type: number

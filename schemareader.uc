@@ -8870,6 +8870,44 @@ function instantiateServiceAdminUi(location, value, errors) {
 	return value;
 }
 
+function instantiateServiceRrm(location, value, errors) {
+	if (type(value) == "object") {
+		let obj = {};
+
+		function parseBeaconRequestAssoc(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "beacon-request-assoc")) {
+			obj.beacon_request_assoc = parseBeaconRequestAssoc(location + "/beacon-request-assoc", value["beacon-request-assoc"], errors);
+		}
+		else {
+			obj.beacon_request_assoc = true;
+		}
+
+		function parseStationStatsInterval(location, value, errors) {
+			if (!(type(value) in [ "int", "double" ]))
+				push(errors, [ location, "must be of type number" ]);
+
+			return value;
+		}
+
+		if (exists(value, "station-stats-interval")) {
+			obj.station_stats_interval = parseStationStatsInterval(location + "/station-stats-interval", value["station-stats-interval"], errors);
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
+
+	return value;
+}
+
 function instantiateService(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
@@ -8956,6 +8994,10 @@ function instantiateService(location, value, errors) {
 
 		if (exists(value, "admin-ui")) {
 			obj.admin_ui = instantiateServiceAdminUi(location + "/admin-ui", value["admin-ui"], errors);
+		}
+
+		if (exists(value, "rrm")) {
+			obj.rrm = instantiateServiceRrm(location + "/rrm", value["rrm"], errors);
 		}
 
 		return obj;

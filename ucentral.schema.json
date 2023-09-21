@@ -3159,6 +3159,18 @@
                 }
             }
         },
+        "service.rrm": {
+            "type": "object",
+            "properties": {
+                "beacon-request-assoc": {
+                    "type": "boolean",
+                    "default": true
+                },
+                "station-stats-interval": {
+                    "type": "number"
+                }
+            }
+        },
         "service": {
             "type": "object",
             "properties": {
@@ -3224,6 +3236,9 @@
                 },
                 "admin-ui": {
                     "$ref": "#/$defs/service.admin-ui"
+                },
+                "rrm": {
+                    "$ref": "#/$defs/service.rrm"
                 }
             }
         },
