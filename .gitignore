@@ -1,5 +1,3 @@
-/*.json
+/jsdoc.conf.json
 docs/
 node_modules
-ucentral.schema.pretty.json
-ucentral.state.pretty.json

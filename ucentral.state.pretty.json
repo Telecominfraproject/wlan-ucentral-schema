@@ -1,0 +1,774 @@
+{
+    "$id": "https://openwrt.org/ucentral.state.json",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "description": "OpenWrt uCentral state schema",
+    "type": "object",
+    "properties": {
+        "version": {
+            "type": "number",
+            "const": 1
+        },
+        "uuid": {
+            "description": "The unique ID of the configuration. This is the unix timestamp of when the config was created.",
+            "type": "integer"
+        },
+        "serial": {
+            "description": "The unique serial number of the device.",
+            "type": "string"
+        },
+        "unit": {
+            "$ref": "#/$defs/unit"
+        },
+        "gps": {
+            "$ref": "#/$defs/gps"
+        },
+        "radios": {
+            "$ref": "#/$defs/radio"
+        },
+        "interfaces": {
+            "$ref": "#/$defs/interface"
+        },
+        "lldp-peers": {
+            "type": "object",
+            "properties": {
+                "upstream": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^(eth|lan|wan)[0-9]*$": {
+                            "$ref": "#/$defs/lldp-peers"
+                        }
+                    }
+                },
+                "downstream": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^(eth|lan|wan)[0-9]*$": {
+                            "$ref": "#/$defs/lldp-peers"
+                        }
+                    }
+                }
+            }
+        },
+        "dynamic_vlans": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/dynamic-vlan"
+            }
+        },
+        "link-state": {
+            "type": "object",
+            "properties": {
+                "upstream": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^(eth|lan|wan)[0-9]*$": {
+                            "$ref": "#/$defs/link-state"
+                        }
+                    }
+                },
+                "downstream": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^(eth|lan|wan)[0-9]*$": {
+                            "$ref": "#/$defs/link-state"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "$defs": {
+        "unit": {
+            "type": "object",
+            "description": "This section describes the current state of the OS running on the device.",
+            "properties": {
+                "load": {
+                    "type": "array",
+                    "description": "This array hold 3 values describing the average system load for the last 1, 5 and 15 minutes.",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "cpu_load": {
+                    "type": "array",
+                    "description": "This array hold the total and per core load in percentage.",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "localtime": {
+                    "type": "number",
+                    "description": "This property contains the current unix time of the device."
+                },
+                "memory": {
+                    "type": "object",
+                    "description": "This section describes the current memory uasge of the device.",
+                    "properties": {
+                        "free": {
+                            "type": "number",
+                            "description": "The amount of free memory."
+                        },
+                        "total": {
+                            "type": "number",
+                            "description": "The total amount of memory."
+                        },
+                        "cached": {
+                            "type": "number",
+                            "description": "The total amount of cached memory."
+                        },
+                        "buffered": {
+                            "type": "number",
+                            "description": "The total amount of buffered memory."
+                        }
+                    }
+                },
+                "uptime": {
+                    "type": "number",
+                    "description": "The number of seconds since the unit last booted."
+                },
+                "temperature": {
+                    "description": "The average and maximum thermal reading from the CPU.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                }
+            }
+        },
+        "gps": {
+            "type": "object",
+            "description": "This section describes the GPS location of the device.",
+            "properties": {
+                "latitude": {
+                    "type": "number",
+                    "description": "The latitude in WGS84."
+                },
+                "longitude": {
+                    "type": "number",
+                    "description": "The longitude in WGS84."
+                },
+                "elevation": {
+                    "type": "number",
+                    "description": "The elevation above sea level in meters."
+                }
+            }
+        },
+        "radio": {
+            "type": "array",
+            "description": "An array containing the current operational state of all wifi radios that the unit has.",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "channel": {
+                        "description": "The primary channel that the radio is currently operating on.",
+                        "type": "number"
+                    },
+                    "channels": {
+                        "description": "The list of all channels that the radio is currently operating on.",
+                        "type": "array",
+                        "items": {
+                            "type": "number"
+                        }
+                    },
+                    "frequency": {
+                        "description": "The list of all frequencies that the radio is currently operating on.",
+                        "type": "array",
+                        "items": {
+                            "type": "number"
+                        }
+                    },
+                    "channel_width": {
+                        "type": "number",
+                        "description": "The channel width currently being used.",
+                        "enum": [
+                            20,
+                            40,
+                            80,
+                            160,
+                            320
+                        ]
+                    },
+                    "tx_power": {
+                        "type": "number",
+                        "description": "The currently configure TX power of the radio in dBm."
+                    },
+                    "phy": {
+                        "type": "string",
+                        "description": "The unique path identifying the radio"
+                    },
+                    "band": {
+                        "description": "The wireless band that the radio is currently operating on.",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "temperature": {
+                        "description": "The current temperature of the Wireless radio.",
+                        "type": "number"
+                    }
+                }
+            }
+        },
+        "interface.ipv4-lease": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "description": "This section describes an IPv4 lease that we have served",
+                "properties": {
+                    "address": {
+                        "type": "string",
+                        "description": "The IPv4 that has been assigned to the networking client."
+                    },
+                    "assigned": {
+                        "type": "string",
+                        "description": "The unix time stamp when this lease was assigned."
+                    },
+                    "hostname": {
+                        "type": "string",
+                        "description": "The hostname that the client included in his request."
+                    },
+                    "mac": {
+                        "type": "string",
+                        "description": "The MAC address of the client that this lease was assigned to."
+                    }
+                }
+            }
+        },
+        "interface.ipv4": {
+            "type": "object",
+            "properties": {
+                "addresses": {
+                    "type": "array",
+                    "description": "The list of IPv4 addresses being used by this logical interface.",
+                    "items": {
+                        "type": "string",
+                        "description": "An IPv4 addreess."
+                    }
+                },
+                "leasetime": {
+                    "type": "number",
+                    "description": "This is the leasetime if the IPv4 address of this logical interface was acquired via DHCPv4."
+                },
+                "dhcp_server": {
+                    "type": "string",
+                    "description": "The IPv4 address of the DHCPv4 server that assigned the active lease."
+                },
+                "leases": {
+                    "$ref": "#/$defs/interface.ipv4-lease"
+                }
+            }
+        },
+        "interface.ipv6-address": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "description": "An IPv6 address assigned to this logical interface.",
+                "properties": {
+                    "address": {
+                        "type": "string",
+                        "description": "The actual IPv6 address/mask"
+                    },
+                    "valid": {
+                        "type": "number",
+                        "description": "How much longer this delegation is valid for."
+                    }
+                }
+            }
+        },
+        "interface.ipv6-lease": {
+            "type": "array",
+            "description": null,
+            "items": {
+                "type": "object",
+                "description": "This section describes an IPv6 lease that we have served.",
+                "properties": {
+                    "addresses": {
+                        "type": "array",
+                        "description": "A list of all IPv6 addresses that were assigned to this host.",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "hostname": {
+                        "type": "string",
+                        "description": "The hostname that the client sent in its solicit message."
+                    }
+                }
+            }
+        },
+        "interface.clients": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "description": "This section describes a network neighbour.",
+                "properties": {
+                    "mac": {
+                        "type": "string",
+                        "description": "The MAC address of the neighbour."
+                    },
+                    "ipv4_addresses": {
+                        "type": "array",
+                        "description": "The IPv4 addresses that the neighbour is known to use.",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "ipv6_addresses": {
+                        "type": "array",
+                        "description": "The IPv4 addresses that the neighbour is known to use.",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "ports": {
+                        "type": "array",
+                        "description": "The physical network devices that that the neighbour has been seen on.",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "last_seen": {
+                        "type": "number",
+                        "description": "How long along was traffic from this neighbour last seen."
+                    }
+                }
+            }
+        },
+        "interface.counter": {
+            "type": "object",
+            "description": "This section contains the traffic counters of the logical interface.",
+            "properties": {
+                "collisions": {
+                    "type": "number"
+                },
+                "multicast": {
+                    "type": "number"
+                },
+                "rx_bytes": {
+                    "type": "number",
+                    "description": "The number of bytes received."
+                },
+                "rx_packets": {
+                    "type": "number",
+                    "description": "The number of packets received."
+                },
+                "rx_error": {
+                    "type": "number",
+                    "description": "The number of receive errors."
+                },
+                "rx_dropped": {
+                    "type": "number",
+                    "description": "The number of received packets that were dropped."
+                },
+                "tx_bytes": {
+                    "type": "number",
+                    "description": "The number of bytes transmitted."
+                },
+                "tx_packets": {
+                    "type": "number",
+                    "description": "The number of packets transmitted."
+                },
+                "tx_error": {
+                    "type": "number",
+                    "description": "The number of transmit errors."
+                },
+                "tx_dropped": {
+                    "type": "number",
+                    "description": "The number of transmitted packets that were dropped."
+                }
+            }
+        },
+        "interface.mesh-path": {
+            "type": "object",
+            "description": "This section contains info about connected mesh nodes.",
+            "properties": {
+                "destiination": {
+                    "type": "string"
+                },
+                "next_hop": {
+                    "type": "string"
+                },
+                "metric": {
+                    "type": "number"
+                },
+                "expire": {
+                    "type": "number"
+                },
+                "hop_count": {
+                    "type": "number"
+                }
+            }
+        },
+        "interface.ssid.association": {
+            "type": "array",
+            "description": "A list all OBSS that this BSS is connected to. The contained entries depend opertational mode. * AP - all associated stationd * STA - the remote AP * mesh - all mesh peers that we can see * wds - the remote wds peer",
+            "items": {
+                "description": "An explanation about the purpose of this instance.",
+                "properties": {
+                    "bssid": {
+                        "type": "string",
+                        "description": "The BSSID of the remote BSS."
+                    },
+                    "station": {
+                        "type": "string",
+                        "description": "The MAC address of the station."
+                    },
+                    "dynamic_vlan": {
+                        "type": "number",
+                        "description": "The VID in case the association is on a dynamic VLAN."
+                    },
+                    "rssi": {
+                        "type": "number",
+                        "description": "The RX signal strength of the remore BSS. (dBm)"
+                    },
+                    "connected": {
+                        "type": "number",
+                        "description": "The time since connected"
+                    },
+                    "inactive": {
+                        "type": "number",
+                        "description": "The time since inactive"
+                    },
+                    "tx_duration": {
+                        "type": "number",
+                        "description": "The tx duration"
+                    },
+                    "rx_duration": {
+                        "type": "number",
+                        "description": "The rx duration"
+                    },
+                    "rx_bytes": {
+                        "type": "number",
+                        "description": "The number of bytes received."
+                    },
+                    "ack_signal": {
+                        "type": "number"
+                    },
+                    "ack_signal_avg": {
+                        "type": "number"
+                    },
+                    "rx_packets": {
+                        "type": "number",
+                        "description": "The number of packets received."
+                    },
+                    "tx_packets": {
+                        "type": "number",
+                        "description": "The number of packets received."
+                    },
+                    "tx_bytes": {
+                        "type": "number",
+                        "description": "The number of bytes transmitted."
+                    },
+                    "tx_retries": {
+                        "type": "number"
+                    },
+                    "tx_failed": {
+                        "type": "number",
+                        "description": "The number of packets transmitted."
+                    },
+                    "rx_rate": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "bitrate": {
+                                    "type": "number"
+                                },
+                                "sgi": {
+                                    "type": "boolean"
+                                },
+                                "vht": {
+                                    "type": "boolean"
+                                },
+                                "mcs": {
+                                    "type": "number"
+                                },
+                                "nss": {
+                                    "type": "number"
+                                },
+                                "chwidth": {
+                                    "type": "number"
+                                },
+                                "he": {
+                                    "type": "boolean"
+                                },
+                                "he_gi": {
+                                    "type": "number"
+                                },
+                                "he_dcm": {
+                                    "type": "number"
+                                }
+                            }
+                        }
+                    },
+                    "tx_rate": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "bitrate": {
+                                    "type": "number"
+                                },
+                                "sgi": {
+                                    "type": "boolean"
+                                },
+                                "vht": {
+                                    "type": "boolean"
+                                },
+                                "mcs": {
+                                    "type": "number"
+                                },
+                                "nss": {
+                                    "type": "number"
+                                },
+                                "chwidth": {
+                                    "type": "number"
+                                },
+                                "he": {
+                                    "type": "boolean"
+                                },
+                                "he_gi": {
+                                    "type": "number"
+                                },
+                                "he_dcm": {
+                                    "type": "number"
+                                }
+                            }
+                        }
+                    },
+                    "tid_stats": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "rx_msdu": {
+                                    "type": "number"
+                                },
+                                "tx_msdu": {
+                                    "type": "number"
+                                },
+                                "tx_msdu_retries": {
+                                    "type": "number"
+                                },
+                                "tx_msdu_failed": {
+                                    "type": "number"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "interface.ssid": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "description": "This section contains the current state of a SSID being brodcasted or connected to by this device.",
+                "properties": {
+                    "bssid": {
+                        "type": "string",
+                        "description": "The BSSID used by this BSS instance."
+                    },
+                    "location": {
+                        "type": "string",
+                        "description": "The json-schema path within the configuration where this logical interface is located."
+                    },
+                    "phy": {
+                        "type": "string",
+                        "description": "The unique path identifying the radio"
+                    },
+                    "band": {
+                        "description": "The wireless band that the radio is currently operating on.",
+                        "type": "string"
+                    },
+                    "ssid": {
+                        "type": "string",
+                        "description": "The SSID that we are broadcasting or connecting to."
+                    },
+                    "iface": {
+                        "type": "string",
+                        "description": "The physical network device used."
+                    },
+                    "vlan_ifaces": {
+                        "description": "The list of dynamic vlan interfaces.",
+                        "type": "object",
+                        "patternProperties": {
+                            "^wlan-v": {
+                                "type": "object",
+                                "$ref": "#/$defs/interface.counter"
+                            }
+                        }
+                    },
+                    "mode": {
+                        "type": "string",
+                        "description": "The operational mode of the BSS.",
+                        "enum": [
+                            "ap",
+                            "sta",
+                            "mesh",
+                            "wds"
+                        ]
+                    },
+                    "radio": {
+                        "type": "object",
+                        "description": "A reference to the section describing the physical radio within this document. (#/radios/X)",
+                        "properties": {
+                            "ref": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "frequency": {
+                        "description": "The list of all frequencies that the radio is currently operating on.",
+                        "type": "array",
+                        "items": {
+                            "type": "number"
+                        }
+                    },
+                    "associations": {
+                        "$ref": "#/$defs/interface.ssid.association"
+                    },
+                    "counters": {
+                        "$ref": "#/$defs/interface.counter"
+                    }
+                }
+            }
+        },
+        "interface": {
+            "type": "array",
+            "description": "An array containing the runtime state of all logical interfaces.items",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "location": {
+                        "type": "string",
+                        "description": "The json-schema path within the configuration where this logical interface is located."
+                    },
+                    "uptime": {
+                        "type": "number",
+                        "description": "The number of seconds since the interface was brought up."
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "The administrative name of this logical interface. This field is freetext"
+                    },
+                    "ntp_server": {
+                        "type": "string",
+                        "description": "The upstream NTP server being used by this interface."
+                    },
+                    "dns_servers": {
+                        "type": "array",
+                        "description": "The list of remote DNS servers that this logical interface uses for domain name resolution.",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "ipv4": {
+                        "$ref": "#/$defs/interface.ipv4"
+                    },
+                    "ipv6_addresses": {
+                        "$ref": "#/$defs/interface.ipv6-address"
+                    },
+                    "ipv6_leases": {
+                        "$ref": "#/$defs/interface.ipv6-lease"
+                    },
+                    "clients": {
+                        "$ref": "#/$defs/interface.clients"
+                    },
+                    "counters": {
+                        "$ref": "#/$defs/interface.counter"
+                    },
+                    "mesh-path": {
+                        "$ref": "#/$defs/interface.mesh-path"
+                    },
+                    "ssids": {
+                        "$ref": "#/$defs/interface.ssid"
+                    }
+                }
+            }
+        },
+        "lldp-peers": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "description": "A list of all LLDP peers that this logical interface is connected to.",
+                "properties": {
+                    "capability": {
+                        "type": "array",
+                        "description": "The device capabilities that our neighbour is announcing.",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "The chassis description that our neighbour is announcing."
+                    },
+                    "mac": {
+                        "type": "string",
+                        "description": "The chassis ID/MAC that our neighbour is announcing."
+                    },
+                    "management_ips": {
+                        "type": "array",
+                        "description": "The management IPs that our neighbour is announcing.",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "port": {
+                        "type": "string",
+                        "description": "The physical network port that we see this neighbour on."
+                    }
+                }
+            }
+        },
+        "dynamic-vlan": {
+            "type": "object",
+            "description": "This section contains the traffic counters of the logical interface.",
+            "properties": {
+                "vid": {
+                    "type": "number"
+                },
+                "rx_bytes": {
+                    "type": "number",
+                    "description": "The number of bytes received."
+                },
+                "rx_packets": {
+                    "type": "number",
+                    "description": "The number of packets received."
+                },
+                "tx_bytes": {
+                    "type": "number",
+                    "description": "The number of bytes transmitted."
+                },
+                "tx_packets": {
+                    "type": "number",
+                    "description": "The number of packets transmitted."
+                }
+            }
+        },
+        "link-state": {
+            "type": "object",
+            "description": "A list of all LLDP peers that this logical interface is connected to.",
+            "properties": {
+                "carrier": {
+                    "type": "boolean",
+                    "description": "The physical interfaces carrier state."
+                },
+                "speed": {
+                    "type": "number",
+                    "description": "The speed of the physical link."
+                },
+                "duplex": {
+                    "type": "string",
+                    "description": "The physical links duplex mode.",
+                    "enum": [
+                        "full",
+                        "half"
+                    ]
+                },
+                "counters": {
+                    "$ref": "#/$defs/interface.counter"
+                }
+            }
+        }
+    }
+}
