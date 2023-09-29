@@ -140,6 +140,21 @@ function lookup_phys() {
 						push(p.htmode, 'HE160');
 					if (chwidth & 0x10)
 						push(p.htmode, 'HE80+80');
+					if (iftype.eht_cap_phy) {
+						p.eht_phy_capa = iftype?.eht_cap_phy;
+						p.eht_mac_capa = iftype?.eht_cap_mac;
+						push(p.htmode, 'EHT20');
+						if (chwidth & 0x2 || chwidth & 0x4)
+							push(p.htmode, 'EHT40');
+						if (chwidth & 0x4)
+							push(p.htmode, 'EHT80');
+						if (chwidth & 0x8 || chwidth & 0x10)
+							push(p.htmode, 'EHT160');
+						if (chwidth & 0x10)
+							push(p.htmode, 'EHT80+80');
+                                                if ('6G' in p.band)
+                                                        push(p.htmode, 'EHT320');
+					}
 				}
 			}
 		}
