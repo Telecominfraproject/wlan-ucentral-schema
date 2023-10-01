@@ -1019,8 +1019,8 @@ function instantiateRadio(location, value, errors) {
 			if (type(value) != "string")
 				push(errors, [ location, "must be of type string" ]);
 
-			if (!(value in [ "HT", "VHT", "HE" ]))
-				push(errors, [ location, "must be one of \"HT\", \"VHT\" or \"HE\"" ]);
+			if (!(value in [ "HT", "VHT", "HE", "EHT" ]))
+				push(errors, [ location, "must be one of \"HT\", \"VHT\", \"HE\" or \"EHT\"" ]);
 
 			return value;
 		}
@@ -1036,8 +1036,8 @@ function instantiateRadio(location, value, errors) {
 			if (type(value) != "int")
 				push(errors, [ location, "must be of type integer" ]);
 
-			if (!(value in [ 20, 40, 80, 160, 8080 ]))
-				push(errors, [ location, "must be one of 20, 40, 80, 160 or 8080" ]);
+			if (!(value in [ 20, 40, 80, 160, 320, 8080 ]))
+				push(errors, [ location, "must be one of 20, 40, 80, 160, 320 or 8080" ]);
 
 			return value;
 		}

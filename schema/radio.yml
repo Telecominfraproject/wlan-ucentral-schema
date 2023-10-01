@@ -66,6 +66,7 @@ properties:
     - HT
     - VHT
     - HE
+    - EHT
     default: HE
   channel-width:
     description:
@@ -77,6 +78,7 @@ properties:
     - 40
     - 80
     - 160
+    - 320
     - 8080
     default: 80
   require-mode:

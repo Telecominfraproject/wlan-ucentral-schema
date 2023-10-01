@@ -10,8 +10,8 @@
 	function match_htmode(phy, radio) {
 		let channel_mode = radio.channel_mode;
 		let channel_width = radio.channel_width;
-		let fallback_modes = { HE: /^(HE|VHT|HT)/, VHT: /^(VHT|HT)/, HT: /^HT/ };
-		let mode_weight = { HT: 1, VHT: 10, HE: 100 };
+		let fallback_modes = { EHT: /^(EHT|HE|VHT|HT)/, HE: /^(HE|VHT|HT)/, VHT: /^(VHT|HT)/, HT: /^HT/ };
+		let mode_weight = { HT: 1, VHT: 10, HE: 100, EHT: 1000 };
 		let wanted_mode = channel_mode + (channel_width == 8080 ? "80+80" : channel_width);
 
 		let supported_phy_modes = map(sort(map(phy.htmode, (mode) => {
@@ -37,6 +37,7 @@
 	}
 
 	let channel_list = {
+		"320": [ 0 ],
 		"160": [ 36, 100 ],
 		"80": [ 36, 52, 100, 116, 132, 149 ],
 		"40": [ 36, 44, 52, 60, 100, 108,
