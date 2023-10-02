@@ -164,7 +164,8 @@
 
 			return {
 				proto: ssid.encryption.proto,
-				key: ssid.encryption.key
+				key: ssid.encryption.key,
+				dyn_auth: ssid.radius?.dynamic_authorization,
 			};
 		};
 
