@@ -96,10 +96,42 @@ let gps = ctx.call("gps", "info");
 let devstats = ctx.call('udevstats', 'dump');
 let devices = ctx.call("network.device", "status");
 
+let previous = json(fs.readfile('/tmp/' + (telemetry ? 'telemetry.json' : 'state.json')) || '{ "ports": {}, "devstats": {}, "stations": {} }');
+
+let stations_lookup = {};
+for (let k, v in stations) {
+	stations_lookup[k] = {};
+	for (let assoc in v)
+		stations_lookup[k][assoc.station] = assoc;
+}
+fs.writefile('/tmp/' + (telemetry ? 'telemetry.json' : 'state.json'), { ports, devstats, stations: stations_lookup });
+
+//printf('%.J\n', previous);
+
 let lldp = [];
 let wireless = cursor.get_all("wireless");
 let snoop = ctx.call("dhcpsnoop", "dump");
 let captive = ctx.call("spotfilter", "client_list", { "interface": "hotspot"});
+
+
+function ports_deltas(port) {
+	if (!ports[port]?.counters || !previous.ports[port]?.counters)
+		return {};
+
+	let ret = {};
+	for (let k in ports[port].counters)
+		ret[k] = ports[port].counters[k] - (previous.ports[port]?.counters[k] || 0);
+	return ret;
+}
+
+function stations_deltas(assoc, iface) {
+	let ret = {};
+	if (!previous.stations[iface] || !previous.stations[iface][assoc.station])
+		return ret;
+	for (let k in [ "rx_packets", "tx_packets", "rx_bytes", "tx_bytes", "tx_retries", "tx_failed" ])
+		ret[k] = assoc[k] - (previous.stations[iface][assoc.station][k] || 0);
+	return ret;
+}
 
 /* prepare dhcp leases cache */
 let ip4leases = {};
@@ -509,11 +541,15 @@ cursor.foreach("network", "interface", function(d) {
 							push(iface.clients, client);
 						}
 					}
+
+					assoc.delta_counters = stations_deltas(assoc, vap.ifname);
 				}
 
 				ssid.iface = vap.ifname;
-				if (ports[vap.ifname]?.counters)
+				if (ports[vap.ifname]?.counters) {
 					ssid.counters = ports[vap.ifname].counters || {};
+					ssid.delta_counters = ports_deltas(vap.ifname);
+				}
 				if (is_mesh(d, wif)) {
 					ssid.counters = ports['batman_mesh'].counters;
 					ssid['mesh-path'] = mesh[vap.ifname];
@@ -543,6 +579,8 @@ cursor.foreach("network", "interface", function(d) {
 		for (let port in iface_ports)
 			iface_add_counters(iface.counters, vlan, port); 
 
+	} else {
+		iface.delta_counters = ports_deltas(name); 
 	}
 
 	if (!length(iface.ipv4))
@@ -659,8 +697,10 @@ if (length(capab.network)) {
 				state.speed = +sysfs_net(iface, "speed");
 				state.duplex = sysfs_net(iface, "duplex");
 			}
-			if (ports[iface]?.counters)
+			if (ports[iface]?.counters) {
 				state.counters = ports[iface].counters;
+				state.delta_counters = ports_deltas(iface);
+			}
 			link[link_name][name] = state;
 
 			let lldp_neigh = [];
