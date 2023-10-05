@@ -96,7 +96,7 @@ let gps = ctx.call("gps", "info");
 let devstats = ctx.call('udevstats', 'dump');
 let devices = ctx.call("network.device", "status");
 
-let previous = json(fs.readfile('/tmp/' + (telemetry ? 'telemetry.json' : 'state.json')) || '{ "ports": {}, "devstats": {}, "stations": {} }');
+let previous = json(fs.readfile('/tmp/' + (telemetry ? 'telemetry.json' : 'state.json')) || '{ "ports": {}, "devstats": {}, "stations": {}, "devstats": {} }');
 
 let stations_lookup = {};
 for (let k, v in stations) {
@@ -104,7 +104,7 @@ for (let k, v in stations) {
 	for (let assoc in v)
 		stations_lookup[k][assoc.station] = assoc;
 }
-fs.writefile('/tmp/' + (telemetry ? 'telemetry.json' : 'state.json'), { ports, devstats, stations: stations_lookup });
+fs.writefile('/tmp/' + (telemetry ? 'telemetry.json' : 'state.json'), { ports, devstats, stations: stations_lookup, devstats });
 
 //printf('%.J\n', previous);
 
@@ -334,16 +334,21 @@ if (!length(state.radios))
 	delete state.radios;
 
 
-function iface_add_counters(counters, vlan, port) {
+function iface_add_counters(iface, vlan, port) {
 	if (!devstats[port])
 		return;
 	for (let k, vid in devstats[port]) {
 		if (vid.vid != vlan)
 			continue;
-		counters.tx_bytes += vid.tx?.bytes || 0;
-		counters.tx_packets += vid.tx?.packets || 0;
-		counters.rx_bytes += vid.rx?.bytes || 0;
-		counters.rx_packets += vid.rx?.packets || 0;
+		iface.counters.tx_bytes += vid.tx?.bytes || 0;
+		iface.counters.tx_packets += vid.tx?.packets || 0;
+		iface.counters.rx_bytes += vid.rx?.bytes || 0;
+		iface.counters.rx_packets += vid.rx?.packets || 0;
+		if (previous.devstats[port] && previous.devstats[port][k]) {
+			iface.delta_counters = {};
+			for (let v in [ 'tx_bytes', 'tx_packets', 'rx_bytes', 'rx_packets' ])
+				iface.delta_counters[v] = +iface.counters[v] - (+previous.devstats[port][k] || 0);
+		}
 	}
 }
 
@@ -577,7 +582,7 @@ cursor.foreach("network", "interface", function(d) {
 		iface.counters.rx_packets = 0;
 		iface.counters.tx_packets = 0;
 		for (let port in iface_ports)
-			iface_add_counters(iface.counters, vlan, port); 
+			iface_add_counters(iface, vlan, port); 
 
 	} else {
 		iface.delta_counters = ports_deltas(name); 
@@ -720,7 +725,7 @@ if (length(capab.network)) {
 }
 
 state.version = 1;
-printf("%s\n", state);
+printf("%.J\n", state);
 
 let msg = {
 	uuid: cfg.uuid || 1,
