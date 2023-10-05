@@ -56,6 +56,20 @@ properties:
         type: integer
       last:
         type: integer     
+  ieee8021x-ports:
+    description:
+      The list of physical network devices that shall serve .1x for this interface.
+    type: array
+    items:
+      type: string
+      examples:
+      - LAN1
+      - LAN2
+      - LAN3
+      - LAN4
+      - LAN*
+      - WAN*
+      - "*"
   vlan:
     $ref: "https://ucentral.io/schema/v1/interface/vlan/"
   bridge:

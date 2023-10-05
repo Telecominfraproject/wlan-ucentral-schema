@@ -2,16 +2,6 @@ description:
   This section allows enabling wired ieee802.1X
 type: object
 properties:
-  ca-certificate:
-    description:
-       The local servers CA bundle.
-    type: string
-  use-local-certificates:
-    description:
-      The device will use its local certificate bundle for the Radius server and
-      ignore all other certificate options in this section.
-    type: boolean
-    default: false
   mode:
     description:
       This field must be set to 'radius or user'
@@ -19,7 +9,7 @@ properties:
     enum:
     - radius
     - user
-  port-filter:
+  select-ports:
     description:
       Specifies a list of ports that we want to filter.
     type: array
@@ -27,14 +17,6 @@ properties:
       type: string
       examples:
               - LAN1:
-  server-certificate:
-    description:
-       The local servers certificate.
-    type: string
-  private-key:
-    description:
-      The local servers private key/
-    type: string
   users:
     description:
       Specifies a collection of local EAP user/psk/vid triplets.
@@ -114,4 +96,7 @@ properties:
         type: string
         examples:
           - secret
-
+      mac-address-bypass:
+        description:
+          Trigger mac-auth when a new ARP is learned.
+        type: boolean

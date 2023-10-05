@@ -26,6 +26,13 @@
 	for (let i, interface in state.interfaces)
 		interface.index = i;
 
+	/* reserve all ieee8021x ports */
+	for (let i, interface in state.interfaces) {
+		let ports = ethernet.lookup_by_select_ports(interface.ieee8021x_ports);
+		for (let port in ports)
+			ethernet.reserve_port(port);
+	}
+
 	/* find out which vlans are used and which should be assigned dynamically */
 	let vlans = [];
 	for (let i, interface in state.interfaces)
@@ -48,9 +55,12 @@
 	}
 
 	/* dynamically assign vlan ids to all interfaces that have none yet */
-	for (let i, interface in state.interfaces)
+	for (let i, interface in state.interfaces) {
 		if (!interface.vlan.id)
 			interface.vlan.dyn_id = next_free_vid();
+		if (interface.ieee8021x_ports)
+			interface.dot1x_vlan = next_free_vid();
+	}
 
 	/* dynamically assign vlans to all swconfig ports */
 	let swconfig = false;

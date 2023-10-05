@@ -93,6 +93,7 @@ let mesh = require('wifi.mesh');
 let ports = ctx.call("topology", "port", { delta });
 let poe = ctx.call("poe", "info");
 let gps = ctx.call("gps", "info");
+let ieee8021x = ctx.call("ieee8021x", "dump");
 let devstats = ctx.call('udevstats', 'dump');
 let devices = ctx.call("network.device", "status");
 
@@ -722,6 +723,11 @@ if (length(capab.network)) {
 	state["link-state"] = link;
 	if (index(stats.types, 'lldp') >= 0) 
 		state["lldp-peers"] = lldp_peers;
+}
+
+if (ieee8021x) {
+	state.ieee8021x = {};
+
 }
 
 state.version = 1;

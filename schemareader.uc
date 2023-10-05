@@ -6189,6 +6189,28 @@ function instantiateInterface(location, value, errors) {
 			obj.vlan_awareness = parseVlanAwareness(location + "/vlan-awareness", value["vlan-awareness"], errors);
 		}
 
+		function parseIeee8021xPorts(location, value, errors) {
+			if (type(value) == "array") {
+				function parseItem(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				return map(value, (item, i) => parseItem(location + "/" + i, item, errors));
+			}
+
+			if (type(value) != "array")
+				push(errors, [ location, "must be of type array" ]);
+
+			return value;
+		}
+
+		if (exists(value, "ieee8021x-ports")) {
+			obj.ieee8021x_ports = parseIeee8021xPorts(location + "/ieee8021x-ports", value["ieee8021x-ports"], errors);
+		}
+
 		if (exists(value, "vlan")) {
 			obj.vlan = instantiateInterfaceVlan(location + "/vlan", value["vlan"], errors);
 		}
@@ -6699,31 +6721,6 @@ function instantiateServiceIeee8021x(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
 
-		function parseCaCertificate(location, value, errors) {
-			if (type(value) != "string")
-				push(errors, [ location, "must be of type string" ]);
-
-			return value;
-		}
-
-		if (exists(value, "ca-certificate")) {
-			obj.ca_certificate = parseCaCertificate(location + "/ca-certificate", value["ca-certificate"], errors);
-		}
-
-		function parseUseLocalCertificates(location, value, errors) {
-			if (type(value) != "bool")
-				push(errors, [ location, "must be of type boolean" ]);
-
-			return value;
-		}
-
-		if (exists(value, "use-local-certificates")) {
-			obj.use_local_certificates = parseUseLocalCertificates(location + "/use-local-certificates", value["use-local-certificates"], errors);
-		}
-		else {
-			obj.use_local_certificates = false;
-		}
-
 		function parseMode(location, value, errors) {
 			if (type(value) != "string")
 				push(errors, [ location, "must be of type string" ]);
@@ -6738,7 +6735,7 @@ function instantiateServiceIeee8021x(location, value, errors) {
 			obj.mode = parseMode(location + "/mode", value["mode"], errors);
 		}
 
-		function parsePortFilter(location, value, errors) {
+		function parseSelectPorts(location, value, errors) {
 			if (type(value) == "array") {
 				function parseItem(location, value, errors) {
 					if (type(value) != "string")
@@ -6756,30 +6753,8 @@ function instantiateServiceIeee8021x(location, value, errors) {
 			return value;
 		}
 
-		if (exists(value, "port-filter")) {
-			obj.port_filter = parsePortFilter(location + "/port-filter", value["port-filter"], errors);
-		}
-
-		function parseServerCertificate(location, value, errors) {
-			if (type(value) != "string")
-				push(errors, [ location, "must be of type string" ]);
-
-			return value;
-		}
-
-		if (exists(value, "server-certificate")) {
-			obj.server_certificate = parseServerCertificate(location + "/server-certificate", value["server-certificate"], errors);
-		}
-
-		function parsePrivateKey(location, value, errors) {
-			if (type(value) != "string")
-				push(errors, [ location, "must be of type string" ]);
-
-			return value;
-		}
-
-		if (exists(value, "private-key")) {
-			obj.private_key = parsePrivateKey(location + "/private-key", value["private-key"], errors);
+		if (exists(value, "select-ports")) {
+			obj.select_ports = parseSelectPorts(location + "/select-ports", value["select-ports"], errors);
 		}
 
 		function parseUsers(location, value, errors) {
@@ -6954,6 +6929,17 @@ function instantiateServiceIeee8021x(location, value, errors) {
 
 				if (exists(value, "coa-server-secret")) {
 					obj.coa_server_secret = parseCoaServerSecret(location + "/coa-server-secret", value["coa-server-secret"], errors);
+				}
+
+				function parseMacAddressBypass(location, value, errors) {
+					if (type(value) != "bool")
+						push(errors, [ location, "must be of type boolean" ]);
+
+					return value;
+				}
+
+				if (exists(value, "mac-address-bypass")) {
+					obj.mac_address_bypass = parseMacAddressBypass(location + "/mac-address-bypass", value["mac-address-bypass"], errors);
 				}
 
 				return obj;

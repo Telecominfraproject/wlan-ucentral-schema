@@ -93,6 +93,7 @@
 	// Gather related BSS modes and ethernet ports.
 	let bss_modes = map(interface.ssids, ssid => ssid.bss_mode);
 	let eth_ports = ethernet.lookup_by_interface_vlan(interface);
+	let dot1x_ports = ethernet.lookup_by_select_ports(interface.ieee8021x_ports);
 	let swconfig;
 	if (interface.role == 'upstream')
 		swconfig = ethernet.switch_by_interface_vlan(interface);
@@ -204,6 +205,9 @@
 
 	if (interface.captive)
 		include('interface/captive.uc', { name });
+
+	if (length(dot1x_ports))
+		include('interface/ieee8021x.uc', { dot1x_ports, interface, eth_ports, this_vid });
 %}
 {% if (tunnel_proto == 'mesh'): %}
 set network.{{ name }}.batman=1

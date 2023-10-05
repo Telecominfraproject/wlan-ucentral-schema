@@ -314,6 +314,13 @@ let wiphy = {
 let ethernet = {
 	ports: discover_ports(),
 
+	reverse_lookup: function(iface) {
+		for (let name, dev in this.ports)
+			if (dev == iface)
+				return name;
+		return null;
+	},
+
 	/**
 	 * Get a list of all wireless PHYs for a specific wireless band
 	 *

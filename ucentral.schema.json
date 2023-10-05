@@ -2237,6 +2237,21 @@
                         }
                     }
                 },
+                "ieee8021x-ports": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "examples": [
+                            "LAN1",
+                            "LAN2",
+                            "LAN3",
+                            "LAN4",
+                            "LAN*",
+                            "WAN*",
+                            "*"
+                        ]
+                    }
+                },
                 "vlan": {
                     "$ref": "#/$defs/interface.vlan"
                 },
@@ -2427,13 +2442,6 @@
         "service.ieee8021x": {
             "type": "object",
             "properties": {
-                "ca-certificate": {
-                    "type": "string"
-                },
-                "use-local-certificates": {
-                    "type": "boolean",
-                    "default": false
-                },
                 "mode": {
                     "type": "string",
                     "enum": [
@@ -2441,7 +2449,7 @@
                         "user"
                     ]
                 },
-                "port-filter": {
+                "select-ports": {
                     "type": "array",
                     "items": {
                         "type": "string",
@@ -2451,12 +2459,6 @@
                             }
                         ]
                     }
-                },
-                "server-certificate": {
-                    "type": "string"
-                },
-                "private-key": {
-                    "type": "string"
                 },
                 "users": {
                     "type": "array",
@@ -2532,6 +2534,9 @@
                             "examples": [
                                 "secret"
                             ]
+                        },
+                        "mac-address-bypass": {
+                            "type": "boolean"
                         }
                     }
                 }
