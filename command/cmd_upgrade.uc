@@ -51,17 +51,19 @@ let archive_cmdline = [
 	'/etc/config/ucentral'
 ];
 
-let files = [
+if (args.keep_redirector) {
+	let files = [
 		"/etc/ucentral/cas.pem", "/etc/ucentral/cert.pem",
 		"/etc/ucentral/redirector.json", "/etc/ucentral/dev-id",
 		"/etc/ucentral/key.pem", "/etc/ucentral/gateway.json",
 		"/etc/ucentral/profile.json", "/etc/ucentral/restrictions.json",
-];
-for (let f in files)
-	if (fs.stat(f))
-		push(archive_cmdline, f);
+	];
+	for (let f in files)
+		if (fs.stat(f))
+			push(archive_cmdline, f);
+}
 
-if (args.keep_redirector) {
+if (args.keep_config) {
 	let active_config = fs.readlink("/etc/ucentral/ucentral.active");
 
 	if (active_config)
@@ -70,18 +72,20 @@ if (args.keep_redirector) {
 		result(2, "Unable to determine active configuration: %s", fs.error());
 }
 
-let rc = system(archive_cmdline);
+if (args.keep_redirector || args.keep_config) {
+	let rc = system(archive_cmdline);
 
-if (rc != 0) {
-	result(2, "Archive command %s exited with non-zero code %d", archive_cmdline, rc);
+	if (rc != 0) {
+		result(2, "Archive command %s exited with non-zero code %d", archive_cmdline, rc);
 
-	return;
+		return;
+	}
 }
 
 include('reboot_cause.uc', { reason: 'upgrade' });
 
 let sysupgrade_cmdline = sprintf("sysupgrade %s %s",
-				 args.keep_redirector ? "-f /upgrade.tgz" : "-n",
+				 (args.keep_redirector || args.keep_config) ? "-f /upgrade.tgz" : "-n",
 				 image_path);
 
 warn("Upgrading firmware\n");
