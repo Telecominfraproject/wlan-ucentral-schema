@@ -206,6 +206,39 @@
                     "temperature": {
                         "description": "The current temperature of the Wireless radio.",
                         "type": "number"
+                    },
+                    "survey": {
+                        "description": "The result of the site-survey call.",
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "busy": {
+                                    "type": "number",
+                                    "description": "Channel busy time."
+                                },
+                                "frequency": {
+                                    "type": "number",
+                                    "description": "The frequency of this channel."
+                                },
+                                "noise": {
+                                    "type": "number",
+                                    "description": "The noise on this frequency."
+                                },
+                                "time": {
+                                    "type": "number",
+                                    "description": "Channel active time."
+                                },
+                                "time_rx": {
+                                    "type": "number",
+                                    "description": "Channel receive time."
+                                },
+                                "time_tx": {
+                                    "type": "number",
+                                    "description": "Channel transmit time"
+                                }
+                            }
+                        }
                     }
                 }
             }
