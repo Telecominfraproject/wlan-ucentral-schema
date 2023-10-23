@@ -39,7 +39,7 @@ let profiles = {
 	"rfc8325": {
 		"defaults": {
 			"UP0": [ "MIN", "CS2" ],
-			"UP1": [ "LE" ],
+			"UP1": [ "CS1" ],
 			"UP3": [ "AF21", "AF23" ],
 			"UP4": [ "CS3", "AF43" ],
 			"UP5": [ "CS5" ],
