@@ -211,6 +211,10 @@ function wifi_scan() {
 				case 0:
 					res.ssid = ie.data;
 					break;
+				case 11:      
+					res.sta_count = ord(ie.data, 1) * 256 + ord(ie.data, 0);
+					res.ch_util = ord(ie.data, 2);                          
+					break;   
 				case 114:
 					if (verbose)
 						res.meshid = ie.data;
