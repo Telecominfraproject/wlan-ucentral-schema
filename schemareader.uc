@@ -981,26 +981,6 @@ function instantiateRadio(location, value, errors) {
 			obj.valid_channels = parseValidChannels(location + "/valid-channels", value["valid-channels"], errors);
 		}
 
-		function parseCountry(location, value, errors) {
-			if (type(value) == "string") {
-				if (length(value) > 2)
-					push(errors, [ location, "must be at most 2 characters long" ]);
-
-				if (length(value) < 2)
-					push(errors, [ location, "must be at least 2 characters long" ]);
-
-			}
-
-			if (type(value) != "string")
-				push(errors, [ location, "must be of type string" ]);
-
-			return value;
-		}
-
-		if (exists(value, "country")) {
-			obj.country = parseCountry(location + "/country", value["country"], errors);
-		}
-
 		function parseAllowDfs(location, value, errors) {
 			if (type(value) != "bool")
 				push(errors, [ location, "must be of type boolean" ]);
