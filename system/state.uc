@@ -402,7 +402,7 @@ cursor.foreach("network", "interface", function(d) {
 	if (!length(status))
 		return;
 
-	if (devices && length(devices[role]["bridge-members"]))
+	if (devices && devices[role] && length(devices[role]["bridge-members"]))
 		iface_ports = devices[role]["bridge-members"];
 	iface.uptime = status.uptime || 0;
 
