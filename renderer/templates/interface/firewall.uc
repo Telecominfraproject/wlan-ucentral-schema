@@ -141,6 +141,18 @@ set firewall.@rule[-1].proto='udp'
 set firewall.@rule[-1].target='ACCEPT'
 {% endif %}
 
+{% if (interface.role == 'downstream' && interface?.ipv4?.disallow_upstream_subnet):
+      for (let subnet in interface.ipv4.disallow_upstream_subnet):
+%}
+add firewall rule
+set firewall.@rule[-1].name='Reject-{{ subnet }}-subnet-{{name}}'
+set firewall.@rule[-1].src={{ s(name) }}
+set firewall.@rule[-1].dest='{{ s(dest || ethernet.find_interface("upstream", interface.vlan.id)) }}'
+set firewall.@rule[-1].dest_ip='{{ s(subnet) }}'
+set firewall.@rule[-1].proto='all'
+set firewall.@rule[-1].target='DROP'
+{%    endfor
+    endif %}
 {%
 	for (let forward in interface.ipv4?.port_forward)
 		include('firewall/forward.uc', {

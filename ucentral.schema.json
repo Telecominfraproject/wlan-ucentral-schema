@@ -790,6 +790,17 @@
                         ]
                     }
                 },
+                "disallow-upstream-subnet": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "format": "uc-cidr4",
+                        "examples": [
+                            "192.168.0.0/16",
+                            "10.0.0.0/8"
+                        ]
+                    }
+                },
                 "dhcp": {
                     "$ref": "#/$defs/interface.ipv4.dhcp"
                 },
