@@ -459,14 +459,6 @@
                         "minimum": 1
                     }
                 },
-                "country": {
-                    "type": "string",
-                    "maxLength": 2,
-                    "minLength": 2,
-                    "examples": [
-                        "US"
-                    ]
-                },
                 "allow-dfs": {
                     "type": "boolean",
                     "default": true

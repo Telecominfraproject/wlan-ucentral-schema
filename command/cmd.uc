@@ -60,6 +60,7 @@ let scope = {
 	ctx,
 	fs,
 	restrict,
+	capab,
 
 	/* log helper */
 	log,

@@ -594,15 +594,6 @@
                             "minimum": 1
                         }
                     },
-                    "country": {
-                        "description": "Specifies the country code, affects the available channels and transmission powers.",
-                        "type": "string",
-                        "maxLength": 2,
-                        "minLength": 2,
-                        "examples": [
-                            "US"
-                        ]
-                    },
                     "allow-dfs": {
                         "description": "This property defines whether a radio may use DFS channels.",
                         "type": "boolean",
