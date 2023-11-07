@@ -20,3 +20,8 @@ properties:
     type: string
     format: uc-timeout
     default: 6h
+  use-dns:
+    description:
+     The DNS server sent to clients as DHCP option 6.
+    type: string
+    format: uc-ip

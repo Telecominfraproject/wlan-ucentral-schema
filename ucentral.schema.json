@@ -669,6 +669,10 @@
                     "type": "string",
                     "format": "uc-timeout",
                     "default": "6h"
+                },
+                "use-dns": {
+                    "type": "string",
+                    "format": "uc-ip"
                 }
             }
         },

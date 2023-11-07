@@ -8,6 +8,9 @@ set dhcp.{{ name }}.start={{ dhcp.lease_first }}
 set dhcp.{{ name }}.limit={{ dhcp.lease_count }}
 set dhcp.{{ name }}.leasetime={{ dhcp.lease_time }}
 set dhcp.{{ name }}.ignore={{ b(dhcp.ignore) }}
+{% if (dhcp.use_dns): %}
+add_list dhcp.{{ name }}.dhcp_option='6,{{ dhcp.use_dns }}'
+{% endif %}
 {% if (interface.role != 'upstream'): %}
 {%  if (dhcpv6.mode == 'hybrid'): %}
 set dhcp.{{ name }}.ra=server

@@ -1471,6 +1471,23 @@ function instantiateInterfaceIpv4Dhcp(location, value, errors) {
 			obj.lease_time = "6h";
 		}
 
+		function parseUseDns(location, value, errors) {
+			if (type(value) == "string") {
+				if (!matchUcIp(value))
+					push(errors, [ location, "must be a valid IPv4 or IPv6 address" ]);
+
+			}
+
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "use-dns")) {
+			obj.use_dns = parseUseDns(location + "/use-dns", value["use-dns"], errors);
+		}
+
 		return obj;
 	}
 

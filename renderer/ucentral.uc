@@ -39,7 +39,7 @@ try {
 
 	let batch = state ? renderer.render(state, logs) : "";
 
-	if (state.strict && length(logs)) {
+	if (state?.strict && length(logs)) {
 		push(logs, 'Rejecting config due to strict-mode validation');
 		state = null;
 	}
