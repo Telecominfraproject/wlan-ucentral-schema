@@ -237,11 +237,11 @@ function wifi_scan() {
 						switch(type) {
 						case 1:
 							if (data)
-								res.tip_name = data;
+								res.tip_serial = data;
 							break;
 						case 2:
 							if (data)
-								res.tip_serial = data;
+								res.tip_name = data;
 							break;
 						case 3:
 							if (data)
