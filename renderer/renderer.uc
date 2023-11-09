@@ -1153,6 +1153,15 @@ return /** @lends uCentral.prototype */ {
 			warn: (fmt, ...args) => push(logs, sprintf("[W] (In %s) ", location || '/') + sprintf(fmt, ...args)),
 
 			/**
+			 * Emit an error message.
+			 *
+			 * @memberof uCentral.prototype
+			 * @param {string} fmt  The warning message format string
+			 * @param {...*} args	Optional format arguments
+			 */
+			error: (fmt, ...args) => push(logs, sprintf("[E] (In %s) ", location || '/') + sprintf(fmt, ...args)),
+
+			/**
 			 * Emit an informational message.
 			 *
 			 * @memberof uCentral.prototype

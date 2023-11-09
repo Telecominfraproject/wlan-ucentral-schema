@@ -3,8 +3,9 @@
 
 	// reject the config if there is no valid upstream configuration
 	if (!state.uuid) {
-		warn('Configuration must contain a valid UUID. Rejecting whole file');
-		die('Configuration must contain a valid UUID. Rejecting whole file');
+		state.strict = true;
+		error('Configuration must contain a valid UUID. Rejecting whole file');
+		return;
 	}
 
 	include('admin_ui.uc');
@@ -18,10 +19,28 @@
 	}
 
 	if (!upstream) {
-		warn('Configuration must contain at least one valid upstream interface. Rejecting whole file');
-		die('Configuration must contain at least one valid upstream interface. Rejecting whole file');
+		state.strict = true;
+		error('Configuration must contain at least one valid upstream interface. Rejecting whole file');
+		return;
 	}
 
+	// reject config if a wired port is used twice in un-tagged mode
+	let untagged_ports = [];
+	for (let i, interface in state.interfaces) {
+		if (interface.role != 'upstream')
+			continue;
+		let eth_ports = ethernet.lookup_by_interface_vlan(interface);
+		for (let port in keys(eth_ports)) {
+			if (ethernet.port_vlan(interface, eth_ports[port]))
+				continue;
+			if (port in untagged_ports) {
+				state.strict = true;
+				error('duplicate usage of un-tagged ports: ' + port);
+				return;
+			}
+			push(untagged_ports, port);
+		}
+	}
 
 	for (let i, interface in state.interfaces)
 		interface.index = i;
