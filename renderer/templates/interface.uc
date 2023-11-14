@@ -208,6 +208,11 @@
 
 	if (length(dot1x_ports))
 		include('interface/ieee8021x.uc', { dot1x_ports, interface, eth_ports, this_vid });
+
+	if (interface.isolate_hosts) {
+		interface.bridge ??= {};
+		interface.bridge.isolate_ports = true;
+	}
 %}
 {% if (tunnel_proto == 'mesh'): %}
 set network.{{ name }}.batman=1

@@ -21,7 +21,7 @@ add_list network.@bridge-vlan[-1].ports=vx-unet
 {% endif %}
 {% if (interface.bridge): %}
 set network.@bridge-vlan[-1].txqueuelen={{ interface.bridge.tx_queue_len }}
-set network.@bridge-vlan[-1].isolate={{interface.bridge.isolate_ports }}
+set network.@bridge-vlan[-1].isolate={{ b(interface.bridge.isolate_ports || interface.isolate_hosts) }}
 set network.@bridge-vlan[-1].mtu={{ interface.bridge.mtu }}
 {% endif %}
 
