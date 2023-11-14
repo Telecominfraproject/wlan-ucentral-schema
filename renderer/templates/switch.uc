@@ -15,3 +15,7 @@ add_list switch.mirror.monitor={{ s(mirror) }}
 set switch.mirror.analysis={{ s(analysis[0]) }}
 
 {% endif %}
+
+set network.mirror=interface
+set network.mirror.ifname=eth1
+set network.mirror.proto=none
