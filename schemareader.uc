@@ -6461,17 +6461,6 @@ function instantiateServiceNtp(location, value, errors) {
 			obj.servers = parseServers(location + "/servers", value["servers"], errors);
 		}
 
-		function parseLocalServer(location, value, errors) {
-			if (type(value) != "bool")
-				push(errors, [ location, "must be of type boolean" ]);
-
-			return value;
-		}
-
-		if (exists(value, "local-server")) {
-			obj.local_server = parseLocalServer(location + "/local-server", value["local-server"], errors);
-		}
-
 		return obj;
 	}
 

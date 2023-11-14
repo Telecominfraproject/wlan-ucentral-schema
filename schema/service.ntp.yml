@@ -12,9 +12,3 @@ properties:
       format: uc-host
     examples:
     - 0.openwrt.pool.ntp.org
-  local-server:
-    description:
-      Start a NTP server that provides the time to local clients.
-    type: boolean
-    examples:
-    - true

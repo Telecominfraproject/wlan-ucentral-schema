@@ -2349,12 +2349,6 @@
                     "examples": [
                         "0.openwrt.pool.ntp.org"
                     ]
-                },
-                "local-server": {
-                    "type": "boolean",
-                    "examples": [
-                        true
-                    ]
                 }
             }
         },

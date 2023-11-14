@@ -3,9 +3,11 @@
 		return;
 	let interfaces = services.lookup_interfaces("ntp");
 %}
+set system.ntp.enable_server={{ b(length(interfaces)) }}
+{%	if (ntp.servers): %}
+set system.ntp.use_dhcp=0
 delete system.ntp.server
-set system.ntp.enabled={{ b(ntp.local_server) }}
-set system.ntp.enable_server={{ b(ntp.servers) }}
+{%	endif %}
 {%	for (let server in ntp.servers): %}
 add_list system.ntp.server={{ s(server) }}
 {%	endfor
