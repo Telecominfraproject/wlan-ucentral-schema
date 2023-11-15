@@ -459,8 +459,12 @@ set wireless.{{ section }}.identity='uCentral'
      if (interface.vlan_awareness.last)
 	     vlan += '-' + interface.vlan_awareness.last; %}
 set wireless.{{ section }}.network_vlan={{ vlan }}
+{% elif (ssid.vlan_awareness?.first && bss_mode == 'sta'):
+     let vlan = ssid.vlan_awareness.first;
+     if (ssid.vlan_awareness.last)
+	     vlan += '-' + ssid.vlan_awareness.last; %}
+set wireless.{{ section }}.network_vlan={{ vlan }}
 {% endif %}
-
 
 # AP specific setings
 {%   if (bss_mode == 'ap'): %}

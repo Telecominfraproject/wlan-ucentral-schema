@@ -2364,6 +2364,18 @@
                 "captive": {
                     "$ref": "#/$defs/service.captive"
                 },
+                "vlan-awareness": {
+                    "description": "Setup additional VLANs inside the bridge",
+                    "type": "object",
+                    "properties": {
+                        "first": {
+                            "type": "integer"
+                        },
+                        "last": {
+                            "type": "integer"
+                        }
+                    }
+                },
                 "hostapd-bss-raw": {
                     "description": "This array allows passing raw hostapd.conf lines.",
                     "type": "array",

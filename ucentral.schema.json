@@ -2074,6 +2074,17 @@
                 "captive": {
                     "$ref": "#/$defs/service.captive"
                 },
+                "vlan-awareness": {
+                    "type": "object",
+                    "properties": {
+                        "first": {
+                            "type": "integer"
+                        },
+                        "last": {
+                            "type": "integer"
+                        }
+                    }
+                },
                 "hostapd-bss-raw": {
                     "type": "array",
                     "items": {

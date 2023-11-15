@@ -5659,6 +5659,45 @@ function instantiateInterfaceSsid(location, value, errors) {
 			obj.captive = instantiateServiceCaptive(location + "/captive", value["captive"], errors);
 		}
 
+		function parseVlanAwareness(location, value, errors) {
+			if (type(value) == "object") {
+				let obj = {};
+
+				function parseFirst(location, value, errors) {
+					if (type(value) != "int")
+						push(errors, [ location, "must be of type integer" ]);
+
+					return value;
+				}
+
+				if (exists(value, "first")) {
+					obj.first = parseFirst(location + "/first", value["first"], errors);
+				}
+
+				function parseLast(location, value, errors) {
+					if (type(value) != "int")
+						push(errors, [ location, "must be of type integer" ]);
+
+					return value;
+				}
+
+				if (exists(value, "last")) {
+					obj.last = parseLast(location + "/last", value["last"], errors);
+				}
+
+				return obj;
+			}
+
+			if (type(value) != "object")
+				push(errors, [ location, "must be of type object" ]);
+
+			return value;
+		}
+
+		if (exists(value, "vlan-awareness")) {
+			obj.vlan_awareness = parseVlanAwareness(location + "/vlan-awareness", value["vlan-awareness"], errors);
+		}
+
 		function parseHostapdBssRaw(location, value, errors) {
 			if (type(value) == "array") {
 				function parseItem(location, value, errors) {
