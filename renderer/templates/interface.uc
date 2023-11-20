@@ -128,6 +128,11 @@
 	if (!interface.metric && interface.role == "downstream")
 		interface.metric = 10;
 
+	if (interface.isolate_hosts) {
+		interface.bridge ??= {};
+		interface.bridge.isolate_ports = true;
+	}
+
 	// If this interface is a tunnel, we need to create the interface
 	// in a different way
 	let tunnel_proto = interface.tunnel ? interface.tunnel.proto : '';
@@ -209,10 +214,6 @@
 	if (length(dot1x_ports))
 		include('interface/ieee8021x.uc', { dot1x_ports, interface, eth_ports, this_vid });
 
-	if (interface.isolate_hosts) {
-		interface.bridge ??= {};
-		interface.bridge.isolate_ports = true;
-	}
 %}
 {% if (tunnel_proto == 'mesh'): %}
 set network.{{ name }}.batman=1
