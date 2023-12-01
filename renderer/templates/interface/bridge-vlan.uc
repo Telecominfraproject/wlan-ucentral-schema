@@ -49,7 +49,9 @@ set network.down.vlan={{ vlan }}
 {% endif %}
 
 {% if (interface.role == 'upstream'): %}
-{%  for (let port in keys(eth_ports)): %}
+{%  for (let port in keys(eth_ports)):
+	port = replace(port, '.', '_');
+%}
 set udevstats.{{ port }}=device
 set udevstats.{{ port }}.name={{ s(port) }}
 add_list udevstats.{{ port }}.vlan={{ s(interface.vlan.id || 0) }}
