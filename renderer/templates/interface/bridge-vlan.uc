@@ -64,3 +64,13 @@ set network.@switch_vlan[-1].device={{ s(swconfig.name) }}
 set network.@switch_vlan[-1].vlan={{ s(this_vid) }}
 set network.@switch_vlan[-1].ports={{s(swconfig.ports)}}
 {% endif %}
+
+{% if (interface.role == 'upstream' && swconfig && !interface.vlan.id): %}
+{%   for (let dev in keys(eth_ports)):
+        if (ethernet.swconfig && ethernet.swconfig[dev]): %}
+set event.config.swconfig={{ethernet.swconfig[dev].switch?.name}}
+add_list event.config.swconfig_ports={{ethernet.swconfig[dev].swconfig}}t
+add_list event.config.swconfig_ports={{ethernet.swconfig[dev].switch?.port}}t
+{%     endif %}
+{%   endfor %}
+{% endif %}
