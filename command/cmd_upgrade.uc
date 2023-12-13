@@ -83,6 +83,8 @@ if (args.keep_redirector || args.keep_config) {
 }
 
 include('reboot_cause.uc', { reason: 'upgrade' });
+result(0, "Triggering FW upgrade");
+sleep(2000);
 
 let sysupgrade_cmdline = sprintf("sysupgrade %s %s",
 				 (args.keep_redirector || args.keep_config) ? "-f /upgrade.tgz" : "-n",
