@@ -101,6 +101,18 @@
 		}
 	}
 
+	/* force auto channel if there are any sta interfaces on the radio */
+	for (let i, radio in state.radios) {
+		if (!radio.channel || radio.channel == 'auto')
+			continue;
+		for (let j, iface in state.interfaces)
+			for (let s, ssid in iface.ssids)
+				if (ssid.bss_mode in [ 'sta', 'wds-sta', 'wds-repeater' ]) {
+					warn('Forcing Auto-Channel as a STA interface is present');
+					delete radio.channel;
+				}
+	}
+
 	include('base.uc');
 
 	if (state.unit)
