@@ -48,10 +48,4 @@ set network.@switch[-1].reset={{ b(v.reset) }}
 set network.@switch[-1].enable_vlan={{ b(v.enable) }}
 {% endfor %}
 
-{% for (let k, port in ethernet.ports): %}
-{%   if (!port.switch) continue; %}
-add network switch_vlan
-set network.@switch_vlan[-1].device={{ s(port.switch.name) }}
-set network.@switch_vlan[-1].vlan={{ s(port.vlan) }}
-set network.@switch_vlan[-1].ports={{s(port.switch.port + 't ' + port.swconfig)}}
-{% endfor %}
+
