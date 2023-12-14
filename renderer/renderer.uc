@@ -327,6 +327,13 @@ let ethernet = {
 		return null;
 	},
 
+	lookup_port: function(iface) {
+		for (let name, dev in this.ports)
+			if (dev.netdev == iface)
+				return dev;
+		return null;
+	},
+
 	/**
 	 * Get a list of all wireless PHYs for a specific wireless band
 	 *
