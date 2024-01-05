@@ -622,11 +622,14 @@
                     },
                     "vlan_ifaces": {
                         "description": "The list of dynamic vlan interfaces.",
-                        "type": "object",
-                        "patternProperties": {
-                            "^wlan-v": {
-                                "type": "object",
-                                "$ref": "#/$defs/interface.counter"
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "patternProperties": {
+                                "^wlan-v": {
+                                    "type": "object",
+                                    "$ref": "#/$defs/interface.counter"
+                                }
                             }
                         }
                     },
