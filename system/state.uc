@@ -242,7 +242,9 @@ if (length(thermal) > 0) {
 		if (temp > 1000)
 			temp /= 1000;
 		file.close();
-		push(temps, temp);
+		// skip non-connected thermal zones
+		if (temp < 200)
+			push(temps, temp);
 	}
 	if (length(temps) > 0) {
 		let avg = 0;
