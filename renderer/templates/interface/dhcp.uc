@@ -1,7 +1,16 @@
 {% let name = ethernet.calculate_name(interface) %}
 {% let dhcp = ipv4.dhcp || { ignore: 1 } %}
 {% let dhcpv6 = ipv6.dhcpv6 || {} %}
-
+{% function use_dns() {
+	let ret = '';
+	if (type(dhcp.use_dns) == 'array') {
+		for (let k, v in dhcp.use_dns)
+			ret += ',' + v;
+	} else {
+		ret += ',' + dhcp.use_dns;
+	}
+	return ret;
+} %}
 set dhcp.{{ name }}=dhcp
 set dhcp.{{ name }}.interface={{ s(ethernet.calculate_ipv4_name(interface)) }}
 set dhcp.{{ name }}.start={{ dhcp.lease_first }}
@@ -9,7 +18,7 @@ set dhcp.{{ name }}.limit={{ dhcp.lease_count }}
 set dhcp.{{ name }}.leasetime={{ dhcp.lease_time }}
 set dhcp.{{ name }}.ignore={{ b(dhcp.ignore) }}
 {% if (dhcp.use_dns): %}
-add_list dhcp.{{ name }}.dhcp_option='6,{{ dhcp.use_dns }}'
+add_list dhcp.{{ name }}.dhcp_option='6{{ use_dns() }}'
 {% endif %}
 {% if (interface.role != 'upstream'): %}
 {%  if (dhcpv6.mode == 'hybrid'): %}

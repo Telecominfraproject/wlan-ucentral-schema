@@ -23,5 +23,10 @@ properties:
   use-dns:
     description:
      The DNS server sent to clients as DHCP option 6.
-    type: string
-    format: uc-ip
+    anyOf:
+      - type: string
+        format: ipv4
+      - type: array
+        items:
+          type: string
+          format: ipv4
