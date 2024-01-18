@@ -66,11 +66,12 @@ set network.@switch_vlan[-1].ports={{s(swconfig.ports)}}
 {% endif %}
 
 {% if (interface.role == 'upstream' && swconfig && !interface.vlan.id): %}
-{%   for (let dev in keys(eth_ports)):
-        if (ethernet.swconfig && ethernet.swconfig[dev]): %}
+{%   if ("WAN" in ethernet.ports):
+       dev = ethernet.ports["WAN"].netdev;
+       if (ethernet.swconfig && ethernet.swconfig[dev]): %}
 set event.config.swconfig={{ethernet.swconfig[dev].switch?.name}}
 add_list event.config.swconfig_ports={{ethernet.swconfig[dev].swconfig}}t
 add_list event.config.swconfig_ports={{ethernet.swconfig[dev].switch?.port}}t
 {%     endif %}
-{%   endfor %}
+{%   endif %}
 {% endif %}
