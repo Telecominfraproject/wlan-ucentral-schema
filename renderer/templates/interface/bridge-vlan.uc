@@ -88,5 +88,5 @@ add_list event.config.swconfig_ports={{ethernet.swconfig[dev].switch?.port}}t
 {% endif %}
 
 {% if (interface.role == 'upstream' && swconfig && interface.vlan.id): %}
-add_list event.config.swconfig_vlans=interface.vlan.id
+add_list event.config.swconfig_vlans={{interface.vlan.id}}
 {% endif %}
