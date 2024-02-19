@@ -22,6 +22,10 @@ function matchUcMac(value) {
 	return match(value, /^[0-9a-f][0-9a-f]:[0-9a-f][0-9a-f]:[0-9a-f][0-9a-f]:[0-9a-f][0-9a-f]:[0-9a-f][0-9a-f]:[0-9a-f][0-9a-f]$/i);
 }
 
+function matchUcMobility(value) {
+	return match(value, /^[0-9a-f][0-9a-f][0-9a-f][0-9a-f]$/i);
+}
+
 function matchUcHost(value) {
 	if (length(iptoarr(value)) != 0) return true;
 	if (length(value) > 255) return false;
@@ -2812,11 +2816,8 @@ function instantiateInterfaceSsidRoaming(location, value, errors) {
 
 		function parseDomainIdentifier(location, value, errors) {
 			if (type(value) == "string") {
-				if (length(value) > 4)
-					push(errors, [ location, "must be at most 4 characters long" ]);
-
-				if (length(value) < 4)
-					push(errors, [ location, "must be at least 4 characters long" ]);
+				if (!matchUcMobility(value))
+					push(errors, [ location, "must be a valid Mobility Domain" ]);
 
 			}
 

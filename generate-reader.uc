@@ -74,6 +74,12 @@ let GeneratorProto = {
 				'return match(value, /^[0-9a-f][0-9a-f]:[0-9a-f][0-9a-f]:[0-9a-f][0-9a-f]:[0-9a-f][0-9a-f]:[0-9a-f][0-9a-f]:[0-9a-f][0-9a-f]$/i);'
 			]
 		},
+		"uc-mobility": {
+                        desc: 'Mobility Domain',
+                        code: [
+                                'return match(value, /^[0-9a-f][0-9a-f][0-9a-f][0-9a-f]$/i);'
+                        ]
+                },
 		"uc-host": {
 			desc: 'hostname or IP address',
 			code: [

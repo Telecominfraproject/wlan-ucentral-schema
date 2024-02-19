@@ -1293,8 +1293,7 @@
                 "domain-identifier": {
                     "description": "Mobility Domain identifier (dot11FTMobilityDomainID, MDID).",
                     "type": "string",
-                    "maxLength": 4,
-                    "minLength": 4,
+                    "format": "uc-mobility",
                     "examples": [
                         "abcd"
                     ]
