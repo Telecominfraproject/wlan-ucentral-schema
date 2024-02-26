@@ -10,13 +10,13 @@ function radius_proxy_tlv(server, port, name) {
 captive.interface(section, config);
 let name = split(section, '_')[0];
 
-if (!captive.web_root)
+if (!config.web_root)
 	system('cp -r /www-uspot /tmp/ucentral/');
 else {
 	let fs = require('fs');
 	fs.mkdir('/tmp/ucentral/www-uspot');
 	let web_root = fs.open('/tmp/ucentral/web-root.tar', 'w');
-	web_root.write(b64dec(captive.web_root));
+	web_root.write(b64dec(config.web_root));
 	web_root.close();
 	system('tar x -C /tmp/ucentral/www-uspot -f /tmp/ucentral/web-root.tar');
 }
