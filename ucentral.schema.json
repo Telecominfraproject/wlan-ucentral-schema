@@ -294,13 +294,6 @@
                         10000
                     ]
                 },
-                "duplex": {
-                    "type": "string",
-                    "enum": [
-                        "half",
-                        "full"
-                    ]
-                },
                 "enabled": {
                     "type": "boolean",
                     "default": true

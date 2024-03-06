@@ -565,20 +565,6 @@ function instantiateEthernet(location, value, errors) {
 			obj.speed = parseSpeed(location + "/speed", value["speed"], errors);
 		}
 
-		function parseDuplex(location, value, errors) {
-			if (type(value) != "string")
-				push(errors, [ location, "must be of type string" ]);
-
-			if (!(value in [ "half", "full" ]))
-				push(errors, [ location, "must be one of \"half\" or \"full\"" ]);
-
-			return value;
-		}
-
-		if (exists(value, "duplex")) {
-			obj.duplex = parseDuplex(location + "/duplex", value["duplex"], errors);
-		}
-
 		function parseEnabled(location, value, errors) {
 			if (type(value) != "bool")
 				push(errors, [ location, "must be of type boolean" ]);
