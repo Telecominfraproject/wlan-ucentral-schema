@@ -406,7 +406,9 @@
                 },
                 "bss-color": {
                     "type": "integer",
-                    "default": 64
+                    "minimum": 0,
+                    "maximum": 64,
+                    "default": 0
                 }
             }
         },

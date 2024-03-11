@@ -812,6 +812,15 @@ function instantiateRadioHe(location, value, errors) {
 		}
 
 		function parseBssColor(location, value, errors) {
+			if (type(value) in [ "int", "double" ]) {
+				if (value > 64)
+					push(errors, [ location, "must be lower than or equal to 64" ]);
+
+				if (value < 0)
+					push(errors, [ location, "must be bigger than or equal to 0" ]);
+
+			}
+
 			if (type(value) != "int")
 				push(errors, [ location, "must be of type integer" ]);
 
@@ -822,7 +831,7 @@ function instantiateRadioHe(location, value, errors) {
 			obj.bss_color = parseBssColor(location + "/bss-color", value["bss-color"], errors);
 		}
 		else {
-			obj.bss_color = 64;
+			obj.bss_color = 0;
 		}
 
 		return obj;

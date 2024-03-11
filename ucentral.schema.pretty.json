@@ -451,7 +451,9 @@
                 "bss-color": {
                     "description": "This enables BSS Coloring on the PHY. setting it to 0 disables the feature 1-63 sets the color and 64 will make hostapd pick a random color.",
                     "type": "integer",
-                    "default": 64
+                    "minimum": 0,
+                    "maximum": 64,
+                    "default": 0
                 }
             }
         },

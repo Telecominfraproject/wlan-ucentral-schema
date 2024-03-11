@@ -189,7 +189,7 @@ set wireless.{{ phy.section }}.acs_exclude_dfs={{ b(!radio.allow_dfs) }}
 add_list wireless.{{ phy.section }}.channels={{ channel }}
 {% endfor %}
 {%  if (radio.he_settings && phy.he_mac_capa && match(htmode, /HE.*/)): %}
-set wireless.{{ phy.section }}.he_bss_color={{ radio.he_settings.bss_color }}
+set wireless.{{ phy.section }}.he_bss_color={{ radio.he_settings.bss_color || '' }}
 set wireless.{{ phy.section }}.multiple_bssid={{ b(radio.he_settings.multiple_bssid) }}
 set wireless.{{ phy.section }}.ema={{ b(radio.he_settings.ema) }}
 {%  endif %}
