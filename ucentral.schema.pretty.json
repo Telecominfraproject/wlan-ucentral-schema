@@ -3674,6 +3674,10 @@
                 }
             }
         },
+        "service.fingerprint": {
+            "description": "This section option enables fingerprinting.",
+            "type": "boolean"
+        },
         "service": {
             "description": "This section describes all of the services that may be present on the AP. Each service is then referenced via its name inside an interface, ssid, ...",
             "type": "object",
@@ -3743,6 +3747,9 @@
                 },
                 "rrm": {
                     "$ref": "#/$defs/service.rrm"
+                },
+                "fingerprint": {
+                    "$ref": "#/$defs/service.fingerprint"
                 }
             }
         },

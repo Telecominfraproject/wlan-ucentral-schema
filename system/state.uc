@@ -731,6 +731,8 @@ if (ieee8021x) {
 	state.ieee8021x = {};
 
 }
+if (fingerprint)
+	state.fingerprint = fingerprint;
 
 state.version = 1;
 printf("%.J\n", state);

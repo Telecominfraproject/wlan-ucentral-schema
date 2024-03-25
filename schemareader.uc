@@ -9031,6 +9031,13 @@ function instantiateServiceRrm(location, value, errors) {
 	return value;
 }
 
+function instantiateServiceFingerprint(location, value, errors) {
+	if (type(value) != "bool")
+		push(errors, [ location, "must be of type boolean" ]);
+
+	return value;
+}
+
 function instantiateService(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
@@ -9121,6 +9128,10 @@ function instantiateService(location, value, errors) {
 
 		if (exists(value, "rrm")) {
 			obj.rrm = instantiateServiceRrm(location + "/rrm", value["rrm"], errors);
+		}
+
+		if (exists(value, "fingerprint")) {
+			obj.fingerprint = instantiateServiceFingerprint(location + "/fingerprint", value["fingerprint"], errors);
 		}
 
 		return obj;

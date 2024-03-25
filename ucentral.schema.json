@@ -3203,6 +3203,9 @@
                 }
             }
         },
+        "service.fingerprint": {
+            "type": "boolean"
+        },
         "service": {
             "type": "object",
             "properties": {
@@ -3271,6 +3274,9 @@
                 },
                 "rrm": {
                     "$ref": "#/$defs/service.rrm"
+                },
+                "fingerprint": {
+                    "$ref": "#/$defs/service.fingerprint"
                 }
             }
         },

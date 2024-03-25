@@ -4230,6 +4230,10 @@
                             "type": "number"
                         }
                     }
+                },
+                "fingerprint": {
+                    "description": "This section option enables fingerprinting.",
+                    "type": "boolean"
                 }
             }
         },

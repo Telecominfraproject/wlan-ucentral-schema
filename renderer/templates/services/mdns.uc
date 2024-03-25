@@ -1,5 +1,6 @@
 {% if (!services.is_present("umdns")) return %}
 {% let interfaces = services.lookup_interfaces("mdns") %}
+{% if (state.services?.fingerprint) interfaces = state.interfaces %}
 {% let enable = length(interfaces) %}
 {% services.set_enabled("umdns", enable) %}
 {% if (!enable) return %}
