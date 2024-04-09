@@ -27,6 +27,14 @@ if (restrictfile) {
 
 let version = json(fs.readfile('/etc/ucentral/version.json') || '{}');
 let schema = json(fs.readfile('/etc/ucentral/schema.json') || '{}');
+let version_vendor = json(fs.readfile('/etc/ucentral/version.vendor.json') || '{}');
+let schema_vendor = json(fs.readfile('/etc/ucentral/schema.vendor.json') || '{}');
+
+if (length(version_vendor))
+	version.vendor = version_vendor;
+
+if (length(schema_vendor))
+	schema.vendor = schema_vendor;
 
 ctx = ubus.connect();
 let wifi = require("wifi.phy");
