@@ -24,10 +24,19 @@ if (restrictfile) {
 	else
 		capa.developer = false;
 }
+
+let version = json(fs.readfile('/etc/ucentral/version.json') || '{}');
+let schema = json(fs.readfile('/etc/ucentral/schema.json') || '{}');
+
 ctx = ubus.connect();
 let wifi = require("wifi.phy");
 capa.compatible = replace(board.model.id, ',', '_');
 capa.model = board.model.name;
+
+capa.version = {
+	'ap': version,
+	schema
+};
 
 if (board.bridge && board.bridge.name == "switch")
 	capa.platform = "switch";
