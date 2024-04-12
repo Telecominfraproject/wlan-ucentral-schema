@@ -377,7 +377,7 @@ let ethernet = {
 				continue;
 			}
 			/* resolve upstream vlans on swconfig ports */
-			if (this.swconfig && interface.role == 'upstream' && interface.vlan.id && this.swconfig[k]?.switch && v != 'un-tagged') {
+			if (this.swconfig && interface.role == 'upstream' && interface.vlan.id && this.swconfig[k]?.switch) {
 				rv[split(k, '.')[0] + '.' + interface.vlan.id] = 'un-tagged';
 				continue;
 			}
