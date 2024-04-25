@@ -83,6 +83,15 @@ try {
 		if (!custom_config) {
 			fs.unlink('/etc/ucentral/ucentral.active');
 			fs.symlink(ARGV[0], '/etc/ucentral/ucentral.active');
+			let cfgs = [];
+			for (let k, v in fs.lsdir('/etc/ucentral/'))
+				if (wildcard(v, 'ucentral.cfg.1*', true))
+					push(cfgs, v);
+			cfgs = sort(cfgs);
+			while (length(cfgs) >= 5) {
+				fs.unlink(cfgs[0]);
+				shift(cfgs);
+			}
 		}
 
 		set_service_state(true);
