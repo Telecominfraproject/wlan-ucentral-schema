@@ -22,6 +22,7 @@ set network.up.name=up
 set network.up.type=bridge
 set network.up.stp={{ loop_detect("upstream") }}
 set network.up.igmp_snooping='1'
+set network.up.macaddr={{ s(capab.macaddr?.wan) }}
 
 {% if (capab.platform != "switch"): %}
 set network.down=device
@@ -29,17 +30,12 @@ set network.down.name=down
 set network.down.type=bridge
 set network.down.stp={{ loop_detect("downstream") }}
 set network.down.igmp_snooping='1'
+set network.down.macaddr={{ s(capab.macaddr?.lan) }}
 
 {% endif %}
 set network.up_none=interface
 set network.up_none.ifname=up
 set network.up_none.proto=none
-
-{% for (let k, v in capab.macaddr): %}
-add network device
-set network.@device[-1].name={{ s(k) }}
-set network.@device[-1].macaddr={{ s(v) }}
-{% endfor %}
 
 {% for (let k, v in capab.switch): %}
 add network switch
