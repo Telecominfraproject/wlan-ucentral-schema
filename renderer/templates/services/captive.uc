@@ -42,12 +42,18 @@ set firewall.@rule[-1].mark='2/127'
 
 {%   if (interface.role == 'downstream'): %}
 add firewall rule
-set firewall.@rule[-1].name='Allow-pre-captive-{{ name }}'
+set firewall.@rule[-1].name='Drop-pre-captive-{{ name }}'
 set firewall.@rule[-1].src='{{ name }}'
 set firewall.@rule[-1].dest='{{ ethernet.find_interface("upstream", interface.vlan.id) }}'
 set firewall.@rule[-1].proto='any'
 set firewall.@rule[-1].target='DROP'
 set firewall.@rule[-1].mark='1/127'
+
+add firewall include
+set firewall.@include[-1].type=nftables
+set firewall.@include[-1].position='chain-post'
+set firewall.@include[-1].path='/usr/share/uspot/firewall.nft'
+set firewall.@include[-1].chain='mangle_postrouting'
 
 add firewall include
 set firewall.@include[-1].type=restore
