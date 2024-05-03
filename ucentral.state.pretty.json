@@ -132,6 +132,10 @@
                     "items": {
                         "type": "number"
                     }
+                },
+                "boottime": {
+                    "type": "number",
+                    "description": "This property contains the current unix time of the device."
                 }
             }
         },
@@ -386,7 +390,7 @@
                     "type": "number",
                     "description": "The number of packets received."
                 },
-                "rx_error": {
+                "rx_errors": {
                     "type": "number",
                     "description": "The number of receive errors."
                 },
@@ -402,7 +406,7 @@
                     "type": "number",
                     "description": "The number of packets transmitted."
                 },
-                "tx_error": {
+                "tx_errors": {
                     "type": "number",
                     "description": "The number of transmit errors."
                 },
@@ -501,7 +505,7 @@
                         "description": "The number of packets transmitted."
                     },
                     "rx_rate": {
-                        "type": "array",
+                        "type": "object",
                         "items": {
                             "properties": {
                                 "bitrate": {
@@ -535,7 +539,7 @@
                         }
                     },
                     "tx_rate": {
-                        "type": "array",
+                        "type": "object",
                         "items": {
                             "properties": {
                                 "bitrate": {
@@ -664,6 +668,9 @@
                     },
                     "counters": {
                         "$ref": "#/$defs/interface.counter"
+                    },
+                    "delta_counters": {
+                        "$ref": "#/$defs/interface.counter"
                     }
                 }
             }
@@ -712,6 +719,9 @@
                     "counters": {
                         "$ref": "#/$defs/interface.counter"
                     },
+                    "delta_counters": {
+                        "$ref": "#/$defs/interface.counter"
+                    },
                     "mesh-path": {
                         "$ref": "#/$defs/interface.mesh-path"
                     },
@@ -727,6 +737,9 @@
                 "type": "object",
                 "description": "A list of all LLDP peers that this logical interface is connected to.",
                 "properties": {
+                    "name": {
+                        "type": "string"
+                    },
                     "capability": {
                         "type": "array",
                         "description": "The device capabilities that our neighbour is announcing.",
@@ -748,6 +761,12 @@
                         "items": {
                             "type": "string"
                         }
+                    },
+                    "port_id": {
+                        "type": "string"
+                    },
+                    "port_descr": {
+                        "type": "string"
                     },
                     "port": {
                         "type": "string",
@@ -802,6 +821,9 @@
                     ]
                 },
                 "counters": {
+                    "$ref": "#/$defs/interface.counter"
+                },
+                "delta_counters": {
                     "$ref": "#/$defs/interface.counter"
                 }
             }

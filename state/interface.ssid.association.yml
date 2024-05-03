@@ -69,7 +69,7 @@ items:
       description:
         The number of packets transmitted.
     rx_rate:
-      type: array
+      type: object
       items:
         properties:
           bitrate:
@@ -91,7 +91,7 @@ items:
           he_dcm:
             type: number
     tx_rate:
-      type: array
+      type: object
       items:
         properties:
           bitrate:

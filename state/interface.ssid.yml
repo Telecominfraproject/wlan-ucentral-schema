@@ -66,3 +66,5 @@ items:
       $ref: "https://ucentral.io/state/v1/interface/ssid/association/"
     counters:
       $ref: "https://ucentral.io/state/v1/interface/counter/"
+    delta_counters:
+      $ref: "https://ucentral.io/state/v1/interface/counter/"

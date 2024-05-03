@@ -50,4 +50,8 @@ properties:
     type: array
     items:
       type: number
+  boottime:
+    type: number
+    description:
+      This property contains the current unix time of the device.
 

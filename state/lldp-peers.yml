@@ -4,6 +4,8 @@ items:
   description:
     A list of all LLDP peers that this logical interface is connected to.
   properties:
+    name:
+      type: string
     capability:
       type: array
       description:
@@ -24,6 +26,10 @@ items:
         The management IPs that our neighbour is announcing.
       items:
         type: string
+    port_id:
+      type: string
+    port_descr:
+      type: string
     port:
       type: string
       description:

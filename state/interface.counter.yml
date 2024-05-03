@@ -14,7 +14,7 @@ properties:
     type: number
     description:
       The number of packets received.
-  rx_error:
+  rx_errors:
     type: number
     description:
       The number of receive errors.
@@ -30,7 +30,7 @@ properties:
     type: number
     description:
       The number of packets transmitted.
-  tx_error:
+  tx_errors:
     type: number
     description:
       The number of transmit errors.
