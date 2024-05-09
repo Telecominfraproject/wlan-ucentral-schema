@@ -55,7 +55,8 @@
 
 	if (type(ssid.roaming) == 'bool')
 		ssid.roaming = {
-			message_exchange: true
+			message_exchange: 'air',
+			generate_psk: true,
 		};
 
 	if (ssid.roaming && ssid.encryption.proto in [ "wpa", "psk", "none" ]) {
