@@ -41,10 +41,6 @@ if (length(args) && args.keep_redirector) {
 
 include('reboot_cause.uc', { reason: 'factory' });
 
-let rc = system(reset_cmdline);
-
-if (rc != 0)
-	result_json({
-		"error": 2,
-		"text": sprintf("Reset command %s exited with non-zero code %d", reset_cmdline, rc)
-	});
+system("touch /ucentral.upgrade");
+system("(sleep 10; /etc/init.d/network stop; " + reset_cmdline + ")&");
+system("/etc/init.d/ucentral stop");
