@@ -335,6 +335,7 @@ set wireless.{{ section }}.owe_transition_ifname={{ s('o' + section) }}
 {%   if (owe): %}
 set wireless.{{ section }}.ifname={{ s(section) }}
 set wireless.{{ section }}.owe_transition_ifname={{ s(ssidname) }}
+set wireless.{{ section }}.owe_transition_ssid={{ s(ssid.name + '-OWE') }}
 {%   endif %}
 {%   if (bss_mode == 'mesh'): %}
 set wireless.{{ section }}.mode={{ bss_mode }}
