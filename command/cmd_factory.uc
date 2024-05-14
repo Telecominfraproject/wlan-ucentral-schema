@@ -42,5 +42,5 @@ if (length(args) && args.keep_redirector) {
 include('reboot_cause.uc', { reason: 'factory' });
 
 system("touch /ucentral.upgrade");
-system("(sleep 10; /etc/init.d/network stop; " + reset_cmdline + ")&");
+system("(sleep 10; " + join(' ', reset_cmdline) + ")&");
 system("/etc/init.d/ucentral stop");
