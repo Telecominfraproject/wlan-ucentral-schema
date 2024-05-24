@@ -1,4 +1,5 @@
 {%
+	let fs = require('fs');
 	let phys = wiphy.lookup_by_band(radio.band);
 
 	if (!length(phys)) {
@@ -162,6 +163,29 @@
 		warn('DFS is restricted.');
 		radio.allow_dfs = false;
 	}
+
+	let afc = false;
+	let afc_location;
+	if (radio.band == '6G')
+		fs.unlink('/tmp/afc-location-missing');
+	if (radio.band == '6G' && radio.country == 'US' && radio.he_6ghz_settings?.power_type != 'very-low-power') {
+		afc = true;
+		if (!radio.he_6ghz_settings.controller ||
+		    !radio.he_6ghz_settings.serial_number ||
+		    !radio.he_6ghz_settings.certificates_ids ||
+		    !radio.he_6ghz_settings.frequency_ranges ||
+		    !radio.he_6ghz_settings.operation_classes)
+			die('invalid AFC settings');
+		afc_location = fs.readfile('/etc/ucentral/afc-location.json');
+		if (afc_location)
+			afc_location = json(afc_location);
+		if (!afc_location) {
+			fs.writefile('/tmp/afc-location-missing', 'true');
+			warn('AFC location is missing, skipping 6GHz radio');
+			return;
+		}
+	}
+
 %}
 
 # Wireless Configuration
@@ -202,5 +226,27 @@ add_list wireless.{{ phy.section }}.hostapd_options={{ s(raw) }}
 {%  endfor %}
 {%  if (radio.band == "6G"): %}
 set wireless.{{ phy.section }}.he_co_locate={{ b(1) }}
+{%  endif %}
+{%  if (afc): %}
+set wireless.{{ phy.section }}.afc=1
+set wireless.{{ phy.section }}.afc_request_version='1.4'=
+set wireless.{{ phy.section }}.afc_request_id={{ s(radio.he_6ghz_settings.request_id) }}
+set wireless.{{ phy.section }}.afc_serial_number={{ s(radio.he_6ghz_settingsafc_serial_number) }}
+set wireless.{{ phy.section }}.afc_cert_ids={{ s(radio.he_6ghz_settings.certificate_ids) }}
+set wireless.{{ phy.section }}.afc_min_power{{radio.he_6ghz_settings.minimum_power}}
+{%    if (radio.he_6ghz_settings.frequency_ranges): %}
+set wireless.{{ phy.section }}.afc_freq_range{{s(join(',', radio.he_6ghz_settings.frequency_ranges)) }}
+{%    endif %}
+{%    if (radio.he_6ghz_settings.operating_classes): %}
+set wireless.{{ phy.section }}.afc_freq_range{{s(join(',', radio.he_6ghz_settings.operating_classes)) }}
+{%    endif %}
+set wireless.{{ phy.section }}.afc_location_type={{ s(afc_location.location_type) }}
+set wireless.{{ phy.section }}.afc_location={{ s(afc_location.location) }}
+set wireless.{{ phy.section }}.afc_major_axis={{ s(afc_location.major_axis) }}
+set wireless.{{ phy.section }}.afc_minor_axis={{ s(afc_location.minor_axis) }}
+set wireless.{{ phy.section }}.afc_orientation={{ s(afc_location.orientation) }}
+set wireless.{{ phy.section }}.afc_height={{ s(afc_location.height) }}
+set wireless.{{ phy.section }}.afc_height_type={{ s(afc_location.height_type) }}
+set wireless.{{ phy.section }}.afc_vertical_tolerance={{ s(afc_location.vertical_tolerance) }}
 {%  endif %}
 {% endfor %}

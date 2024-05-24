@@ -743,6 +743,56 @@
                             }
                         }
                     },
+                    "he-6ghz-settings": {
+                        "type": "object",
+                        "properties": {
+                            "power-type": {
+                                "description": "This config is to set the 6 GHz Access Point type",
+                                "type": "string",
+                                "enum": [
+                                    "indoor-power-indoor",
+                                    "standard-power",
+                                    "very-low-power"
+                                ],
+                                "default": "very-low-power"
+                            },
+                            "controller": {
+                                "description": "The URL of the AFC controller that the AP shall connect to.",
+                                "type": "string"
+                            },
+                            "ca-certificate": {
+                                "description": "The CA of the server. This enables mTLS.",
+                                "type": "string",
+                                "format": "uc-base64"
+                            },
+                            "serial-number": {
+                                "description": "The serial number that the AP shall send to the AFC controller.",
+                                "type": "string"
+                            },
+                            "certificate-ids": {
+                                "description": "The certificate IDs that the AP shall send to the AFC controller.",
+                                "type": "string"
+                            },
+                            "minimum-power": {
+                                "description": "The minimum power that the AP shall request from to the AFC controller.",
+                                "type": "number"
+                            },
+                            "frequency-ranges": {
+                                "description": "The list of frequency ranges that the AP shall request from to the AFC controller.",
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "operating-classes": {
+                                "description": "The list of frequency ranges that the AP shall request from to the AFC controller.",
+                                "type": "array",
+                                "items": {
+                                    "type": "number"
+                                }
+                            }
+                        }
+                    },
                     "hostapd-iface-raw": {
                         "description": "This array allows passing raw hostapd.conf lines.",
                         "type": "array",

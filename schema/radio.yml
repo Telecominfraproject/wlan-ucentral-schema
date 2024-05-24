@@ -136,6 +136,8 @@ properties:
     $ref: "https://ucentral.io/schema/v1/radio/rates/"
   he-settings:
     $ref: "https://ucentral.io/schema/v1/radio/he/"
+  he-6ghz-settings:
+    $ref: "https://ucentral.io/schema/v1/radio/he-6ghz/"
   hostapd-iface-raw:
     description:
       This array allows passing raw hostapd.conf lines.
