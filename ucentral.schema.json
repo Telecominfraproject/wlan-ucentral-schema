@@ -412,6 +412,48 @@
                 }
             }
         },
+        "radio.he-6ghz": {
+            "type": "object",
+            "properties": {
+                "power-type": {
+                    "type": "string",
+                    "enum": [
+                        "indoor-power-indoor",
+                        "standard-power",
+                        "very-low-power"
+                    ],
+                    "default": "very-low-power"
+                },
+                "controller": {
+                    "type": "string"
+                },
+                "ca-certificate": {
+                    "type": "string",
+                    "format": "uc-base64"
+                },
+                "serial-number": {
+                    "type": "string"
+                },
+                "certificate-ids": {
+                    "type": "string"
+                },
+                "minimum-power": {
+                    "type": "number"
+                },
+                "frequency-ranges": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "operating-classes": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                }
+            }
+        },
         "radio": {
             "type": "object",
             "properties": {
@@ -536,6 +578,9 @@
                 },
                 "he-settings": {
                     "$ref": "#/$defs/radio.he"
+                },
+                "he-6ghz-settings": {
+                    "$ref": "#/$defs/radio.he-6ghz"
                 },
                 "hostapd-iface-raw": {
                     "type": "array",

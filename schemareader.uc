@@ -843,6 +843,141 @@ function instantiateRadioHe(location, value, errors) {
 	return value;
 }
 
+function instantiateRadioHe6ghz(location, value, errors) {
+	if (type(value) == "object") {
+		let obj = {};
+
+		function parsePowerType(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			if (!(value in [ "indoor-power-indoor", "standard-power", "very-low-power" ]))
+				push(errors, [ location, "must be one of \"indoor-power-indoor\", \"standard-power\" or \"very-low-power\"" ]);
+
+			return value;
+		}
+
+		if (exists(value, "power-type")) {
+			obj.power_type = parsePowerType(location + "/power-type", value["power-type"], errors);
+		}
+		else {
+			obj.power_type = "very-low-power";
+		}
+
+		function parseController(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "controller")) {
+			obj.controller = parseController(location + "/controller", value["controller"], errors);
+		}
+
+		function parseCaCertificate(location, value, errors) {
+			if (type(value) == "string") {
+				if (!matchUcBase64(value))
+					push(errors, [ location, "must be a valid base64 encoded data" ]);
+
+			}
+
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "ca-certificate")) {
+			obj.ca_certificate = parseCaCertificate(location + "/ca-certificate", value["ca-certificate"], errors);
+		}
+
+		function parseSerialNumber(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "serial-number")) {
+			obj.serial_number = parseSerialNumber(location + "/serial-number", value["serial-number"], errors);
+		}
+
+		function parseCertificateIds(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "certificate-ids")) {
+			obj.certificate_ids = parseCertificateIds(location + "/certificate-ids", value["certificate-ids"], errors);
+		}
+
+		function parseMinimumPower(location, value, errors) {
+			if (!(type(value) in [ "int", "double" ]))
+				push(errors, [ location, "must be of type number" ]);
+
+			return value;
+		}
+
+		if (exists(value, "minimum-power")) {
+			obj.minimum_power = parseMinimumPower(location + "/minimum-power", value["minimum-power"], errors);
+		}
+
+		function parseFrequencyRanges(location, value, errors) {
+			if (type(value) == "array") {
+				function parseItem(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				return map(value, (item, i) => parseItem(location + "/" + i, item, errors));
+			}
+
+			if (type(value) != "array")
+				push(errors, [ location, "must be of type array" ]);
+
+			return value;
+		}
+
+		if (exists(value, "frequency-ranges")) {
+			obj.frequency_ranges = parseFrequencyRanges(location + "/frequency-ranges", value["frequency-ranges"], errors);
+		}
+
+		function parseOperatingClasses(location, value, errors) {
+			if (type(value) == "array") {
+				function parseItem(location, value, errors) {
+					if (!(type(value) in [ "int", "double" ]))
+						push(errors, [ location, "must be of type number" ]);
+
+					return value;
+				}
+
+				return map(value, (item, i) => parseItem(location + "/" + i, item, errors));
+			}
+
+			if (type(value) != "array")
+				push(errors, [ location, "must be of type array" ]);
+
+			return value;
+		}
+
+		if (exists(value, "operating-classes")) {
+			obj.operating_classes = parseOperatingClasses(location + "/operating-classes", value["operating-classes"], errors);
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
+
+	return value;
+}
+
 function instantiateRadio(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
@@ -1161,6 +1296,10 @@ function instantiateRadio(location, value, errors) {
 
 		if (exists(value, "he-settings")) {
 			obj.he_settings = instantiateRadioHe(location + "/he-settings", value["he-settings"], errors);
+		}
+
+		if (exists(value, "he-6ghz-settings")) {
+			obj.he_6ghz_settings = instantiateRadioHe6ghz(location + "/he-6ghz-settings", value["he-6ghz-settings"], errors);
 		}
 
 		function parseHostapdIfaceRaw(location, value, errors) {
