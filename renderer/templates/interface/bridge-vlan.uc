@@ -80,6 +80,8 @@ set network.@switch_vlan[-1].ports={{s(port.switch.port + 't ' + port.swconfig)}
 {%   if ("WAN" in ethernet.ports):
        dev = ethernet.ports["WAN"].netdev;
        if (ethernet.swconfig && ethernet.swconfig[dev]): %}
+del event.config.wan_port
+add_list event.config.wan_port={{dev}}
 set event.config.swconfig={{ethernet.swconfig[dev].switch?.name}}
 add_list event.config.swconfig_ports={{ethernet.swconfig[dev].swconfig}}t
 add_list event.config.swconfig_ports={{ethernet.swconfig[dev].switch?.port}}t
