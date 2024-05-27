@@ -168,13 +168,12 @@
 	let afc_location;
 	if (radio.band == '6G')
 		fs.unlink('/tmp/afc-location-missing');
-	if (radio.band == '6G' && radio.country == 'US' && radio.he_6ghz_settings?.power_type != 'very-low-power') {
+	if (radio.band == '6G' && radio.country == 'US' && radio.he_6ghz_settings?.power_type && radio.he_6ghz_settings?.power_type != 'very-low-power') {
 		afc = true;
 		if (!radio.he_6ghz_settings.controller ||
 		    !radio.he_6ghz_settings.serial_number ||
-		    !radio.he_6ghz_settings.certificates_ids ||
-		    !radio.he_6ghz_settings.frequency_ranges ||
-		    !radio.he_6ghz_settings.operation_classes)
+		    !radio.he_6ghz_settings.certificate_ids ||
+		    (!radio.he_6ghz_settings.frequency_ranges && !radio.he_6ghz_settings.operating_classes))
 			die('invalid AFC settings');
 		afc_location = fs.readfile('/etc/ucentral/afc-location.json');
 		if (afc_location)
@@ -184,6 +183,17 @@
 			warn('AFC location is missing, skipping 6GHz radio');
 			return;
 		}
+	}
+
+	function get_6GHz_power_type() {
+		switch(radio.he_6ghz_settings?.power_type) {
+		case 'indoor-power-indoor':
+			return 0;
+		case 'standard-power':
+			return 1;
+		}
+		/* very-low-power */
+		return 2;
 	}
 
 %}
@@ -226,19 +236,23 @@ add_list wireless.{{ phy.section }}.hostapd_options={{ s(raw) }}
 {%  endfor %}
 {%  if (radio.band == "6G"): %}
 set wireless.{{ phy.section }}.he_co_locate={{ b(1) }}
+set wireless.{{ phy.section }}.he_6ghz_reg_pwr_type={{ s(get_6GHz_power_type()) }}
 {%  endif %}
 {%  if (afc): %}
+add wireless afc-server                            
+set wireless.@afc-server[-1].url={{s(radio.he_6ghz_settings.controller)}}
+set wireless.@afc-server[-1].cert={{s(files.add_anonymous(location, 'ca', b64dec(radio.he_6ghz_settings.ca_certificate));)}}
 set wireless.{{ phy.section }}.afc=1
-set wireless.{{ phy.section }}.afc_request_version='1.4'=
-set wireless.{{ phy.section }}.afc_request_id={{ s(radio.he_6ghz_settings.request_id) }}
-set wireless.{{ phy.section }}.afc_serial_number={{ s(radio.he_6ghz_settingsafc_serial_number) }}
+set wireless.{{ phy.section }}.afc_request_version='1.4'
+set wireless.{{ phy.section }}.afc_request_id='1234'
+set wireless.{{ phy.section }}.afc_serial_number={{ s(radio.he_6ghz_settings.afc_serial_number) }}
 set wireless.{{ phy.section }}.afc_cert_ids={{ s(radio.he_6ghz_settings.certificate_ids) }}
-set wireless.{{ phy.section }}.afc_min_power{{radio.he_6ghz_settings.minimum_power}}
+set wireless.{{ phy.section }}.afc_min_power={{radio.he_6ghz_settings.minimum_power}}
 {%    if (radio.he_6ghz_settings.frequency_ranges): %}
-set wireless.{{ phy.section }}.afc_freq_range{{s(join(',', radio.he_6ghz_settings.frequency_ranges)) }}
+set wireless.{{ phy.section }}.afc_freq_range={{s(join(',', radio.he_6ghz_settings.frequency_ranges)) }}
 {%    endif %}
 {%    if (radio.he_6ghz_settings.operating_classes): %}
-set wireless.{{ phy.section }}.afc_freq_range{{s(join(',', radio.he_6ghz_settings.operating_classes)) }}
+set wireless.{{ phy.section }}.afc_freq_range={{s(join(',', radio.he_6ghz_settings.operating_classes)) }}
 {%    endif %}
 set wireless.{{ phy.section }}.afc_location_type={{ s(afc_location.location_type) }}
 set wireless.{{ phy.section }}.afc_location={{ s(afc_location.location) }}
