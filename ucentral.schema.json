@@ -3249,7 +3249,34 @@
             }
         },
         "service.fingerprint": {
-            "type": "boolean"
+            "type": "object",
+            "properties": {
+                "mode": {
+                    "type": "string",
+                    "enum": [
+                        "polled",
+                        "final",
+                        "raw-data"
+                    ],
+                    "default": "always"
+                },
+                "minimum-age": {
+                    "type": "number",
+                    "default": 60
+                },
+                "maximum-age": {
+                    "type": "number",
+                    "default": 60
+                },
+                "periodicity": {
+                    "type": "number",
+                    "default": 600
+                },
+                "allow-wan": {
+                    "type": "boolean",
+                    "default": false
+                }
+            }
         },
         "service": {
             "type": "object",

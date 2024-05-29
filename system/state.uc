@@ -8,6 +8,7 @@ let cfgfile = fs.open("/etc/ucentral/ucentral.active", "r");
 let cfg = json(cfgfile.read("all"));
 let capabfile = fs.open("/etc/ucentral/capabilities.json", "r");
 let capab = json(capabfile.read("all"));
+let now = time();
 
 /* set up basic functionality */
 if (!cursor)
@@ -70,8 +71,9 @@ function lookup_port(netdev) {
 
 /* find out what telemetry we should gather */
 let stats;
+cursor.load("state");
+cursor.load("event");
 if (!length(stats)) {
-	cursor.load("state");
 	stats = cursor.get_all("state", "stats");
 }
 
@@ -96,9 +98,17 @@ let gps = ctx.call("gps", "info");
 let ieee8021x = ctx.call("ieee8021x", "dump");
 let devstats = ctx.call('udevstats', 'dump');
 let devices = ctx.call("network.device", "status");
-
 let previous = json(fs.readfile('/tmp/' + (telemetry ? 'telemetry.json' : 'state.json')) || '{ "ports": {}, "devstats": {}, "stations": {}, "devstats": {} }');
-
+let finger_config = cursor.get_all("state", "fingerprint");
+let finger_state = json(fs.readfile('/tmp/finger.state') || '{}');
+let fingerprint;
+if (finger_config?.mode != 'polled')
+	fingerprint = ctx.call("fingerprint", "fingerprint", { age: +(finger_config?.min_age || 0), raw: (finger_config?.mode == 'raw') }) || {};
+let finger_wan = [];
+if (!finger_config?.allow_wan) 
+	for (let k in cursor.get("event", "config", "wan_port"))
+		push(finger_wan, lookup_port(k));
+printf('%.J\n', finger_wan);
 let stations_lookup = {};
 for (let k, v in stations) {
 	stations_lookup[k] = {};
@@ -106,6 +116,18 @@ for (let k, v in stations) {
 		stations_lookup[k][assoc.station] = assoc;
 }
 fs.writefile('/tmp/' + (telemetry ? 'telemetry.json' : 'state.json'), { ports, devstats, stations: stations_lookup, devstats });
+
+if (fingerprint) {
+	for (let mac in fingerprint) {
+		if (!finger_state[mac])
+			finger_state[mac] = { reported: 0 };
+		finger_state[mac].seen = now;
+	}
+
+	for (let mac, data in finger_state)
+		if ((now - data.seen) > (+finger_config?.max_age || 600))
+			delete finger_state[mac];
+}
 
 //printf('%.J\n', previous);
 
@@ -361,6 +383,21 @@ function is_mesh(net, wif) {
 	return true;
 }
 
+function get_fingerprint(mac, ports) {
+	if (finger_config?.mode != 'final')
+		return null;
+	if (!fingerprint[mac])
+		return null;
+	if (ports)
+		for (let port in finger_wan)
+			if (port in ports)
+				return 0;
+	if ((time() - finger_state[mac].reported || 0) < (+finger_config.period || 0))
+		return null;
+	finger_state[mac].reported = time();
+	return fingerprint[mac];
+}
+
 let idx = 0;
 let dyn_vlans = {};
 let dyn_vids = [];
@@ -484,6 +521,9 @@ cursor.foreach("network", "interface", function(d) {
 			client.ports = [];
 			for (let k in topo.fdb)
 				push(client.ports, lookup_port(k));
+			let fp = get_fingerprint(mac, client.ports);
+			if (fp)
+				client.fingerprint = fp;
 			client.last_seen = topo.last_seen;
 			if (index(stats.types, 'clients') >= 0) {
 				push(clients, client);
@@ -532,6 +572,9 @@ cursor.foreach("network", "interface", function(d) {
 					ssid.associations = [ ...(ssid.associations || []), ...v ];
 				}
 				for (let assoc in ssid.associations) {
+					let fp = get_fingerprint(assoc.station);
+					if (fp)
+					 	assoc.fingerprint = fp;
 					if (length(ip4leases[assoc.station]))
 			                           assoc.ipaddr_v4 = ip4leases[assoc.station];
 					else if (snoop && snoop[assoc.station]) {
@@ -725,12 +768,19 @@ if (length(capab.network)) {
 		state["lldp-peers"] = lldp_peers;
 }
 
-if (ieee8021x) {
+if (ieee8021x)
 	state.ieee8021x = {};
 
+if (fingerprint) {
+	switch(finger_config?.mode) {
+	case 'raw-data':
+		state.fingerprint = fingerprint;
+		break;
+	case 'final':
+		fs.writefile('/tmp/finger.state', finger_state);
+		break;
+	}
 }
-if (fingerprint)
-	state.fingerprint = fingerprint;
 
 state.version = 1;
 printf("%.J\n", state);

@@ -9171,8 +9171,87 @@ function instantiateServiceRrm(location, value, errors) {
 }
 
 function instantiateServiceFingerprint(location, value, errors) {
-	if (type(value) != "bool")
-		push(errors, [ location, "must be of type boolean" ]);
+	if (type(value) == "object") {
+		let obj = {};
+
+		function parseMode(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			if (!(value in [ "polled", "final", "raw-data" ]))
+				push(errors, [ location, "must be one of \"polled\", \"final\" or \"raw-data\"" ]);
+
+			return value;
+		}
+
+		if (exists(value, "mode")) {
+			obj.mode = parseMode(location + "/mode", value["mode"], errors);
+		}
+		else {
+			obj.mode = "always";
+		}
+
+		function parseMinimumAge(location, value, errors) {
+			if (!(type(value) in [ "int", "double" ]))
+				push(errors, [ location, "must be of type number" ]);
+
+			return value;
+		}
+
+		if (exists(value, "minimum-age")) {
+			obj.minimum_age = parseMinimumAge(location + "/minimum-age", value["minimum-age"], errors);
+		}
+		else {
+			obj.minimum_age = 60;
+		}
+
+		function parseMaximumAge(location, value, errors) {
+			if (!(type(value) in [ "int", "double" ]))
+				push(errors, [ location, "must be of type number" ]);
+
+			return value;
+		}
+
+		if (exists(value, "maximum-age")) {
+			obj.maximum_age = parseMaximumAge(location + "/maximum-age", value["maximum-age"], errors);
+		}
+		else {
+			obj.maximum_age = 60;
+		}
+
+		function parsePeriodicity(location, value, errors) {
+			if (!(type(value) in [ "int", "double" ]))
+				push(errors, [ location, "must be of type number" ]);
+
+			return value;
+		}
+
+		if (exists(value, "periodicity")) {
+			obj.periodicity = parsePeriodicity(location + "/periodicity", value["periodicity"], errors);
+		}
+		else {
+			obj.periodicity = 600;
+		}
+
+		function parseAllowWan(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "allow-wan")) {
+			obj.allow_wan = parseAllowWan(location + "/allow-wan", value["allow-wan"], errors);
+		}
+		else {
+			obj.allow_wan = false;
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
 
 	return value;
 }
