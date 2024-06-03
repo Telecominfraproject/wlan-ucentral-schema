@@ -2956,7 +2956,7 @@ function instantiateInterfaceSsidRoaming(location, value, errors) {
 			obj.message_exchange = parseMessageExchange(location + "/message-exchange", value["message-exchange"], errors);
 		}
 		else {
-			obj.message_exchange = "ds";
+			obj.message_exchange = "air";
 		}
 
 		function parseGeneratePsk(location, value, errors) {
