@@ -1339,7 +1339,7 @@
                         "air",
                         "ds"
                     ],
-                    "default": "ds"
+                    "default": "air"
                 },
                 "generate-psk": {
                     "description": "Whether to generate FT response locally for PSK networks. This avoids use of PMK-R1 push/pull from other APs with FT-PSK networks.",
