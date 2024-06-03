@@ -1177,7 +1177,7 @@
                         "air",
                         "ds"
                     ],
-                    "default": "ds"
+                    "default": "air"
                 },
                 "generate-psk": {
                     "type": "boolean",
