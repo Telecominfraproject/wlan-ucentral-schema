@@ -10,7 +10,7 @@ properties:
     enum:
     - air
     - ds
-    default: ds
+    default: air
   generate-psk:
     description:
       Whether to generate FT response locally for PSK networks. This avoids
