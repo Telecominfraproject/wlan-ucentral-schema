@@ -3258,7 +3258,7 @@
                         "final",
                         "raw-data"
                     ],
-                    "default": "always"
+                    "default": "final"
                 },
                 "minimum-age": {
                     "type": "number",
