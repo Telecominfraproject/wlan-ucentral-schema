@@ -252,7 +252,7 @@ set wireless.{{ phy.section }}.afc_min_power={{radio.he_6ghz_settings.minimum_po
 set wireless.{{ phy.section }}.afc_freq_range={{s(join(',', radio.he_6ghz_settings.frequency_ranges)) }}
 {%    endif %}
 {%    if (radio.he_6ghz_settings.operating_classes): %}
-set wireless.{{ phy.section }}.afc_freq_range={{s(join(',', radio.he_6ghz_settings.operating_classes)) }}
+set wireless.{{ phy.section }}.afc_op_class={{s(join(',', radio.he_6ghz_settings.operating_classes)) }}
 {%    endif %}
 set wireless.{{ phy.section }}.afc_location_type={{ s(afc_location.location_type) }}
 set wireless.{{ phy.section }}.afc_location={{ s(afc_location.location) }}
