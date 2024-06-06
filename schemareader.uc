@@ -9199,7 +9199,7 @@ function instantiateServiceFingerprint(location, value, errors) {
 			obj.mode = parseMode(location + "/mode", value["mode"], errors);
 		}
 		else {
-			obj.mode = "always";
+			obj.mode = "final";
 		}
 
 		function parseMinimumAge(location, value, errors) {
