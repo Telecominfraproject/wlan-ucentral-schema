@@ -903,6 +903,17 @@ function instantiateRadioHe6ghz(location, value, errors) {
 			obj.serial_number = parseSerialNumber(location + "/serial-number", value["serial-number"], errors);
 		}
 
+		function parseRequestId(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "request-id")) {
+			obj.request_id = parseRequestId(location + "/request-id", value["request-id"], errors);
+		}
+
 		function parseCertificateIds(location, value, errors) {
 			if (type(value) != "string")
 				push(errors, [ location, "must be of type string" ]);

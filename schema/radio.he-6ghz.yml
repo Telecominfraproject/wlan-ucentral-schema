@@ -22,6 +22,10 @@ properties:
     description:
       The serial number that the AP shall send to the AFC controller.
     type: string
+  request-id:
+    description:
+      The request-id that the AP shall send to the AFC controller.
+    type: string
   certificate-ids:
     description:
       The certificate IDs that the AP shall send to the AFC controller.

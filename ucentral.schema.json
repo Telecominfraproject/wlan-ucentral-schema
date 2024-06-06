@@ -434,6 +434,9 @@
                 "serial-number": {
                     "type": "string"
                 },
+                "request-id": {
+                    "type": "string"
+                },
                 "certificate-ids": {
                     "type": "string"
                 },

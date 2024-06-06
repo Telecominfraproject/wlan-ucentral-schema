@@ -241,11 +241,13 @@ set wireless.{{ phy.section }}.he_6ghz_reg_pwr_type={{ s(get_6GHz_power_type()) 
 {%  if (afc): %}
 add wireless afc-server                            
 set wireless.@afc-server[-1].url={{s(radio.he_6ghz_settings.controller)}}
+{% if (radio.he_6ghz_settings.ca_certificate): %}
 set wireless.@afc-server[-1].cert={{s(files.add_anonymous(location, 'ca', b64dec(radio.he_6ghz_settings.ca_certificate)))}}
+{% endif %}
 set wireless.{{ phy.section }}.afc=1
 set wireless.{{ phy.section }}.afc_request_version='1.4'
-set wireless.{{ phy.section }}.afc_request_id='1234'
-set wireless.{{ phy.section }}.afc_serial_number={{ s(radio.he_6ghz_settings.afc_serial_number) }}
+set wireless.{{ phy.section }}.afc_request_id={{ s(radio.he_6ghz_settings.request_id) }}
+set wireless.{{ phy.section }}.afc_serial_number={{ s(radio.he_6ghz_settings.serial_number) }}
 set wireless.{{ phy.section }}.afc_cert_ids={{ s(radio.he_6ghz_settings.certificate_ids) }}
 set wireless.{{ phy.section }}.afc_min_power={{radio.he_6ghz_settings.minimum_power}}
 {%    if (radio.he_6ghz_settings.frequency_ranges): %}
