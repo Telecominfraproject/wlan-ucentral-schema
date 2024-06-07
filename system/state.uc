@@ -105,10 +105,9 @@ let fingerprint;
 if (finger_config?.mode != 'polled')
 	fingerprint = ctx.call("fingerprint", "fingerprint", { age: +(finger_config?.min_age || 0), raw: (finger_config?.mode == 'raw') }) || {};
 let finger_wan = [];
-if (!finger_config?.allow_wan) 
+if (!+finger_config?.allow_wan) 
 	for (let k in cursor.get("event", "config", "wan_port"))
 		push(finger_wan, lookup_port(k));
-printf('%.J\n', finger_wan);
 let stations_lookup = {};
 for (let k, v in stations) {
 	stations_lookup[k] = {};
