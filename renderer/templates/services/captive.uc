@@ -85,6 +85,8 @@ add_list uhttpd.@uhttpd[-1].listen_http='0.0.0.0:80'
 add_list uhttpd.@uhttpd[-1].listen_http='[::]:80'
 set uhttpd.@uhttpd[-1].home=/tmp/ucentral/www-uspot
 add_list uhttpd.@uhttpd[-1].ucode_prefix='/hotspot=/usr/share/uspot/handler.uc'
+add_list uhttpd.@uhttpd[-1].ucode_prefix='/logoff=/usr/share/uspot/handler.uc'
+add_list uhttpd.@uhttpd[-1].ucode_prefix='/logout=/usr/share/uspot/handler.uc'
 add_list uhttpd.@uhttpd[-1].ucode_prefix='/cpd=/usr/share/uspot/handler-cpd.uc'
 add_list uhttpd.@uhttpd[-1].ucode_prefix='/env=/usr/share/uspot/handler-env.uc'
 set uhttpd.@uhttpd[-1].error_page='/cpd'
