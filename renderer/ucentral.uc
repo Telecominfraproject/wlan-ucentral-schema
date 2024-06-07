@@ -75,7 +75,7 @@ try {
 		ubus.call('state', 'reload');
 
 		for (let cmd in [ 'reload_config',
-				  '/etc/init.d/ratelimit restart',
+				  '/etc/init.d/ratelimit reload',
 				  '/etc/init.d/dnsmasq restart',
 				  '/etc/init.d/ucentral-state restart'])
 			system(cmd);
