@@ -237,6 +237,7 @@ add_list wireless.{{ phy.section }}.hostapd_options={{ s(raw) }}
 {%  if (radio.band == "6G"): %}
 set wireless.{{ phy.section }}.he_co_locate={{ b(1) }}
 set wireless.{{ phy.section }}.he_6ghz_reg_pwr_type={{ s(get_6GHz_power_type()) }}
+set wireless.{{ phy.section }}.acs_exclude_6ghz_non_psc={{ b(radio.acs_exclude_6ghz_non_psc) }}
 {%  endif %}
 {%  if (afc): %}
 add wireless afc-server                            

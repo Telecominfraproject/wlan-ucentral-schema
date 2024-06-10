@@ -499,6 +499,10 @@
                         "minimum": 1
                     }
                 },
+                "acs-exclude-6ghz-non-psc": {
+                    "type": "boolean",
+                    "default": false
+                },
                 "country": {
                     "type": "string",
                     "maxLength": 2,

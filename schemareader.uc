@@ -1126,6 +1126,20 @@ function instantiateRadio(location, value, errors) {
 			obj.valid_channels = parseValidChannels(location + "/valid-channels", value["valid-channels"], errors);
 		}
 
+		function parseAcsExclude6ghzNonPsc(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "acs-exclude-6ghz-non-psc")) {
+			obj.acs_exclude_6ghz_non_psc = parseAcsExclude6ghzNonPsc(location + "/acs-exclude-6ghz-non-psc", value["acs-exclude-6ghz-non-psc"], errors);
+		}
+		else {
+			obj.acs_exclude_6ghz_non_psc = false;
+		}
+
 		function parseCountry(location, value, errors) {
 			if (type(value) == "string") {
 				if (length(value) > 2)
