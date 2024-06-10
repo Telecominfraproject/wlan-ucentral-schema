@@ -558,6 +558,11 @@
                         "minimum": 1
                     }
                 },
+                "acs-exclude-6ghz-non-psc": {
+                    "description": "Exclude non-psc when doing auto channel selection on 6GHz",
+                    "type": "boolean",
+                    "default": false
+                },
                 "country": {
                     "description": "Specifies the country code, affects the available channels and transmission powers.",
                     "type": "string",
