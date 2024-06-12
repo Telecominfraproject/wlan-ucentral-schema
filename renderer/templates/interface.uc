@@ -185,13 +185,6 @@
 		let modes = (ssid.bss_mode == "wds-repeater") ?
 			[ "wds-sta", "wds-ap" ] : [ ssid.bss_mode ];
 		for (let mode in modes) {
-			include('interface/ssid.uc', {
-				location: location + '/ssids/' + i,
-				ssid: { ...ssid, bss_mode: mode },
-				count,
-				name,
-				network,
-			});
 			if (ssid?.encryption?.proto == 'owe-transition') {
 				ssid.encryption.proto = 'none';
 				include('interface/ssid.uc', {
@@ -201,9 +194,17 @@
 					name,
 					network,
 					owe: true,
-			});
-
+				});
+				ssid.encryption.proto = 'owe-transition';
 			}
+
+			include('interface/ssid.uc', {
+				location: location + '/ssids/' + i,
+				ssid: { ...ssid, bss_mode: mode },
+				count,
+				name,
+				network,
+			});
 			count++;
 		}
 	}
