@@ -55,17 +55,6 @@ set firewall.@include[-1].position='chain-post'
 set firewall.@include[-1].path='/usr/share/uspot/firewall.nft'
 set firewall.@include[-1].chain='mangle_postrouting'
 
-add firewall include
-set firewall.@include[-1].type=restore
-set firewall.@include[-1].family=ipv4
-set firewall.@include[-1].path='/usr/share/uspot/firewall.ipt'
-set firewall.@include[-1].reload=1
-
-add firewall include
-set firewall.@include[-1].type=restore
-set firewall.@include[-1].family=ipv6
-set firewall.@include[-1].path='/usr/share/uspot/firewall.ipt'
-set firewall.@include[-1].reload=1
 {%   endif %}
 {% endfor %}
 
