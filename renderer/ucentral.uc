@@ -89,7 +89,7 @@ try {
 					push(cfgs, v);
 			cfgs = sort(cfgs);
 			while (length(cfgs) >= 5) {
-				fs.unlink(cfgs[0]);
+				fs.unlink('/etc/ucentral/' + cfgs[0]);
 				shift(cfgs);
 			}
 		}
