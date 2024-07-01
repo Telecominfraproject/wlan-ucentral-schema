@@ -1,11 +1,12 @@
 {% let eth_ports = ethernet.lookup_by_select_ports(ports.select_ports) %}
-{% for (let port in eth_ports):
-	port = replace(port, '.', '_');
-%}
-set network.{{ port }}=device
-set network.{{ port }}.name={{ s(port) }}
-set network.{{ port }}.ifname={{ s(port) }}
-set network.{{ port }}.enabled={{ b(ports.enabled) }}
-{% if (!ports.speed) continue %}
-set network.{{ port }}.speed={{ ports.speed }}
+{% for (let port in eth_ports): %}
+{% let nport = replace(port, '.', '_'); %}
+set network.{{ nport }}=device
+set network.{{ nport }}.name={{ s(port) }}
+set network.{{ nport }}.ifname={{ s(port) }}
+set network.{{ nport }}.enabled={{ ports.enabled }}
+{% if (!ports.speed && !ports.duplex) continue %}
+set network.{{ nport }}.speed={{ ports.speed }}
+set network.{{ nport }}.duplex={{ ports.duplex == "full" ? true : false }}
+
 {% endfor %}
