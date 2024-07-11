@@ -2296,7 +2296,7 @@
                 },
                 "mtu": {
                     "type": "integer",
-                    "maximum": 1500,
+                    "maximum": 1600,
                     "minimum": 1280
                 },
                 "services": {

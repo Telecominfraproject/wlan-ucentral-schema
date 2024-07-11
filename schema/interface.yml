@@ -35,7 +35,7 @@ properties:
     description:
       The MTU of this logical interface.
     type: integer
-    maximum: 1500
+    maximum: 1600
     minimum: 1280
   services:
     description:
