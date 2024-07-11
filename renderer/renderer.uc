@@ -720,6 +720,22 @@ let services = {
 		return ssids;
 	},
 
+	lookup_ssids_by_mpsk: function() {
+		let mpsk = false;
+
+		for (let interface in state.interfaces) {
+			if (!interface.ssids)
+				continue;
+			for (let ssid in interface.ssids) {
+				if (!length(ssid.multi_psk))
+					continue;
+				mpsk = true;
+			}
+		}
+
+		return mpsk;
+	},
+
 	lookup_ethernet: function(service) {
 		let ethernets = [];
 
