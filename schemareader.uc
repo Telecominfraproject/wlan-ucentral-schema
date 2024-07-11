@@ -6422,8 +6422,8 @@ function instantiateInterface(location, value, errors) {
 
 		function parseMtu(location, value, errors) {
 			if (type(value) in [ "int", "double" ]) {
-				if (value > 1500)
-					push(errors, [ location, "must be lower than or equal to 1500" ]);
+				if (value > 1600)
+					push(errors, [ location, "must be lower than or equal to 1600" ]);
 
 				if (value < 1280)
 					push(errors, [ location, "must be bigger than or equal to 1280" ]);
