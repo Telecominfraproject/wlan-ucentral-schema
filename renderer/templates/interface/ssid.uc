@@ -623,6 +623,11 @@ set wireless.@wifi-station[-1].mac={{ psk.mac }}
 set wireless.@wifi-station[-1].key={{ psk.key }}
 set wireless.@wifi-station[-1].vid={{ psk.vlan_id }}
 {%     endfor %}
+{%     if (length(ssid.multi_psk)): %} 
+add wireless wifi-station
+set wireless.@wifi-station[-1].iface={{ s(section) }}
+set wireless.@wifi-station[-1].key={{ ssid.encryption.key }}
+{%     endif %}
 {%   else %}
 
 # STA specific settings
