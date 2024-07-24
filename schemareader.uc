@@ -3012,6 +3012,26 @@ function instantiateInterfaceSsidRoaming(location, value, errors) {
 			obj.pmk_r1_key_holder = parsePmkR1KeyHolder(location + "/pmk-r1-key-holder", value["pmk-r1-key-holder"], errors);
 		}
 
+		function parseKeyAes256(location, value, errors) {
+			if (type(value) in [ "int", "double" ]) {
+				if (value > 64)
+					push(errors, [ location, "must be lower than or equal to 64" ]);
+
+				if (value < 64)
+					push(errors, [ location, "must be bigger than or equal to 64" ]);
+
+			}
+
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "key-aes-256")) {
+			obj.key_aes_256 = parseKeyAes256(location + "/key-aes-256", value["key-aes-256"], errors);
+		}
+
 		return obj;
 	}
 

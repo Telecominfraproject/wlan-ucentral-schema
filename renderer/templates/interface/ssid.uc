@@ -64,6 +64,12 @@
 		warn("Roaming requires wpa2 or later");
 	}
 
+	if (ssid.roaming?.key_aes_256) {
+		delete ssid.roaming.generate_psk;
+		delete ssid.roaming.pmk_r0_key_holder;
+		delete ssid.roaming.pmk_r1_key_holder;
+	}
+
 	let certificates = ssid.certificates || {};
 	if (certificates.use_local_certificates) {
 		cursor.load("system");
@@ -514,6 +520,7 @@ set wireless.{{ section }}.ft_psk_generate_local={{ b(ssid.roaming.generate_psk)
 set wireless.{{ section }}.mobility_domain={{ ssid.roaming.domain_identifier }}
 set wireless.{{ section }}.r0kh={{ s(ssid.roaming.pmk_r0_key_holder) }}
 set wireless.{{ section }}.r1kh={{ s(ssid.roaming.pmk_r1_key_holder) }}
+set wireless.{{ section }}.ft_key={{ s(ssid.roaming.key_aes_256) }}
 {%     endif %}
 
 {%     if (ssid.quality_thresholds): %}

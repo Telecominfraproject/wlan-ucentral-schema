@@ -1204,6 +1204,11 @@
                 "pmk-r1-key-holder": {
                     "type": "string",
                     "example": "14:DD:20:47:14:E4,14DD204714E4,00112233445566778899aabbccddeeff"
+                },
+                "key-aes-256": {
+                    "type": "string",
+                    "minimum": 64,
+                    "maximum": 64
                 }
             }
         },
