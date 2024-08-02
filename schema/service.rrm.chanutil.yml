@@ -1,0 +1,29 @@
+description:
+  RRM policy based on Channel Utilization for optimization.
+type: object
+properties:
+  interval:
+    description:
+      The interval to check channel utilization (in seconds).
+    type: number
+    minimum: 240
+  threshold:
+    description:
+      The airtime utilization threshold.
+    type: number
+    minimum: 0
+    maximum: 99
+    examples:
+    - 50
+  consecutive-threshold-breach:
+    description:
+      The number of times the Channel Utilization is higher than the threshold before triggering channel optimization.
+    type: integer
+    minimum: 1
+  algo:
+    description:
+      The algorithm for channel optimization.
+    type: string
+    examples:
+    - rcs
+    - acs

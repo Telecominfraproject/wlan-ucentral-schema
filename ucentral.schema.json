@@ -3261,6 +3261,34 @@
                 }
             }
         },
+        "service.rrm.chanutil": {
+            "type": "object",
+            "properties": {
+                "interval": {
+                    "type": "number",
+                    "minimum": 240
+                },
+                "threshold": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 99,
+                    "examples": [
+                        50
+                    ]
+                },
+                "consecutive-threshold-breach": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "algo": {
+                    "type": "string",
+                    "examples": [
+                        "rcs",
+                        "acs"
+                    ]
+                }
+            }
+        },
         "service.rrm": {
             "type": "object",
             "properties": {
@@ -3270,6 +3298,9 @@
                 },
                 "station-stats-interval": {
                     "type": "number"
+                },
+                "chanutil": {
+                    "$ref": "#/$defs/service.rrm.chanutil"
                 }
             }
         },
