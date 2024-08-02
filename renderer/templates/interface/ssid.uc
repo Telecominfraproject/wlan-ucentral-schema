@@ -83,6 +83,15 @@
 		ssid.radius.dynamic_authorization.host = '127.0.0.1';
 		ssid.radius.dynamic_authorization.port = 3799;
 	}
+	
+	let multi_psk2_radius = false;
+	if (ssid?.encryption?.proto == 'psk2-radius' && ssid.multi_psk) {
+		multi_psk2_radius = true;
+		ssid.encryption.proto = 'psk2';
+		ssid.encryption.key = '';
+		for (let i = 0; i < 32; i++)
+		        ssid.encryption.key += sprintf('%02x', math.rand() % 255);
+	}
 
 	function validate_encryption_ap() {
 		if (ssid.encryption.proto in [ "wpa", "wpa2", "wpa-mixed", "wpa3", "wpa3-mixed", "wpa3-192", "psk2-radius" ] &&
@@ -173,6 +182,7 @@
 				proto: ssid.encryption.proto,
 				key: ssid.encryption.key,
 				dyn_auth: ssid.radius?.dynamic_authorization,
+				acct: ssid.radius?.accounting,
 			};
 		};
 

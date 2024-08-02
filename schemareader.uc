@@ -5800,12 +5800,63 @@ function instantiateInterfaceSsid(location, value, errors) {
 		}
 
 		function parseMultiPsk(location, value, errors) {
-			if (type(value) == "array") {
-				return map(value, (item, i) => instantiateInterfaceSsidMultiPsk(location + "/" + i, item, errors));
+			function parseVariant0(location, value, errors) {
+				if (type(value) == "array") {
+					return map(value, (item, i) => instantiateInterfaceSsidMultiPsk(location + "/" + i, item, errors));
+				}
+
+				if (type(value) != "array")
+					push(errors, [ location, "must be of type array" ]);
+
+				return value;
 			}
 
-			if (type(value) != "array")
-				push(errors, [ location, "must be of type array" ]);
+			function parseVariant1(location, value, errors) {
+				if (type(value) != "bool")
+					push(errors, [ location, "must be of type boolean" ]);
+
+				return value;
+			}
+
+			let success = 0, tryval, tryerr, vvalue = null, verrors = [];
+
+			tryerr = [];
+			tryval = parseVariant0(location, value, tryerr);
+			if (!length(tryerr)) {
+				if (type(vvalue) == "object" && type(tryval) == "object")
+					vvalue = { ...vvalue, ...tryval };
+				else
+					vvalue = tryval;
+
+				success++;
+			}
+			else {
+				push(verrors, join(" and\n", map(tryerr, err => "\t - " + err[1])));
+			}
+
+			tryerr = [];
+			tryval = parseVariant1(location, value, tryerr);
+			if (!length(tryerr)) {
+				if (type(vvalue) == "object" && type(tryval) == "object")
+					vvalue = { ...vvalue, ...tryval };
+				else
+					vvalue = tryval;
+
+				success++;
+			}
+			else {
+				push(verrors, join(" and\n", map(tryerr, err => "\t - " + err[1])));
+			}
+
+			if (success == 0) {
+				if (length(verrors))
+					push(errors, [ location, "must match at least one of the following constraints:\n" + join("\n- or -\n", verrors) ]);
+				else
+					push(errors, [ location, "must match only one variant" ]);
+				return null;
+			}
+
+			value = vvalue;
 
 			return value;
 		}

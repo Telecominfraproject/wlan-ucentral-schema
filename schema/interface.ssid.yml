@@ -138,9 +138,11 @@ properties:
   encryption:
     $ref: "https://ucentral.io/schema/v1/interface/ssid/encryption/"
   multi-psk:
-    type: array
-    items:
-      $ref: "https://ucentral.io/schema/v1/interface/ssid/multi-psk/"
+    anyOf:
+      - type: array
+        items:
+          $ref: "https://ucentral.io/schema/v1/interface/ssid/multi-psk/"
+      - type: boolean
   rrm:
     $ref: "https://ucentral.io/schema/v1/interface/ssid/rrm/"
   rate-limit:

@@ -1635,33 +1635,40 @@
                                     }
                                 },
                                 "multi-psk": {
-                                    "type": "array",
-                                    "items": {
-                                        "type": "object",
-                                        "description": "A SSID can have multiple PSK/VID mappings. Each one of them can be bound to a specific MAC or be a wildcard.",
-                                        "properties": {
-                                            "mac": {
-                                                "type": "string",
-                                                "format": "uc-mac"
-                                            },
-                                            "key": {
-                                                "description": "The Pre Shared Key (PSK) that is used for encryption on the BSS when using any of the WPA-PSK modes.",
-                                                "type": "string",
-                                                "maxLength": 63,
-                                                "minLength": 8
-                                            },
-                                            "vlan-id": {
-                                                "type": "integer",
-                                                "maximum": 4096,
-                                                "examples": [
-                                                    3,
-                                                    100,
-                                                    200,
-                                                    4094
-                                                ]
+                                    "anyOf": [
+                                        {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "description": "A SSID can have multiple PSK/VID mappings. Each one of them can be bound to a specific MAC or be a wildcard.",
+                                                "properties": {
+                                                    "mac": {
+                                                        "type": "string",
+                                                        "format": "uc-mac"
+                                                    },
+                                                    "key": {
+                                                        "description": "The Pre Shared Key (PSK) that is used for encryption on the BSS when using any of the WPA-PSK modes.",
+                                                        "type": "string",
+                                                        "maxLength": 63,
+                                                        "minLength": 8
+                                                    },
+                                                    "vlan-id": {
+                                                        "type": "integer",
+                                                        "maximum": 4096,
+                                                        "examples": [
+                                                            3,
+                                                            100,
+                                                            200,
+                                                            4094
+                                                        ]
+                                                    }
+                                                }
                                             }
+                                        },
+                                        {
+                                            "type": "boolean"
                                         }
-                                    }
+                                    ]
                                 },
                                 "rrm": {
                                     "description": "Enable 802.11k Radio Resource Management (RRM) for this BSS.",
