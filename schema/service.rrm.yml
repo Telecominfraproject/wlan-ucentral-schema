@@ -11,3 +11,5 @@ properties:
     description:
       Periodically send station statistics every N seconds.
     type: number
+  chanutil:
+    $ref: "https://ucentral.io/schema/v1/rrm/chanutil/"

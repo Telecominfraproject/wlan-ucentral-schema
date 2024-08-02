@@ -9206,6 +9206,83 @@ function instantiateServiceRrm(location, value, errors) {
 			obj.station_stats_interval = parseStationStatsInterval(location + "/station-stats-interval", value["station-stats-interval"], errors);
 		}
 
+		function parseChanUtil(location, value, errors) {
+			if (type(value) == "object") {
+				let obj = {};
+
+				function parseInterval(location, value, errors) {
+					if (type(value) in [ "int", "double" ]) {
+						if (value < 240)
+							push(errors, [ location, "must be larger than or equal to 240" ]);
+
+					}
+
+					if (!(type(value) in [ "int", "double" ]))
+						push(errors, [ location, "must be of type number" ]);
+
+					return value;
+				}
+
+				if (exists(value, "interval")) {
+					obj.interval = parseInterval(location + "/interval", value["interval"], errors);
+				}
+
+				function parseThreshold(location, value, errors) {
+					if (type(value) in [ "int", "double" ]) {
+						if (value < 0 || value > 99)
+							push(errors, [ location, "must be within 0-99 range" ]);
+					}
+
+					if (!(type(value) in [ "int", "double" ]))
+						push(errors, [ location, "must be of type number" ]);
+
+					return value;
+				}
+
+				if (exists(value, "threshold")) {
+					obj.threshold = parseThreshold(location + "/threshold", value["threshold"], errors);
+				}
+
+				function parseConsecutiveThresholdBreach(location, value, errors) {
+					if (type(value) == "int") {
+						if (value < 1)
+							push(errors, [ location, "must be larger than or equal to 1" ]);
+					}
+
+					if (type(value) != "int")
+						push(errors, [ location, "must be of type integer" ]);
+
+					return value;
+				}
+
+				if (exists(value, "consecutive-threshold-breach")) {
+					obj.consecutive_threshold_breach = parseConsecutiveThresholdBreach(location + "/consecutive-threshold-breach", value["consecutive-threshold-breach"], errors);
+				}
+
+				function parseAlgo(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "algo")) {
+					obj.algo = parseAlgo(location + "/algo", value["algo"], errors);
+				}
+
+				return obj;
+			}
+
+			if (type(value) != "object")
+				push(errors, [ location, "must be of type object" ]);
+
+			return value;
+		}
+
+		if (exists(value, "chanutil")) {
+			obj.chanutil = parseChanUtil(location + "/chanutil", value["chanutil"], errors);
+		}
+
 		return obj;
 	}
 

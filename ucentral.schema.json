@@ -3257,6 +3257,31 @@
                 },
                 "station-stats-interval": {
                     "type": "number"
+                },
+                "chanutil": {
+                    "type": "object",
+                    "properties": {
+                        "interval": {
+                            "type": "number",
+                            "minimum": 240,
+                            "default": 240
+                        },
+                        "threshold": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 99,
+                            "default": 0
+                        },
+                        "consecutive-threshold-breach": {
+                            "type": "number",
+                            "minimum": 1,
+                            "default": 1
+                        },
+                        "algo": {
+                            "type": "string",
+                            "default": "rcs"
+                        }
+                    }
                 }
             }
         },

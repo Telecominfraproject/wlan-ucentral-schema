@@ -4293,6 +4293,35 @@
                         "station-stats-interval": {
                             "description": "Periodically send station statistics every N seconds.",
                             "type": "number"
+                        },
+                        "chanutil": {
+                            "description": "RRM policy based on Channel Utilization for optimization.",
+                            "type": "object",
+                            "properties": {
+                                "interval": {
+                                    "description": "The interval to check channel utilization (in seconds).",
+                                    "type": "number",
+                                    "minimum": 240,
+                                    "default": 240                                },
+                                "threshold": {
+                                    "description": "The airtime utilization threshold.",
+                                    "type": "number",
+                                    "minimum": 0,
+                                    "maximum": 99,
+                                    "default": 0
+                                },
+                                "consecutive-threshold-breach": {
+                                    "description": "The number of times the Channel Utilization is higher than the threshold before triggering channel optimization.",
+                                    "type": "number",
+                                    "minimum": 1,
+                                    "default": 1
+                                },
+                                "algo": {
+                                    "description": "The algorithm for channel optimization.",
+                                    "type": "string",
+                                    "default": "rcs"
+                                }
+                            }
                         }
                     }
                 },
