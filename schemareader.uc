@@ -5397,6 +5397,28 @@ function instantiateServiceCaptive(location, value, errors) {
 				obj.web_root = parseWebRoot(location + "/web-root", value["web-root"], errors);
 			}
 
+			function parseWebRootUrl(location, value, errors) {
+				if (type(value) != "string")
+					push(errors, [ location, "must be of type string" ]);
+
+				return value;
+			}
+
+			if (exists(value, "web-root-url")) {
+				obj.web_root_url = parseWebRootUrl(location + "/web-root-url", value["web-root-url"], errors);
+			}
+
+			function parseWebRootChecksum(location, value, errors) {
+				if (type(value) != "string")
+					push(errors, [ location, "must be of type string" ]);
+
+				return value;
+			}
+
+			if (exists(value, "web-root-checksum")) {
+				obj.web_root_checksum = parseWebRootChecksum(location + "/web-root-checksum", value["web-root-checksum"], errors);
+			}
+
 			function parseIdleTimeout(location, value, errors) {
 				if (type(value) != "int")
 					push(errors, [ location, "must be of type integer" ]);

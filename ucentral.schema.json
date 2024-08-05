@@ -1969,6 +1969,12 @@
                             "type": "string",
                             "format": "uc-base64"
                         },
+                        "web-root-url": {
+                            "type": "string"
+                        },
+                        "web-root-checksum": {
+                            "type": "string"
+                        },
                         "idle-timeout": {
                             "type": "integer",
                             "default": 600

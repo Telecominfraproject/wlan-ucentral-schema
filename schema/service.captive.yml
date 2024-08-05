@@ -24,6 +24,14 @@ allOf:
           A base64 encoded TAR file with the custom web-root.
         type: string
         format: uc-base64
+      web-root-url:
+        description:
+          A URL where the webroot should be downloaded from.
+        type: string
+      web-root-checksum:
+        description:
+          The SHA256 of the file located at web-root-url.
+        type: string
       idle-timeout:
         description:
           How long may a client be idle before getting removed.
