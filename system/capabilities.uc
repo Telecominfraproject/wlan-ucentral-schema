@@ -5,14 +5,17 @@ push(REQUIRE_SEARCH_PATH,
 
 let ubus = require("ubus");
 let fs = require("fs");
-
+let default_config = {
+	country: 'US'
+};
 let boardfile = fs.open("/etc/board.json", "r");
 let board = json(boardfile.read("all"));
 boardfile.close();
 let restrictfile = fs.open("/etc/ucentral/restrictions.json", "r");
 
 capa = {
-	'secure-rtty': true
+	'secure-rtty': true,
+	'default-config': true,
 };
 if (restrictfile) {
 	capa.restrictions = json(restrictfile.read("all")) || {};
@@ -37,7 +40,37 @@ if (length(schema_vendor))
 	schema.vendor = schema_vendor;
 
 ctx = ubus.connect();
+
+if (board.wifi?.country) {
+	let countries = split(board.wifi.country, ' ');
+	default_config.country = countries[0];
+	capa.country_codes = countries;
+} 
+
+if (fs.stat('/tmp/squashfs')) {
+	let pipe = fs.popen('fw_printenv -n country');
+	let country = replace(pipe.read("all"), '\n', '');
+	pipe.close();
+	if (country)
+		default_config.country = country;
+	else
+		system('fw_setenv country ' + default_config.country); 
+	fs.writefile('/etc/ucentral/ucentral.defaults', default_config);
+} else {
+	if (!fs.stat('/certificates/ucentral.defaults')) {
+		fs.writefile('/certificates/ucentral.defaults', default_config);
+	}
+	if (fs.stat('/certificates/ucentral.defaults')) {
+		let defaults = fs.readfile('/certificates/ucentral.defaults');
+		if (json(defaults))
+			default_config = json(defaults);
+	}
+	fs.writefile('/etc/ucentral/ucentral.defaults', default_config);
+}
+capa.country = default_config.country || 'US';
+
 let wifi = require("wifi.phy");
+
 capa.compatible = replace(board.model.id, ',', '_');
 capa.model = board.model.name;
 
@@ -104,15 +137,11 @@ for (let k, v in board.network) {
 if (length(macs))
 	capa.macaddr = macs;
 
-if (board.wifi?.country)
-	capa.country_code = split(board.wifi.country, ' ');
-
 if (board.system?.label_macaddr)
 	capa.label_macaddr = board.system?.label_macaddr;
 
 if (length(wifi))
 	capa.wifi = wifi;
 
-capafile = fs.open("/etc/ucentral/capabilities.json", "w");
-capafile.write(capa);
-capafile.close();
+fs.writefile('/etc/ucentral/capabilities.json', capa);
+
