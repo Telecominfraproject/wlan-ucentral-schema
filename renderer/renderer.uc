@@ -21,6 +21,10 @@ if (developer != 'developer=1') {
 	restrict = restrictfile ? json(restrictfile.read("all")) : {};
 }
 
+let default_config = fs.readfile('/etc/ucentral/ucentral.defaults');
+default_config = default_config ? json(default_config) : {};
+default_config.country ??= 'US';
+
 let serial = cursor.get("ucentral", "config", "serial");
 
 assert(cursor, "Unable to instantiate uci");
@@ -1151,6 +1155,7 @@ return /** @lends uCentral.prototype */ {
 			cursor,
 			capab,
 			restrict,
+			default_config,
 
 			/** @member {uCentral.files} */
 			files,

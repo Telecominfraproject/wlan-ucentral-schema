@@ -1,6 +1,7 @@
 {%
 	let fs = require('fs');
 	let phys = wiphy.lookup_by_band(radio.band);
+	let mpsk = services.lookup_ssids_by_mpsk();
 
 	if (!length(phys)) {
 		warn("Can't find any suitable radio phy for band %s radio settings", radio.band);
@@ -54,10 +55,7 @@
 					 145, 149, 153, 157, 161, 165, 169, 173, 177, 181, 185, 189, 193, 197, 201, 205,
 					 209, 213, 217, 221, 225, 229, 233 ];
 
-	if (capab.country_code && !(radio.country in capab.country_code)) {
-		warn("Overriding country code to %s", capab.country_code[0]);
-		radio.country = capab.country_code[0];
-	}
+	radio.country ??= default_config.country;
 
 	if (length(restrict.country) && !(radio.country in restrict.country)) {
 		warn("Country code is restricted");
@@ -216,7 +214,7 @@ set wireless.{{ phy.section }}.chan_bw={{ radio.bandwidth }}
 set wireless.{{ phy.section }}.maxassoc={{ radio.maximum_clients }}
 set wireless.{{ phy.section }}.maxassoc_ignore_probe={{ b(radio.maximum_clients_ignore_probe) }}
 set wireless.{{ phy.section }}.noscan=1
-set wireless.{{ phy.section }}.reconf=1
+set wireless.{{ phy.section }}.reconf={{ mpsk ? 0 : 1 }}
 set wireless.{{ phy.section }}.acs_exclude_dfs={{ b(!radio.allow_dfs) }}
 {% for (let channel in radio.valid_channels): %}
 {%    if (!radio.allow_dfs && channel in phy.dfs_channels) continue %}
