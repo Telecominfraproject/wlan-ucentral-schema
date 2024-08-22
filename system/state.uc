@@ -114,6 +114,7 @@ for (let k, v in stations) {
 	for (let assoc in v)
 		stations_lookup[k][assoc.station] = assoc;
 }
+
 fs.writefile('/tmp/' + (telemetry ? 'telemetry.json' : 'state.json'), { ports, devstats, stations: stations_lookup, devstats });
 
 if (fingerprint) {
@@ -135,23 +136,46 @@ let wireless = cursor.get_all("wireless");
 let snoop = ctx.call("dhcpsnoop", "dump");
 let captive = ctx.call("spotfilter", "client_list", { "interface": "hotspot"});
 
+function generate_deltas(counters, prev_counters) {
+	let ret = {};
+ 	for (let k in [ "rx_packets", "tx_packets", "rx_bytes", "tx_bytes", "tx_retries", "tx_failed", "rx_errors", "tx_errors", "rx_dropped", "tx_dropped",  "multicast", "collisions" ]) {
+		if (prev_counters[k] < 0)
+			prev_counters[k] = 0;
+		ret[k] = counters[k] - prev_counters[k];
+		if (ret[k] < 0) {
+			if (counters[k] > 0)
+				ret[k] = counters[k];
+			else
+				ret[k] = 0;
+		}
+	}
+	return ret;
+}
 
 function ports_deltas(port) {
 	if (!ports[port]?.counters || !previous.ports[port]?.counters)
 		return {};
 
-	let ret = {};
-	for (let k in ports[port].counters)
-		ret[k] = ports[port].counters[k] - (previous.ports[port]?.counters[k] || 0);
-	return ret;
+	return generate_deltas(ports[port].counters, previous.ports[port].counters);
 }
 
 function stations_deltas(assoc, iface) {
 	let ret = {};
 	if (!previous.stations[iface] || !previous.stations[iface][assoc.station])
 		return ret;
-	for (let k in [ "rx_packets", "tx_packets", "rx_bytes", "tx_bytes", "tx_retries", "tx_failed" ])
-		ret[k] = assoc[k] - (previous.stations[iface][assoc.station][k] || 0);
+	for (let k in [ "rx_packets", "tx_packets", "rx_bytes", "tx_bytes", "tx_retries", "tx_failed" ]) {
+		if (assoc["connected_time"] < previous.stations[iface][assoc.station]["connected_time"]) {
+			ret[k] = assoc[k];
+		} else {
+			ret[k] = assoc[k] - (previous.stations[iface][assoc.station][k] || 0);
+		}
+		// Stil negative?
+		if (ret[k] < 0 && assoc[k] > 0) {
+			ret[k] = assoc[k];
+		} else if (ret[k] < 0) {
+			ret[k] = 0;
+		}
+	}
 	return ret;
 }
 
