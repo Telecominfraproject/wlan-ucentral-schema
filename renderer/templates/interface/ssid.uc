@@ -203,7 +203,7 @@
 		if ('6G' in phy.band)
 			return 2;
 
-		if (!ssid.encryption)
+		if (!ssid.encryption || ssid.encryption.proto in [ "none" ])
 			return 0;
 
 		if (ssid.encryption.proto in [ "sae-mixed", "wpa3-mixed" ])
