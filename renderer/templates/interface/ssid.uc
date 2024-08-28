@@ -132,9 +132,9 @@
 		return false;
 	}
 
-	function validate_encryption(phy) {
-		if ('6G' in phy.band && !(ssid?.encryption.proto in [ "wpa3", "wpa3-mixed", "wpa3-192", "sae", "sae-mixed", "owe" ])) {
-			warn("Invalid encryption settings for 6G band");
+	function validate_encryption(band) {
+		if (band == "6G" && !(ssid?.encryption.proto in [ "wpa3", "wpa3-mixed", "wpa3-192", "sae", "sae-mixed", "owe" ])) {
+			warn("Invalid encryption settings for 6G band ");
 			return null;
 		}
 
@@ -199,8 +199,8 @@
 		warn("Can't find any valid encryption settings");
 	}
 
-	function match_ieee80211w(phy) {
-		if ('6G' in phy.band)
+	function match_ieee80211w(band) {
+		if (band == "6G")
 			return 2;
 
 		if (!ssid.encryption || ssid.encryption.proto in [ "none" ])
@@ -215,8 +215,8 @@
 		return index([ "disabled", "optional", "required" ], ssid.encryption.ieee80211w);
 	}
 
-	function match_sae_pwe(phy) {
-		if ('6G' in phy.band)
+	function match_sae_pwe(band) {
+		if (band == "6G")
 			return 1;
 		return '';
 	}
@@ -293,6 +293,14 @@
 		return '';
 	}
 
+	function match_band(phy) {
+		for (let band in ssid.wifi_bands) {
+			if (band in phy.band)
+				return band;
+		}
+		return null;
+	}
+
 	let radius_gw_proxy = ssid.services && (index(ssid.services, "radius-gw-proxy") >= 0);
 
 	if ('captive' in ssid.services && !ssid.captive)
@@ -330,7 +338,9 @@
 {%   let ssidname = basename + '_' + n + '_' + count; %}
 {%   let section = (owe ? 'o' : '' ) + ssidname; %}
 {%   let id = wiphy.allocate_ssid_section_id(phy) %}
-{%   let crypto = validate_encryption(phy); %}
+{%   let band = match_band(phy); %}
+{%   if (!band) continue; %}
+{%   let crypto = validate_encryption(band); %}
 {%   let ifname = calculate_ifname(basename) %}
 {%   if (!crypto) continue; %}
 set wireless.{{ section }}=wifi-iface
@@ -373,13 +383,13 @@ set wireless.{{ section }}.disassoc_low_ack='{{ b(ssid.disassoc_low_ack) }}'
 set wireless.{{ section }}.auth_cache='{{ b(ssid.encryption?.key_caching) }}'
 {%   endif %}
 
-{% if ('6G' in phy.band): %}
+{% if (band == "6G"): %}
 set wireless.{{ section }}.fils_discovery_max_interval={{ ssid.fils_discovery_interval }}
 {%   endif %}
 
 # Crypto settings
-set wireless.{{ section }}.ieee80211w={{ match_ieee80211w(phy) }}
-set wireless.{{ section }}.sae_pwe={{ match_sae_pwe(phy) }}
+set wireless.{{ section }}.ieee80211w={{ match_ieee80211w(band) }}
+set wireless.{{ section }}.sae_pwe={{ match_sae_pwe(band) }}
 set wireless.{{ section }}.encryption={{ crypto.proto }}
 set wireless.{{ section }}.key={{ s(crypto.key) }}
 
