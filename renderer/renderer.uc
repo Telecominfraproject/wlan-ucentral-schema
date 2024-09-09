@@ -727,7 +727,9 @@ let services = {
 			if (!interface.ssids)
 				continue;
 			for (let ssid in interface.ssids) {
-				if (!length(ssid.multi_psk))
+				if (type(ssid.multi_psk) == 'bool' && ssid.multi_psk)
+					mpsk = true;
+				else if (!length(ssid.multi_psk))
 					continue;
 				mpsk = true;
 			}
