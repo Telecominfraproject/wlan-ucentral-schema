@@ -49,3 +49,5 @@ properties:
     $ref: 'https://ucentral.io/schema/v1/service/rrm/'
   fingerprint:
     $ref: 'https://ucentral.io/schema/v1/service/fingerprint/'
+  snmpd:
+    $ref: 'https://ucentral.io/schema/v1/service/snmpd/'

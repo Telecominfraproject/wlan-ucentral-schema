@@ -1,0 +1,18 @@
+description:
+  List of community permissions.
+type: array
+items:
+  type: object
+  properties:
+      miboid:
+        description:
+          OID used by pass protocol.
+        type: string
+      name:
+        description:
+          Name of the MIB.
+        type: string
+      prog:
+        description:
+          MIB script.
+        type: string
