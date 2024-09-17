@@ -9456,6 +9456,834 @@ function instantiateServiceFingerprint(location, value, errors) {
 	return value;
 }
 
+function instantiateServiceSnmpdAgent(location, value, errors) {
+	if (type(value) == "object") {
+		let obj = {};
+
+		function parseAgentaddress(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "agentaddress")) {
+			obj.agentaddress = parseAgentaddress(location + "/agentaddress", value["agentaddress"], errors);
+		}
+		else {
+			obj.agentaddress = "UDP:161";
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
+
+	return value;
+}
+
+function instantiateServiceSnmpdAccess(location, value, errors) {
+	if (type(value) == "object") {
+		let obj = {};
+
+		function parsePublic_access(location, value, errors) {
+			if (type(value) == "object") {
+				let obj = {};
+
+				function parseContext(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "context")) {
+					obj.context = parseContext(location + "/context", value["context"], errors);
+				}
+
+				function parseGroup(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "group")) {
+					obj.group = parseGroup(location + "/group", value["group"], errors);
+				}
+
+				function parseLevel(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "level")) {
+					obj.level = parseLevel(location + "/level", value["level"], errors);
+				}
+
+				function parseNotify(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "notify")) {
+					obj.notify = parseNotify(location + "/notify", value["notify"], errors);
+				}
+
+				function parsePrefix(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "prefix")) {
+					obj.prefix = parsePrefix(location + "/prefix", value["prefix"], errors);
+				}
+
+				function parseRead(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "read")) {
+					obj.read = parseRead(location + "/read", value["read"], errors);
+				}
+
+				function parseVersion(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "version")) {
+					obj.version = parseVersion(location + "/version", value["version"], errors);
+				}
+
+				function parseWrite(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "write")) {
+					obj.write = parseWrite(location + "/write", value["write"], errors);
+				}
+
+				return obj;
+			}
+
+			if (type(value) != "object")
+				push(errors, [ location, "must be of type object" ]);
+
+			return value;
+		}
+
+		if (exists(value, "public_access")) {
+			obj.public_access = parsePublic_access(location + "/public_access", value["public_access"], errors);
+		}
+
+		function parsePrivate_access(location, value, errors) {
+			if (type(value) == "object") {
+				let obj = {};
+
+				function parseContext(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "context")) {
+					obj.context = parseContext(location + "/context", value["context"], errors);
+				}
+
+				function parseGroup(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "group")) {
+					obj.group = parseGroup(location + "/group", value["group"], errors);
+				}
+
+				function parseLevel(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "level")) {
+					obj.level = parseLevel(location + "/level", value["level"], errors);
+				}
+
+				function parseNotify(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "notify")) {
+					obj.notify = parseNotify(location + "/notify", value["notify"], errors);
+				}
+
+				function parsePrefix(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "prefix")) {
+					obj.prefix = parsePrefix(location + "/prefix", value["prefix"], errors);
+				}
+
+				function parseRead(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "read")) {
+					obj.read = parseRead(location + "/read", value["read"], errors);
+				}
+
+				function parseVersion(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "version")) {
+					obj.version = parseVersion(location + "/version", value["version"], errors);
+				}
+
+				function parseWrite(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "write")) {
+					obj.write = parseWrite(location + "/write", value["write"], errors);
+				}
+
+				return obj;
+			}
+
+			if (type(value) != "object")
+				push(errors, [ location, "must be of type object" ]);
+
+			return value;
+		}
+
+		if (exists(value, "private_access")) {
+			obj.private_access = parsePrivate_access(location + "/private_access", value["private_access"], errors);
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
+
+	return value;
+}
+
+function instantiateServiceSnmpdAgentx(location, value, errors) {
+	if (type(value) == "object") {
+		let obj = {};
+
+		function parseType(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "type")) {
+			obj.type = parseType(location + "/type", value["type"], errors);
+		}
+		else {
+			obj.type = "master";
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
+
+	return value;
+}
+
+function instantiateServiceSnmpdCom2sec(location, value, errors) {
+	if (type(value) == "object") {
+		let obj = {};
+
+		function parsePublic(location, value, errors) {
+			if (type(value) == "object") {
+				let obj = {};
+
+				function parseCommunity(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "community")) {
+					obj.community = parseCommunity(location + "/community", value["community"], errors);
+				}
+
+				function parseSecname(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "secname")) {
+					obj.secname = parseSecname(location + "/secname", value["secname"], errors);
+				}
+
+				function parseSource(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "source")) {
+					obj.source = parseSource(location + "/source", value["source"], errors);
+				}
+
+				return obj;
+			}
+
+			if (type(value) != "object")
+				push(errors, [ location, "must be of type object" ]);
+
+			return value;
+		}
+
+		if (exists(value, "public")) {
+			obj.public = parsePublic(location + "/public", value["public"], errors);
+		}
+
+		function parsePrivate(location, value, errors) {
+			if (type(value) == "object") {
+				let obj = {};
+
+				function parseCommunity(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "community")) {
+					obj.community = parseCommunity(location + "/community", value["community"], errors);
+				}
+
+				function parseSecname(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "secname")) {
+					obj.secname = parseSecname(location + "/secname", value["secname"], errors);
+				}
+
+				function parseSource(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "source")) {
+					obj.source = parseSource(location + "/source", value["source"], errors);
+				}
+
+				return obj;
+			}
+
+			if (type(value) != "object")
+				push(errors, [ location, "must be of type object" ]);
+
+			return value;
+		}
+
+		if (exists(value, "private")) {
+			obj.private = parsePrivate(location + "/private", value["private"], errors);
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
+
+	return value;
+}
+
+function instantiateServiceSnmpdGeneral(location, value, errors) {
+	if (type(value) == "object") {
+		let obj = {};
+
+		function parseEnabled(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "enabled")) {
+			obj.enabled = parseEnabled(location + "/enabled", value["enabled"], errors);
+		}
+		else {
+			obj.enabled = false;
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
+
+	return value;
+}
+
+function instantiateServiceSnmpdPass(location, value, errors) {
+	if (type(value) == "array") {
+		function parseItem(location, value, errors) {
+			if (type(value) == "object") {
+				let obj = {};
+
+				function parseMiboid(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "miboid")) {
+					obj.miboid = parseMiboid(location + "/miboid", value["miboid"], errors);
+				}
+
+				function parseName(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "name")) {
+					obj.name = parseName(location + "/name", value["name"], errors);
+				}
+
+				function parseProg(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "prog")) {
+					obj.prog = parseProg(location + "/prog", value["prog"], errors);
+				}
+
+				return obj;
+			}
+
+			if (type(value) != "object")
+				push(errors, [ location, "must be of type object" ]);
+
+			return value;
+		}
+
+		return map(value, (item, i) => parseItem(location + "/" + i, item, errors));
+	}
+
+	if (type(value) != "array")
+		push(errors, [ location, "must be of type array" ]);
+
+	return value;
+}
+
+function instantiateServiceSnmpdGroup(location, value, errors) {
+	if (type(value) == "object") {
+		let obj = {};
+
+		function parsePublic_v1(location, value, errors) {
+			if (type(value) == "object") {
+				let obj = {};
+
+				function parseGroup(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "group")) {
+					obj.group = parseGroup(location + "/group", value["group"], errors);
+				}
+
+				function parseSecname(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "secname")) {
+					obj.secname = parseSecname(location + "/secname", value["secname"], errors);
+				}
+
+				function parseVersion(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "version")) {
+					obj.version = parseVersion(location + "/version", value["version"], errors);
+				}
+
+				return obj;
+			}
+
+			if (type(value) != "object")
+				push(errors, [ location, "must be of type object" ]);
+
+			return value;
+		}
+
+		if (exists(value, "public_v1")) {
+			obj.public_v1 = parsePublic_v1(location + "/public_v1", value["public_v1"], errors);
+		}
+
+		function parsePrivate_v1(location, value, errors) {
+			if (type(value) == "object") {
+				let obj = {};
+
+				function parseGroup(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "group")) {
+					obj.group = parseGroup(location + "/group", value["group"], errors);
+				}
+
+				function parseSecname(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "secname")) {
+					obj.secname = parseSecname(location + "/secname", value["secname"], errors);
+				}
+
+				function parseVersion(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "version")) {
+					obj.version = parseVersion(location + "/version", value["version"], errors);
+				}
+
+				return obj;
+			}
+
+			if (type(value) != "object")
+				push(errors, [ location, "must be of type object" ]);
+
+			return value;
+		}
+
+		if (exists(value, "private_v1")) {
+			obj.private_v1 = parsePrivate_v1(location + "/private_v1", value["private_v1"], errors);
+		}
+
+		function parsePrivate_v2c(location, value, errors) {
+			if (type(value) == "object") {
+				let obj = {};
+
+				function parseGroup(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "group")) {
+					obj.group = parseGroup(location + "/group", value["group"], errors);
+				}
+
+				function parseSecname(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "secname")) {
+					obj.secname = parseSecname(location + "/secname", value["secname"], errors);
+				}
+
+				function parseVersion(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "version")) {
+					obj.version = parseVersion(location + "/version", value["version"], errors);
+				}
+
+				return obj;
+			}
+
+			if (type(value) != "object")
+				push(errors, [ location, "must be of type object" ]);
+
+			return value;
+		}
+
+		if (exists(value, "private_v2c")) {
+			obj.private_v2c = parsePrivate_v2c(location + "/private_v2c", value["private_v2c"], errors);
+		}
+
+		function parsePublic_v2c(location, value, errors) {
+			if (type(value) == "object") {
+				let obj = {};
+
+				function parseGroup(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "group")) {
+					obj.group = parseGroup(location + "/group", value["group"], errors);
+				}
+
+				function parseSecname(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "secname")) {
+					obj.secname = parseSecname(location + "/secname", value["secname"], errors);
+				}
+
+				function parseVersion(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "version")) {
+					obj.version = parseVersion(location + "/version", value["version"], errors);
+				}
+
+				return obj;
+			}
+
+			if (type(value) != "object")
+				push(errors, [ location, "must be of type object" ]);
+
+			return value;
+		}
+
+		if (exists(value, "public_v2c")) {
+			obj.public_v2c = parsePublic_v2c(location + "/public_v2c", value["public_v2c"], errors);
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
+
+	return value;
+}
+
+function instantiateServiceSnmpdSystem(location, value, errors) {
+	if (type(value) == "object") {
+		let obj = {};
+
+		function parseSysContact(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "sysContact")) {
+			obj.sysContact = parseSysContact(location + "/sysContact", value["sysContact"], errors);
+		}
+
+		function parseSysLocation(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "sysLocation")) {
+			obj.sysLocation = parseSysLocation(location + "/sysLocation", value["sysLocation"], errors);
+		}
+
+		function parseSysName(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "sysName")) {
+			obj.sysName = parseSysName(location + "/sysName", value["sysName"], errors);
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
+
+	return value;
+}
+
+function instantiateServiceSnmpdView(location, value, errors) {
+	if (type(value) == "object") {
+		let obj = {};
+
+		function parseOid(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "oid")) {
+			obj.oid = parseOid(location + "/oid", value["oid"], errors);
+		}
+
+		function parseType(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "type")) {
+			obj.type = parseType(location + "/type", value["type"], errors);
+		}
+
+		function parseViewname(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "viewname")) {
+			obj.viewname = parseViewname(location + "/viewname", value["viewname"], errors);
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
+
+	return value;
+}
+
+function instantiateServiceSnmpd(location, value, errors) {
+	if (type(value) == "object") {
+		let obj = {};
+
+		if (exists(value, "agent")) {
+			obj.agent = instantiateServiceSnmpdAgent(location + "/agent", value["agent"], errors);
+		}
+
+		if (exists(value, "access")) {
+			obj.access = instantiateServiceSnmpdAccess(location + "/access", value["access"], errors);
+		}
+
+		if (exists(value, "agentx")) {
+			obj.agentx = instantiateServiceSnmpdAgentx(location + "/agentx", value["agentx"], errors);
+		}
+
+		if (exists(value, "com2sec")) {
+			obj.com2sec = instantiateServiceSnmpdCom2sec(location + "/com2sec", value["com2sec"], errors);
+		}
+
+		if (exists(value, "general")) {
+			obj.general = instantiateServiceSnmpdGeneral(location + "/general", value["general"], errors);
+		}
+
+		if (exists(value, "pass")) {
+			obj.pass = instantiateServiceSnmpdPass(location + "/pass", value["pass"], errors);
+		}
+
+		if (exists(value, "group")) {
+			obj.group = instantiateServiceSnmpdGroup(location + "/group", value["group"], errors);
+		}
+
+		if (exists(value, "system")) {
+			obj.system = instantiateServiceSnmpdSystem(location + "/system", value["system"], errors);
+		}
+
+		if (exists(value, "view")) {
+			obj.view = instantiateServiceSnmpdView(location + "/view", value["view"], errors);
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
+
+	return value;
+}
+
 function instantiateService(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
@@ -9550,6 +10378,10 @@ function instantiateService(location, value, errors) {
 
 		if (exists(value, "fingerprint")) {
 			obj.fingerprint = instantiateServiceFingerprint(location + "/fingerprint", value["fingerprint"], errors);
+		}
+
+		if (exists(value, "snmpd")) {
+			obj.snmpd = instantiateServiceSnmpd(location + "/snmpd", value["snmpd"], errors);
 		}
 
 		return obj;
