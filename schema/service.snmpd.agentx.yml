@@ -1,0 +1,9 @@
+description:
+  Configure the role in AgentX protocol.
+type: object
+properties:
+  type:
+    description:
+      AgentX protocol role.
+    type: string
+    default: master

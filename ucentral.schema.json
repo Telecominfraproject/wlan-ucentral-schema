@@ -3334,6 +3334,267 @@
                 }
             }
         },
+        "service.snmpd.agent": {
+            "type": "object",
+            "properties": {
+                "agentaddress": {
+                    "type": "string",
+                    "default": "UDP:161"
+                }
+            }
+        },
+        "service.snmpd.access": {
+            "type": "object",
+            "properties": {
+                "public_access": {
+                    "type": "object",
+                    "properties": {
+                        "context": {
+                            "type": "string"
+                        },
+                        "group": {
+                            "type": "string"
+                        },
+                        "level": {
+                            "type": "string"
+                        },
+                        "notify": {
+                            "type": "string"
+                        },
+                        "prefix": {
+                            "type": "string"
+                        },
+                        "read": {
+                            "type": "string"
+                        },
+                        "version": {
+                            "type": "string"
+                        },
+                        "write": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "private_access": {
+                    "type": "object",
+                    "properties": {
+                        "context": {
+                            "type": "string"
+                        },
+                        "group": {
+                            "type": "string"
+                        },
+                        "level": {
+                            "type": "string"
+                        },
+                        "notify": {
+                            "type": "string"
+                        },
+                        "prefix": {
+                            "type": "string"
+                        },
+                        "read": {
+                            "type": "string"
+                        },
+                        "version": {
+                            "type": "string"
+                        },
+                        "write": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "service.snmpd.agentx": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "default": "master"
+                }
+            }
+        },
+        "service.snmpd.com2sec": {
+            "type": "object",
+            "properties": {
+                "public": {
+                    "type": "object",
+                    "properties": {
+                        "community": {
+                            "type": "string"
+                        },
+                        "secname": {
+                            "type": "string"
+                        },
+                        "source": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "private": {
+                    "type": "object",
+                    "properties": {
+                        "community": {
+                            "type": "string"
+                        },
+                        "secname": {
+                            "type": "string"
+                        },
+                        "source": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "service.snmpd.general": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "default": false
+                }
+            }
+        },
+        "service.snmpd.pass": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "miboid": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "prog": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "service.snmpd.group": {
+            "type": "object",
+            "properties": {
+                "public_v1": {
+                    "type": "object",
+                    "properties": {
+                        "group": {
+                            "type": "string"
+                        },
+                        "secname": {
+                            "type": "string"
+                        },
+                        "version": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "private_v1": {
+                    "type": "object",
+                    "properties": {
+                        "group": {
+                            "type": "string"
+                        },
+                        "secname": {
+                            "type": "string"
+                        },
+                        "version": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "private_v2c": {
+                    "type": "object",
+                    "properties": {
+                        "group": {
+                            "type": "string"
+                        },
+                        "secname": {
+                            "type": "string"
+                        },
+                        "version": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "public_v2c": {
+                    "type": "object",
+                    "properties": {
+                        "group": {
+                            "type": "string"
+                        },
+                        "secname": {
+                            "type": "string"
+                        },
+                        "version": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "service.snmpd.system": {
+            "type": "object",
+            "properties": {
+                "sysContact": {
+                    "type": "string"
+                },
+                "sysLocation": {
+                    "type": "string"
+                },
+                "sysName": {
+                    "type": "string"
+                }
+            }
+        },
+        "service.snmpd.view": {
+            "type": "object",
+            "properties": {
+                "oid": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "viewname": {
+                    "type": "string"
+                }
+            }
+        },
+        "service.snmpd": {
+            "type": "object",
+            "properties": {
+                "agent": {
+                    "$ref": "#/$defs/service.snmpd.agent"
+                },
+                "access": {
+                    "$ref": "#/$defs/service.snmpd.access"
+                },
+                "agentx": {
+                    "$ref": "#/$defs/service.snmpd.agentx"
+                },
+                "com2sec": {
+                    "$ref": "#/$defs/service.snmpd.com2sec"
+                },
+                "general": {
+                    "$ref": "#/$defs/service.snmpd.general"
+                },
+                "pass": {
+                    "$ref": "#/$defs/service.snmpd.pass"
+                },
+                "group": {
+                    "$ref": "#/$defs/service.snmpd.group"
+                },
+                "system": {
+                    "$ref": "#/$defs/service.snmpd.system"
+                },
+                "view": {
+                    "$ref": "#/$defs/service.snmpd.view"
+                }
+            }
+        },
         "service": {
             "type": "object",
             "properties": {
@@ -3405,6 +3666,9 @@
                 },
                 "fingerprint": {
                     "$ref": "#/$defs/service.fingerprint"
+                },
+                "snmpd": {
+                    "$ref": "#/$defs/service.snmpd"
                 }
             }
         },

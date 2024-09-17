@@ -1,0 +1,16 @@
+description:
+  View configuration.
+type: object
+properties:
+    oid:
+      description:
+        Define the source oid tree for the view.
+      type: string
+    type:
+      description:
+        Type is either included or excluded.
+      type: string
+    viewname:
+      description:
+        View name.
+      type: string
