@@ -1,0 +1,16 @@
+description:
+  System information used by SNMP service.
+type: object
+properties:
+  sysContact:
+    description:
+      Contact information.
+    type: string
+  sysLocation:
+    description:
+      Location information.
+    type: string
+  sysName:
+    description:
+      System name.
+    type: string

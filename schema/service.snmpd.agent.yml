@@ -1,0 +1,9 @@
+description:
+  Configure the SNMP agent.
+type: object
+properties:
+  agentaddress:
+    description:
+      Define the agent configuration.
+    type: string
+    default: UDP:161

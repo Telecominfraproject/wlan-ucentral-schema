@@ -1,0 +1,22 @@
+description:
+  SNMP sections.
+type: object
+properties:
+  agent:
+    $ref: "https://ucentral.io/schema/v1/service/snmpd/agent/"
+  access:
+    $ref: "https://ucentral.io/schema/v1/service/snmpd/access/"
+  agentx:
+    $ref: "https://ucentral.io/schema/v1/service/snmpd/agentx/"
+  com2sec:
+    $ref: "https://ucentral.io/schema/v1/service/snmpd/com2sec/"
+  general:
+    $ref: "https://ucentral.io/schema/v1/service/snmpd/general/"
+  pass:
+    $ref: "https://ucentral.io/schema/v1/service/snmpd/pass/"
+  group:
+    $ref: "https://ucentral.io/schema/v1/service/snmpd/group/"
+  system:
+    $ref: "https://ucentral.io/schema/v1/service/snmpd/system/"
+  view:
+    $ref: "https://ucentral.io/schema/v1/service/snmpd/view/"
