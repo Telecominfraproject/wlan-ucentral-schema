@@ -94,6 +94,10 @@
                     "type": "boolean",
                     "default": false
                 },
+                "system-password": {
+                    "description": "System-config string that holds the password for main (root / admin) user to apply.",
+                    "type": "string"
+                },
                 "beacon-advertisement": {
                     "description": "The TIP vendor IEs that shall be added to beacons",
                     "type": "object",
