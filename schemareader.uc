@@ -164,6 +164,17 @@ function instantiateUnit(location, value, errors) {
 			obj.random_password = false;
 		}
 
+		function parseSystemPassword(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "system-password")) {
+			obj.system_password = parseSystemPassword(location + "/system-password", value["system-password"], errors);
+		}
+
 		function parseBeaconAdvertisement(location, value, errors) {
 			if (type(value) == "object") {
 				let obj = {};

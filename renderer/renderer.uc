@@ -996,6 +996,14 @@ let shell = {
 		}
 		system("(echo " + passwd + "; sleep 1; echo " + passwd + ") | passwd root");
 		conn.call("ucentral", "password", { passwd });
+	},
+
+	/**
+	 * Set system password
+	 */
+	system_password: function(passwd) {
+		system("(echo " + passwd + "; sleep 1; echo " + passwd + ") | passwd root");
+		conn.call("ucentral", "password", { passwd });
 	}
 };
 
