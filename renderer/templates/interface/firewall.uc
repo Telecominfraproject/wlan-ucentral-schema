@@ -119,7 +119,6 @@ add firewall rule
 set firewall.@rule[-1].name='Allow-DNS-{{ name }}'
 set firewall.@rule[-1].src={{ s(name) }}
 set firewall.@rule[-1].dest_port='53'
-set firewall.@rule[-1].family='ipv4'
 add_list firewall.@rule[-1].proto='tcp'
 add_list firewall.@rule[-1].proto='udp'
 set firewall.@rule[-1].target='ACCEPT'
