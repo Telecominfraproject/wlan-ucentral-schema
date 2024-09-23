@@ -1,7 +1,6 @@
 {%
 	let fs = require('fs');
 	let phys = wiphy.lookup_by_band(radio.band);
-	let mpsk = services.lookup_ssids_by_mpsk();
 
 	if (!length(phys)) {
 		warn("Can't find any suitable radio phy for band %s radio settings", radio.band);
@@ -214,7 +213,7 @@ set wireless.{{ phy.section }}.chan_bw={{ radio.bandwidth }}
 set wireless.{{ phy.section }}.maxassoc={{ radio.maximum_clients }}
 set wireless.{{ phy.section }}.maxassoc_ignore_probe={{ b(radio.maximum_clients_ignore_probe) }}
 set wireless.{{ phy.section }}.noscan=1
-set wireless.{{ phy.section }}.reconf={{ mpsk ? 0 : 1 }}
+set wireless.{{ phy.section }}.reconf={{ 1 }}
 set wireless.{{ phy.section }}.acs_exclude_dfs={{ b(!radio.allow_dfs) }}
 {% for (let channel in radio.valid_channels): %}
 {%    if (!radio.allow_dfs && channel in phy.dfs_channels) continue %}

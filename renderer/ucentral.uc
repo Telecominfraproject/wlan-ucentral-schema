@@ -95,6 +95,7 @@ try {
 		}
 
 		set_service_state(true);
+		ubus.call('mpsk', 'flush');
 	} else {
 		error = 1;
 	}
