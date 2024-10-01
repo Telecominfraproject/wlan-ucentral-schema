@@ -18,9 +18,15 @@ inputfile.close();
 let logs = [];
 
 function set_service_state(state) {
+	let services = ubus.call('service', 'list');
 	for (let service, enable in renderer.services_state()) {
 		if (enable != state)
 			continue;
+		if (enable == 'no-restart')
+			if (services[service] && services[service]?.instances[service]?.running) {
+				printf("%s is already running\n", service);
+				continue;
+			}
 		printf("%s %s\n", service, enable ? "starting" : "stopping");
 		system(sprintf("/etc/init.d/%s %s", service, (enable || enable == 'early') ? "restart" : "stop"));
 	}
@@ -95,6 +101,7 @@ try {
 		}
 
 		set_service_state(true);
+		set_service_state('no-restart');
 		ubus.call('mpsk', 'flush');
 	} else {
 		error = 1;

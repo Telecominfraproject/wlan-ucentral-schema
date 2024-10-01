@@ -671,6 +671,8 @@ let services = {
 		if (!this.state[name]) {
 			if (state == 'early')
 				this.state[name] = 'early';
+			else if (state == 'no-restart')
+				this.state[name] = 'no-restart';
 			else
 				this.state[name] = state ? true : false;
 		}
