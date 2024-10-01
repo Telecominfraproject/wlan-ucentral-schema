@@ -371,7 +371,7 @@ set wireless.{{ section }}.wds='{{ b(match_wds()) }}'
 set wireless.{{ section }}.wpa_disable_eapol_key_retries='{{ b(ssid.wpa_disable_eapol_key_retries) }}'
 set wireless.{{ section }}.vendor_elements='{{ ssid.vendor_elements }}'
 set wireless.{{ section }}.disassoc_low_ack='{{ b(ssid.disassoc_low_ack) }}'
-set wireless.{{ section }}.auth_cache='{{ b(ssid.encryption?.key_caching) }}'
+set wireless.{{ section }}.auth_cache='{{ b(ssid.multi_psk ? 0 : ssid.encryption?.key_caching) }}'
 {%   endif %}
 
 {% if (band == "6G"): %}
