@@ -143,5 +143,7 @@ if (board.system?.label_macaddr)
 if (length(wifi))
 	capa.wifi = wifi;
 
+capa.compress_cmd = true;
+
 fs.writefile('/etc/ucentral/capabilities.json', capa);
 
