@@ -20,6 +20,7 @@ set network.{{ afname }}.auto={{ interface.auto_start }}
 set network.{{ afname }}.proto=static
 {%  elif ((length(afnames) == 1 || afidx == 0) && ipv4_mode == 'dynamic'): %}
 set network.{{ afname }}.proto=dhcp
+set network.{{ afname }}.reqopts='43 224'
 {%  elif ((length(afnames) == 1 || afidx == 1) && ipv6_mode == 'dynamic'): %}
 set network.{{ afname }}.proto=dhcpv6
 {%  else %}
