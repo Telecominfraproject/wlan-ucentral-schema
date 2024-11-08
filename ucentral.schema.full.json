@@ -1049,6 +1049,31 @@
                                     true
                                 ]
                             },
+                            "vendor-class": {
+                                "description": "Include the provided vendor-class inside DHCP requests",
+                                "type": "string",
+                                "default": "OpenLAN",
+                                "examples": [
+                                    "OpenLAN"
+                                ]
+                            },
+                            "request-options": {
+                                "description": "Define additional DHCP options to request inside DHCP requests",
+                                "type": "array",
+                                "default": [
+                                    43,
+                                    60,
+                                    224
+                                ],
+                                "items": {
+                                    "type": "integer",
+                                    "minimum": 1,
+                                    "maximum": 255,
+                                    "examples": [
+                                        43
+                                    ]
+                                }
+                            },
                             "use-dns": {
                                 "description": "Define which DNS servers shall be used. This can either be a list of static IPv4 addresse or dhcp (use the server provided by the DHCP lease)",
                                 "type": "array",

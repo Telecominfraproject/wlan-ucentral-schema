@@ -1985,6 +1985,54 @@ function instantiateInterfaceIpv4(location, value, errors) {
 			obj.send_hostname = true;
 		}
 
+		function parseVendorClass(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "vendor-class")) {
+			obj.vendor_class = parseVendorClass(location + "/vendor-class", value["vendor-class"], errors);
+		}
+		else {
+			obj.vendor_class = "OpenLAN";
+		}
+
+		function parseRequestOptions(location, value, errors) {
+			if (type(value) == "array") {
+				function parseItem(location, value, errors) {
+					if (type(value) in [ "int", "double" ]) {
+						if (value > 255)
+							push(errors, [ location, "must be lower than or equal to 255" ]);
+
+						if (value < 1)
+							push(errors, [ location, "must be bigger than or equal to 1" ]);
+
+					}
+
+					if (type(value) != "int")
+						push(errors, [ location, "must be of type integer" ]);
+
+					return value;
+				}
+
+				return map(value, (item, i) => parseItem(location + "/" + i, item, errors));
+			}
+
+			if (type(value) != "array")
+				push(errors, [ location, "must be of type array" ]);
+
+			return value;
+		}
+
+		if (exists(value, "request-options")) {
+			obj.request_options = parseRequestOptions(location + "/request-options", value["request-options"], errors);
+		}
+		else {
+			obj.request_options = [ 43, 60, 224 ];
+		}
+
 		function parseUseDns(location, value, errors) {
 			if (type(value) == "array") {
 				function parseItem(location, value, errors) {
