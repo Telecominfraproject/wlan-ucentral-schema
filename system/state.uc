@@ -8,6 +8,8 @@ let cfgfile = fs.open("/etc/ucentral/ucentral.active", "r");
 let cfg = json(cfgfile.read("all"));
 let capabfile = fs.open("/etc/ucentral/capabilities.json", "r");
 let capab = json(capabfile.read("all"));
+let vsifile = fs.open("/tmp/udhcpc-vsi.json", "r");
+let vsi = vsifile ? json(vsifile.read("all")) : null;
 let now = time();
 
 /* set up basic functionality */
@@ -473,6 +475,9 @@ cursor.foreach("network", "interface", function(d) {
 			push(ipv4, sprintf("%s/%d", a.address, a.mask));
 
 		iface.ipv4.addresses = ipv4;
+
+		if (vsi && name in vsi)
+			iface.ipv4.dhcp_vsi = vsi[name];
 	}
 
 	if (length(status["ipv6-address"])) {
