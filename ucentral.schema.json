@@ -840,6 +840,29 @@
                         true
                     ]
                 },
+                "vendor-class": {
+                    "type": "string",
+                    "default": "OpenLAN",
+                    "examples": [
+                        "OpenLAN"
+                    ]
+                },
+                "request-options": {
+                    "type": "array",
+                    "default": [
+                        43,
+                        60,
+                        224
+                    ],
+                    "items": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 255,
+                        "examples": [
+                            43
+                        ]
+                    }
+                },
                 "use-dns": {
                     "type": "array",
                     "items": {
