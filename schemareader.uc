@@ -10043,6 +10043,52 @@ function instantiateConfigRaw(location, value, errors) {
 	return value;
 }
 
+function instantiateTimeouts(location, value, errors) {
+	if (type(value) == "object") {
+		let obj = {};
+
+		function parseOffline(location, value, errors) {
+			if (type(value) != "int")
+				push(errors, [ location, "must be of type integer" ]);
+
+			return value;
+		}
+
+		if (exists(value, "offline")) {
+			obj.offline = parseOffline(location + "/offline", value["offline"], errors);
+		}
+
+		function parseOrphan(location, value, errors) {
+			if (type(value) != "int")
+				push(errors, [ location, "must be of type integer" ]);
+
+			return value;
+		}
+
+		if (exists(value, "orphan")) {
+			obj.orphan = parseOrphan(location + "/orphan", value["orphan"], errors);
+		}
+
+		function parseValidate(location, value, errors) {
+			if (type(value) != "int")
+				push(errors, [ location, "must be of type integer" ]);
+
+			return value;
+		}
+
+		if (exists(value, "validate")) {
+			obj.validate = parseValidate(location + "/validate", value["validate"], errors);
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
+
+	return value;
+}
+
 function newUCentralState(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
@@ -10143,6 +10189,10 @@ function newUCentralState(location, value, errors) {
 
 		if (exists(value, "config-raw")) {
 			obj.config_raw = instantiateConfigRaw(location + "/config-raw", value["config-raw"], errors);
+		}
+
+		if (exists(value, "timeouts")) {
+			obj.timeouts = instantiateTimeouts(location + "/timeouts", value["timeouts"], errors);
 		}
 
 		function parseThirdParty(location, value, errors) {

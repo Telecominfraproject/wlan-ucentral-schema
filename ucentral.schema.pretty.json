@@ -52,6 +52,9 @@
         "config-raw": {
             "$ref": "#/$defs/config-raw"
         },
+        "timeouts": {
+            "$ref": "#/$defs/timeouts"
+        },
         "third-party": {
             "type": "object",
             "additionalProperties": true
@@ -4189,6 +4192,24 @@
                         "1.openwrt.pool.ntp.org"
                     ]
                 ]
+            }
+        },
+        "timeouts": {
+            "description": "A device has certain properties that describe its identity and location. These properties are described inside this object.",
+            "type": "object",
+            "properties": {
+                "offline": {
+                    "description": "How long can the device be offline before it enters orphan state.",
+                    "type": "integer"
+                },
+                "orphan": {
+                    "description": "The interval at which an orphaned device will try to discover the cloud.",
+                    "type": "integer"
+                },
+                "validate": {
+                    "description": "How long the client has time to connect to the cloud before discovery is restarted.",
+                    "type": "integer"
+                }
             }
         }
     }

@@ -38,6 +38,8 @@ properties:
     $ref: "https://ucentral.io/schema/v1/metrics/"
   config-raw:
     $ref: "https://ucentral.io/schema/v1/config-raw/"
+  timeouts:
+    $ref: "https://ucentral.io/schema/v1/timeouts/"
   third-party:
     type: object
     additionalProperties: true

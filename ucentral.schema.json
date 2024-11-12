@@ -49,6 +49,9 @@
         "config-raw": {
             "$ref": "#/$defs/config-raw"
         },
+        "timeouts": {
+            "$ref": "#/$defs/timeouts"
+        },
         "third-party": {
             "type": "object",
             "additionalProperties": true
@@ -3666,6 +3669,20 @@
                         "1.openwrt.pool.ntp.org"
                     ]
                 ]
+            }
+        },
+        "timeouts": {
+            "type": "object",
+            "properties": {
+                "offline": {
+                    "type": "integer"
+                },
+                "orphan": {
+                    "type": "integer"
+                },
+                "validate": {
+                    "type": "integer"
+                }
             }
         }
     }

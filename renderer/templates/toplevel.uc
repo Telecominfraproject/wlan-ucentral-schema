@@ -118,6 +118,9 @@
 	if (state.unit)
 		include('unit.uc', { location: '/unit', unit: state.unit });
 
+	if (state.timeouts)
+		include('timeout.uc', { location: '/timeout', timeout: state.timeouts });
+
 	if (!state.services)
                 state.services = {};
 
