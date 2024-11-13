@@ -190,6 +190,17 @@
 		warn("Can't find any valid encryption settings");
 	}
 
+	function match_crypto(band) {
+		let crypto = validate_encryption(band);
+		if ('6G' == band) {
+			if (crypto.proto == "sae-mixed")
+				crypto.proto = "sae";
+			else if (crypto.proto == "wpa3-mixed")
+				crypto.proto = "wpa3";
+		}
+		return crypto;
+	}
+
 	function match_ieee80211w(band) {
 		if (band == "6G")
 			return 2;
@@ -331,7 +342,7 @@
 {%   let id = wiphy.allocate_ssid_section_id(phy) %}
 {%   let band = match_band(phy); %}
 {%   if (!band) continue; %}
-{%   let crypto = validate_encryption(band); %}
+{%   let crypto = match_crypto(band); %}
 {%   let ifname = calculate_ifname(basename) %}
 {%   if (!crypto) continue; %}
 set wireless.{{ section }}=wifi-iface
