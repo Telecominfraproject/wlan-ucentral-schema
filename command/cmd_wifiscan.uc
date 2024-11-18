@@ -71,22 +71,19 @@ function iface_find(wiphy, types, ifaces) {
 	return;
 }
 
-function scan_trigger(wdev, frequency, width) {
+function scan_trigger(wdev, frequency) {
+	// printf("scan trigger params %.J\n", {wdev: wdev, frequency: frequency});
+
 	let params = { dev: wdev, scan_flags: SCAN_FLAG_AP };
 
 	if (frequency && type(frequency) == 'array') {
 		params.scan_frequencies = frequency;
 	}
-	else if (frequency && width) {
-		params.wiphy_freq = frequency;
-		params.center_freq1 = frequency + frequency_offset[width];
-		params.channel_width = frequency_width[width];
-	}
 
 	if (active)
 		params.scan_ssids = [ '' ];
 
-	//printf("%.J\n", params);
+	// printf("params = %.J\n", params);
 	let res = nl.request(def.NL80211_CMD_TRIGGER_SCAN, 0, params);
 
 	if (res === false)
@@ -96,18 +93,15 @@ function scan_trigger(wdev, frequency, width) {
 		res = nl.waitfor([
 			def.NL80211_CMD_NEW_SCAN_RESULTS,
 			def.NL80211_CMD_SCAN_ABORTED
-		], (frequency && width) ? 500 : 5000);
+		], 5000);
 
 	if (!res)
 		warn("Netlink error while awaiting scan results: " + nl.error() + "\n");
 
 	else if (res.cmd == def.NL80211_CMD_SCAN_ABORTED)
 		warn("Scan aborted by kernel\n");
-}
-
-function trigger_scan_width(wdev, freqs, width) {
-	for (let freq in freqs)
-		scan_trigger(wdev, freq, width);
+	else
+		printf("Scan completed for wdev=%s\n", wdev);
 }
 
 function phy_get(wdev) {
@@ -145,6 +139,7 @@ let phys = phy_get();
 let ifaces = iface_get();
 
 function intersect(list, filter) {
+	// printf("intersect list = %.J, intersect filter = %.J\n", list, filter);
 	let res = [];
 
 	for (let item in list)
@@ -154,6 +149,7 @@ function intersect(list, filter) {
 }
 
 function wifi_scan() {
+	printf("starting wifiscan args = %.J\n", args);
 	let scan = [];
 
 	for (let phy in phys) {
@@ -179,15 +175,17 @@ function wifi_scan() {
 			scan_trigger(iface.dev, frequency_list_2g);
 
 		let ch_width = iface.channel_width;
-		if (frequency_width[bandwith])
-			ch_width = frequency_width[bandwith];
-		let freqs_5g = intersect(freqs, frequency_list_5g[ch_width]);
-		if (length(freqs_5g)) {
+		// printf("bandwidth = %d, ch_width from iface = %d\n", bandwidth, ch_width);
+		if (frequency_width[bandwidth])
+			ch_width = frequency_width[bandwidth];
+		let freqs_5g_or_6g = intersect(freqs, frequency_list_5g[ch_width]);
+		if (length(freqs_5g_or_6g)) {
+			// printf("freqs_5g = %.J\n", freqs_5g);
 			if (override_dfs && !scan_iface && phy_frequency_dfs(phy, iface.wiphy_freq)) {
 				ctx.call(sprintf('hostapd.%s', iface.dev), 'switch_chan', { freq: 5180, bcn_count: 10 });
 				sleep(2000)
 			}
-			trigger_scan_width(iface.dev, freqs_5g, ch_width);
+			scan_trigger(iface.dev, freqs_5g_or_6g);
 		}
 		let res = nl.request(def.NL80211_CMD_GET_SCAN, def.NLM_F_DUMP, { dev: iface.dev });
 		for (let bss in res) {
@@ -287,3 +285,4 @@ result_json({
 	resultCode: 1,
 	scan,
 });
+
