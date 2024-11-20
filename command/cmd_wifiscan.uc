@@ -24,6 +24,118 @@ const frequency_list_5g = { '3': [ 5180, 5260, 5500, 5580, 5660, 5745 ],
 				 5700, 5720, 5745, 5765, 5785, 5805,
 				 5825, 5845, 5865, 5885 ],
 };
+const frequency_list_6g = { '3': [  //https://en.wikipedia.org/wiki/List_of_WLAN_channels
+				// all 80mhz 6ghz 40 mhz starting frequencies
+				5955,
+				6035,
+				6115,
+				6195,
+				6275,
+				6355,
+				6435,
+				6515,
+				6595,
+				6675,
+				6755,
+				6835,
+				6915,
+				6995,
+	],
+			  '2': [ 
+				// all 40mhz 6ghz 40 mhz starting frequencies
+				5955,
+				5995,
+				6035,
+				6075,
+				6115,
+				6155,
+				6195,
+				6235,
+				6275,
+				6315,
+				6355,
+				6395,
+				6435,
+				6475,
+				6515,
+				6555,
+				6595,
+				6635,
+				6675,
+				6715,
+				6755,
+				6795,
+				6835,
+				6875,
+				6915,
+				6955,
+				6995,
+				7035,
+				7075,
+				 ],
+			  '1': [ 
+             5935,
+             5975,
+             5995,
+             6015,
+             6035,
+             6055,
+             6075,
+             6095,
+             6115,
+             6135,
+             6155,
+             6175,
+             6195,
+             6215,
+             6235,
+             6255,
+             6275,
+             6295,
+             6315,
+             6335,
+             6355,
+             6375,
+             6395,
+             6415,
+             6435,
+             6455,
+             6475,
+             6495,
+             6515,
+             6535,
+             6555,
+             6575,
+             6595,
+             6615,
+             6635,
+             6655,
+             6675,
+             6695,
+             6715,
+             6735,
+             6755,
+             6775,
+             6795,
+             6815,
+             6835,
+             6855,
+             6875,
+             6895,
+             6915,
+             6935,
+             6955,
+             6975,
+             6995,
+             7015,
+             7035,
+             7055,
+             7075,
+             7095,
+             7115,
+            5955,
+				 ],
+};
 const frequency_offset = { '80': 30, '40': 10 };
 const frequency_width = { '80': 3, '40': 2, '20': 1 };
 const IFTYPE_STATION = 2;
@@ -121,6 +233,7 @@ function phy_get_frequencies(phy) {
 			if (!freq.disabled)
 				push(freqs, freq.freq);
 	}
+	// printf("phy_get_frequencies = %.J\n", freqs);
 	return freqs;
 }
 
@@ -138,8 +251,19 @@ function phy_frequency_dfs(phy, curr) {
 let phys = phy_get();
 let ifaces = iface_get();
 
+// 0 = 2g, 1 = 5g, 2 = 6g
+function frequency_list_for_phy(phy) {
+	if (phy.wiphy == 0)
+		return frequency_list_2g;
+	else if (phy.wiphy == 1)
+		return frequency_list_5g;
+	else if (phy.wiphy == 2)
+		return frequency_list_6g;
+}
+
 function intersect(list, filter) {
 	// printf("intersect list = %.J, intersect filter = %.J\n", list, filter);
+	if ( filter === null ) { return list }
 	let res = [];
 
 	for (let item in list)
@@ -178,9 +302,12 @@ function wifi_scan() {
 		// printf("bandwidth = %d, ch_width from iface = %d\n", bandwidth, ch_width);
 		if (frequency_width[bandwidth])
 			ch_width = frequency_width[bandwidth];
-		let freqs_5g_or_6g = intersect(freqs, frequency_list_5g[ch_width]);
+		printf("bandwidth = %d, ch_width = %d\n", bandwidth, ch_width);
+		let frequency_list = frequency_list_for_phy(phy);
+		printf("frequency list %.J\n", frequency_list);
+		let freqs_5g_or_6g = intersect(freqs, frequency_list[ch_width]);
 		if (length(freqs_5g_or_6g)) {
-			// printf("freqs_5g = %.J\n", freqs_5g);
+			// printf("freqs_5g_or_6g = %.J\n", freqs_5g_or_6g);
 			if (override_dfs && !scan_iface && phy_frequency_dfs(phy, iface.wiphy_freq)) {
 				ctx.call(sprintf('hostapd.%s', iface.dev), 'switch_chan', { freq: 5180, bcn_count: 10 });
 				sleep(2000)
