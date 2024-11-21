@@ -1,6 +1,6 @@
 let verbose = args?.verbose == null ? true : args.verbose;
-let active = args?.active ? true : false;
-let bandwidth = args?.bandwidth || 0;
+let active = args?.active ? true : false; //  if true, set params.scan_ssids = [ '' ]
+let bandwidth = args?.bandwidth || 20; // Mhz of scanning width
 let override_dfs = args?.override_dfs ? true : false;
 let nl = require("nl80211");
 let rtnl = require("rtnl");
@@ -10,8 +10,8 @@ if (!ctx) {
         ubus = require("ubus");
         ctx = ubus.connect();
 }
-
 const SCAN_FLAG_AP = (1<<2);
+//https://en.wikipedia.org/wiki/List_of_WLAN_channels
 const frequency_list_2g = [ 2412, 2417, 2422, 2427, 2432, 2437, 2442,
 			  2447, 2452, 2457, 2462, 2467, 2472, 2484 ];
 const frequency_list_5g = { '3': [ 5180, 5260, 5500, 5580, 5660, 5745 ],
@@ -24,8 +24,25 @@ const frequency_list_5g = { '3': [ 5180, 5260, 5500, 5580, 5660, 5745 ],
 				 5700, 5720, 5745, 5765, 5785, 5805,
 				 5825, 5845, 5865, 5885 ],
 };
-const frequency_list_6g = { '3': [  //https://en.wikipedia.org/wiki/List_of_WLAN_channels
-				// all 80mhz 6ghz 40 mhz starting frequencies
+const frequency_list_6g = { 
+	'5': [
+				// all 320mhz 6ghz scan frequencies
+				6115,
+				6435,
+				6755,
+	],
+				// all 160mhz 6ghz scan frequencies
+	'4': [
+				5955,
+				6115,
+				6275,
+				6435,
+				6595,
+				6755,
+				6915,
+	],
+	'3': [  
+				// all 80mhz 6ghz scan frequencies
 				5955,
 				6035,
 				6115,
@@ -42,7 +59,7 @@ const frequency_list_6g = { '3': [  //https://en.wikipedia.org/wiki/List_of_WLAN
 				6995,
 	],
 			  '2': [ 
-				// all 40mhz 6ghz 40 mhz starting frequencies
+				// all 40mhz 6ghz scan frequencies
 				5955,
 				5995,
 				6035,
@@ -73,8 +90,10 @@ const frequency_list_6g = { '3': [  //https://en.wikipedia.org/wiki/List_of_WLAN
 				7035,
 				7075,
 				 ],
+				// all 20mhz 6ghz scan frequencies
 			  '1': [ 
              5935,
+             5955,
              5975,
              5995,
              6015,
@@ -133,11 +152,15 @@ const frequency_list_6g = { '3': [  //https://en.wikipedia.org/wiki/List_of_WLAN
              7075,
              7095,
              7115,
-            5955,
 				 ],
 };
-const frequency_offset = { '80': 30, '40': 10 };
-const frequency_width = { '80': 3, '40': 2, '20': 1 };
+
+// frequency offset by widths
+const frequency_offset = { '360': 80, '160': 40, '80': 30, '40': 10 };
+
+// internal width indexing
+const frequency_width = { '360': 5, '160': 4, '80': 3, '40': 2, '20': 1 };
+
 const IFTYPE_STATION = 2;
 const IFTYPE_AP = 3;
 const IFTYPE_MESH = 7;
@@ -183,14 +206,18 @@ function iface_find(wiphy, types, ifaces) {
 	return;
 }
 
-function scan_trigger(wdev, frequency) {
-	// printf("scan trigger params %.J\n", {wdev: wdev, frequency: frequency});
+function scan_trigger(wdev, frequency, width) {
+	// printf("scan trigger params %.J\n", {wdev: wdev, frequency: frequency, width: width});
 
 	let params = { dev: wdev, scan_flags: SCAN_FLAG_AP };
 
 	if (frequency && type(frequency) == 'array') {
 		params.scan_frequencies = frequency;
-	}
+	} else if (frequency) {
+		params.wiphy_freq = frequency;
+		params.center_freq1 = frequency + frequency_offset[width];
+		params.channel_width = frequency_width[width];
+	}	
 
 	if (active)
 		params.scan_ssids = [ '' ];
@@ -263,7 +290,8 @@ function frequency_list_for_phy(phy) {
 
 function intersect(list, filter) {
 	// printf("intersect list = %.J, intersect filter = %.J\n", list, filter);
-	if ( filter === null ) { return list }
+	// printf("intersect filter = %.J\n", filter);
+	// if ( filter === null ) { return list }
 	let res = [];
 
 	for (let item in list)
@@ -302,17 +330,24 @@ function wifi_scan() {
 		// printf("bandwidth = %d, ch_width from iface = %d\n", bandwidth, ch_width);
 		if (frequency_width[bandwidth])
 			ch_width = frequency_width[bandwidth];
+		let phy_frequency_list_from_code = frequency_list_for_phy(phy)[ch_width];
+
 		printf("bandwidth = %d, ch_width = %d\n", bandwidth, ch_width);
-		let frequency_list = frequency_list_for_phy(phy);
-		printf("frequency list %.J\n", frequency_list);
-		let freqs_5g_or_6g = intersect(freqs, frequency_list[ch_width]);
-		if (length(freqs_5g_or_6g)) {
-			// printf("freqs_5g_or_6g = %.J\n", freqs_5g_or_6g);
+		printf("frequency list from iface = %.J\n", freqs);
+		printf("phy_frequency_list_from_code = %.J\n", phy_frequency_list_from_code);
+		let freqs_5g_or_6g = intersect(freqs, phy_frequency_list_from_code);
+
+		printf("freqs_5g_or_6g = %.J\n", freqs_5g_or_6g);
+		// if 5/6 ghz and not 2.4ghz
+		if (length(freqs_5g_or_6g) && phy.wiphy != 0) {	
+			printf("acutally scanning on phy%d\n", phy.wiphy);
 			if (override_dfs && !scan_iface && phy_frequency_dfs(phy, iface.wiphy_freq)) {
 				ctx.call(sprintf('hostapd.%s', iface.dev), 'switch_chan', { freq: 5180, bcn_count: 10 });
 				sleep(2000)
 			}
 			scan_trigger(iface.dev, freqs_5g_or_6g);
+			// for (let freq in freqs_5g_or_6g)
+			// 	scan_trigger(iface.dev, freq, bandwidth);
 		}
 		let res = nl.request(def.NL80211_CMD_GET_SCAN, def.NLM_F_DUMP, { dev: iface.dev });
 		for (let bss in res) {
