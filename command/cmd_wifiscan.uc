@@ -332,15 +332,15 @@ function wifi_scan() {
 			ch_width = frequency_width[bandwidth];
 		let phy_frequency_list_from_code = frequency_list_for_phy(phy)[ch_width];
 
-		printf("bandwidth = %d, ch_width = %d\n", bandwidth, ch_width);
-		printf("frequency list from iface = %.J\n", freqs);
-		printf("phy_frequency_list_from_code = %.J\n", phy_frequency_list_from_code);
+		// printf("bandwidth = %d, ch_width = %d\n", bandwidth, ch_width);
+		// printf("frequency list from iface = %.J\n", freqs);
+		// printf("phy_frequency_list_from_code = %.J\n", phy_frequency_list_from_code);
 		let freqs_5g_or_6g = intersect(freqs, phy_frequency_list_from_code);
 
-		printf("freqs_5g_or_6g = %.J\n", freqs_5g_or_6g);
+		// printf("freqs_5g_or_6g = %.J\n", freqs_5g_or_6g);
 		// if 5/6 ghz and not 2.4ghz
 		if (length(freqs_5g_or_6g) && phy.wiphy != 0) {	
-			printf("acutally scanning on phy%d\n", phy.wiphy);
+			// printf("acutally scanning on phy%d\n", phy.wiphy);
 			if (override_dfs && !scan_iface && phy_frequency_dfs(phy, iface.wiphy_freq)) {
 				ctx.call(sprintf('hostapd.%s', iface.dev), 'switch_chan', { freq: 5180, bcn_count: 10 });
 				sleep(2000)
