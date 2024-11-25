@@ -68,11 +68,52 @@ function get_hwmon(phy) {
 	return temp;
 }
 
+function lookup_board() {
+	let board = fs.readfile('/etc/board.json');
+	if (board)
+		board = json(board);
+	if (!length(board?.wlan))
+		return null;
+	let ret = {};
+	for (let name, phy in board?.wlan) {
+		if (!length(phy.info?.radios))
+			continue;
+		for (let band, data in phy.info.bands) {
+			let radio_index = -1;
+			let channels = [];
+			let frequencies = [];
+			for (let radio in phy.info.radios)
+				if (radio.bands[band]) {
+					radio_index = radio.index;
+					frequencies = radio.bands[band].frequencies;
+					channels = radio.bands[band].channels;
+				}
+
+			ret[`${phy.path}:${band}`] = {
+				tx_ant: phy.info.antenna_tx,
+				rx_ant: phy.info.antenna_rx,
+				tx_ant_avail: phy.info.antenna_tx,
+				rx_ant_avail: phy.info.antenna_rx,
+				htmode: data.modes,
+				band: [ band ],
+				radio_index,
+				frequencies,
+				channels,
+			};
+		}
+		return ret;
+	}
+	return null;
+}   
+
 function lookup_phys() {
+	let ret = lookup_board();
+	if (ret)
+		return ret;
 	lookup_paths();
 
 	let phys = phy_get();
-	let ret = {};
+	ret = {};
 	for (let phy in phys) {
 		let phyname = 'phy' + phy.wiphy;
 		let path = paths[phyname];

@@ -372,10 +372,13 @@ for (let radio, data in wifistatus) {
 		if (v.frequency in radio.frequency)
 			push(radio.survey, v);
 	delete radio.in_use;
-	radio.phy = data.config.path;
-	if (wifiphy[data.config.path] && wifiphy[data.config.path].temperature)
-		radio.temperature = wifiphy[data.config.path].temperature;
-	radio.band = wifiphy[data.config.path].band;
+	let path = data.config.path;
+	if (exists(data.config, 'radio'))
+		path += ':' + uc(data.config.band);
+	radio.phy = path;
+	if (wifiphy[path] && wifiphy[path].temperature)
+		radio.temperature = wifiphy[path].temperature;
+	radio.band = wifiphy[path].band;
 	push(state.radios, radio);
 }
 if (!length(state.radios))
