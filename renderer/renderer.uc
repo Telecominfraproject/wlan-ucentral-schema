@@ -221,12 +221,12 @@ let wiphy = {
 	 * @returns {string|false}
 	 * Returns the UCI section name of a specific PHY
 	 */
-	path_to_section: function(path) {
+	path_to_section: function(path, radio_index) {
 		let sid = null;
 
 		cursor.load("wireless");
 		cursor.foreach("wireless", "wifi-device", (s) => {
-			if (s.path == path && s.scanning != 1) {
+			if ((s.path == path || s.radio == radio_index) && s.scanning != 1) {
 				sid = s['.name'];
 
 				return false;
@@ -287,7 +287,7 @@ let wiphy = {
 			if (phy_max_freq < this.band_freqs[band][0] || phy_min_freq > this.band_freqs[band][1])
 				continue;
 
-			let sid = this.path_to_section(path);
+			let sid = this.path_to_section(path, phy.radio_index);
 
 			if (sid)
 				push(phys, { ...phy, section: sid });
