@@ -101,7 +101,6 @@ function lookup_board() {
 				channels,
 			};
 		}
-		printf('%.J\n', ret);
 		return ret;
 	}
 	return null;

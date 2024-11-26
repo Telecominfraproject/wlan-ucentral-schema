@@ -374,7 +374,7 @@ for (let radio, data in wifistatus) {
 	delete radio.in_use;
 	let path = data.config.path;
 	if (exists(data.config, 'radio'))
-		path += ':' + data.config.band
+		path += ':' + uc(data.config.band);
 	radio.phy = path;
 	if (wifiphy[path] && wifiphy[path].temperature)
 		radio.temperature = wifiphy[path].temperature;
