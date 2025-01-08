@@ -1,4 +1,5 @@
 {%
+import * as fs from 'fs';
 let roles = (state.switch && state.switch.loop_detection &&
 	     state.switch.loop_detection.roles) ?
 			state.switch.loop_detection.roles : [];
@@ -8,6 +9,9 @@ services.set_enabled("ustpd", length(roles));
 function loop_detect(role) {
 	return (index(roles, role) >= 0) ? 1 : 0;
 }
+let board = fs.readfile('/etc/board.json');
+if (board)
+	board = json(board);
 %}
 
 # Basic configuration
@@ -44,4 +48,10 @@ set network.@switch[-1].reset={{ b(v.reset) }}
 set network.@switch[-1].enable_vlan={{ b(v.enable) }}
 {% endfor %}
 
-
+{% for (let k, v in board?.network):
+	if (+v.none == 1): %}
+set network.{{v.device}}_none=interface
+set network.{{v.device}}_none.proto=none
+set network.{{v.device}}_none.device={{ s(v.device) }}
+{% 	endif
+endfor %}
