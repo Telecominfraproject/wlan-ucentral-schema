@@ -198,6 +198,7 @@
 # Wireless Configuration
 {% for (let phy in phys): %}
 {%  let htmode = match_htmode(phy, radio) %}
+{%  let reconf = phy.no_reconf ? 0 : 1 %}
 set wireless.{{ phy.section }}.disabled=0
 set wireless.{{ phy.section }}.ucentral_path={{ s(location) }}
 set wireless.{{ phy.section }}.htmode={{ htmode }}
@@ -213,7 +214,7 @@ set wireless.{{ phy.section }}.chan_bw={{ radio.bandwidth }}
 set wireless.{{ phy.section }}.maxassoc={{ radio.maximum_clients }}
 set wireless.{{ phy.section }}.maxassoc_ignore_probe={{ b(radio.maximum_clients_ignore_probe) }}
 set wireless.{{ phy.section }}.noscan=1
-set wireless.{{ phy.section }}.reconf={{ 1 }}
+set wireless.{{ phy.section }}.reconf={{ b(reconf) }}
 set wireless.{{ phy.section }}.acs_exclude_dfs={{ b(!radio.allow_dfs) }}
 {% for (let channel in radio.valid_channels): %}
 {%    if (!radio.allow_dfs && channel in phy.dfs_channels) continue %}
