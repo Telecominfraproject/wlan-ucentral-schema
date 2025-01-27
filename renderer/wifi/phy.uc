@@ -94,6 +94,7 @@ function lookup_board() {
 				rx_ant: phy.info.antenna_rx,
 				tx_ant_avail: phy.info.antenna_tx,
 				rx_ant_avail: phy.info.antenna_rx,
+				no_reconf: true,
 				htmode: data.modes,
 				band: [ band ],
 				radio_index,
