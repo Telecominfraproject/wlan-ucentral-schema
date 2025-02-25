@@ -163,6 +163,9 @@ function ports_deltas(port) {
 
 function stations_deltas(assoc, iface) {
 	let ret = {};
+	// Search for the station in the dynamic iface
+	if (assoc.dynamic_vlan)
+		iface = iface + "-v" + assoc.dynamic_vlan;
 	if (!previous.stations[iface] || !previous.stations[iface][assoc.station])
 		return ret;
 	for (let k in [ "rx_packets", "tx_packets", "rx_bytes", "tx_bytes", "tx_retries", "tx_failed" ]) {
