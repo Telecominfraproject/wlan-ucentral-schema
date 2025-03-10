@@ -3875,84 +3875,88 @@
         "service.snmpd.access": {
             "description": "List of access types for SNMP.",
             "type": "object",
-            "properties": {
-                "public_access": {
-                    "type": "object",
-                    "description": "Configuration of public access.",
-                    "properties": {
-                        "context": {
-                            "description": "A collection of management information accessible by an SNMP entity.",
-                            "type": "string"
-                        },
-                        "group": {
-                            "description": "Group related to the access.",
-                            "type": "string"
-                        },
-                        "level": {
-                            "description": "Level of authorization.",
-                            "type": "string"
-                        },
-                        "notify": {
-                            "description": "Specifies the view to be used for GET*, SET and TRAP/INFORM requests.",
-                            "type": "string"
-                        },
-                        "prefix": {
-                            "description": "Specifies how CONTEXT should be matched against the context of the incoming request.",
-                            "type": "string"
-                        },
-                        "read": {
-                            "description": "Specifies the view to be used for GET*, SET and TRAP/INFORM requests.",
-                            "type": "string"
-                        },
-                        "version": {
-                            "description": "SNMP version.",
-                            "type": "string"
-                        },
-                        "write": {
-                            "description": "Specifies the view to be used for GET*, SET and TRAP/INFORM requests.",
-                            "type": "string"
+            "properties": [
+                {
+                    "public_access": {
+                        "type": "object",
+                        "description": "Configuration of public access.",
+                        "properties": {
+                            "context": {
+                                "description": "A collection of management information accessible by an SNMP entity.",
+                                "type": "string"
+                            },
+                            "group": {
+                                "description": "Group related to the access.",
+                                "type": "string"
+                            },
+                            "level": {
+                                "description": "Level of authorization.",
+                                "type": "string"
+                            },
+                            "notify": {
+                                "description": "Specifies the view to be used for GET*, SET and TRAP/INFORM requests.",
+                                "type": "string"
+                            },
+                            "prefix": {
+                                "description": "Specifies how CONTEXT should be matched against the context of the incoming request.",
+                                "type": "string"
+                            },
+                            "read": {
+                                "description": "Specifies the view to be used for GET*, SET and TRAP/INFORM requests.",
+                                "type": "string"
+                            },
+                            "version": {
+                                "description": "SNMP version.",
+                                "type": "string"
+                            },
+                            "write": {
+                                "description": "Specifies the view to be used for GET*, SET and TRAP/INFORM requests.",
+                                "type": "string"
+                            }
                         }
                     }
                 },
-                "private_access": {
-                    "type": "object",
-                    "description": "Configuration of public access.",
-                    "properties": {
-                        "context": {
-                            "description": "A collection of management information accessible by an SNMP entity.",
-                            "type": "string"
-                        },
-                        "group": {
-                            "description": "Group related to the access.",
-                            "type": "string"
-                        },
-                        "level": {
-                            "description": "Level of authorization.",
-                            "type": "string"
-                        },
-                        "notify": {
-                            "description": "Specifies the view to be used for GET*, SET and TRAP/INFORM requests.",
-                            "type": "string"
-                        },
-                        "prefix": {
-                            "description": "Specifies how CONTEXT should be matched against the context of the incoming request.",
-                            "type": "string"
-                        },
-                        "read": {
-                            "description": "Specifies the view to be used for GET*, SET and TRAP/INFORM requests.",
-                            "type": "string"
-                        },
-                        "version": {
-                            "description": "SNMP version.",
-                            "type": "string"
-                        },
-                        "write": {
-                            "description": "Specifies the view to be used for GET*, SET and TRAP/INFORM requests.",
-                            "type": "string"
+                {
+                    "private_access": {
+                        "type": "object",
+                        "description": "Configuration of public access.",
+                        "properties": {
+                            "context": {
+                                "description": "A collection of management information accessible by an SNMP entity.",
+                                "type": "string"
+                            },
+                            "group": {
+                                "description": "Group related to the access.",
+                                "type": "string"
+                            },
+                            "level": {
+                                "description": "Level of authorization.",
+                                "type": "string"
+                            },
+                            "notify": {
+                                "description": "Specifies the view to be used for GET*, SET and TRAP/INFORM requests.",
+                                "type": "string"
+                            },
+                            "prefix": {
+                                "description": "Specifies how CONTEXT should be matched against the context of the incoming request.",
+                                "type": "string"
+                            },
+                            "read": {
+                                "description": "Specifies the view to be used for GET*, SET and TRAP/INFORM requests.",
+                                "type": "string"
+                            },
+                            "version": {
+                                "description": "SNMP version.",
+                                "type": "string"
+                            },
+                            "write": {
+                                "description": "Specifies the view to be used for GET*, SET and TRAP/INFORM requests.",
+                                "type": "string"
+                            }
                         }
                     }
                 }
-            }
+            ]
         },
         "service.snmpd.agentx": {
             "description": "Configure the role in AgentX protocol.",
@@ -3968,44 +3972,48 @@
         "service.snmpd.com2sec": {
             "description": "Map an SNMPv1 or SNMPv2c community string to a security name..",
             "type": "object",
-            "properties": {
-                "public": {
-                    "type": "object",
-                    "description": "Public com2sec.",
-                    "properties": {
-                        "community": {
-                            "description": "Community name.",
-                            "type": "string"
-                        },
-                        "secname": {
-                            "description": "Security name.",
-                            "type": "string"
-                        },
-                        "source": {
-                            "description": "A restricted source can either be a specific hostname or a subnet.",
-                            "type": "string"
+            "properties": [
+                {
+                    "public": {
+                        "description": "Public com2sec.",
+                        "type": "object",
+                        "properties": {
+                            "community": {
+                                "description": "Community name.",
+                                "type": "string"
+                            },
+                            "secname": {
+                                "description": "Security name.",
+                                "type": "string"
+                            },
+                            "source": {
+                                "description": "A restricted source can either be a specific hostname or a subnet.",
+                                "type": "string"
+                            }
                         }
                     }
                 },
-                "private": {
-                    "description": "Private com2sec.",
-                    "type": "object",
-                    "properties": {
-                        "community": {
-                            "description": "Community name.",
-                            "type": "string"
-                        },
-                        "secname": {
-                            "description": "Security name.",
-                            "type": "string"
-                        },
-                        "source": {
-                            "description": "A restricted source can either be a specific hostname or a subnet.",
-                            "type": "string"
+                {
+                    "private": {
+                        "description": "Private com2sec.",
+                        "type": "object",
+                        "properties": {
+                            "community": {
+                                "description": "Community name.",
+                                "type": "string"
+                            },
+                            "secname": {
+                                "description": "Security name.",
+                                "type": "string"
+                            },
+                            "source": {
+                                "description": "A restricted source can either be a specific hostname or a subnet.",
+                                "type": "string"
+                            }
                         }
                     }
                 }
-            }
+            ]
         },
         "service.snmpd.general": {
             "description": "General options for SNMP service.",
@@ -4042,76 +4050,84 @@
         "service.snmpd.group": {
             "description": "List of pass sections for SNMP.",
             "type": "object",
-            "properties": {
-                "public_v1": {
-                    "type": "object",
-                    "properties": {
-                        "group": {
-                            "type": "string",
-                            "description": "Group name."
-                        },
-                        "secname": {
-                            "description": "Related security name.",
-                            "type": "string"
-                        },
-                        "version": {
-                            "description": "SNMP version.",
-                            "type": "string"
+            "properties": [
+                {
+                    "public_v1": {
+                        "type": "object",
+                        "properties": {
+                            "group": {
+                                "type": "string",
+                                "description": "Group name."
+                            },
+                            "secname": {
+                                "description": "Related security name.",
+                                "type": "string"
+                            },
+                            "version": {
+                                "description": "SNMP version.",
+                                "type": "string"
+                            }
                         }
                     }
                 },
-                "private_v1": {
-                    "type": "object",
-                    "properties": {
-                        "group": {
-                            "type": "string",
-                            "description": "Group name."
-                        },
-                        "secname": {
-                            "description": "Related security name.",
-                            "type": "string"
-                        },
-                        "version": {
-                            "description": "SNMP version.",
-                            "type": "string"
+                {
+                    "private_v1": {
+                        "type": "object",
+                        "properties": {
+                            "group": {
+                                "type": "string",
+                                "description": "Group name."
+                            },
+                            "secname": {
+                                "description": "Related security name.",
+                                "type": "string"
+                            },
+                            "version": {
+                                "description": "SNMP version.",
+                                "type": "string"
+                            }
                         }
                     }
                 },
-                "private_v2c": {
-                    "type": "object",
-                    "properties": {
-                        "group": {
-                            "type": "string",
-                            "description": "Group name."
-                        },
-                        "secname": {
-                            "description": "Related security name.",
-                            "type": "string"
-                        },
-                        "version": {
-                            "description": "SNMP version.",
-                            "type": "string"
+                {
+                    "private_v2c": {
+                        "type": "object",
+                        "properties": {
+                            "group": {
+                                "type": "string",
+                                "description": "Group name."
+                            },
+                            "secname": {
+                                "description": "Related security name.",
+                                "type": "string"
+                            },
+                            "version": {
+                                "description": "SNMP version.",
+                                "type": "string"
+                            }
                         }
                     }
                 },
-                "public_v2c": {
-                    "type": "object",
-                    "properties": {
-                        "group": {
-                            "type": "string",
-                            "description": "Group name."
-                        },
-                        "secname": {
-                            "description": "Related security name.",
-                            "type": "string"
-                        },
-                        "version": {
-                            "description": "SNMP version.",
-                            "type": "string"
+                {
+                    "public_v2c": {
+                        "type": "object",
+                        "properties": {
+                            "group": {
+                                "type": "string",
+                                "description": "Group name."
+                            },
+                            "secname": {
+                                "description": "Related security name.",
+                                "type": "string"
+                            },
+                            "version": {
+                                "description": "SNMP version.",
+                                "type": "string"
+                            }
                         }
                     }
                 }
-            }
+            ]
         },
         "service.snmpd.system": {
             "description": "System information used by SNMP service.",
@@ -4392,27 +4408,7 @@
                     "description": "The event types that get added to telemetry.",
                     "type": "array",
                     "items": {
-                        "type": "string",
-                        "enum": [
-                            "ssh",
-                            "health",
-                            "health.dns",
-                            "health.dhcp",
-                            "health.radius",
-                            "health.memory",
-                            "client",
-                            "client.join",
-                            "client.leave",
-                            "client.key-mismatch",
-                            "wifi",
-                            "wifi.start",
-                            "wifi.stop",
-                            "wired",
-                            "wired.carrier-up",
-                            "wired.carrier-down",
-                            "unit",
-                            "unit.boot-up"
-                        ]
+                        "type": "string"
                     }
                 }
             }
@@ -4425,27 +4421,7 @@
                     "description": "The event types that get added to telemetry.",
                     "type": "array",
                     "items": {
-                        "type": "string",
-                        "enum": [
-                            "ssh",
-                            "health",
-                            "health.dns",
-                            "health.dhcp",
-                            "health.radius",
-                            "health.memory",
-                            "client",
-                            "client.join",
-                            "client.leave",
-                            "client.key-mismatch",
-                            "wifi",
-                            "wifi.start",
-                            "wifi.stop",
-                            "wired",
-                            "wired.carrier-up",
-                            "wired.carrier-down",
-                            "unit",
-                            "unit.boot-up"
-                        ]
+                        "type": "string"
                     }
                 }
             }
