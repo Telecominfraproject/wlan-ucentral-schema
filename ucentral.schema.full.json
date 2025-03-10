@@ -4867,27 +4867,7 @@
                             "description": "The event types that get added to telemetry.",
                             "type": "array",
                             "items": {
-                                "type": "string",
-                                "enum": [
-                                    "ssh",
-                                    "health",
-                                    "health.dns",
-                                    "health.dhcp",
-                                    "health.radius",
-                                    "health.memory",
-                                    "client",
-                                    "client.join",
-                                    "client.leave",
-                                    "client.key-mismatch",
-                                    "wifi",
-                                    "wifi.start",
-                                    "wifi.stop",
-                                    "wired",
-                                    "wired.carrier-up",
-                                    "wired.carrier-down",
-                                    "unit",
-                                    "unit.boot-up"
-                                ]
+                                "type": "string"
                             }
                         }
                     }
@@ -4900,27 +4880,7 @@
                             "description": "The event types that get added to telemetry.",
                             "type": "array",
                             "items": {
-                                "type": "string",
-                                "enum": [
-                                    "ssh",
-                                    "health",
-                                    "health.dns",
-                                    "health.dhcp",
-                                    "health.radius",
-                                    "health.memory",
-                                    "client",
-                                    "client.join",
-                                    "client.leave",
-                                    "client.key-mismatch",
-                                    "wifi",
-                                    "wifi.start",
-                                    "wifi.stop",
-                                    "wired",
-                                    "wired.carrier-up",
-                                    "wired.carrier-down",
-                                    "unit",
-                                    "unit.boot-up"
-                                ]
+                                "type": "string"
                             }
                         }
                     }
