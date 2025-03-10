@@ -231,7 +231,8 @@
                         "sae-mixed",
                         "wpa3",
                         "wpa3-192",
-                        "wpa3-mixed"
+                        "wpa3-mixed",
+                        "mpsk-radius"
                     ],
                     "examples": [
                         "psk2"
@@ -3374,66 +3375,88 @@
         },
         "service.snmpd.access": {
             "type": "object",
-            "properties": {
-                "public_access": {
-                    "type": "object",
-                    "properties": {
-                        "context": {
-                            "type": "string"
-                        },
-                        "group": {
-                            "type": "string"
-                        },
-                        "level": {
-                            "type": "string"
-                        },
-                        "notify": {
-                            "type": "string"
-                        },
-                        "prefix": {
-                            "type": "string"
-                        },
-                        "read": {
-                            "type": "string"
-                        },
-                        "version": {
-                            "type": "string"
-                        },
-                        "write": {
-                            "type": "string"
+            "properties": [
+                {
+                    "public_access": {
+                        "type": "object",
+                        "description": "Configuration of public access.",
+                        "properties": {
+                            "context": {
+                                "description": "A collection of management information accessible by an SNMP entity.",
+                                "type": "string"
+                            },
+                            "group": {
+                                "description": "Group related to the access.",
+                                "type": "string"
+                            },
+                            "level": {
+                                "description": "Level of authorization.",
+                                "type": "string"
+                            },
+                            "notify": {
+                                "description": "Specifies the view to be used for GET*, SET and TRAP/INFORM requests.",
+                                "type": "string"
+                            },
+                            "prefix": {
+                                "description": "Specifies how CONTEXT should be matched against the context of the incoming request.",
+                                "type": "string"
+                            },
+                            "read": {
+                                "description": "Specifies the view to be used for GET*, SET and TRAP/INFORM requests.",
+                                "type": "string"
+                            },
+                            "version": {
+                                "description": "SNMP version.",
+                                "type": "string"
+                            },
+                            "write": {
+                                "description": "Specifies the view to be used for GET*, SET and TRAP/INFORM requests.",
+                                "type": "string"
+                            }
                         }
                     }
                 },
-                "private_access": {
-                    "type": "object",
-                    "properties": {
-                        "context": {
-                            "type": "string"
-                        },
-                        "group": {
-                            "type": "string"
-                        },
-                        "level": {
-                            "type": "string"
-                        },
-                        "notify": {
-                            "type": "string"
-                        },
-                        "prefix": {
-                            "type": "string"
-                        },
-                        "read": {
-                            "type": "string"
-                        },
-                        "version": {
-                            "type": "string"
-                        },
-                        "write": {
-                            "type": "string"
+                {
+                    "private_access": {
+                        "type": "object",
+                        "description": "Configuration of public access.",
+                        "properties": {
+                            "context": {
+                                "description": "A collection of management information accessible by an SNMP entity.",
+                                "type": "string"
+                            },
+                            "group": {
+                                "description": "Group related to the access.",
+                                "type": "string"
+                            },
+                            "level": {
+                                "description": "Level of authorization.",
+                                "type": "string"
+                            },
+                            "notify": {
+                                "description": "Specifies the view to be used for GET*, SET and TRAP/INFORM requests.",
+                                "type": "string"
+                            },
+                            "prefix": {
+                                "description": "Specifies how CONTEXT should be matched against the context of the incoming request.",
+                                "type": "string"
+                            },
+                            "read": {
+                                "description": "Specifies the view to be used for GET*, SET and TRAP/INFORM requests.",
+                                "type": "string"
+                            },
+                            "version": {
+                                "description": "SNMP version.",
+                                "type": "string"
+                            },
+                            "write": {
+                                "description": "Specifies the view to be used for GET*, SET and TRAP/INFORM requests.",
+                                "type": "string"
+                            }
                         }
                     }
                 }
-            }
+            ]
         },
         "service.snmpd.agentx": {
             "type": "object",
@@ -3446,36 +3469,48 @@
         },
         "service.snmpd.com2sec": {
             "type": "object",
-            "properties": {
-                "public": {
-                    "type": "object",
-                    "properties": {
-                        "community": {
-                            "type": "string"
-                        },
-                        "secname": {
-                            "type": "string"
-                        },
-                        "source": {
-                            "type": "string"
+            "properties": [
+                {
+                    "public": {
+                        "description": "Public com2sec.",
+                        "type": "object",
+                        "properties": {
+                            "community": {
+                                "description": "Community name.",
+                                "type": "string"
+                            },
+                            "secname": {
+                                "description": "Security name.",
+                                "type": "string"
+                            },
+                            "source": {
+                                "description": "A restricted source can either be a specific hostname or a subnet.",
+                                "type": "string"
+                            }
                         }
                     }
                 },
-                "private": {
-                    "type": "object",
-                    "properties": {
-                        "community": {
-                            "type": "string"
-                        },
-                        "secname": {
-                            "type": "string"
-                        },
-                        "source": {
-                            "type": "string"
+                {
+                    "private": {
+                        "description": "Private com2sec.",
+                        "type": "object",
+                        "properties": {
+                            "community": {
+                                "description": "Community name.",
+                                "type": "string"
+                            },
+                            "secname": {
+                                "description": "Security name.",
+                                "type": "string"
+                            },
+                            "source": {
+                                "description": "A restricted source can either be a specific hostname or a subnet.",
+                                "type": "string"
+                            }
                         }
                     }
                 }
-            }
+            ]
         },
         "service.snmpd.general": {
             "type": "object",
@@ -3505,64 +3540,84 @@
         },
         "service.snmpd.group": {
             "type": "object",
-            "properties": {
-                "public_v1": {
-                    "type": "object",
-                    "properties": {
-                        "group": {
-                            "type": "string"
-                        },
-                        "secname": {
-                            "type": "string"
-                        },
-                        "version": {
-                            "type": "string"
+            "properties": [
+                {
+                    "public_v1": {
+                        "type": "object",
+                        "properties": {
+                            "group": {
+                                "type": "string",
+                                "description": "Group name."
+                            },
+                            "secname": {
+                                "description": "Related security name.",
+                                "type": "string"
+                            },
+                            "version": {
+                                "description": "SNMP version.",
+                                "type": "string"
+                            }
                         }
                     }
                 },
-                "private_v1": {
-                    "type": "object",
-                    "properties": {
-                        "group": {
-                            "type": "string"
-                        },
-                        "secname": {
-                            "type": "string"
-                        },
-                        "version": {
-                            "type": "string"
+                {
+                    "private_v1": {
+                        "type": "object",
+                        "properties": {
+                            "group": {
+                                "type": "string",
+                                "description": "Group name."
+                            },
+                            "secname": {
+                                "description": "Related security name.",
+                                "type": "string"
+                            },
+                            "version": {
+                                "description": "SNMP version.",
+                                "type": "string"
+                            }
                         }
                     }
                 },
-                "private_v2c": {
-                    "type": "object",
-                    "properties": {
-                        "group": {
-                            "type": "string"
-                        },
-                        "secname": {
-                            "type": "string"
-                        },
-                        "version": {
-                            "type": "string"
+                {
+                    "private_v2c": {
+                        "type": "object",
+                        "properties": {
+                            "group": {
+                                "type": "string",
+                                "description": "Group name."
+                            },
+                            "secname": {
+                                "description": "Related security name.",
+                                "type": "string"
+                            },
+                            "version": {
+                                "description": "SNMP version.",
+                                "type": "string"
+                            }
                         }
                     }
                 },
-                "public_v2c": {
-                    "type": "object",
-                    "properties": {
-                        "group": {
-                            "type": "string"
-                        },
-                        "secname": {
-                            "type": "string"
-                        },
-                        "version": {
-                            "type": "string"
+                {
+                    "public_v2c": {
+                        "type": "object",
+                        "properties": {
+                            "group": {
+                                "type": "string",
+                                "description": "Group name."
+                            },
+                            "secname": {
+                                "description": "Related security name.",
+                                "type": "string"
+                            },
+                            "version": {
+                                "description": "SNMP version.",
+                                "type": "string"
+                            }
                         }
                     }
                 }
-            }
+            ]
         },
         "service.snmpd.system": {
             "type": "object",

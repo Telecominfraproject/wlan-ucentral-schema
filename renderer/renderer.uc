@@ -733,7 +733,9 @@ let services = {
 			if (!interface.ssids)
 				continue;
 			for (let ssid in interface.ssids) {
-				if (type(ssid.multi_psk) == 'bool' && ssid.multi_psk)
+				if ((ssid?.encryption?.proto && type(ssid.encryption.proto) == 'string' &&
+				    ssid.encryption.proto == "mpsk-radius") ||
+				    (type(ssid.multi_psk) == 'bool' && ssid.multi_psk))
 					mpsk = true;
 				else if (!length(ssid.multi_psk))
 					continue;

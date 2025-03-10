@@ -85,7 +85,7 @@
 	}
 	
 	function validate_encryption_ap() {
-		if (ssid.encryption.proto in [ "wpa", "wpa2", "wpa-mixed", "wpa3", "wpa3-mixed", "wpa3-192", "psk2-radius" ] &&
+		if (ssid.encryption.proto in [ "wpa", "wpa2", "wpa-mixed", "wpa3", "wpa3-mixed", "wpa3-192", "psk2-radius", "mpsk-radius" ] &&
 		    ssid.radius && ssid.radius.local &&
 		    length(certificates))
 			return {
@@ -95,7 +95,7 @@
 			};
 
 
-		if (ssid.encryption.proto in [ "wpa", "wpa2", "wpa-mixed", "wpa3", "wpa3-mixed", "wpa3-192", "psk2-radius" ] &&
+		if (ssid.encryption.proto in [ "wpa", "wpa2", "wpa-mixed", "wpa3", "wpa3-mixed", "wpa3-192", "psk2-radius", "mpsk-radius" ] &&
 		    ssid.radius && ssid.radius.authentication &&
 		    ssid.radius.authentication.host &&
 		    ssid.radius.authentication.port &&
@@ -124,7 +124,8 @@
 	}
 
 	function validate_encryption(band) {
-		if (band == "6G" && !(ssid?.encryption.proto in [ "wpa3", "wpa3-mixed", "wpa3-192", "sae", "sae-mixed", "owe" ])) {
+		let is6gband = band == "6G" ? true : false;
+		if (is6gband && !(ssid?.encryption.proto in [ "wpa3", "wpa3-mixed", "wpa3-192", "sae", "sae-mixed", "owe", "mpsk-radius" ])) {
 			warn("Invalid encryption settings for 6G band ");
 			return null;
 		}
@@ -153,7 +154,12 @@
 				proto: 'owe'
 			};
 
-		if (ssid.encryption.proto in [ "psk", "psk2", "psk-mixed", "sae", "sae-mixed" ] &&
+		let multi_psk = ssid?.encryption.proto == "mpsk-radius";
+		if (multi_psk)
+			ssid.multi_psk = true;
+
+		let mpsk_6g = is6gband && multi_psk;
+		if ((ssid.encryption.proto in [ "psk", "psk2", "psk-mixed", "sae", "sae-mixed" ] || mpsk_6g) &&
 		    ssid.encryption.key) {
 			if (ssid.radius?.authentication?.mac_filter &&
 			    ssid.radius.authentication?.host &&
@@ -193,11 +199,12 @@
 	function match_crypto(band) {
 		let crypto = validate_encryption(band);
 		if ('6G' == band) {
-			if (crypto.proto == "sae-mixed")
+			if (crypto.proto == "sae-mixed" || crypto.proto == "mpsk-radius")
 				crypto.proto = "sae";
 			else if (crypto.proto == "wpa3-mixed")
 				crypto.proto = "wpa3";
-		}
+		} else if (crypto.proto == "mpsk-radius")
+			crypto.proto = "psk2-radius";
 		return crypto;
 	}
 
@@ -541,6 +548,8 @@ set wireless.{{ section }}.r0kh={{ s(ssid.roaming.pmk_r0_key_holder) }}
 set wireless.{{ section }}.r1kh={{ s(ssid.roaming.pmk_r1_key_holder) }}
 set wireless.{{ section }}.ft_key={{ s(ssid.roaming.key_aes_256) }}
 {%     endif %}
+
+set wireless.{{ section }}.multi_psk={{ b(ssid.multi_psk) }}
 
 {%     if (ssid.quality_thresholds): %}
 set wireless.{{ phy.section }}.rssi_reject_assoc_rssi={{ ssid.quality_thresholds.association_request_rssi }}

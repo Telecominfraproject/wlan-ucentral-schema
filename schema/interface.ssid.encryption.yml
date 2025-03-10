@@ -23,6 +23,7 @@ properties:
     - wpa3
     - wpa3-192
     - wpa3-mixed
+    - mpsk-radius
     examples:
     - psk2
   key:
