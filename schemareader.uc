@@ -1035,8 +1035,8 @@ function instantiateRadio(location, value, errors) {
 		function parseChannel(location, value, errors) {
 			function parseVariant0(location, value, errors) {
 				if (type(value) in [ "int", "double" ]) {
-					if (value > 196)
-						push(errors, [ location, "must be lower than or equal to 196" ]);
+					if (value > 233)
+						push(errors, [ location, "must be lower than or equal to 233" ]);
 
 					if (value < 1)
 						push(errors, [ location, "must be bigger than or equal to 1" ]);
@@ -1110,8 +1110,8 @@ function instantiateRadio(location, value, errors) {
 			if (type(value) == "array") {
 				function parseItem(location, value, errors) {
 					if (type(value) in [ "int", "double" ]) {
-						if (value > 196)
-							push(errors, [ location, "must be lower than or equal to 196" ]);
+						if (value > 233)
+							push(errors, [ location, "must be lower than or equal to 233" ]);
 
 						if (value < 1)
 							push(errors, [ location, "must be bigger than or equal to 1" ]);
