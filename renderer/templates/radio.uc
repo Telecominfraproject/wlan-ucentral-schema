@@ -90,7 +90,7 @@
 			return wanted_channel;
 
 		let min = (wanted_channel <= 14) ?  1 :  32;
-		let max = (wanted_channel <= 14) ? 14 : 196;
+		let max = (wanted_channel <= 14) ? 14 : 233;
 		let eligible_channels = filter(phy.channels, (ch) => (ch >= min && ch <= max));
 
 		// try to find a channel next to the wanted one
