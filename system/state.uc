@@ -761,9 +761,41 @@ function link_state_name(name) {
 	return names[name] || name;
 }
 
+function get_vlan_id_for_port(sw_port, switch_name) {
+	let current_vlan;
+	let swconfig_cmd = "swconfig dev " + switch_name + " show";
+	let sw_status = fs.popen(swconfig_cmd);
+
+	for (let line; (line = sw_status.read("line")) != null; ){
+		line = trim(line);
+
+		let vlan_info = match(line, /^VLAN\s+(\d+):$/);
+		if (vlan_info) {
+			current_vlan = vlan_info[1];
+			continue;
+		}
+
+		let port_info = match(line, /^ports:\s+(.+)$/);
+		if (port_info && current_vlan) {
+            let ports = split(port_info[1], /\s+/);
+
+			for (let port_num in ports) {
+				if (port_num == sw_port) {
+					sw_status.close();
+					return current_vlan;
+				}
+			}
+		}
+	}
+
+	sw_status.close();
+	return null;
+}
+
 if (length(capab.network)) {
 	let link = {};
 	let lldp_peers = {};
+	let vlan_id;
 
 	for (let name, net in capab.network) {
 		let link_name = link_state_name(name);
@@ -774,6 +806,19 @@ if (length(capab.network)) {
 			let state = {};
 			let lldp_state = {};
 			let name = lookup_port(iface);
+
+			if (length(capab.switch_ports)) {
+				for (let eth_port, sw_port_info in capab.switch_ports) {
+					let sw_iface = split(iface, ":");
+					if (sw_iface[0] == eth_port) {
+						vlan_id = get_vlan_id_for_port(sw_iface[1], sw_port_info['name']);
+
+						if (vlan_id) {
+							iface = eth_port + "." + vlan_id;
+						}
+					}
+				}
+			}
 
 			state.carrier = +sysfs_net(iface, "carrier");
 			if (state.carrier) {
