@@ -792,6 +792,39 @@ function get_vlan_id_for_port(sw_port, switch_name) {
 	return null;
 }
 
+function get_sw_port_status(sw_port, switch_name, prop) {
+	let speed_regexp, duplex_regexp, val;
+
+	let swconfig_cmd = "swconfig dev " + switch_name + " port " + sw_port + " show";
+	let sw_status = fs.popen(swconfig_cmd);
+
+	for (let line; (line = sw_status.read("line")) != null; ){
+		line = trim(line);
+
+		switch (prop) {
+			case 'carrier':
+				if (match(line, /link:up/))
+					val = 1;
+				else if (match(line, /link:down/))
+					val = 0;
+				break;
+			case 'speed':
+				speed_regexp = match(line, /speed:([0-9]+)/);
+				if (speed_regexp)
+					val = speed_regexp[1];
+				break;
+			case 'duplex':
+				duplex_regexp = match(line, /(full|half)-duplex/);
+				if (duplex_regexp)
+					val = duplex_regexp[1];
+				break;
+		}
+	}
+
+	sw_status.close();
+	return val;
+}
+
 if (length(capab.network)) {
 	let link = {};
 	let lldp_peers = {};
@@ -807,6 +840,12 @@ if (length(capab.network)) {
 			let lldp_state = {};
 			let name = lookup_port(iface);
 
+			state.carrier = +sysfs_net(iface, "carrier");
+			if (state.carrier) {
+				state.speed = +sysfs_net(iface, "speed");
+				state.duplex = sysfs_net(iface, "duplex");
+			}
+
 			if (length(capab.switch_ports)) {
 				for (let eth_port, sw_port_info in capab.switch_ports) {
 					let sw_iface = split(iface, ":");
@@ -816,15 +855,16 @@ if (length(capab.network)) {
 						if (vlan_id) {
 							iface = eth_port + "." + vlan_id;
 						}
+
+						state.carrier = get_sw_port_status(sw_iface[1], sw_port_info['name'], "carrier");
+						if (state.carrier) {
+							state.speed = get_sw_port_status(sw_iface[1], sw_port_info['name'], "speed");
+							state.duplex = get_sw_port_status(sw_iface[1], sw_port_info['name'], "duplex");
+						}
 					}
 				}
 			}
 
-			state.carrier = +sysfs_net(iface, "carrier");
-			if (state.carrier) {
-				state.speed = +sysfs_net(iface, "speed");
-				state.duplex = sysfs_net(iface, "duplex");
-			}
 			if (ports[iface]?.counters) {
 				state.counters = ports[iface].counters;
 				state.delta_counters = ports_deltas(iface);
