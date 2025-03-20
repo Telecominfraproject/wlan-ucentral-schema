@@ -30,7 +30,7 @@ properties:
       algorithm.
     oneOf:
       - type: integer
-        maximum: 196
+        maximum: 233
         minimum: 1
       - type: string
         const: auto
@@ -40,7 +40,7 @@ properties:
     type: array
     items:
       type: integer
-      maximum: 196
+      maximum: 233
       minimum: 1
   acs-exclude-6ghz-non-psc:
     description:
@@ -120,13 +120,6 @@ properties:
       Allow legacy 802.11b data rates.
     type: boolean
     default: false
-  beacon-interval:
-    description:
-      Beacon interval in kus (1.024 ms).
-    type: integer
-    default: 100
-    maximum: 65535
-    minimum: 15
   maximum-clients:
     description:
       Set the maximum number of clients that may connect to this radio. This

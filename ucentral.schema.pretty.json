@@ -548,7 +548,7 @@
                     "oneOf": [
                         {
                             "type": "integer",
-                            "maximum": 196,
+                            "maximum": 233,
                             "minimum": 1
                         },
                         {
@@ -562,7 +562,7 @@
                     "type": "array",
                     "items": {
                         "type": "integer",
-                        "maximum": 196,
+                        "maximum": 233,
                         "minimum": 1
                     }
                 },
@@ -642,13 +642,6 @@
                     "description": "Allow legacy 802.11b data rates.",
                     "type": "boolean",
                     "default": false
-                },
-                "beacon-interval": {
-                    "description": "Beacon interval in kus (1.024 ms).",
-                    "type": "integer",
-                    "default": 100,
-                    "maximum": 65535,
-                    "minimum": 15
                 },
                 "maximum-clients": {
                     "description": "Set the maximum number of clients that may connect to this radio. This value is accumulative for all attached VAP interfaces.",

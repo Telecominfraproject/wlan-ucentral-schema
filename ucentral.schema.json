@@ -489,7 +489,7 @@
                     "oneOf": [
                         {
                             "type": "integer",
-                            "maximum": 196,
+                            "maximum": 233,
                             "minimum": 1
                         },
                         {
@@ -502,7 +502,7 @@
                     "type": "array",
                     "items": {
                         "type": "integer",
-                        "maximum": 196,
+                        "maximum": 233,
                         "minimum": 1
                     }
                 },
@@ -573,12 +573,6 @@
                 "legacy-rates": {
                     "type": "boolean",
                     "default": false
-                },
-                "beacon-interval": {
-                    "type": "integer",
-                    "default": 100,
-                    "maximum": 65535,
-                    "minimum": 15
                 },
                 "maximum-clients": {
                     "type": "integer",

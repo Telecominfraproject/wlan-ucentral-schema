@@ -1281,29 +1281,6 @@ function instantiateRadio(location, value, errors) {
 			obj.legacy_rates = false;
 		}
 
-		function parseBeaconInterval(location, value, errors) {
-			if (type(value) in [ "int", "double" ]) {
-				if (value > 65535)
-					push(errors, [ location, "must be lower than or equal to 65535" ]);
-
-				if (value < 15)
-					push(errors, [ location, "must be bigger than or equal to 15" ]);
-
-			}
-
-			if (type(value) != "int")
-				push(errors, [ location, "must be of type integer" ]);
-
-			return value;
-		}
-
-		if (exists(value, "beacon-interval")) {
-			obj.beacon_interval = parseBeaconInterval(location + "/beacon-interval", value["beacon-interval"], errors);
-		}
-		else {
-			obj.beacon_interval = 100;
-		}
-
 		function parseMaximumClients(location, value, errors) {
 			if (type(value) != "int")
 				push(errors, [ location, "must be of type integer" ]);
