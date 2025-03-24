@@ -2429,6 +2429,11 @@
                 "encryption": {
                     "$ref": "#/$defs/interface.ssid.encryption"
                 },
+                "enhanced-mpsk": {
+                    "description": "Optinally disable MPSK",
+                    "type": "boolean",
+                    "default": true
+                },
                 "multi-psk": {
                     "anyOf": [
                         {

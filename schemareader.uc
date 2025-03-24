@@ -5857,6 +5857,20 @@ function instantiateInterfaceSsid(location, value, errors) {
 			obj.encryption = instantiateInterfaceSsidEncryption(location + "/encryption", value["encryption"], errors);
 		}
 
+		function parseEnhancedMpsk(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "enhanced-mpsk")) {
+			obj.enhanced_mpsk = parseEnhancedMpsk(location + "/enhanced-mpsk", value["enhanced-mpsk"], errors);
+		}
+		else {
+			obj.enhanced_mpsk = true;
+		}
+
 		function parseMultiPsk(location, value, errors) {
 			function parseVariant0(location, value, errors) {
 				if (type(value) == "array") {

@@ -137,6 +137,11 @@ properties:
     maximum: 20
   encryption:
     $ref: "https://ucentral.io/schema/v1/interface/ssid/encryption/"
+  enhanced-mpsk:
+    description:
+      Optinally disable MPSK
+    type: boolean
+    default: true
   multi-psk:
     anyOf:
       - type: array
