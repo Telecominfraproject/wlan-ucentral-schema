@@ -7,7 +7,9 @@ let def = nl.const;
 function freq2channel(freq) {
 	if (freq == 2484)
 		return 14;
-	else if (freq < 2484)
+	else if (freq < 1000)
+		return (freq - 900) / 2;
+	else if (freq > 2400 && freq < 2484)
 		return (freq - 2407) / 5;
 	else if (freq >= 4910 && freq <= 4980)
 		return (freq - 4000) / 5;
@@ -107,6 +109,67 @@ function lookup_board() {
 	return null;
 }   
 
+// mapping 5G to S1G(HaLow)
+function map5GToS1G() {
+    // format: 5G channel -> { s1g_channel, s1g_freq }
+    let mappingTable = {
+        // 1MHz bandwidth
+        '132': { s1g_channel: 1, s1g_freq: 902 },
+        '136': { s1g_channel: 3, s1g_freq: 903 },
+        '36': { s1g_channel: 5, s1g_freq: 904 },
+        '40': { s1g_channel: 7, s1g_freq: 905 },
+        '44': { s1g_channel: 9, s1g_freq: 906 },
+        '48': { s1g_channel: 11, s1g_freq: 907 },
+        '52': { s1g_channel: 13, s1g_freq: 908 },
+        '56': { s1g_channel: 15, s1g_freq: 909 },
+        '60': { s1g_channel: 17, s1g_freq: 910 },
+        '64': { s1g_channel: 19, s1g_freq: 911 },
+        '100': { s1g_channel: 21, s1g_freq: 912 },
+        '104': { s1g_channel: 23, s1g_freq: 913 },
+        '108': { s1g_channel: 25, s1g_freq: 914 },
+        '112': { s1g_channel: 27, s1g_freq: 915 },
+        '116': { s1g_channel: 29, s1g_freq: 916 },
+        '120': { s1g_channel: 31, s1g_freq: 917 },
+        '124': { s1g_channel: 33, s1g_freq: 918 },
+        '128': { s1g_channel: 35, s1g_freq: 919 },
+        '149': { s1g_channel: 37, s1g_freq: 920 },
+        '153': { s1g_channel: 39, s1g_freq: 921 },
+        '157': { s1g_channel: 41, s1g_freq: 922 },
+        '161': { s1g_channel: 43, s1g_freq: 923 },
+        '165': { s1g_channel: 45, s1g_freq: 924 },
+        '169': { s1g_channel: 47, s1g_freq: 925 },
+        '173': { s1g_channel: 49, s1g_freq: 926 },
+        '177': { s1g_channel: 51, s1g_freq: 927 },
+         // 2MHz bandwidth
+        '134': { s1g_channel: 2, s1g_freq: 903 },
+        '38': { s1g_channel: 6, s1g_freq: 905 },
+        '46': { s1g_channel: 10, s1g_freq: 907 },
+        '54': { s1g_channel: 14, s1g_freq: 909 },
+        '62': { s1g_channel: 18, s1g_freq: 911 },
+        '102': { s1g_channel: 22, s1g_freq: 913 },
+        '110': { s1g_channel: 26, s1g_freq: 915 },
+        '118': { s1g_channel: 30, s1g_freq: 917 },
+        '126': { s1g_channel: 34, s1g_freq: 919 },
+        '151': { s1g_channel: 38, s1g_freq: 921 },
+        '159': { s1g_channel: 42, s1g_freq: 923 },
+        '167': { s1g_channel: 46, s1g_freq: 925 },
+        '175': { s1g_channel: 50, s1g_freq: 927 },
+        // 4MHz bandwidth
+        '42': { s1g_channel: 8, s1g_freq: 906 },
+        '58': { s1g_channel: 16, s1g_freq: 910 },
+        '106': { s1g_channel: 24, s1g_freq: 914 },
+        '122': { s1g_channel: 32, s1g_freq: 918 },
+        '155': { s1g_channel: 40, s1g_freq: 922 },
+        '171': { s1g_channel: 48, s1g_freq: 926 },
+        // 8MHz bandwidth
+        '50': { s1g_channel: 12, s1g_freq: 908 },
+        '114': { s1g_channel: 28, s1g_freq: 916 },
+        '163': { s1g_channel: 44, s1g_freq: 924 }
+    };
+
+    return mappingTable;
+}
+
 function lookup_phys() {
 	let ret = lookup_board();
 	if (ret)
@@ -115,13 +178,28 @@ function lookup_phys() {
 
 	let phys = phy_get();
 	ret = {};
+
+	// get 5G to S1G mapping table
+	let s1gMapping = map5GToS1G();
+
 	for (let phy in phys) {
 		let phyname = 'phy' + phy.wiphy;
 		let path = paths[phyname];
 		if (!path)
 			continue;
 
+		// check whether MORSE PHY
+		let isMorse = false;
+		let morsePath = '/sys/kernel/debug/ieee80211/' + phyname + '/morse';
+
+		// check whether MORSE dir exists
+		if (fs.stat(morsePath))
+			isMorse = true;
+
 		let p = {};
+
+		p.is_morse_phy = isMorse;  // save result in is_morse_phy
+
 		let temp = get_hwmon('phy' + phy.wiphy);
 		if (temp)
 			p.temperature = temp / 1000;
@@ -139,16 +217,37 @@ function lookup_phys() {
 			for (let freq in band?.freqs) {
 				if (freq.disabled)
 					continue;
-				push(p.frequencies, freq.freq);
-				push(p.channels, freq2channel(freq.freq));
-				if (freq.radar)
-					push(p.dfs_channels, freq2channel(freq.freq));
+
+				let channel = freq2channel(freq.freq);
+				// if MORSE PHY and band is 5G，mapping to S1G
+				if (isMorse && freq.freq >= 5160 && freq.freq <= 5885) {
+					let ch = "" + channel;
+					if (ch in s1gMapping) {
+						// replace 5G ch into S1G ch
+						channel = s1gMapping[ch].s1g_channel;
+						push(p.channels, channel);
+						push(p.frequencies, s1gMapping[ch].s1g_freq);
+					} else {
+						// no S1G ch in table, keep 5G ch
+						push(p.channels, channel);
+						push(p.frequencies, freq.freq);
+					}
+				} else {
+					// not MORSE PHY or not 5G
+					push(p.channels, channel);
+					push(p.frequencies, freq.freq);
+					if (freq.radar)
+						push(p.dfs_channels, channel);
+				}
+
 				if (freq.freq >= 6000)
 					push(p.band, '6G');
-				else if (freq.freq <= 2484)
+				else if (freq.freq <= 2484 && freq.freq > 2400)
 					push(p.band, '2G');
-				else if (freq.freq >= 5160 && freq.freq <= 5885)
+				else if (freq.freq >= 5160 && freq.freq <= 5885 && !isMorse)
 					push(p.band, '5G');
+				else if (freq.freq < 1000 || (isMorse && freq.freq >= 5160 && freq.freq <= 5885))
+					push(p.band, 'HaLow');
 			}
 			if (band?.ht_capa) {
 				p.ht_capa = band.ht_capa;
@@ -205,6 +304,9 @@ function lookup_phys() {
 		if (!length(p.dfs_channels))
 			delete p.dfs_channels;
 		ret[path] = p;
+	}
+	for (let path in ret) {
+		system("logger 'phy: PHY path:" + path + ", bands:" + join(',', ret[path].band) + "'");
 	}
 	return ret;
 }
