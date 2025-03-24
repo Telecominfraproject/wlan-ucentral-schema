@@ -2,77 +2,77 @@ description:
   List of access types for SNMP.
 type: object
 properties:
-  - public_access:
-      type: object
-      description:
-        Configuration of public access.
-      properties:
-        context:
-          description:
-            A collection of management information accessible by an SNMP entity.
-          type: string
-        group:
-          description:
-            Group related to the access.
-          type: string
-        level:
-          description:
-            Level of authorization.
-          type: string
-        notify:
-          description:
-            Specifies the view to be used for GET*, SET and TRAP/INFORM requests.
-          type: string
-        prefix:
-          description:
-            Specifies how CONTEXT should be matched against the context of the incoming request.
-          type: string
-        read:
-          description:
-            Specifies the view to be used for GET*, SET and TRAP/INFORM requests.
-          type: string
-        version:
-          description:
-            SNMP version.
-          type: string
-        write:
-          description:
-            Specifies the view to be used for GET*, SET and TRAP/INFORM requests.
-          type: string
-  - private_access:
-      type: object
-      description:
-        Configuration of public access.
-      properties:
-        context:
-          description:
-            A collection of management information accessible by an SNMP entity.
-          type: string
-        group:
-          description:
-            Group related to the access.
-          type: string
-        level:
-          description:
-            Level of authorization.
-          type: string
-        notify:
-          description:
-            Specifies the view to be used for GET*, SET and TRAP/INFORM requests.
-          type: string
-        prefix:
-          description:
-            Specifies how CONTEXT should be matched against the context of the incoming request.
-          type: string
-        read:
-          description:
-            Specifies the view to be used for GET*, SET and TRAP/INFORM requests.
-          type: string
-        version:
-          description:
-            SNMP version.
-          type: string
-        write:
-          description:
-            Specifies the view to be used for GET*, SET and TRAP/INFORM requests.
-          type: string
+ public_access:
+   type: object
+   description:
+     Configuration of public access.
+   properties:
+     context:
+       description:
+         A collection of management information accessible by an SNMP entity.
+       type: string
+     group:
+       description:
+         Group related to the access.
+       type: string
+     level:
+       description:
+         Level of authorization.
+       type: string
+     notify:
+       description:
+         Specifies the view to be used for GET*, SET and TRAP/INFORM requests.
+       type: string
+     prefix:
+       description:
+         Specifies how CONTEXT should be matched against the context of the incoming request.
+       type: string
+     read:
+       description:
+         Specifies the view to be used for GET*, SET and TRAP/INFORM requests.
+       type: string
+     version:
+       description:
+         SNMP version.
+       type: string
+     write:
+       description:
+         Specifies the view to be used for GET*, SET and TRAP/INFORM requests.
+       type: string
+ private_access:
+   type: object
+   description:
+     Configuration of public access.
+   properties:
+     context:
+       description:
+         A collection of management information accessible by an SNMP entity.
+       type: string
+     group:
+       description:
+         Group related to the access.
+       type: string
+     level:
+       description:
+         Level of authorization.
+       type: string
+     notify:
+       description:
+         Specifies the view to be used for GET*, SET and TRAP/INFORM requests.
+       type: string
+     prefix:
+       description:
+         Specifies how CONTEXT should be matched against the context of the incoming request.
+       type: string
+     read:
+       description:
+         Specifies the view to be used for GET*, SET and TRAP/INFORM requests.
+       type: string
+     version:
+       description:
+         SNMP version.
+       type: string
+     write:
+       description:
+         Specifies the view to be used for GET*, SET and TRAP/INFORM requests.
+       type: string

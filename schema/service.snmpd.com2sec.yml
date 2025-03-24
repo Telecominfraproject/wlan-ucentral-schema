@@ -2,37 +2,37 @@ description:
   Map an SNMPv1 or SNMPv2c community string to a security name..
 type: object
 properties:
-  - public:
-      description:
-        Public com2sec.
-      type: object
-      properties:
-        community:
-          description:
-            Community name.
-          type: string
-        secname:
-          description:
-            Security name.
-          type: string
-        source:
-          description:
-            A restricted source can either be a specific hostname or a subnet.
-          type: string
-  - private:
-      description:
-        Private com2sec.
-      type: object
-      properties:
-        community:
-          description:
-            Community name.
-          type: string
-        secname:
-          description:
-            Security name.
-          type: string
-        source:
-          description:
-            A restricted source can either be a specific hostname or a subnet.
-          type: string
+  public:
+    description:
+      Public com2sec.
+    type: object
+    properties:
+      community:
+        description:
+          Community name.
+        type: string
+      secname:
+        description:
+          Security name.
+        type: string
+      source:
+        description:
+          A restricted source can either be a specific hostname or a subnet.
+        type: string
+  private:
+    description:
+      Private com2sec.
+    type: object
+    properties:
+      community:
+        description:
+          Community name.
+        type: string
+      secname:
+        description:
+          Security name.
+        type: string
+      source:
+        description:
+          A restricted source can either be a specific hostname or a subnet.
+        type: string
