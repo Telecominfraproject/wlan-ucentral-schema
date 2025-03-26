@@ -59,6 +59,10 @@
 			generate_psk: true,
 		};
 
+	if (ssid.encryption.proto in [ "wpa3", "wpa3-mixed", "wpa3-192", "sae", "sae-mixed" ])
+		if (ssid.roaming?.generate_psk)
+			ssid.roaming.generate_psk = false;
+
 	if (ssid.roaming && ssid.encryption.proto in [ "wpa", "psk", "none" ]) {
 		delete ssid.roaming;
 		warn("Roaming requires wpa2 or later");
