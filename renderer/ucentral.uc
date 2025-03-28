@@ -60,7 +60,8 @@ try {
 		outputjson.close();
 
 		for (let cmd in [ 'rm -rf /tmp/config-shadow',
-				  'cp -r /etc/config-shadow /tmp' ])
+				  'cp -r /etc/config-shadow /tmp',
+				  '/usr/share/ucentral/wifi_detect.sh' ])
 			system(cmd);
 
 		let apply = fs.popen("/sbin/uci -c /tmp/config-shadow batch", "w");
