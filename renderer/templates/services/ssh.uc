@@ -18,6 +18,7 @@ files.add_named("/etc/dropbear/authorized_keys", join("\n", ssh.authorized_keys 
 set dropbear.@dropbear[-1].enable={{ b(enable) }}
 set dropbear.@dropbear[-1].Port={{ s(ssh.port) }}
 set dropbear.@dropbear[-1].PasswordAuth={{ b(ssh.password_authentication) }}
+set dropbear.@dropbear[-1].IdleTimeout=60
 
 {% for (let interface in interfaces): %}
 {%    let name = ethernet.calculate_name(interface) %}
