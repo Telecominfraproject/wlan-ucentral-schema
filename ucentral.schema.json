@@ -474,7 +474,8 @@
                         "5G",
                         "5G-lower",
                         "5G-upper",
-                        "6G"
+                        "6G",
+                        "Halow"
                     ]
                 },
                 "bandwidth": {
@@ -535,6 +536,10 @@
                 "channel-width": {
                     "type": "integer",
                     "enum": [
+                        1,
+                        2,
+                        4,
+                        8,
                         20,
                         40,
                         80,
@@ -2036,7 +2041,8 @@
                             "5G",
                             "5G-lower",
                             "5G-upper",
-                            "6G"
+                            "6G",
+                            "Halow"
                         ]
                     }
                 },
@@ -3280,7 +3286,8 @@
                             "5G",
                             "5G-lower",
                             "5G-upper",
-                            "6G"
+                            "6G",
+                            "Halow"
                         ]
                     }
                 },

@@ -43,7 +43,11 @@
 		"80": [ 36, 52, 100, 116, 132, 149 ],
 		"40": [ 36, 44, 52, 60, 100, 108,
 			116, 124, 132, 140, 149, 157, 165, 173,
-			184, 192 ]
+			184, 192 ],
+		"8": [ 12, 28, 44 ],
+		"4": [ 8, 16, 24, 32, 40, 48 ],
+		"2": [ 2, 6, 10, 14, 18, 22, 26, 30, 34, 38, 42, 46, 50 ],
+		"1": [ 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39, 41, 43, 45, 47, 49, 51 ]
 	};
 
 	if (!length(radio.valid_channels) && radio.band == "5G")
@@ -53,6 +57,10 @@
 					 77, 81, 85, 89, 93, 97, 101, 105, 109, 113, 117, 121, 125, 129, 133, 137, 141,
 					 145, 149, 153, 157, 161, 165, 169, 173, 177, 181, 185, 189, 193, 197, 201, 205,
 					 209, 213, 217, 221, 225, 229, 233 ];
+	if (!length(radio.valid_channels) && radio.band == "HaLow")
+		radio.valid_channels = [ 1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23,
+					 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 37, 38, 39, 40, 41, 42, 43,
+					 44, 45, 46, 47, 48, 49, 50, 51 ];
 
 	radio.country ??= default_config.country;
 
@@ -193,18 +201,30 @@
 		return 2;
 	}
 
+	function get_s1g_op_class(s1g_chan) {
+	    if (s1g_chan % 4 == 0)
+	        return (s1g_chan % 16 == 0) ? 70 : 71;
+	    else if (s1g_chan % 2 == 0)
+	        return 69;
+	    else
+	        return 68;
+	}
+
 %}
 
 # Wireless Configuration
 {% for (let phy in phys): %}
-{%  let htmode = match_htmode(phy, radio) %}
 {%  let reconf = phy.no_reconf ? 0 : 1 %}
 set wireless.{{ phy.section }}.disabled=0
 set wireless.{{ phy.section }}.ucentral_path={{ s(location) }}
+{%  if (radio.band != "HaLow"): %}
+{%      let htmode = match_htmode(phy, radio) %}
 set wireless.{{ phy.section }}.htmode={{ htmode }}
-set wireless.{{ phy.section }}.channel={{ match_channel(phy, radio) }}
 set wireless.{{ phy.section }}.txantenna={{ match_mimo(phy.tx_ant_avail, radio.mimo) }}
 set wireless.{{ phy.section }}.rxantenna={{ match_mimo(phy.rx_ant_avail, radio.mimo) }}
+set wireless.{{ phy.section }}.noscan=1
+{%  endif %}
+set wireless.{{ phy.section }}.channel={{ match_channel(phy, radio) }}
 set wireless.{{ phy.section }}.beacon_int={{ radio.beacon_interval }}
 set wireless.{{ phy.section }}.country={{ s(radio.country) }}
 set wireless.{{ phy.section }}.require_mode={{ s(match_require_mode(radio.require_mode)) }}
@@ -213,7 +233,6 @@ set wireless.{{ phy.section }}.legacy_rates={{ b(radio.legacy_rates) }}
 set wireless.{{ phy.section }}.chan_bw={{ radio.bandwidth }}
 set wireless.{{ phy.section }}.maxassoc={{ radio.maximum_clients }}
 set wireless.{{ phy.section }}.maxassoc_ignore_probe={{ b(radio.maximum_clients_ignore_probe) }}
-set wireless.{{ phy.section }}.noscan=1
 set wireless.{{ phy.section }}.reconf={{ b(reconf) }}
 set wireless.{{ phy.section }}.acs_exclude_dfs={{ b(!radio.allow_dfs) }}
 {% for (let channel in radio.valid_channels): %}
@@ -236,6 +255,13 @@ add_list wireless.{{ phy.section }}.hostapd_options={{ s(raw) }}
 set wireless.{{ phy.section }}.he_co_locate={{ b(1) }}
 set wireless.{{ phy.section }}.he_6ghz_reg_pwr_type={{ s(get_6GHz_power_type()) }}
 set wireless.{{ phy.section }}.acs_exclude_6ghz_non_psc={{ b(radio.acs_exclude_6ghz_non_psc) }}
+{%  endif %}
+{%  if (radio.band == "HaLow"): %}
+set wireless.{{ phy.section }}.type='morse'
+set wireless.{{ phy.section }}.band='s1g'
+set wireless.{{ phy.section }}.hwmode='a'
+set wireless.{{ phy.section }}.s1g_prim_1mhz_chan_index='auto'
+set wireless.{{ phy.section }}.op_class={{ get_s1g_op_class(match_channel(phy, radio)) }}
 {%  endif %}
 {%  if (afc): %}
 add wireless afc-server                            

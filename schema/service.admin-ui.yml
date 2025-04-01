@@ -26,6 +26,7 @@ properties:
       - 5G-lower
       - 5G-upper
       - 6G
+      - HaLow
   offline-trigger:
     description:
       The admin-ui will be spawned when this offline threshold was exceeded.

@@ -33,6 +33,7 @@ properties:
       - 5G-lower
       - 5G-upper
       - 6G
+      - HaLow
   bss-mode:
     description:
       Selects the operation mode of the wireless network interface controller.
