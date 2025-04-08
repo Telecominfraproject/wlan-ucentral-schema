@@ -90,22 +90,27 @@ if (board.switch) {
 	capa.switch = [];
 	capa.switch_ports = {};
 	for (let name, s in board.switch) {
-		let device = { name, lan: [], wan: [] };
-		let netdev;
-		for (let p in s.ports) {
-			if (p.device) {
-				netdev = p.device;
-				device.port = p.num;
-			} else if (device[p.role]) {
-				push(device[p.role], p.num)
+		for (let role in s.roles) {
+			let netdev;
+			let device = { name, lan: [], wan: [] };
+			let ports = split(role.ports, ' ');
+			for (let p in s.ports) {
+				if (!('' + p.num in ports))
+					continue;
+				if (p.device) {
+					netdev = p.device;
+					device.port = p.num;
+				} else if (device[p.role]) {
+					push(device[p.role], p.num)
+				}
 			}
+			if (!length(device.lan))
+				delete device.lan;
+			if (!length(device.wan))
+				delete device.wan;
+			if (netdev)
+				capa.switch_ports[netdev] = device;
 		}
-		if (!length(device.lan))
-			delete device.lan;
-		if (!length(device.wan))
-			delete device.wan;
-		if (netdev)
-			capa.switch_ports[netdev] = device;
 		push(capa.switch, { name, enable: s.enable, reset: s.reset });
 	}
 }
