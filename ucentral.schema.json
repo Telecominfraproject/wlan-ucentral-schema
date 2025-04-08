@@ -3623,6 +3623,17 @@
                 }
             }
         },
+        "service.dhcp-inject": {
+            "type": "object",
+            "properties": {
+                "select-ports": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "service": {
             "type": "object",
             "properties": {
@@ -3697,6 +3708,9 @@
                 },
                 "snmpd": {
                     "$ref": "#/$defs/service.snmpd"
+                },
+                "dhcp-inject": {
+                    "$ref": "#/$defs/service.dhcp-inject"
                 }
             }
         },

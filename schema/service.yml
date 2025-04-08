@@ -51,3 +51,5 @@ properties:
     $ref: 'https://ucentral.io/schema/v1/service/fingerprint/'
   snmpd:
     $ref: 'https://ucentral.io/schema/v1/service/snmpd/'
+  dhcp-inject:
+    $ref: 'https://ucentral.io/schema/v1/service/dhcp-inject/'

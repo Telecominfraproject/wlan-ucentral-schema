@@ -1,0 +1,11 @@
+description:
+  Define the interfaces on which the dhcp shall be relayed.
+type: object
+properties:
+  select-ports:
+    description:
+      The list of physical network devices that shall be used to fwd the
+      DHCP frames.
+    type: array
+    items:
+      type: string
