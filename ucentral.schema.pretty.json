@@ -4181,6 +4181,19 @@
                 }
             }
         },
+        "service.dhcp-inject": {
+            "description": "Define the interfaces on which the dhcp shall be relayed.",
+            "type": "object",
+            "properties": {
+                "select-ports": {
+                    "description": "The list of physical network devices that shall be used to fwd the DHCP frames.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "service": {
             "description": "This section describes all of the services that may be present on the AP. Each service is then referenced via its name inside an interface, ssid, ...",
             "type": "object",
@@ -4256,6 +4269,9 @@
                 },
                 "snmpd": {
                     "$ref": "#/$defs/service.snmpd"
+                },
+                "dhcp-inject": {
+                    "$ref": "#/$defs/service.dhcp-inject"
                 }
             }
         },
