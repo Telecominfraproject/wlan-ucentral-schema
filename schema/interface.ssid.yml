@@ -74,6 +74,10 @@ properties:
     type: integer
     maximum: 65535
     minimum: 1
+  max-inactivity:
+    description:
+      Set the Maximum Inactivity in seconds
+    type: integer
   broadcast-time:
     description:
       This option will make the unit braodcast the time inside its beacons.

@@ -511,6 +511,7 @@ set wireless.{{ section }}.hidden={{ b(ssid.hidden_ssid) }}
 set wireless.{{ section }}.time_advertisement={{ ssid.broadcast_time ? 2 : 0 }}
 set wireless.{{ section }}.isolate={{ b(ssid.isolate_clients || interface.isolate_hosts) }}
 set wireless.{{ section }}.bridge_isolate={{ b(interface.isolate_hosts) }}
+set wireless.{{ section }}.max_inactivity={{ s(ssid.max_inactivity) }}
 set wireless.{{ section }}.uapsd={{ b(ssid.power_save) }}
 set wireless.{{ section }}.rts_threshold={{ ssid.rts_threshold }}
 set wireless.{{ section }}.multicast_to_unicast={{ b(ssid.unicast_conversion) }}

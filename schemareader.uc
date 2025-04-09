@@ -5699,6 +5699,17 @@ function instantiateInterfaceSsid(location, value, errors) {
 			obj.rts_threshold = parseRtsThreshold(location + "/rts-threshold", value["rts-threshold"], errors);
 		}
 
+		function parseMaxInactivity(location, value, errors) {
+			if (type(value) != "int")
+				push(errors, [ location, "must be of type integer" ]);
+
+			return value;
+		}
+
+		if (exists(value, "max-inactivity")) {
+			obj.max_inactivity = parseMaxInactivity(location + "/max-inactivity", value["max-inactivity"], errors);
+		}
+
 		function parseBroadcastTime(location, value, errors) {
 			if (type(value) != "bool")
 				push(errors, [ location, "must be of type boolean" ]);

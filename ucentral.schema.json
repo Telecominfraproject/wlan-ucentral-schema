@@ -2074,6 +2074,9 @@
                     "maximum": 65535,
                     "minimum": 1
                 },
+                "max-inactivity": {
+                    "type": "integer"
+                },
                 "broadcast-time": {
                     "type": "boolean"
                 },
