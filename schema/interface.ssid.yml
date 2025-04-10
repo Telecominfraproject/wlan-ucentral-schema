@@ -78,6 +78,7 @@ properties:
     description:
       Set the Maximum Inactivity in seconds
     type: integer
+    default: 300
   broadcast-time:
     description:
       This option will make the unit braodcast the time inside its beacons.

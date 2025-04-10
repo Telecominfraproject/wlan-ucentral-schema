@@ -2075,7 +2075,8 @@
                     "minimum": 1
                 },
                 "max-inactivity": {
-                    "type": "integer"
+                    "type": "integer",
+                    "default": 300
                 },
                 "broadcast-time": {
                     "type": "boolean"

@@ -5709,6 +5709,9 @@ function instantiateInterfaceSsid(location, value, errors) {
 		if (exists(value, "max-inactivity")) {
 			obj.max_inactivity = parseMaxInactivity(location + "/max-inactivity", value["max-inactivity"], errors);
 		}
+		else {
+			obj.max_inactivity = 300;
+		}
 
 		function parseBroadcastTime(location, value, errors) {
 			if (type(value) != "bool")
