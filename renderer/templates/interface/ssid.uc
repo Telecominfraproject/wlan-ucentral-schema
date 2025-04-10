@@ -53,10 +53,11 @@
 		return;
 	}
 
+	let has_multi_psk = (ssid?.encryption.proto == "mpsk-radius") || ssid.multi_psk;
 	if (type(ssid.roaming) == 'bool')
 		ssid.roaming = {
 			message_exchange: 'air',
-			generate_psk: true,
+			generate_psk: !has_multi_psk,
 		};
 
 	if (ssid.encryption.proto in [ "wpa3", "wpa3-mixed", "wpa3-192", "sae", "sae-mixed" ])
