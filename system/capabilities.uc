@@ -108,8 +108,15 @@ if (board.switch) {
 				delete device.lan;
 			if (!length(device.wan))
 				delete device.wan;
-			if (netdev)
-				capa.switch_ports[netdev] = device;
+			if (netdev) {
+				if (capa.switch_ports[netdev]) {
+					for (let iface in ['lan', 'wan'])
+						if (device[iface])
+							capa.switch_ports[netdev][iface] = device[iface]
+				} else {
+					capa.switch_ports[netdev] = device;
+				}
+			}
 		}
 		push(capa.switch, { name, enable: s.enable, reset: s.reset });
 	}
