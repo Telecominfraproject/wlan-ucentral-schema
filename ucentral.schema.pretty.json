@@ -531,7 +531,8 @@
                         "5G",
                         "5G-lower",
                         "5G-upper",
-                        "6G"
+                        "6G",
+                        "Halow"
                     ]
                 },
                 "bandwidth": {
@@ -600,6 +601,10 @@
                     "description": "The channel width that the radio shall use. This is just a hint for the AP. If the requested value is not supported then the AP will use the highest common denominator.",
                     "type": "integer",
                     "enum": [
+                        1,
+                        2,
+                        4,
+                        8,
                         20,
                         40,
                         80,
@@ -2325,7 +2330,8 @@
                             "5G",
                             "5G-lower",
                             "5G-upper",
-                            "6G"
+                            "6G",
+                            "Halow"
                         ]
                     }
                 },
@@ -3768,7 +3774,8 @@
                             "5G",
                             "5G-lower",
                             "5G-upper",
-                            "6G"
+                            "6G",
+                            "Halow"
                         ]
                     }
                 },

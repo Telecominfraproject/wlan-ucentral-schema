@@ -135,6 +135,11 @@
 			return null;
 		}
 
+		if (band == "HaLow" && !(ssid?.encryption.proto in [ "sae", "sae-mixed", "owe" ])) {
+			warn("Invalid encryption settings for HaLow band ");
+			return null;
+		}
+
 		if (!ssid.encryption || ssid.encryption.proto in [ "none" ]) {
 			if (ssid.radius?.authentication?.mac_filter &&
 			    ssid.radius.authentication?.host &&
@@ -203,7 +208,8 @@
 
 	function match_crypto(band) {
 		let crypto = validate_encryption(band);
-		if ('6G' == band) {
+
+		if ('6G' == band || 'HaLow' == band) {
 			if (crypto.proto == "sae-mixed" || crypto.proto == "mpsk-radius")
 				crypto.proto = "sae";
 			else if (crypto.proto == "wpa3-mixed")
@@ -396,6 +402,12 @@ set wireless.{{ section }}.auth_cache='{{ b(ssid.multi_psk ? 0 : ssid.encryption
 
 {% if (band == "6G"): %}
 set wireless.{{ section }}.fils_discovery_max_interval={{ ssid.fils_discovery_interval }}
+{%   endif %}
+
+{% if (band == "HaLow"): %}
+set wireless.{{ section }}.wpa_strict_rekey=0
+set wireless.{{ section }}.wpa_group_rekey=0
+set wireless.{{ section }}.eap_reauth_period=0
 {%   endif %}
 
 # Crypto settings
