@@ -16,6 +16,7 @@ properties:
     - 5G-lower
     - 5G-upper
     - 6G
+    - HaLow
   bandwidth:
     description:
       Specifies a narrow channel width in MHz, possible values are 5, 10, 20.
@@ -79,6 +80,10 @@ properties:
       requested value is not supported then the AP will use the highest common denominator.
     type: integer
     enum:
+    - 1
+    - 2
+    - 4
+    - 8
     - 20
     - 40
     - 80
