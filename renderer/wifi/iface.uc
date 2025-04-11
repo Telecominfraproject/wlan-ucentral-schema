@@ -30,7 +30,9 @@ let chwidth = {
 function freq2channel(freq) {
 	if (freq == 2484)
 		return 14;
-	else if (freq < 2484)
+	else if (freq < 1000)
+		return (freq - 900) / 2;
+	else if (freq > 2400 && freq < 2484)
 		return (freq - 2407) / 5;
 	else if (freq >= 4910 && freq <= 4980)
 		return (freq - 4000) / 5;

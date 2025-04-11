@@ -1008,8 +1008,8 @@ function instantiateRadio(location, value, errors) {
 			if (type(value) != "string")
 				push(errors, [ location, "must be of type string" ]);
 
-			if (!(value in [ "2G", "5G", "5G-lower", "5G-upper", "6G" ]))
-				push(errors, [ location, "must be one of \"2G\", \"5G\", \"5G-lower\", \"5G-upper\" or \"6G\"" ]);
+			if (!(value in [ "2G", "5G", "5G-lower", "5G-upper", "6G", "HaLow" ]))
+				push(errors, [ location, "must be one of \"2G\", \"5G\", \"5G-lower\", \"5G-upper\", \"6G\" or \"HaLow\"" ]);
 
 			return value;
 		}
@@ -1206,8 +1206,8 @@ function instantiateRadio(location, value, errors) {
 			if (type(value) != "int")
 				push(errors, [ location, "must be of type integer" ]);
 
-			if (!(value in [ 20, 40, 80, 160, 320, 8080 ]))
-				push(errors, [ location, "must be one of 20, 40, 80, 160, 320 or 8080" ]);
+			if (!(value in [ 1, 2, 4, 8, 20, 40, 80, 160, 320, 8080 ]))
+				push(errors, [ location, "must be one of 1, 2, 4, 8, 20, 40, 80, 160, 320 or 8080" ]);
 
 			return value;
 		}
@@ -5579,8 +5579,8 @@ function instantiateInterfaceSsid(location, value, errors) {
 					if (type(value) != "string")
 						push(errors, [ location, "must be of type string" ]);
 
-					if (!(value in [ "2G", "5G", "5G-lower", "5G-upper", "6G" ]))
-						push(errors, [ location, "must be one of \"2G\", \"5G\", \"5G-lower\", \"5G-upper\" or \"6G\"" ]);
+					if (!(value in [ "2G", "5G", "5G-lower", "5G-upper", "6G", "HaLow" ]))
+						push(errors, [ location, "must be one of \"2G\", \"5G\", \"5G-lower\", \"5G-upper\", \"6G\" or \"HaLow\"" ]);
 
 					return value;
 				}
@@ -9275,8 +9275,8 @@ function instantiateServiceAdminUi(location, value, errors) {
 					if (type(value) != "string")
 						push(errors, [ location, "must be of type string" ]);
 
-					if (!(value in [ "2G", "5G", "5G-lower", "5G-upper", "6G" ]))
-						push(errors, [ location, "must be one of \"2G\", \"5G\", \"5G-lower\", \"5G-upper\" or \"6G\"" ]);
+					if (!(value in [ "2G", "5G", "5G-lower", "5G-upper", "6G", "HaLow" ]))
+						push(errors, [ location, "must be one of \"2G\", \"5G\", \"5G-lower\", \"5G-upper\", \"6G\" or \"HaLow\"" ]);
 
 					return value;
 				}

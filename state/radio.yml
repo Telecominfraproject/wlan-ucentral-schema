@@ -26,6 +26,10 @@ items:
       description:
         The channel width currently being used.
       enum:
+      - 1
+      - 2
+      - 4
+      - 8
       - 20
       - 40
       - 80
