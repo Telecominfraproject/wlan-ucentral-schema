@@ -391,6 +391,7 @@ function get_pdev_stats(radio_band) {
 	let band = lc(radio_band);
 	let prev_values = {};
 	let curr_values = {};
+	let _chanUtil = null;
 
 	let final_stat_values = {
 		txFrameCount: null,
@@ -412,7 +413,8 @@ function get_pdev_stats(radio_band) {
 	let _rxFrameCountDelta = curr_values.rxFrameCount - prev_values.rxFrameCount;
 	let _rxClearCountDelta = curr_values.rxClearCount - prev_values.rxClearCount;
 	let _cycleCountDelta = curr_values.cycleCount - prev_values.cycleCount;
-	let _chanUtil = (_rxClearCountDelta * 100) / _cycleCountDelta;
+	if (_cycleCountDelta && _cycleCountDelta > 0)
+		_chanUtil = (_rxClearCountDelta * 100) / _cycleCountDelta;
 
 	// values from pdev_stats
 	final_stat_values.txFrameCount = curr_values.txFrameCount;
