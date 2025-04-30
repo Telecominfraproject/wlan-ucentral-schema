@@ -78,6 +78,9 @@ let scope = {
 
 if (match(cmd.command, /^[A-Za-z0-9_]+$/)) {
 	try {
+		if (cmd.command == 'wifiscan' && fs.stat('/sys/kernel/debug/ath12k/'))
+			cmd.command += '7';
+
 		include(sprintf("cmd_%s.uc", cmd.command), scope);
 	}
 	catch (e) {
