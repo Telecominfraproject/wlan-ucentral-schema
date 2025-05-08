@@ -1,5 +1,5 @@
 {% if (!services.is_present("dhcpinject")) return %}
-{% let ssids = services.lookup_ssids("dhcpinject") %}
+{% let ssids = services.lookup_ssids("dhcp-inject") %}
 {% let enable = length(ssids) %}
 {% let iface_count = 0 %}
 {% services.set_enabled("dhcpinject", enable) %}
