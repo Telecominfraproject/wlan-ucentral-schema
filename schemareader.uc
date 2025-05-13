@@ -6844,6 +6844,26 @@ function instantiateServiceSsh(location, value, errors) {
 			obj.password_authentication = true;
 		}
 
+		function parseIdleTimeout(location, value, errors) {
+			if (type(value) in [ "int", "double" ]) {
+				if (value > 600)
+					push(errors, [ location, "must be lower than or equal to 600" ]);
+
+			}
+
+			if (type(value) != "int")
+				push(errors, [ location, "must be of type integer" ]);
+
+			return value;
+		}
+
+		if (exists(value, "idle-timeout")) {
+			obj.idle_timeout = parseIdleTimeout(location + "/idle-timeout", value["idle-timeout"], errors);
+		}
+		else {
+			obj.idle_timeout = 60;
+		}
+
 		return obj;
 	}
 
