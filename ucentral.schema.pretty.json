@@ -2801,6 +2801,12 @@
                     "description": "This option defines if password authentication shall be enabled. If set to false, only ssh key based authentication is possible.",
                     "type": "boolean",
                     "default": true
+                },
+                "idle-timeout": {
+                    "description": "This option defines the idle timeout of an ssh connection, set to 0 to disable this feature. Default to 60 seconds if this field is not specified.",
+                    "type": "integer",
+                    "default": 60,
+                    "maximum": 600
                 }
             }
         },
