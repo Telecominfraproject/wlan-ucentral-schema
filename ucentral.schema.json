@@ -475,7 +475,7 @@
                         "5G-lower",
                         "5G-upper",
                         "6G",
-                        "Halow"
+                        "HaLow"
                     ]
                 },
                 "bandwidth": {
@@ -2042,7 +2042,7 @@
                             "5G-lower",
                             "5G-upper",
                             "6G",
-                            "Halow"
+                            "HaLow"
                         ]
                     }
                 },
@@ -3291,7 +3291,7 @@
                             "5G-lower",
                             "5G-upper",
                             "6G",
-                            "Halow"
+                            "HaLow"
                         ]
                     }
                 },
