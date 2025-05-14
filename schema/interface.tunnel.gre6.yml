@@ -2,6 +2,14 @@ description:
   This Object defines the properties of a GREv6 tunnel.
 type: object
 properties:
+  mtu:
+    description:
+      The maximum transmission unit (MTU) size for the GRE tunnel interface.
+      The default value is 1280 bytes to reflect OpenWRT GRE Package Defaults.
+    type: integer
+    minimum: 1280
+    maximum: 1500
+    default: 1280
   proto:
     description:
       This field must be set to gre6.

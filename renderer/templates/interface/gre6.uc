@@ -10,6 +10,7 @@ set network.greip6=interface
 set network.greip6.proto='grev6tap'
 set network.greip6.peer6addr='{{ interface.tunnel.peer_address }}'
 set network.greip6.nohostroute='1'
+set network.gre.mtu='{{ interface.tunnel.mtu }}'
 
 {%
 let suffix = '';
