@@ -2270,6 +2270,12 @@
         "interface.tunnel.gre": {
             "type": "object",
             "properties": {
+                "mtu": {
+                    "type": "integer",
+                    "minimum": 68,
+                    "maximum": 1500,
+                    "default": 1280
+                },
                 "proto": {
                     "type": "string",
                     "const": "gre"
@@ -2292,6 +2298,12 @@
         "interface.tunnel.gre6": {
             "type": "object",
             "properties": {
+                "mtu": {
+                    "type": "integer",
+                    "minimum": 1280,
+                    "maximum": 1500,
+                    "default": 1280
+                },
                 "proto": {
                     "type": "string",
                     "const": "gre6"

@@ -11,6 +11,7 @@ set network.gre.proto='gretap'
 set network.gre.peeraddr='{{ interface.tunnel.peer_address }}'
 set network.gre.nohostroute='1'
 set network.gre.df='{{ b(interface.tunnel.dont_fragment) }}'
+set network.gre.mtu='{{ interface.tunnel.mtu }}'
 
 {%
 let suffix = '';
