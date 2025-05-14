@@ -6275,6 +6275,29 @@ function instantiateInterfaceTunnelGre(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
 
+		function parseMtu(location, value, errors) {
+			if (type(value) in [ "int", "double" ]) {
+				if (value > 1500)
+					push(errors, [ location, "must be lower than or equal to 1500" ]);
+
+				if (value < 68)
+					push(errors, [ location, "must be bigger than or equal to 68" ]);
+
+			}
+
+			if (type(value) != "int")
+				push(errors, [ location, "must be of type integer" ]);
+
+			return value;
+		}
+
+		if (exists(value, "mtu")) {
+			obj.mtu = parseMtu(location + "/mtu", value["mtu"], errors);
+		}
+		else {
+			obj.mtu = 1280;
+		}
+
 		function parseProto(location, value, errors) {
 			if (type(value) != "string")
 				push(errors, [ location, "must be of type string" ]);
@@ -6346,6 +6369,29 @@ function instantiateInterfaceTunnelGre(location, value, errors) {
 function instantiateInterfaceTunnelGre6(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
+
+		function parseMtu(location, value, errors) {
+			if (type(value) in [ "int", "double" ]) {
+				if (value > 1500)
+					push(errors, [ location, "must be lower than or equal to 1500" ]);
+
+				if (value < 1280)
+					push(errors, [ location, "must be bigger than or equal to 1280" ]);
+
+			}
+
+			if (type(value) != "int")
+				push(errors, [ location, "must be of type integer" ]);
+
+			return value;
+		}
+
+		if (exists(value, "mtu")) {
+			obj.mtu = parseMtu(location + "/mtu", value["mtu"], errors);
+		}
+		else {
+			obj.mtu = 1280;
+		}
 
 		function parseProto(location, value, errors) {
 			if (type(value) != "string")

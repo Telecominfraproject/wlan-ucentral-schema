@@ -532,7 +532,7 @@
                         "5G-lower",
                         "5G-upper",
                         "6G",
-                        "Halow"
+                        "HaLow"
                     ]
                 },
                 "bandwidth": {
@@ -2331,7 +2331,7 @@
                             "5G-lower",
                             "5G-upper",
                             "6G",
-                            "Halow"
+                            "HaLow"
                         ]
                     }
                 },
@@ -2590,6 +2590,13 @@
             "description": "This Object defines the properties of a GRE tunnel.",
             "type": "object",
             "properties": {
+                "mtu": {
+                    "description": "The maximum transmission unit (MTU) size for the GRE tunnel interface. The default value is 1280 bytes to reflect OpenWRT GRE Package Defaults.",
+                    "type": "integer",
+                    "minimum": 68,
+                    "maximum": 1500,
+                    "default": 1280
+                },
                 "proto": {
                     "description": "This field must be set to gre.",
                     "type": "string",
@@ -2617,6 +2624,13 @@
             "description": "This Object defines the properties of a GREv6 tunnel.",
             "type": "object",
             "properties": {
+                "mtu": {
+                    "description": "The maximum transmission unit (MTU) size for the GRE tunnel interface. The default value is 1280 bytes to reflect OpenWRT GRE Package Defaults.",
+                    "type": "integer",
+                    "minimum": 1280,
+                    "maximum": 1500,
+                    "default": 1280
+                },
                 "proto": {
                     "description": "This field must be set to gre6.",
                     "type": "string",
@@ -3775,7 +3789,7 @@
                             "5G-lower",
                             "5G-upper",
                             "6G",
-                            "Halow"
+                            "HaLow"
                         ]
                     }
                 },
