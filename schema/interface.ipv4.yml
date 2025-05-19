@@ -47,7 +47,7 @@ properties:
     description:
       Define additional DHCP options to request inside DHCP requests
     type: array
-    default: [43, 60, 224]
+    default: [43, 60, 138, 224]
     items:
       type: integer
       minimum: 1

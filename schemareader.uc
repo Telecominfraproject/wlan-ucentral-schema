@@ -2007,7 +2007,7 @@ function instantiateInterfaceIpv4(location, value, errors) {
 			obj.request_options = parseRequestOptions(location + "/request-options", value["request-options"], errors);
 		}
 		else {
-			obj.request_options = [ 43, 60, 224 ];
+			obj.request_options = [ 43, 60, 138, 224 ];
 		}
 
 		function parseUseDns(location, value, errors) {
