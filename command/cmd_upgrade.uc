@@ -1,17 +1,78 @@
 let image_path = "/tmp/ucentral.upgrade";
 
+function process_file(args, name, path) {
+	if (!args[name]) {
+		result(2, name + " is required in payload for secure download");
+		return false;
+	}
+	let content = b64dec(args[name]);
+	if (!content) {
+		result(2, "Failed to base64 decode " + name);
+		return false;
+	}
+	let f = fs.open(path, "w");
+	if (!f) {
+		result(2, "Failed to write " + name);
+		return false;
+	}
+	f.write(content);
+	f.close();
+
+	return true;
+}
+
+function download_run(cmd) {
+	let pipe = fs.popen(cmd);
+	if (!pipe)
+		return -1;
+
+	let out = trim(pipe.read("all"));
+	let ret = pipe.close();
+
+	return { "err": ret, "http_code": int(out) };
+}
+
 if (!args.uri) {
 	result(2, "No firmware URL provided");
 	return;
 }
 
-let download_cmdline = [ 'wget', '-O', image_path, args.uri ];
-let rc = system(download_cmdline);
+let secure_download = true;
+let ca_file   = "/etc/ucentral/cas.pem";
+let cert_file = "/etc/ucentral/cert.pem";
+let key_file =  "/etc/ucentral/key.pem";
 
-if (rc != 0) {
-	result(2, "Download command %s exited with non-zero code %d", download_cmdline, rc);
+if (args['use-local-certificates'] == null) {
+    // Backwards compatibility: not provided by the cloud
+	secure_download = false;
+}
+else if (args['use-local-certificates'] == false) {
+	ca_file =   "/tmp/_upgrade_cas.pem";
+	cert_file = "/tmp/_upgrade_cert.pem";
+	key_file =  "/tmp/_upgrade_key.pem";
 
-	return;
+	if (!process_file(args, "ca-certificate", ca_file))
+		return;
+	if (!process_file(args, "certificate", cert_file))
+		return;
+	if (!process_file(args, "private-key", key_file))
+		return;
+}
+
+let sargs = "";
+if (secure_download) {
+	sargs = `--cacert ${ca_file} --cert ${cert_file} --key ${key_file}`;
+}
+
+let dl_cmd = `curl ${sargs} -w "%{http_code}" -o ${image_path} "${args.uri}"`;
+let dl_ret = download_run(dl_cmd);
+if (dl_ret.err != 0 || dl_ret.http_code < 200 || dl_ret.http_code >= 300) {
+	// Try a second time before erroring out
+	dl_ret = download_run(dl_cmd);
+	if (dl_ret.err != 0 || dl_ret.http_code < 200 || dl_ret.http_code >= 300) {
+		result(2, "Download failed, err %d, http_code %d, cmd %s", dl_ret.err, dl_ret.http_code, dl_cmd);
+		return;
+	}
 }
 
 let validation_result = ctx.call("system", "validate_firmware_image", { path: image_path });
