@@ -3,7 +3,7 @@ let fs = require("fs");
 
 let package_json = [];
 
-let fd = fs.open("/tmp/ucentral/packages.state");
+let fd = fs.open("/tmp/packages.state");
 if (fd) {
     let line;
     while (line = fd.read("line")) {
@@ -18,4 +18,4 @@ if (fd) {
     fd.close();
 }
 
-fs.writefile('/tmp/ucentral/packages.json', {"packages": package_json});
+fs.writefile('/tmp/packages.json', {"packages": package_json});
