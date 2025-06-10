@@ -573,7 +573,6 @@ set wireless.{{ section }}.multi_psk={{ b(ssid.multi_psk) }}
 set wireless.{{ phy.section }}.rssi_reject_assoc_rssi={{ ssid.quality_thresholds.association_request_rssi }}
 set wireless.{{ phy.section }}.rssi_ignore_probe_request={{ ssid.quality_thresholds.probe_request_rssi }}
 {%       if (ssid.quality_thresholds.probe_request_rssi): %}
-set wireless.{{ section }}.hidden=1
 set wireless.{{ section }}.dynamic_probe_resp=1
 {%       endif %}
 set usteer2.{{ section }}=ssid
