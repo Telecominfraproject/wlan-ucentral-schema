@@ -38,8 +38,8 @@ if (!args.uri) {
 }
 
 let secure_download = true;
-let ca_file   = "/etc/ucentral/cas.pem";
-let cert_file = "/etc/ucentral/cert.pem";
+let ca_file   = "/etc/ucentral/operational.ca";
+let cert_file = "/etc/ucentral/operational.pem";
 let key_file =  "/etc/ucentral/key.pem";
 
 if (args['use-local-certificates'] == null) {
@@ -114,10 +114,10 @@ let archive_cmdline = [
 
 if (args.keep_redirector) {
 	let files = [
-		"/etc/ucentral/cas.pem", "/etc/ucentral/cert.pem",
-		"/etc/ucentral/redirector.json", "/etc/ucentral/dev-id",
-		"/etc/ucentral/key.pem", "/etc/ucentral/gateway.json",
-		"/etc/ucentral/profile.json", "/etc/ucentral/restrictions.json",
+		"/etc/ucentral/key.pem", "/etc/ucentral/cert.pem",
+		"/etc/ucentral/gateway.json", "/etc/ucentral/profile.json",
+		"/etc/ucentral/operational.pem", "/etc/ucentral/operational.ca",
+		"/etc/ucentral/restrictions.json",
 	];
 	for (let f in files)
 		if (fs.stat(f))

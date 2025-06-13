@@ -7,9 +7,10 @@ if (length(args) && args.keep_redirector) {
 	];
 
 	let files = [
-			"/etc/ucentral/cas.pem", "/etc/ucentral/cert.pem",
-			"/etc/ucentral/gateway.json", "/etc/ucentral/dev-id",
-			"/etc/ucentral/key.pem", "/etc/ucentral/profile.json"
+			"/etc/ucentral/key.pem", "/etc/ucentral/cert.pem",
+			"/etc/ucentral/gateway.json", "/etc/ucentral/profile.json",
+			"/etc/ucentral/operational.pem", "/etc/ucentral/operational.ca",
+			"/etc/ucentral/restrictions.json",
 	];
 	for (let f in files)
 		if (fs.stat(f))
