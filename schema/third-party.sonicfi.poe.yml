@@ -1,0 +1,7 @@
+description: third-party.sonicfi.poe
+type: object
+properties:
+  ports:
+    type: array
+    items:
+      $ref: "https://ucentral.io/schema/v1/third-party/sonicfi/poe/ports/"

@@ -11025,6 +11025,117 @@ function instantiateTimeouts(location, value, errors) {
 	return value;
 }
 
+function instantiateThirdPartySonicfiPoePorts(location, value, errors) {
+	if (type(value) == "object") {
+		let obj = {};
+
+		function parseSelectPorts(location, value, errors) {
+			if (type(value) == "array") {
+				function parseItem(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				return map(value, (item, i) => parseItem(location + "/" + i, item, errors));
+			}
+
+			if (type(value) != "array")
+				push(errors, [ location, "must be of type array" ]);
+
+			return value;
+		}
+
+		if (exists(value, "select-ports")) {
+			obj.select_ports = parseSelectPorts(location + "/select-ports", value["select-ports"], errors);
+		}
+
+		function parseAdminMode(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "admin-mode")) {
+			obj.admin_mode = parseAdminMode(location + "/admin-mode", value["admin-mode"], errors);
+		}
+		else {
+			obj.admin_mode = true;
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
+
+	return value;
+}
+
+function instantiateThirdPartySonicfiPoe(location, value, errors) {
+	if (type(value) == "object") {
+		let obj = {};
+
+		function parsePorts(location, value, errors) {
+			if (type(value) == "array") {
+				return map(value, (item, i) => instantiateThirdPartySonicfiPoePorts(location + "/" + i, item, errors));
+			}
+
+			if (type(value) != "array")
+				push(errors, [ location, "must be of type array" ]);
+
+			return value;
+		}
+
+		if (exists(value, "ports")) {
+			obj.ports = parsePorts(location + "/ports", value["ports"], errors);
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
+
+	return value;
+}
+
+function instantiateThirdPartySonicfi(location, value, errors) {
+	if (type(value) == "object") {
+		let obj = {};
+
+		if (exists(value, "poe")) {
+			obj.poe = instantiateThirdPartySonicfiPoe(location + "/poe", value["poe"], errors);
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
+
+	return value;
+}
+
+function instantiateThirdParty(location, value, errors) {
+	if (type(value) == "object") {
+		let obj = {};
+
+		if (exists(value, "sonicfi")) {
+			obj.sonicfi = instantiateThirdPartySonicfi(location + "/sonicfi", value["sonicfi"], errors);
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
+
+	return value;
+}
+
 function newUCentralState(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
@@ -11131,21 +11242,8 @@ function newUCentralState(location, value, errors) {
 			obj.timeouts = instantiateTimeouts(location + "/timeouts", value["timeouts"], errors);
 		}
 
-		function parseThirdParty(location, value, errors) {
-			if (type(value) == "object") {
-				let obj = { ...value };
-
-				return obj;
-			}
-
-			if (type(value) != "object")
-				push(errors, [ location, "must be of type object" ]);
-
-			return value;
-		}
-
 		if (exists(value, "third-party")) {
-			obj.third_party = parseThirdParty(location + "/third-party", value["third-party"], errors);
+			obj.third_party = instantiateThirdParty(location + "/third-party", value["third-party"], errors);
 		}
 
 		return obj;

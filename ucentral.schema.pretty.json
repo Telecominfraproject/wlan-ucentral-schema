@@ -57,7 +57,8 @@
         },
         "third-party": {
             "type": "object",
-            "additionalProperties": true
+            "additionalProperties": true,
+            "$ref": "#/$defs/third-party"
         }
     },
     "$defs": {
@@ -4541,6 +4542,63 @@
                 "validate": {
                     "description": "How long the client has time to connect to the cloud before discovery is restarted.",
                     "type": "integer"
+                }
+            }
+        },
+        "third-party.sonicfi.poe.ports": {
+            "description": "This section describes the PoE configuration according to the different ports.",
+            "type": "object",
+            "properties": {
+                "select-ports": {
+                    "description": "The list of physical network devices that shall be configured with PoE. The names are logical ones and wildcardable.",
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "examples": [
+                            "LAN1",
+                            "LAN2",
+                            "LAN3",
+                            "LAN*",
+                            "*"
+                        ]
+                    }
+                },
+                "admin-mode": {
+                    "description": "Option to force admin state over selected port. Setting to <false> immediately shuts down power. Setting to <true> starts PoE hanshake (Power sourcing equipment < - > Powered Device) sequence and in case of success, power is being delivered to Powered Device.",
+                    "type": "boolean",
+                    "default": true
+                }
+            }
+        },
+        "third-party.sonicfi.poe": {
+            "description": "third-party.sonicfi.poe",
+            "type": "object",
+            "properties": {
+                "ports": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/third-party.sonicfi.poe.ports"
+                    }
+                }
+            }
+        },
+        "third-party.sonicfi": {
+            "description": "third-party.sonicfi",
+            "type": "object",
+            "properties": {
+                "poe": {
+                    "type": "object",
+                    "$ref": "#/$defs/third-party.sonicfi.poe"
+                }
+            }
+        },
+        "third-party": {
+            "description": "third-party schema",
+            "type": "object",
+            "properties": {
+                "sonicfi": {
+                    "description": "sonicfi schema",
+                    "$ref": "#/$defs/third-party.sonicfi"
                 }
             }
         }

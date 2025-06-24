@@ -1,0 +1,6 @@
+description: third-party schema
+type: object
+properties:
+  sonicfi:
+    description: sonicfi schema
+    $ref: "https://ucentral.io/schema/v1/third-party/sonicfi/"

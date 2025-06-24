@@ -1,0 +1,6 @@
+description: third-party.sonicfi
+type: object
+properties:
+  poe:
+    type: object
+    $ref: "https://ucentral.io/schema/v1/third-party/sonicfi/poe/"

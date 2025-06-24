@@ -1,0 +1,24 @@
+description:
+  This section describes the PoE configuration according to the different ports.
+type: object
+properties:
+  select-ports:
+    description:
+      The list of physical network devices that shall be configured with PoE.
+      The names are logical ones and wildcardable.
+    type: array
+    items:
+      type: string
+      examples:
+        - LAN1
+        - LAN2
+        - LAN3
+        - LAN*
+        - "*"
+  admin-mode:
+    description:
+      Option to force admin state over selected port. Setting to <false> immediately shuts down power.
+      Setting to <true> starts PoE hanshake (Power sourcing equipment < - > Powered Device) 
+      sequence and in case of success, power is being delivered to Powered Device.
+    type: boolean
+    default: true
