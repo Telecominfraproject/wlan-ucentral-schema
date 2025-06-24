@@ -612,6 +612,37 @@ function instantiateEthernet(location, value, errors) {
 			obj.services = parseServices(location + "/services", value["services"], errors);
 		}
 
+		function parsePoe(location, value, errors) {
+			if (type(value) == "object") {
+				let obj = {};
+
+				function parseAdminMode(location, value, errors) {
+					if (type(value) != "bool")
+						push(errors, [ location, "must be of type boolean" ]);
+
+					return value;
+				}
+
+				if (exists(value, "admin-mode")) {
+					obj.admin_mode = parseAdminMode(location + "/admin-mode", value["admin-mode"], errors);
+				}
+				else {
+					obj.admin_mode = true;
+				}
+
+				return obj;
+			}
+
+			if (type(value) != "object")
+				push(errors, [ location, "must be of type object" ]);
+
+			return value;
+		}
+
+		if (exists(value, "poe")) {
+			obj.poe = parsePoe(location + "/poe", value["poe"], errors);
+		}
+
 		return obj;
 	}
 

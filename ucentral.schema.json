@@ -313,6 +313,15 @@
                             "quality-of-service"
                         ]
                     }
+                },
+                "poe": {
+                    "type": "object",
+                    "properties": {
+                        "admin-mode": {
+                            "type": "boolean",
+                            "default": true
+                        }
+                    }
                 }
             }
         },

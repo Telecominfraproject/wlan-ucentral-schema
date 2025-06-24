@@ -157,6 +157,7 @@
 
 	for (let i, ports in state.ethernet)
 		include('ethernet.uc', { location: '/ethernet/' + i, ports });
+	services.set_enabled("poe", true);
 
 	for (let i, radio in state.radios)
 		include('radio.uc', { location: '/radios/' + i, radio });

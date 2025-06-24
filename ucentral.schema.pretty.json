@@ -345,6 +345,17 @@
                             "quality-of-service"
                         ]
                     }
+                },
+                "poe": {
+                    "description": "This section describes the ethernet poe-port configuration object.",
+                    "type": "object",
+                    "properties": {
+                        "admin-mode": {
+                            "description": "Option to force admin state over selected port. Setting to <false> immediately shuts down power. Setting to <true> starts PoE hanshake (Power sourcing equipment < - > Power Device) sequence and in case of success, power is being delivered to Powered Device.",
+                            "type": "boolean",
+                            "default": true
+                        }
+                    }
                 }
             }
         },

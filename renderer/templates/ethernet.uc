@@ -10,3 +10,11 @@ set network.{{ nport }}.speed={{ ports.speed }}
 set network.{{ nport }}.duplex={{ ports.duplex == "full" ? true : false }}
 
 {% endfor %}
+{%
+if (ports?.poe) {
+	include("ethernet/poe.uc",{
+		select_ports: ports.select_ports,
+		poe: ports.poe
+	});
+}
+%}
