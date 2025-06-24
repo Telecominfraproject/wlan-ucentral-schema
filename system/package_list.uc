@@ -1,4 +1,5 @@
 #!/usr/bin/ucode
+
 let fs = require("fs");
 
 let package_json = [];
