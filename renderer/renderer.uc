@@ -360,6 +360,18 @@ let ethernet = {
 		return matched;
 	},
 
+	lookup_name: function(globs) {
+		let matched = {};
+
+		for (let glob, tag_state in globs){
+			for (let name, spec in this.ports){
+				if (wildcard(name, glob))
+					matched[name] = tag_state;
+			}
+		}
+		return matched;
+	},
+
 	lookup_by_interface_vlan: function(interface, raw) {
 		// Gather the glob patterns in all `ethernet: [ { select-ports: ... }]` specs,
 		// dedup them and turn them into one global regular expression pattern, then
@@ -420,6 +432,13 @@ let ethernet = {
 		map(select_ports, glob => globs[glob] = true);
 
 		return sort(keys(this.lookup(globs)));
+	},
+
+	lookup_name_by_select_ports: function(select_ports) {
+		let globs = {};
+		map(select_ports, glob => globs[glob] = true);
+
+		return sort(keys(this.lookup_name(globs)));
 	},
 
 	lookup_by_ethernet: function(ethernets) {

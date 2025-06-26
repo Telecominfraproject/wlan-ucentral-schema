@@ -43,4 +43,3 @@ properties:
   third-party:
     type: object
     additionalProperties: true
-    $ref: "https://ucentral.io/schema/v1/third-party/"

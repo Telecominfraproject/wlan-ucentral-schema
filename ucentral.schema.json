@@ -54,8 +54,7 @@
         },
         "third-party": {
             "type": "object",
-            "additionalProperties": true,
-            "$ref": "#/$defs/third-party"
+            "additionalProperties": true
         }
     },
     "$defs": {
@@ -313,6 +312,15 @@
                         "examples": [
                             "quality-of-service"
                         ]
+                    }
+                },
+                "poe": {
+                    "type": "object",
+                    "properties": {
+                        "admin-mode": {
+                            "type": "boolean",
+                            "default": true
+                        }
                     }
                 }
             }
@@ -3949,56 +3957,6 @@
                 },
                 "validate": {
                     "type": "integer"
-                }
-            }
-        },
-        "third-party.sonicfi.poe.ports": {
-            "type": "object",
-            "properties": {
-                "select-ports": {
-                    "type": "array",
-                    "items": {
-                        "type": "string",
-                        "examples": [
-                            "LAN1",
-                            "LAN2",
-                            "LAN3",
-                            "LAN*",
-                            "*"
-                        ]
-                    }
-                },
-                "admin-mode": {
-                    "type": "boolean",
-                    "default": true
-                }
-            }
-        },
-        "third-party.sonicfi.poe": {
-            "type": "object",
-            "properties": {
-                "ports": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/$defs/third-party.sonicfi.poe.ports"
-                    }
-                }
-            }
-        },
-        "third-party.sonicfi": {
-            "type": "object",
-            "properties": {
-                "poe": {
-                    "type": "object",
-                    "$ref": "#/$defs/third-party.sonicfi.poe"
-                }
-            }
-        },
-        "third-party": {
-            "type": "object",
-            "properties": {
-                "sonicfi": {
-                    "$ref": "#/$defs/third-party.sonicfi"
                 }
             }
         }
