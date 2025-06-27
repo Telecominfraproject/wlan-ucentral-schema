@@ -1,10 +1,10 @@
 #!/usr/bin/ucode
 
-let fs = require("fs");
+import * as fs from 'fs'
 
 let package_json = [];
 
-let fd = fs.open("/tmp/packages.state");
+let fd = fs.open("/tmp/packages.state", "r");
 if (fd) {
     let line;
     while (line = fd.read("line")) {
