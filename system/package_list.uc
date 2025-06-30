@@ -1,6 +1,6 @@
 #!/usr/bin/ucode
 
-import * as fs from 'fs'
+import * as fs from 'fs';
 
 let package_json = [];
 
