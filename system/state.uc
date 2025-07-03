@@ -850,7 +850,7 @@ cursor.foreach("network", "interface", function(d) {
 				}
 
 				ssid.iface = vap.ifname;
-				if (ports[vap.ifname]?.counters) {
+				if (ports && ports[vap.ifname]?.counters) {
 					ssid.counters = ports[vap.ifname].counters || {};
 					ssid.delta_counters = ports_deltas(vap.ifname);
 				}
@@ -874,7 +874,10 @@ cursor.foreach("network", "interface", function(d) {
 			iface.ssids = ssids;
 	}
 
-	iface.counters = ports[name]?.counters || {};
+	if (ports && ports[name]?.counters)
+		iface.counters = ports[name].counters;
+	else
+		iface.counters = {};
 	if (role == 'up') {
 		iface.counters.rx_bytes = 0;
 		iface.counters.tx_bytes = 0;
@@ -1086,7 +1089,7 @@ if (length(capab.network)) {
 				}
 			}
 
-			if (ports[iface]?.counters) {
+			if (ports) {
 				state.counters = ports[iface].counters;
 				state.delta_counters = ports_deltas(iface);
 			}
