@@ -207,7 +207,7 @@
 
 	function get_s1g_op_class(s1g_chan) {
 	    if (s1g_chan % 4 == 0)
-	        return (s1g_chan % 16 == 0) ? 70 : 71;
+	        return (s1g_chan % 8 == 0) ? 70 : 71;
 	    else if (s1g_chan % 2 == 0)
 	        return 69;
 	    else
