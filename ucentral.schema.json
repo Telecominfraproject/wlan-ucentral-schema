@@ -558,6 +558,9 @@
                     ],
                     "default": 80
                 },
+                "enable": {
+                    "type": "boolean"
+                },
                 "require-mode": {
                     "type": "string",
                     "enum": [

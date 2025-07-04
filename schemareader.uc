@@ -1250,6 +1250,17 @@ function instantiateRadio(location, value, errors) {
 			obj.channel_width = 80;
 		}
 
+		function parseEnable(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "enable")) {
+			obj.enable = parseEnable(location + "/enable", value["enable"], errors);
+		}
+
 		function parseRequireMode(location, value, errors) {
 			if (type(value) != "string")
 				push(errors, [ location, "must be of type string" ]);
