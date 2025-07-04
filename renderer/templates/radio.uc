@@ -85,6 +85,10 @@
 
 	function match_channel(phy, radio) {
 		let wanted_channel = radio.channel;
+
+		if (radio.band == "HaLow" && !wanted_channel)
+			return 12;
+
 		if (!wanted_channel || wanted_channel == "auto")
 			return 0;
 
