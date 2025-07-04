@@ -1216,6 +1216,17 @@ function instantiateRadio(location, value, errors) {
 			obj.allow_dfs = true;
 		}
 
+		function parseEnable(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "enable")) {
+			obj.enable = parseEnable(location + "/enable", value["enable"], errors);
+		}
+
 		function parseChannelMode(location, value, errors) {
 			if (type(value) != "string")
 				push(errors, [ location, "must be of type string" ]);
