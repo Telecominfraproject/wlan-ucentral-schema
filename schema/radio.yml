@@ -91,6 +91,10 @@ properties:
     - 320
     - 8080
     default: 80
+  enable:
+    description:
+      Specifies radio HaLow is enabled/disabled.
+    type: boolean
   require-mode:
     description:
       Stations that do no fulfill these HT modes will be rejected.

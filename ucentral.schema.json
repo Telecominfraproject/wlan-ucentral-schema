@@ -558,6 +558,10 @@
                     ],
                     "default": 80
                 },
+                "enable": {
+                    "description": "Specifies radio HaLow is enabled/disabled",
+                    "type": "boolean"
+                },
                 "require-mode": {
                     "type": "string",
                     "enum": [
