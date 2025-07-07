@@ -17,6 +17,7 @@ const NL80211_CHAN_WIDTH_80P80 = 4;
 const NL80211_CHAN_WIDTH_160 = 5;
 const NL80211_CHAN_WIDTH_5 = 6;
 const NL80211_CHAN_WIDTH_10 = 7;
+const NL80211_CHAN_WIDTH_320 = 13;
 let chwidth = {
 	[NL80211_CHAN_WIDTH_20]: "20",
 	[NL80211_CHAN_WIDTH_40]: "40",
@@ -25,6 +26,7 @@ let chwidth = {
 	[NL80211_CHAN_WIDTH_160]: "160",
 	[NL80211_CHAN_WIDTH_5]: "5",
 	[NL80211_CHAN_WIDTH_10]: "10",
+	[NL80211_CHAN_WIDTH_320]: "320",
 };
 
 function freq2channel(freq) {
