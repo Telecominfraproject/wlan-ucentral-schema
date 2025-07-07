@@ -3815,7 +3815,9 @@
                             "inactive-deauth",
                             "key-mismatch",
                             "beacon-report",
-                            "radar-detected"
+                            "radar-detected",
+                            "sta-authorized",
+                            "ft-finish"
                         ]
                     }
                 }

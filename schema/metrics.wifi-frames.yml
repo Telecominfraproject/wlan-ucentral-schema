@@ -20,3 +20,5 @@ properties:
         - key-mismatch
         - beacon-report
         - radar-detected
+        - sta-authorized
+        - ft-finish

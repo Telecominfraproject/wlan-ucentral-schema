@@ -10744,8 +10744,8 @@ function instantiateMetricsWifiFrames(location, value, errors) {
 					if (type(value) != "string")
 						push(errors, [ location, "must be of type string" ]);
 
-					if (!(value in [ "probe", "auth", "assoc", "disassoc", "deauth", "local-deauth", "inactive-deauth", "key-mismatch", "beacon-report", "radar-detected" ]))
-						push(errors, [ location, "must be one of \"probe\", \"auth\", \"assoc\", \"disassoc\", \"deauth\", \"local-deauth\", \"inactive-deauth\", \"key-mismatch\", \"beacon-report\" or \"radar-detected\"" ]);
+					if (!(value in [ "probe", "auth", "assoc", "disassoc", "deauth", "local-deauth", "inactive-deauth", "key-mismatch", "beacon-report", "radar-detected", "sta-authorized", "ft-finish" ]))
+						push(errors, [ location, "must be one of \"probe\", \"auth\", \"assoc\", \"disassoc\", \"deauth\", \"local-deauth\", \"inactive-deauth\", \"key-mismatch\", \"beacon-report\", \"radar-detected\", \"sta-authorized\" or \"ft-finish\"" ]);
 
 					return value;
 				}
