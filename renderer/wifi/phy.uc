@@ -183,7 +183,7 @@ function lookup_phys() {
 	let s1gMapping = map5GToS1G();
 
 	for (let phy in phys) {
-		if (!phy?.wiphy)
+		if (!exists(phy, 'wiphy'))
 			continue;
 		let phyname = 'phy' + phy.wiphy;
 		let path = paths[phyname];
