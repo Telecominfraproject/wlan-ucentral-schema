@@ -357,82 +357,6 @@ if (file) {
 	file.close();
 }
 
-function calc_pdev_stats(radio_band) {
-	let pdev_stats = split(trim(fs.readfile('/tmp/pdev_stats_phy' + radio_band)), "\n");
-	let stat_values = {
-		txFrameCount: null,
-		rxFrameCount: null,
-		rxClearCount: null,
-		cycleCount: null,
-	};
-
-	if (pdev_stats != null) {
-		for (let stat_val in pdev_stats) {
-			let txFrameCount = match(trim(stat_val), /^TX frame count(\s+\d+)/);
-			if (txFrameCount)
-				stat_values.txFrameCount = trim(txFrameCount[1]);
-
-			let rxFrameCount = match(trim(stat_val), /^RX frame count(\s+\d+)/);
-			if (rxFrameCount)
-				stat_values.rxFrameCount = trim(rxFrameCount[1]);
-
-			let rxClearCount = match(trim(stat_val), /^RX clear count(\s+\d+)/);
-			if (rxClearCount)
-				stat_values.rxClearCount = trim(rxClearCount[1]);
-
-			let cycleCount = match(trim(stat_val), /^Cycle count(\s+\d+)/);
-			if (cycleCount)
-				stat_values.cycleCount = trim(cycleCount[1]);
-		}
-	}
-	return stat_values;
-}
-
-function get_pdev_stats(radio_band) {
-	let band = lc(radio_band);
-	let prev_values = {};
-	let curr_values = {};
-	let _chanUtil = null;
-
-	let final_stat_values = {
-		txFrameCount: null,
-		rxFrameCount: null,
-		rxClearCount: null,
-		cycleCount: null,
-		txFrameCountDelta: null,
-		rxFrameCountDelta: null,
-		rxClearCountDelta: null,
-		cycleCountDelta: null,
-		chanUtil: null,
-	};
-
-	prev_values = calc_pdev_stats(band);
-	sleep(5000);
-	curr_values = calc_pdev_stats(band);
-
-	let _txFrameCountDelta = curr_values.txFrameCount - prev_values.txFrameCount;
-	let _rxFrameCountDelta = curr_values.rxFrameCount - prev_values.rxFrameCount;
-	let _rxClearCountDelta = curr_values.rxClearCount - prev_values.rxClearCount;
-	let _cycleCountDelta = curr_values.cycleCount - prev_values.cycleCount;
-	if (_cycleCountDelta && _cycleCountDelta > 0)
-		_chanUtil = (_rxClearCountDelta * 100) / _cycleCountDelta;
-
-	// values from pdev_stats
-	final_stat_values.txFrameCount = curr_values.txFrameCount;
-	final_stat_values.rxFrameCount = curr_values.rxFrameCount;
-	final_stat_values.rxClearCount = curr_values.rxClearCount;
-	final_stat_values.cycleCount = curr_values.cycleCount;
-	// calculated delta
-	final_stat_values.txFrameCountDelta = _txFrameCountDelta;
-	final_stat_values.rxFrameCountDelta = _rxFrameCountDelta;
-	final_stat_values.rxClearCountDelta = _rxClearCountDelta;
-	final_stat_values.cycleCountDelta = _cycleCountDelta;
-
-	final_stat_values.chanUtil = _chanUtil;
-
-	return final_stat_values;
-}
-
 // mapping 5G to S1G(HaLow)
 function map5GToS1G() {
 	// format: 5G channel -> { s1g_channel, s1g_freq, s1g_bw }
@@ -520,8 +444,11 @@ for (let radio, data in wifistatus) {
 		radio.temperature = wifiphy[path].temperature;
 	radio.band = wifiphy[path].band;
 
-	let _pdev_stats = get_pdev_stats(radio.band[0]);
-	radio.pdev_stats = _pdev_stats;
+	radio.chanUtil = 0;
+	let radio_band = lc(radio.band[0]);
+	let _chanUtil = int(fs.readfile('/tmp/chanutil_phy' + radio_band) || 0);
+	if (_chanUtil > 0)
+		radio.chanUtil = _chanUtil;
 
 	// Check if this is a HaLow device
 	if (index(radio.band, 'HaLow') != -1) {
