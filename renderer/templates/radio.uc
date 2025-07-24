@@ -213,7 +213,10 @@
 	    else
 	        return 68;
 	}
-
+	if (radio.band == '6G') {
+		radio.he_settings ??= {};
+		radio.he_settings.multiple_bssid = true;
+	}
 %}
 
 # Wireless Configuration
