@@ -360,6 +360,22 @@
 {%   let crypto = match_crypto(band); %}
 {%   let ifname = calculate_ifname(basename) %}
 {%   if (!crypto) continue; %}
+
+{%   if (band == "HaLow" && bss_mode == 'mesh'): %}
+# HaLow mesh specific configuration
+set wireless.halowmesh=wifi-iface
+set wireless.halowmesh.device={{ phy.section }}
+set wireless.halowmesh.ifname='halow_mesh'
+set wireless.halowmesh.disabled='0'
+set wireless.halowmesh.beacon_int='1000'
+set wireless.halowmesh.wds='0'
+set wireless.halowmesh.network={{ network }}
+set wireless.halowmesh.mode={{ bss_mode }}
+set wireless.halowmesh.network_behavior={{ substr(network, 0, 2) == "up" ? "bridge" : "lan" }}
+set wireless.halowmesh.mesh_id={{ s(ssid.name) }}
+set wireless.halowmesh.encryption={{ crypto.proto }}
+set wireless.halowmesh.key={{ s(crypto.key) }}
+{%   else %}
 set wireless.{{ section }}=wifi-iface
 set wireless.{{ section }}.ucentral_path={{ s(location) }}
 set wireless.{{ section }}.uci_section={{ s(section) }}
@@ -676,5 +692,6 @@ set wireless.@wifi-station[-1].key={{ ssid.encryption.key }}
 {%   else %}
 
 # STA specific settings
+{%   endif %}
 {%   endif %}
 {% endfor %}
