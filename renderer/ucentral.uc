@@ -74,7 +74,8 @@ try {
 
 		for (let cmd in [ 'uci -c /tmp/config-shadow commit',
 				  'cp /tmp/config-shadow/* /etc/config/',
-				  'rm -rf /tmp/config-shadow'])
+				  'rm -rf /tmp/config-shadow',
+				  'sync'])
 			system(cmd);
 
 		set_service_state('early');
