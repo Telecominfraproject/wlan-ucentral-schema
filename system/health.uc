@@ -20,6 +20,7 @@ let config = cursor.get_all('state', 'health');
 let dhcp = cursor.get_all('dhcp');
 let wifi_config = cursor.get_all('wireless');
 let wifi_state = require('wifi.iface');
+let rrmd_config = cursor.get_all('rrmd');
 let count = 0;
 
 function find_ssid(ssid) {
@@ -131,6 +132,25 @@ for (let iface in interfaces) {
 	}
 }
 
+for (let l, policy in rrmd_config) {
+	if (policy['.type'] != 'policy' || policy.name != 'chanutil')
+		continue;
+
+	let buffer_time = (policy.interval/1000) + 60;
+
+	if (policy.threshold > 0 && (policy.algo == 1 || policy.algo == 2)) {
+		if (fs.stat('/tmp/rrm_timestamp')) {
+			let last_rrm_timestamp = int(fs.readfile('/tmp/rrm_timestamp'));
+			let time_passed_since_rrm = time() - last_rrm_timestamp;
+
+			// RRM with channel utilization is enabled but didn't run after the interval time: abnormal state
+			if (time_passed_since_rrm > buffer_time) {
+				state.rrm_chanutil = false;
+			}
+		}
+	}
+}
+
 try {
 	memory = ctx.call('system', 'info');
 	memory = memory.memory;
@@ -150,3 +170,8 @@ let sanity = 100 - (errors * 100 / count);
 
 warn(printf('health check reports sanity of %d', sanity));
 ctx.call('ucentral', 'health', {sanity: sanity, data: state});
+let f = fs.open("/tmp/ucentral.health", "w");
+if (f) {
+	f.write({sanity: sanity, data: state});
+	f.close();
+}
