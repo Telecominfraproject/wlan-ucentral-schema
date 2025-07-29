@@ -917,6 +917,17 @@ function instantiateRadioHe6ghz(location, value, errors) {
 			obj.controller = parseController(location + "/controller", value["controller"], errors);
 		}
 
+		function parseAccessToken(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "access-token")) {
+			obj.access_token = parseAccessToken(location + "/access-token", value["access-token"], errors);
+		}
+
 		function parseCaCertificate(location, value, errors) {
 			if (type(value) == "string") {
 				if (!matchUcBase64(value))
