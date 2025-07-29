@@ -1022,6 +1022,17 @@ function instantiateRadioHe6ghz(location, value, errors) {
 			obj.operating_classes = parseOperatingClasses(location + "/operating-classes", value["operating-classes"], errors);
 		}
 
+		function parseAccessToken(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "access-token")) {
+			obj.access_token = parseAccessToken(location + "/access-token", value["access-token"], errors);
+		}
+
 		return obj;
 	}
 

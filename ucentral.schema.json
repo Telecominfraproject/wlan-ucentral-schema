@@ -470,6 +470,9 @@
                     "items": {
                         "type": "number"
                     }
+                },
+                "access-token": {
+                    "type": "string"
                 }
             }
         },

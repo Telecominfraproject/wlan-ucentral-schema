@@ -271,10 +271,13 @@ set wireless.{{ phy.section }}.s1g_prim_1mhz_chan_index='auto'
 set wireless.{{ phy.section }}.op_class={{ get_s1g_op_class(match_channel(phy, radio)) }}
 {%  endif %}
 {%  if (afc): %}
-add wireless afc-server                            
+add wireless afc-server
 set wireless.@afc-server[-1].url={{s(radio.he_6ghz_settings.controller)}}
 {% if (radio.he_6ghz_settings.ca_certificate): %}
 set wireless.@afc-server[-1].cert={{s(files.add_anonymous(location, 'ca', b64dec(radio.he_6ghz_settings.ca_certificate)))}}
+{% endif %}
+{% if (radio.he_6ghz_settings.access_token): %}
+set wireless.@afc-server[-1].access_token={{s(radio.he_6ghz_settings.access_token)}}
 {% endif %}
 set wireless.{{ phy.section }}.afc=1
 set wireless.{{ phy.section }}.afc_request_version='1.4'
