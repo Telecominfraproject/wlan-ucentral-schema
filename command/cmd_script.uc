@@ -33,8 +33,11 @@ if (args.type != 'diagnostic' &&
 
 let out = '';
 if (args.uri) {
-	result_json({ error: 0, result: 'pending'});
-	out = `/tmp/bundle.${id}.tar.gz`;
+    result_json({ error: 0, result: 'pending'});
+    if(args.type == 'shell')
+        out = `/tmp/bundle.${id}.txt`;
+    else
+        out = `/tmp/bundle.${id}.tar.gz`;
 }
 
 uloop.init();
@@ -54,7 +57,7 @@ let t = uloop.task(
 			bundle.complete();
 			return;
 		default:
-			let stdout = fs.popen("/tmp/script.cmd " + out);
+			let stdout = fs.popen("/tmp/script.cmd " + ">" + out);
 			let result = stdout.read("all");
 			let error = stdout.close();
 			return { result, error };
