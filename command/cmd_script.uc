@@ -33,11 +33,11 @@ if (args.type != 'diagnostic' &&
 
 let out = '';
 if (args.uri) {
-    result_json({ error: 0, result: 'pending'});
-    if(args.type == 'shell')
-        out = `/tmp/bundle.${id}.txt`;
-    else
-        out = `/tmp/bundle.${id}.tar.gz`;
+	result_json({ error: 0, result: 'pending'});
+	if(args.type == 'shell')
+		out = `/tmp/bundle.${id}.txt`;
+	else
+		out = `/tmp/bundle.${id}.tar.gz`;
 }
 
 uloop.init();
