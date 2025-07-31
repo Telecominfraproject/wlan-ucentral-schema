@@ -203,6 +203,7 @@
 				ssid: { ...ssid, bss_mode: mode },
 				count,
 				name,
+				tunnel_proto,
 				network,
 			});
 			count++;

@@ -400,7 +400,9 @@ set wireless.{{ section }}.owe_transition_ssid={{ s(ssid.name + '-OWE') }}
 set wireless.{{ section }}.mode={{ bss_mode }}
 set wireless.{{ section }}.mesh_id={{ s(ssid.name) }}
 set wireless.{{ section }}.mesh_fwding=0
+{%   if (tunnel_proto == 'mesh'): %}
 set wireless.{{ section }}.network=batman_mesh
+{%   endif %}
 set wireless.{{ section }}.mcast_rate=24000
 {%   endif %}
 
