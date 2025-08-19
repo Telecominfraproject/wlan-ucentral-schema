@@ -20,7 +20,9 @@ enum:
 - AF41
 - AF42
 - AF43
-- DF
 - EF
 - VA
 - LE
+- NQB
+- DF
+- BE

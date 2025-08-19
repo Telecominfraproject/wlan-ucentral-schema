@@ -2389,10 +2389,12 @@
                 "AF41",
                 "AF42",
                 "AF43",
-                "DF",
                 "EF",
                 "VA",
-                "LE"
+                "LE",
+                "NQB",
+                "DF",
+                "BE"
             ]
         },
         "service.quality-of-service": {
