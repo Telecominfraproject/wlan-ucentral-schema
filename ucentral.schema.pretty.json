@@ -4245,6 +4245,17 @@
                 }
             }
         },
+        "service.natlog": {
+            "description": "Define the interfaces on which the dhcp shall be relayed.",
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "description": "Whether the NAT logging is enabled.",
+                    "type": "boolean",
+                    "default": false
+                }
+            }
+        },
         "service": {
             "description": "This section describes all of the services that may be present on the AP. Each service is then referenced via its name inside an interface, ssid, ...",
             "type": "object",
@@ -4323,6 +4334,9 @@
                 },
                 "dhcp-inject": {
                     "$ref": "#/$defs/service.dhcp-inject"
+                },
+                "natlog": {
+                    "$ref": "#/$defs/service.natlog"
                 }
             }
         },

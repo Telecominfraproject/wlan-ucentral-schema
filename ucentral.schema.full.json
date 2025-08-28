@@ -4774,6 +4774,17 @@
                             }
                         }
                     }
+                },
+                "natlog": {
+                    "description": "Define the interfaces on which the dhcp shall be relayed.",
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "description": "Whether the NAT logging is enabled.",
+                            "type": "boolean",
+                            "default": false
+                        }
+                    }
                 }
             }
         },

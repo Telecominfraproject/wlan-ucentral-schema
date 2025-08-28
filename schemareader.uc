@@ -10502,6 +10502,33 @@ function instantiateServiceDhcpInject(location, value, errors) {
 	return value;
 }
 
+function instantiateServiceNatlog(location, value, errors) {
+	if (type(value) == "object") {
+		let obj = {};
+
+		function parseEnabled(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "enabled")) {
+			obj.enabled = parseEnabled(location + "/enabled", value["enabled"], errors);
+		}
+		else {
+			obj.enabled = false;
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
+
+	return value;
+}
+
 function instantiateService(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
@@ -10604,6 +10631,10 @@ function instantiateService(location, value, errors) {
 
 		if (exists(value, "dhcp-inject")) {
 			obj.dhcp_inject = instantiateServiceDhcpInject(location + "/dhcp-inject", value["dhcp-inject"], errors);
+		}
+
+		if (exists(value, "natlog")) {
+			obj.natlog = instantiateServiceNatlog(location + "/natlog", value["natlog"], errors);
 		}
 
 		return obj;

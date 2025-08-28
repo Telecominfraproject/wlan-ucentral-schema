@@ -3678,6 +3678,15 @@
                 }
             }
         },
+        "service.natlog": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "default": false
+                }
+            }
+        },
         "service": {
             "type": "object",
             "properties": {
@@ -3755,6 +3764,9 @@
                 },
                 "dhcp-inject": {
                     "$ref": "#/$defs/service.dhcp-inject"
+                },
+                "natlog": {
+                    "$ref": "#/$defs/service.natlog"
                 }
             }
         },
