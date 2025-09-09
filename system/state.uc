@@ -1016,7 +1016,7 @@ if (length(capab.network)) {
 				}
 			}
 
-			if (ports) {
+			if (ports && ports[iface]?.counters) {
 				state.counters = ports[iface].counters;
 				state.delta_counters = ports_deltas(iface);
 			}
