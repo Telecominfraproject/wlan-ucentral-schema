@@ -1,0 +1,37 @@
+{
+  "uuid": "12345678-1234-1234-1234-123456789012",
+  "interfaces": [
+    {
+      "name": "downstream",
+      "role": "downstream",
+      "ethernet": [
+        {
+          "select-ports": ["LAN*"]
+        }
+      ],
+      "ipv4": {
+        "addressing": "static",
+        "subnet": "192.168.1.1/24"
+      },
+      "vlan": {
+        "id": 150
+      },
+      "ssids": [
+        {
+          "name": "PublicWiFi",
+          "wifi-bands": ["2G"],
+          "bss-mode": "ap",
+          "encryption": {
+            "proto": "none"
+          },
+          "services": ["captive"]
+        }
+      ]
+    }
+  ],
+  "template_vars": {
+    "state": {
+      "services": {}
+    }
+  }
+}
