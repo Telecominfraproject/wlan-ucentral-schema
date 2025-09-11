@@ -1,0 +1,58 @@
+{
+  "uuid": "12345678-1234-1234-1234-123456789012",
+  "interfaces": [
+    {
+      "name": "upstream",
+      "role": "upstream", 
+      "ethernet": [
+        {
+          "select-ports": ["WAN"]
+        }
+      ],
+      "ipv4": {
+        "addressing": "dynamic"
+      }
+    }
+  ],
+  "services": {
+    "quality_of_service": {
+      "select_ports": ["WAN"],
+      "bandwidth_up": 1000,
+      "bandwidth_down": 2000,
+      "bulk_detection": {
+        "dscp": "CS1",
+        "packets_per_second": 2000
+      },
+      "classifier": [
+        {
+          "dscp": "EF", 
+          "ports": [
+            {
+              "protocol": "udp",
+              "port": 5060,
+              "range_end": 5070,
+              "reclassify": false
+            }
+          ],
+          "dns": [
+            {
+              "fqdn": "sip.company.com",
+              "suffix_matching": true,
+              "reclassify": false
+            }
+          ]
+        },
+        {
+          "dscp": "AF41",
+          "ports": [
+            {
+              "protocol": "any", 
+              "port": 1935,
+              "reclassify": true
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
