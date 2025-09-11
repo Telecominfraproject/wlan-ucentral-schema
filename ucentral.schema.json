@@ -1815,43 +1815,62 @@
                     "type": "string",
                     "format": "uc-host",
                     "examples": [
-                        "192.168.1.10"
+                        "192.168.1.10",
+                        "radius.company.com",
+                        "10.0.1.100"
                     ]
                 },
                 "auth-port": {
                     "type": "integer",
                     "maximum": 65535,
                     "minimum": 1024,
-                    "default": 1812
+                    "default": 1812,
+                    "examples": [
+                        1812,
+                        1645
+                    ]
                 },
                 "auth-secret": {
                     "type": "string",
                     "examples": [
-                        "secret"
+                        "shared-secret-123",
+                        "radius-auth-key"
                     ]
                 },
                 "acct-server": {
                     "type": "string",
                     "format": "uc-host",
                     "examples": [
-                        "192.168.1.10"
+                        "192.168.1.11",
+                        "accounting.company.com",
+                        "10.0.1.101"
                     ]
                 },
                 "acct-port": {
                     "type": "integer",
                     "maximum": 65535,
                     "minimum": 1024,
-                    "default": 1812
+                    "default": 1813,
+                    "examples": [
+                        1813,
+                        1646
+                    ]
                 },
                 "acct-secret": {
                     "type": "string",
                     "examples": [
-                        "secret"
+                        "accounting-secret-456",
+                        "radius-acct-key"
                     ]
                 },
                 "acct-interval": {
                     "type": "integer",
-                    "default": 600
+                    "default": 600,
+                    "examples": [
+                        300,
+                        600,
+                        1800
+                    ]
                 }
             }
         },
@@ -1868,13 +1887,41 @@
                         "type": "object",
                         "properties": {
                             "username": {
-                                "type": "string"
+                                "type": "string",
+                                "examples": [
+                                    "guest001",
+                                    "visitor",
+                                    "temp_user"
+                                ]
                             },
                             "password": {
-                                "type": "string"
+                                "type": "string",
+                                "examples": [
+                                    "SecurePass123",
+                                    "GuestNetwork2024!",
+                                    "TemporaryAccess456"
+                                ]
                             }
                         }
-                    }
+                    },
+                    "examples": [
+                        [
+                            {
+                                "username": "guest",
+                                "password": "WelcomeGuest123"
+                            },
+                            {
+                                "username": "visitor",
+                                "password": "TempAccess456"
+                            }
+                        ],
+                        [
+                            {
+                                "username": "demo_user",
+                                "password": "Demo2024Pass!"
+                            }
+                        ]
+                    ]
                 }
             }
         },
@@ -2000,32 +2047,79 @@
                         "walled-garden-fqdn": {
                             "type": "array",
                             "items": {
-                                "type": "string"
-                            }
+                                "type": "string",
+                                "examples": [
+                                    "google.com",
+                                    "login.company.com",
+                                    "ntp.pool.org"
+                                ]
+                            },
+                            "examples": [
+                                [
+                                    "google.com",
+                                    "facebook.com"
+                                ],
+                                [
+                                    "login.company.com",
+                                    "auth.enterprise.net"
+                                ]
+                            ]
                         },
                         "walled-garden-ipaddr": {
                             "type": "array",
                             "items": {
                                 "type": "string",
-                                "format": "uc-ip"
-                            }
+                                "format": "uc-ip",
+                                "examples": [
+                                    "8.8.8.8",
+                                    "1.1.1.1",
+                                    "192.168.1.100"
+                                ]
+                            },
+                            "examples": [
+                                [
+                                    "8.8.8.8",
+                                    "1.1.1.1"
+                                ],
+                                [
+                                    "192.168.100.1",
+                                    "10.0.1.53"
+                                ]
+                            ]
                         },
                         "web-root": {
                             "type": "string",
                             "format": "uc-base64"
                         },
                         "web-root-url": {
-                            "type": "string"
+                            "type": "string",
+                            "examples": [
+                                "https://portal.company.com/captive-portal.tar.gz",
+                                "http://assets.local/portal/custom-ui.tar"
+                            ]
                         },
                         "web-root-checksum": {
-                            "type": "string"
+                            "type": "string",
+                            "examples": [
+                                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                            ]
                         },
                         "idle-timeout": {
                             "type": "integer",
-                            "default": 600
+                            "default": 600,
+                            "examples": [
+                                300,
+                                1800,
+                                3600
+                            ]
                         },
                         "session-timeout": {
-                            "type": "integer"
+                            "type": "integer",
+                            "examples": [
+                                1800,
+                                7200,
+                                28800
+                            ]
                         }
                     }
                 }
@@ -2514,7 +2608,10 @@
             "properties": {
                 "enable": {
                     "type": "boolean",
-                    "default": false
+                    "default": false,
+                    "examples": [
+                        true
+                    ]
                 }
             }
         },
@@ -2872,7 +2969,9 @@
                         "type": "string",
                         "format": "uc-host",
                         "examples": [
-                            "192.168.1.10"
+                            "8.8.8.8",
+                            "1.1.1.1",
+                            "192.168.1.1"
                         ]
                     }
                 },
@@ -3262,20 +3361,54 @@
                 "select-ports": {
                     "type": "array",
                     "items": {
-                        "type": "string"
-                    }
+                        "type": "string",
+                        "examples": [
+                            "WAN",
+                            "eth0",
+                            "eth1"
+                        ]
+                    },
+                    "examples": [
+                        [
+                            "WAN"
+                        ],
+                        [
+                            "eth0",
+                            "eth1"
+                        ],
+                        [
+                            "LAN*"
+                        ]
+                    ]
                 },
                 "vlans": {
                     "type": "array",
                     "items": {
                         "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "vlan",
+                            "relay-server"
+                        ],
                         "properties": {
                             "vlan": {
-                                "type": "number"
+                                "type": "number",
+                                "minimum": 1,
+                                "maximum": 4094,
+                                "examples": [
+                                    100,
+                                    200,
+                                    1001
+                                ]
                             },
                             "relay-server": {
                                 "type": "string",
-                                "format": "uc-ip"
+                                "format": "uc-ip",
+                                "examples": [
+                                    "192.168.100.1",
+                                    "10.0.1.10",
+                                    "dhcp.example.com"
+                                ]
                             },
                             "circuit-id-format": {
                                 "type": "string",
@@ -3284,7 +3417,11 @@
                                     "ap-mac",
                                     "ssid"
                                 ],
-                                "default": "vlan-id"
+                                "default": "vlan-id",
+                                "examples": [
+                                    "vlan-id",
+                                    "ap-mac"
+                                ]
                             },
                             "remote-id-format": {
                                 "type": "string",
@@ -3293,10 +3430,28 @@
                                     "ap-mac",
                                     "ssid"
                                 ],
-                                "default": "ap-mac"
+                                "default": "ap-mac",
+                                "examples": [
+                                    "ap-mac",
+                                    "vlan-id"
+                                ]
                             }
                         }
-                    }
+                    },
+                    "examples": [
+                        [
+                            {
+                                "vlan": 100,
+                                "relay-server": "192.168.100.1",
+                                "circuit-id-format": "vlan-id",
+                                "remote-id-format": "ap-mac"
+                            },
+                            {
+                                "vlan": 200,
+                                "relay-server": "192.168.200.1"
+                            }
+                        ]
+                    ]
                 }
             }
         },
@@ -3673,8 +3828,25 @@
                 "select-ports": {
                     "type": "array",
                     "items": {
-                        "type": "string"
-                    }
+                        "type": "string",
+                        "examples": [
+                            "WAN",
+                            "eth0",
+                            "eth1"
+                        ]
+                    },
+                    "examples": [
+                        [
+                            "WAN"
+                        ],
+                        [
+                            "eth0",
+                            "eth1"
+                        ],
+                        [
+                            "LAN*"
+                        ]
+                    ]
                 }
             }
         },
