@@ -1,0 +1,5 @@
+
+# Wifi-frame reporting configuration
+set event.wifi=event
+set event.wifi.type=wifi
+set event.wifi.filter=beacon-report
