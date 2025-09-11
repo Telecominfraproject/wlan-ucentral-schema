@@ -1,10 +1,25 @@
-description:
-  Configure the realtime events that get sent to the cloud.
+description: |
+  Configure realtime event monitoring and reporting. This metric enables 
+  filtering and forwarding of specific event types to the cloud for real-time 
+  monitoring and analysis. Events are validated against the system's available 
+  event registry before being configured for forwarding.
 type: object
 properties:
   types:
-    description:
-      The event types that get added to telemetry.
+    description: |
+      Array of event type identifiers to monitor and forward in real-time.
+      Only event types that exist in the system's event registry (/etc/events.json)
+      will be configured - invalid types are silently filtered out.
+      
+      Common event types include:
+      - client.associate, client.disassociate: WiFi client connection events
+      - wifi.start, wifi.stop: WiFi interface state changes  
+      - dhcp.ack, dhcp.discover: DHCP transaction events
+      - dns.query: DNS lookup events
     type: array
     items:
       type: string
+      examples:
+        - "client.associate"
+        - "wifi.start"
+        - "dhcp.ack"
