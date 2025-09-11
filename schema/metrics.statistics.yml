@@ -1,15 +1,38 @@
-description:
-  Statistics are traffic counters, neighbor tables, ...
+description: |
+  Configure periodic statistics collection and reporting. This metric enables 
+  monitoring of various system subsystems and network components through regular 
+  data collection intervals. Statistics include traffic counters, client 
+  associations, neighbor information, and other operational metrics that help 
+  track system health and performance.
 type: object
 properties:
   interval:
-    description:
-      The reporting interval defined in seconds.
+    description: |
+      The reporting interval in seconds that defines how frequently statistics 
+      are collected and reported. This controls the balance between monitoring 
+      granularity and system resource usage.
+      
+      Minimum value is 60 seconds to prevent excessive system load. Common 
+      values are 300 seconds (5 minutes) for regular monitoring or 120 seconds 
+      (2 minutes) for more detailed tracking.
     type: integer
     minimum: 60
+    examples: [120, 300, 600]
   types:
-    description:
-      A list of names of subsystems that shall be reported periodically.
+    description: |
+      Array of subsystem types to monitor and report statistics for. Each type 
+      represents a different category of operational data that can be collected 
+      independently.
+      
+      Available statistics types:
+      - ssids: Wireless network statistics including client counts, traffic 
+        volumes, and association metrics per SSID
+      - lldp: Link Layer Discovery Protocol information about neighboring 
+        network devices and topology
+      - clients: Connected client device information including association 
+        status, signal strength, and traffic statistics  
+      - tid-stats: Traffic Identifier statistics for analyzing different 
+        types of network traffic flows and QoS metrics
     type: array
     items:
       type: string
@@ -18,3 +41,7 @@ properties:
         - lldp
         - clients
         - tid-stats
+      examples:
+        - ["ssids", "clients"]
+        - ["lldp"]
+        - ["ssids", "lldp", "clients", "tid-stats"]
