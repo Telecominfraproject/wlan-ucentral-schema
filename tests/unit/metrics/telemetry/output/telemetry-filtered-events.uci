@@ -1,0 +1,5 @@
+
+# Telemetry streaming configuration
+set event.bulk.interval=120
+add_list event.bulk.filter=client.associate
+add_list event.bulk.filter=wifi.start

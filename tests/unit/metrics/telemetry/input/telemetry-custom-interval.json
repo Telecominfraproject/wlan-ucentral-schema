@@ -1,0 +1,16 @@
+{
+  "uuid": 1,
+  "interfaces": [
+    {
+      "name": "WAN",
+      "role": "upstream",
+      "proto": "dhcp"
+    }
+  ],
+  "metrics": {
+    "telemetry": {
+      "interval": 600,
+      "types": ["dns.query", "dhcp.discover"]
+    }
+  }
+}

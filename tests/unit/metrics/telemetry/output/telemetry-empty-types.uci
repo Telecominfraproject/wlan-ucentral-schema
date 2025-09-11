@@ -1,0 +1,3 @@
+
+# Telemetry streaming configuration
+set event.bulk.interval=300
