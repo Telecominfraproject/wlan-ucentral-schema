@@ -4,105 +4,19 @@
 
 "use strict";
 
-import * as fs from 'fs';
-import { create_test_context } from '../../../helpers/mock-renderer.uc';
-
-let test_results = {
-	passed: 0,
-	failed: 0,
-	errors: []
-};
-
-function run_test(test_name, input_file, expected_file) {
-	printf("Running test: %s\n", test_name);
-	
-	try {
-		// Load test data
-		let test_data = json(fs.readfile(input_file));
-		let expected_output = fs.readfile(expected_file);
-		
-		// Handle empty expected files
-		if (expected_output === null || expected_output === false) {
-			expected_output = "";
-		}
-		
-		// Create test context
-		let context = create_test_context(test_data);
-		
-		// Add template vars to context
-		for (let key, value in test_data.template_vars || {}) {
-			context[key] = value;
-		}
-		
-		// Clear any previous generated files
-		context.files.clear_generated_files();
-		
-		// Render template
-		let output = render("../../../../renderer/templates/services/ssh.uc", context);
-		
-		// Add generated files to output
-		let generated_files = context.files.get_generated_files();
-		for (let path, file_info in generated_files) {
-			output += sprintf("\n-----%s-----\n%s\n--------\n", path, file_info.content);
-		}
-		
-		// Normalize whitespace for comparison
-		output = trim(replace(output, /\n\s*\n/g, '\n'));
-		expected_output = trim(replace(expected_output, /\n\s*\n/g, '\n'));
-		
-		// Compare output
-		if (output == expected_output) {
-			printf("✓ PASS: %s\n", test_name);
-			test_results.passed++;
-		} else {
-			printf("✗ FAIL: %s\n", test_name);
-			printf("Expected:\n%s\n", expected_output);
-			printf("Got:\n%s\n", output);
-			test_results.failed++;
-			push(test_results.errors, {
-				test: test_name,
-				expected: expected_output,
-				actual: output
-			});
-		}
-	} catch (e) {
-		printf("✗ ERROR: %s - %s\n", test_name, e);
-		test_results.failed++;
-		push(test_results.errors, {
-			test: test_name,
-			error: e.message || e
-		});
-	}
-	
-	printf("\n");
-}
+import { TestFramework, create_service_test_cases } from '../../../helpers/test-framework.uc';
 
 function main() {
-	printf("=== SSH Service Template Tests ===\n\n");
+	let framework = TestFramework("../../../../renderer/templates/services/ssh.uc", "SSH Service Template Tests");
 	
-	// Run all test cases
-	run_test("ssh-basic", "input/ssh-basic.json", "output/ssh-basic.uci");
-	run_test("ssh-restricted", "input/ssh-restricted.json", "output/ssh-restricted.uci");
-	run_test("ssh-no-interfaces", "input/ssh-no-interfaces.json", "output/ssh-no-interfaces.uci");
-	run_test("ssh-custom-port", "input/ssh-custom-port.json", "output/ssh-custom-port.uci");
+	let test_cases = create_service_test_cases("ssh", [
+		"ssh-basic",
+		"ssh-restricted", 
+		"ssh-no-interfaces",
+		"ssh-custom-port"
+	]);
 	
-	// Print summary
-	printf("=== Test Results ===\n");
-	printf("Passed: %d\n", test_results.passed);
-	printf("Failed: %d\n", test_results.failed);
-	
-	if (test_results.failed > 0) {
-		printf("\nFailures:\n");
-		for (let error in test_results.errors) {
-			printf("- %s\n", error.test);
-			if (error.error) {
-				printf("  Error: %s\n", error.error);
-			}
-		}
-		exit(1);
-	}
-	
-	printf("All SSH service tests passed!\n");
+	framework.run_tests(test_cases);
 }
 
 main();

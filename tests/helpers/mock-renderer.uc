@@ -102,6 +102,17 @@ let mock_default_config = {
 	country: "US"
 };
 
+// Mock events data for event-based templates (realtime, telemetry)
+let mock_events = {
+    "client.associate": true,
+    "client.disassociate": true,
+    "wifi.start": true,
+    "wifi.stop": true,
+    "dhcp.ack": true,
+    "dhcp.discover": true,
+    "dns.query": true
+};
+
 // UCI helper functions (from renderer.uc)
 function b(val) {
 	return val ? '1' : '0';
@@ -380,6 +391,7 @@ function create_test_context(overrides) {
 		services: mock_services,
 		ethernet: mock_ethernet,
 		files: mock_files,
+		events: mock_events,
 		
 		// Mock utility functions
 		warn: function(fmt, ...args) {
