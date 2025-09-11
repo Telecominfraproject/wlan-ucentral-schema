@@ -1,0 +1,33 @@
+{
+  "state": {
+    "interfaces": [
+      {
+        "name": "upstream",
+        "role": "upstream", 
+        "services": [],
+        "ethernet": [
+          {
+            "select-ports": ["WAN"]
+          }
+        ],
+        "ipv4": {
+          "addressing": "dynamic"
+        }
+      },
+      {
+        "name": "downstream",
+        "role": "downstream",
+        "services": [],
+        "ethernet": [
+          {
+            "select-ports": ["LAN*"]
+          }
+        ],
+        "ipv4": {
+          "addressing": "static",
+          "subnet": "192.168.1.1/24"
+        }
+      }
+    ]
+  }
+}
