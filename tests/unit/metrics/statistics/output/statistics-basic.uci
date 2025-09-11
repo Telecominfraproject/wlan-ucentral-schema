@@ -1,0 +1,5 @@
+
+# Statistics configuration
+set state.stats.interval=300
+add_list state.stats.types=ssids
+add_list state.stats.types=clients

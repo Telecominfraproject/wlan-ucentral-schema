@@ -1,0 +1,5 @@
+
+# Statistics configuration
+set state.stats.interval=600
+add_list state.stats.types=lldp
+add_list state.stats.types=tid-stats
