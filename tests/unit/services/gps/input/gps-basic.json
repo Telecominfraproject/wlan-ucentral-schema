@@ -1,0 +1,8 @@
+{
+  "template_vars": {
+    "gps": {
+      "adjust_time": false,
+      "baud_rate": 9600
+    }
+  }
+}
