@@ -25,11 +25,11 @@ function algo_to_num(algo_name) {
 }
 %}
 
-set rrmd.@base[0].beacon_request_assoc={{ rrm?.beacon_request_assoc || 0 }}
+set rrmd.@base[0].beacon_request_assoc={{ b(rrm?.beacon_request_assoc || false) }}
 set rrmd.@base[0].station_stats_interval={{ rrm?.station_stats_interval || 0 }}
 
 # RRM policy configuration for Optimization based on Channel Utilization
-{% if (rrm.chanutil): %}
+{% if (rrm?.chanutil): %}
 	add rrmd policy
 	set rrmd.@policy[-1].name='chanutil'
 	set rrmd.@policy[-1].interval={{ sec_to_ms(rrm?.chanutil.interval || 240) }}
