@@ -1,0 +1,22 @@
+{
+  "template_vars": {
+    "fingerprint": {
+      "mode": "polled",
+      "minimum_age": 120,
+      "maximum_age": 1800,
+      "periodicity": 300,
+      "allow_wan": true
+    }
+  },
+  "state": {
+    "services": {
+      "fingerprint": {
+        "mode": "polled",
+        "minimum_age": 120,
+        "maximum_age": 1800,
+        "periodicity": 300,
+        "allow_wan": true
+      }
+    }
+  }
+}
