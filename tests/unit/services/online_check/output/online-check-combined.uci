@@ -1,0 +1,7 @@
+# Online check service configuration
+add onlinecheck config
+set onlinecheck.@config[-1].check_interval='120'
+set onlinecheck.@config[-1].check_threshold='3'
+add_list onlinecheck.@config[-1].action='leds'
+add_list onlinecheck.@config[-1].ping_hosts='8.8.8.8'
+add_list onlinecheck.@config[-1].download_hosts='www.example.org'
