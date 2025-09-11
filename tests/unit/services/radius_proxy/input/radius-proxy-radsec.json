@@ -1,0 +1,42 @@
+{
+  "uuid": "12345678-1234-1234-1234-123456789012",
+  "interfaces": [
+    {
+      "name": "downstream",
+      "role": "downstream",
+      "services": ["radsecproxy"],
+      "ssids": [
+        {
+          "name": "Corporate-WiFi",
+          "wifi-bands": ["2G", "5G"],
+          "bss-mode": "ap",
+          "encryption": {
+            "proto": "wpa2",
+            "mode": "wpa2-enterprise",
+            "ieee80211w": "optional"
+          },
+          "services": ["radsecproxy"]
+        }
+      ]
+    }
+  ],
+  "services": {
+    "radius_proxy": {
+      "proxy_secret": "proxy-secret-123",
+      "realms": [
+        {
+          "protocol": "radsec",
+          "realm": ["example.com", "corp.example.com"],
+          "host": "radius.example.com",
+          "port": 2083,
+          "secret": "radsec-secret",
+          "auto_discover": false,
+          "use_local_certificates": false,
+          "ca_certificate": "LS0tLS1CRUdJTi...",
+          "certificate": "LS0tLS1CRUdJTi...",
+          "private_key": "LS0tLS1CRUdJTi..."
+        }
+      ]
+    }
+  }
+}
