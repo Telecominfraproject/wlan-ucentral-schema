@@ -3,6 +3,12 @@
 "use strict";
 
 import * as fs from 'fs';
+import { 
+	b, s, uci_cmd, uci_set_string, uci_set_boolean, uci_set_number, uci_set_raw,
+	uci_list_string, uci_list_number, uci_section, uci_named_section, 
+	uci_set, uci_list, uci_output, uci_comment
+} from '../../renderer/libs/uci_helpers.uc';
+import { create_ethernet } from '../../renderer/libs/ethernet.uc';
 
 // Mock UCI cursor
 let mock_cursor = {
@@ -82,6 +88,26 @@ let mock_fs = {
 	}
 };
 
+// Mock ports discovery function for ethernet library
+function mock_discover_ports() {
+	return {
+		"WAN": { netdev: "eth0", index: 0 },
+		"LAN1": { netdev: "eth1", index: 0 },
+		"LAN2": { netdev: "eth2", index: 1 },
+		"LAN3": { netdev: "eth3", index: 2 },
+		"LAN4": { netdev: "eth4", index: 3 }
+	};
+}
+
+// Mock capabilities for ethernet library
+let mock_ethernet_capab = {
+	network: {
+		upstream: ["eth0"],
+		downstream: ["eth1", "eth2", "eth3", "eth4"]
+	}
+};
+
+
 // Mock capabilities
 let mock_capab = {
 	network: {
@@ -115,89 +141,6 @@ let mock_events = {
     "dns.query": true
 };
 
-// UCI helper functions (from renderer.uc)
-function b(val) {
-	return val ? '1' : '0';
-}
-
-function s(str) {
-	if (str === null || str === '')
-		return '';
-	return sprintf("'%s'", replace(str, /'/g, "'\\''"));
-}
-
-function uci_cmd(cmd_type, path, value, formatter) {
-	if (cmd_type !== 'add' && value === null)
-		return '';
-	
-	if (cmd_type === 'add') {
-		return sprintf('%s %s', cmd_type, path);
-	} else {
-		let formatted_value = formatter ? formatter(value) : s(value);
-		return sprintf('%s %s=%s', cmd_type, path, formatted_value);
-	}
-}
-
-function uci_set_string(output, path, value) {
-	let cmd = uci_cmd('set', path, value, s);
-	if (cmd) push(output, cmd);
-}
-
-function uci_set_boolean(output, path, value) {
-	let cmd = uci_cmd('set', path, value, b);
-	if (cmd) push(output, cmd);
-}
-
-function uci_set_number(output, path, value) {
-	let cmd = uci_cmd('set', path, value, (v) => v);
-	if (cmd) push(output, cmd);
-}
-
-function uci_set_raw(output, path, value) {
-	let cmd = uci_cmd('set', path, value, (v) => v);
-	if (cmd) push(output, cmd);
-}
-
-function uci_list_number(output, path, value) {
-	let cmd = uci_cmd('add_list', path, value, (v) => v);
-	if (cmd) push(output, cmd);
-}
-
-function uci_set(output, path, value) {
-	let cmd = uci_cmd('set', path, value, s);
-	if (cmd) push(output, cmd);
-}
-
-function uci_list(output, path, value) {
-	let cmd = uci_cmd('add_list', path, value, s);
-	if (cmd) push(output, cmd);
-}
-
-function uci_list_string(output, path, value) {
-	let cmd = uci_cmd('add_list', path, value, s);
-	if (cmd) push(output, cmd);
-}
-
-function uci_section(output, path) {
-	let cmd = uci_cmd('add', path);
-	if (cmd) push(output, cmd);
-}
-
-function uci_named_section(output, name, type) {
-	if (name === null)
-		return;
-	let cmd = sprintf('set %s=%s', name, type);
-	push(output, cmd);
-}
-
-function uci_output(output) {
-	push(output, '');
-	return join('\n', output);
-}
-
-function uci_comment(output, comment) {
-	push(output, comment);
-}
 
 // Mock services object
 let mock_services = {
@@ -263,86 +206,6 @@ let mock_services = {
 	_test_state: null // Will be set by test context
 };
 
-// Mock ethernet object  
-let mock_ethernet = {
-	ports: {},
-	calculate_name: function(interface) {
-		// Generate interface name based on interface properties
-		if (interface && interface.name)
-			return interface.name;
-		if (interface && interface.role)
-			return interface.role;
-		return "mock_interface";
-	},
-	lookup_by_interface_spec: function(interface) {
-		// Return mock port names based on interface ethernet config
-		let ports = [];
-		if (interface && interface.ethernet) {
-			for (let eth in interface.ethernet) {
-				if (eth.select_ports) {
-					for (let port in eth.select_ports) {
-						push(ports, lc(port)); // Convert to lowercase like real system
-					}
-				}
-			}
-		}
-		return ports;
-	},
-	find_interface: function(role, vlan_id) {
-		// Mock interface lookup
-		return role + (vlan_id ? "_" + vlan_id : "");
-	},
-	lookup_by_select_ports: function(select_ports) {
-		// Convert select_ports array to actual port names
-		let ports = [];
-		if (select_ports) {
-			for (let port in select_ports) {
-				if (port == "WAN") {
-					push(ports, "eth0");
-				} else if (port == "LAN*") {
-					push(ports, "eth1");
-				} else {
-					push(ports, lc(port));
-				}
-			}
-		}
-		return ports;
-	},
-	lookup_by_interface_vlan: function(interface) {
-		// Mock function for VLAN interface lookup used by dhcp_snooping
-		// Returns array of interface names for upstream interfaces with VLANs
-		if (interface.vlan && interface.vlan.id) {
-			return [interface.name + "_" + interface.vlan.id];
-		} else {
-			return [interface.name || "upstream"];
-		}
-	},
-	has_vlan: function(interface) {
-		// Mock implementation matching renderer.uc
-		return interface.vlan && interface.vlan.id;
-	},
-	reserve_port: function(port) {
-		// Mock implementation - remove port from available ports
-		delete this.ports[port];
-	},
-	switch_by_interface_vlan: function(interface, raw) {
-		// Mock implementation - return null since most tests don't use switch config
-		return null;
-	},
-	calculate_names: function(interface) {
-		// Mock implementation - return simple name array
-		let name = this.calculate_name(interface);
-		return [name]; // Simplified - real version handles IPv4/IPv6 dual stack
-	},
-	calculate_ipv4_name: function(interface) {
-		// Mock implementation - return simple name
-		return this.calculate_name(interface);
-	},
-	calculate_ipv6_name: function(interface) {
-		// Mock implementation - return simple name
-		return this.calculate_name(interface);
-	}
-};
 
 // Mock files object
 let mock_files = {
@@ -477,6 +340,9 @@ function tryinclude(path, scope) {
 	}
 };
 
+// Create ethernet instance using shared library
+let mock_ethernet = create_ethernet(mock_discover_ports(), mock_ethernet_capab, mock_fs, null);
+
 // Create test context with all mocks  
 function create_test_context(overrides) {
 	let result = {
@@ -550,6 +416,9 @@ function create_test_context(overrides) {
 	} else if (overrides) {
 		result.services._test_state = overrides;
 	}
+	
+	// Set global state for ethernet library functions
+	global.state = overrides || {};
 	
 	return result;
 }
