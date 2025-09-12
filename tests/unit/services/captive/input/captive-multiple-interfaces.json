@@ -60,10 +60,5 @@
     "captive": {
       "auth-mode": "click-to-continue"
     }
-  },
-  "template_vars": {
-    "state": {
-      "services": {}
-    }
   }
 }

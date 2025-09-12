@@ -1,26 +1,24 @@
 {
-  "template_vars": {
+  "services": {
     "lldp": {
       "describe": "Multi-port AP",
       "location": "Network Closet"
     }
   },
-  "state": {
-    "interfaces": [
-      {
-        "role": "upstream", 
-        "services": ["lldp"],
-        "ethernet": [
-          {"select_ports": ["WAN1"]}
-        ]
-      },
-      {
-        "role": "downstream",
-        "services": ["lldp"], 
-        "ethernet": [
-          {"select_ports": ["LAN1", "LAN2"]}
-        ]
-      }
-    ]
-  }
+  "interfaces": [
+    {
+      "role": "upstream", 
+      "services": ["lldp"],
+      "ethernet": [
+        {"select_ports": ["WAN"]}
+      ]
+    },
+    {
+      "role": "downstream",
+      "services": ["lldp"], 
+      "ethernet": [
+        {"select_ports": ["LAN1", "LAN2"]}
+      ]
+    }
+  ]
 }

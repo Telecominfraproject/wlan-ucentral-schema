@@ -1,5 +1,5 @@
 {
-  "template_vars": {
+  "services": {
     "ieee8021x": {
       "mode": "radius",
       "radius": {
@@ -17,12 +17,10 @@
       }
     }
   },
-  "state": {
-    "interfaces": [
-      {
-        "role": "upstream",
-        "ieee8021x_ports": ["eth0"]
-      }
-    ]
-  }
+  "interfaces": [
+    {
+      "role": "upstream",
+      "ieee8021x_ports": ["eth0"]
+    }
+  ]
 }

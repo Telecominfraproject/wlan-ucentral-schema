@@ -31,10 +31,5 @@
   },
   "dhcp_inject": {
     "select_ports": ["eth0"]
-  },
-  "template_vars": {
-    "state": {
-      "services": {}
-    }
   }
 }

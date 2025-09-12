@@ -1,7 +1,5 @@
 {
-	"template_vars": {
-		"timeout": {
-			"orphan": 300
-		}
+	"timeout": {
+		"orphan": 300
 	}
 }

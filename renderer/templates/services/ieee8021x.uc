@@ -79,7 +79,7 @@
 	}
 
 	// Main logic
-	if (!has_ieee8021x_service())
+	if (!ieee8021x || !has_ieee8021x_service())
 		return;
 
 	let enable = has_ieee8021x_interfaces();

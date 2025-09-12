@@ -39,10 +39,5 @@
   ],
   "services": {
     "dhcp-inject": true
-  },
-  "template_vars": {
-    "state": {
-      "services": {}
-    }
   }
 }

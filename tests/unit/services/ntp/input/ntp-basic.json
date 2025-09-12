@@ -36,10 +36,5 @@
         "time.google.com"
       ]
     }
-  },
-  "template_vars": {
-    "state": {
-      "services": {}
-    }
   }
 }

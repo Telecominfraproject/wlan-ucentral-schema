@@ -29,7 +29,7 @@
 
 	// Main template logic
 	// Only generate output if we have timeout configuration
-	if (!has_timeout_config())
+	if (!timeout || !has_timeout_config())
 		return;
 %}
 

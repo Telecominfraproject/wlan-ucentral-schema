@@ -21,10 +21,5 @@
         "time.cloudflare.com"
       ]
     }
-  },
-  "template_vars": {
-    "state": {
-      "services": {}
-    }
   }
 }

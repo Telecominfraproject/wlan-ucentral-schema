@@ -35,10 +35,5 @@
       "walled-garden-fqdn": ["google.com", "facebook.com"],
       "walled-garden-ipaddr": ["8.8.8.8", "1.1.1.1"]
     }
-  },
-  "template_vars": {
-    "state": {
-      "services": {}
-    }
   }
 }

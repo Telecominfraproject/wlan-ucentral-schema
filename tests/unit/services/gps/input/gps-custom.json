@@ -1,5 +1,5 @@
 {
-  "template_vars": {
+  "services": {
     "gps": {
       "adjust_time": true,
       "baud_rate": 19200
