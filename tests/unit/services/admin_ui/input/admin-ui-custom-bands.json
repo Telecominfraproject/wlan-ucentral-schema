@@ -1,0 +1,17 @@
+{
+  "template_vars": {
+    "admin_ui": {
+      "wifi_ssid": "AdminUI-5G",
+      "wifi_bands": ["5G"]
+    }
+  },
+  "state": {
+    "interfaces": [],
+    "services": {
+      "admin_ui": {
+        "wifi_ssid": "AdminUI-5G",
+        "wifi_bands": ["5G"]
+      }
+    }
+  }
+}

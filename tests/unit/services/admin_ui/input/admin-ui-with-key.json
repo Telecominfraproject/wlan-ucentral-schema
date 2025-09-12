@@ -1,0 +1,17 @@
+{
+  "template_vars": {
+    "admin_ui": {
+      "wifi_ssid": "MyAdminNetwork",
+      "wifi_key": "SecurePassword123"
+    }
+  },
+  "state": {
+    "interfaces": [],
+    "services": {
+      "admin_ui": {
+        "wifi_ssid": "MyAdminNetwork",
+        "wifi_key": "SecurePassword123"
+      }
+    }
+  }
+}

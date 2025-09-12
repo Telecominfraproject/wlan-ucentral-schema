@@ -8,6 +8,7 @@ import * as fs from 'fs';
 
 // Import all test modules
 // Services
+import { run_tests as admin_ui_tests } from './unit/services/admin_ui/test-admin_ui.uc';
 import { run_tests as airtime_fairness_tests } from './unit/services/airtime_fairness/test-airtime_fairness.uc';
 import { run_tests as captive_tests } from './unit/services/captive/test-captive.uc';
 import { run_tests as dhcp_inject_tests } from './unit/services/dhcp_inject/test-dhcp_inject.uc';
@@ -58,6 +59,7 @@ function main() {
 	
 	let test_suites = [
 		// Services
+		{ name: "Admin UI Service", run_tests: admin_ui_tests },
 		{ name: "Airtime Fairness Service", run_tests: airtime_fairness_tests },
 		{ name: "Captive Service", run_tests: captive_tests },
 		{ name: "DHCP Inject Service", run_tests: dhcp_inject_tests },
