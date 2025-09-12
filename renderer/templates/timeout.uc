@@ -6,4 +6,3 @@
 set ucentral.timeouts.{{ t }}={{ timeout[t] }}
 {%	endif
    endfor %}
-%}
