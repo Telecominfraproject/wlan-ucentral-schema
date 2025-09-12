@@ -55,6 +55,9 @@ export function TestFramework(template_path, test_title, test_dir) {
                     output += sprintf("\n-----%s-----\n%s\n--------\n", path, file_info.content);
                 }
                 
+                // Write debug output to /tmp/ucentral-test/
+                context.files.write_debug_output(test_name, output);
+                
                 // Normalize whitespace for comparison
                 output = trim(output);
                 expected_output = trim(expected_output);
@@ -305,6 +308,9 @@ export function FullIntegrationTestFramework(test_title, test_dir) {
                 for (let path, file_info in generated_files) {
                     output += sprintf("\n-----%s-----\n%s\n--------\n", path, file_info.content);
                 }
+                
+                // Write debug output to /tmp/ucentral-test/
+                context.files.write_debug_output(test_name + "-" + board_name, output);
                 
                 // Normalize whitespace for comparison
                 output = trim(output);
