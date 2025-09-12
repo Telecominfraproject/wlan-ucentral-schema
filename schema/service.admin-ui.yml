@@ -1,22 +1,31 @@
 type: object
 properties:
   wifi-ssid:
-    description:
-      The name of the admin ssid.
+    description: |
+      The SSID (network name) for the administrative WiFi interface. This creates
+      a special recovery network that allows device access even when the main
+      configuration has issues. The interface will be created with a static IP
+      (10.254.254.1/24) and basic services (SSH, HTTP) enabled.
+      Example: "Admin-Network" or "Recovery-WiFi"
     type: string
     default: Maverick
     maxLength: 32
     minLength: 1
   wifi-key:
-    description:
-      The Pre Shared Key (PSK) that is used for encryption on the BSS.
+    description: |
+      The Pre Shared Key (PSK) used for WPA2 encryption on the admin interface.
+      If not specified, the network will be open (no encryption). When set, the
+      admin WiFi network will use WPA2-PSK security. Must be between 8-63 characters.
+      Example: "SecureAdminPassword123"
     type: string
     maxLength: 63
     minLength: 8
   wifi-bands:
-    description:
-      The band that the SSID should be broadcasted on. The configuration layer
-      will use the first matching band.
+    description: |
+      The radio bands on which the admin SSID should be broadcast. The system will
+      use the first available matching band from the list. If not specified, defaults
+      to both 2.4GHz and 5GHz bands for maximum compatibility.
+      Example: ["5G"] for 5GHz-only operation, or ["2G", "5G"] for dual-band
     type: array
     items:
       type: string
@@ -28,6 +37,10 @@ properties:
       - 6G
       - HaLow
   offline-trigger:
-    description:
-      The admin-ui will be spawned when this offline threshold was exceeded.
+    description: |
+      The time threshold (in seconds) that triggers automatic admin UI activation
+      when the device loses connectivity. When the device is offline for longer than
+      this duration, the admin interface will automatically become available to allow
+      local recovery access. This helps recover devices that have lost remote management.
+      Example: 300 for 5 minutes, 3600 for 1 hour
     type: number
