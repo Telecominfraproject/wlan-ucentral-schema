@@ -68,7 +68,7 @@
 		uci_comment(output, '### generate switch configuration');
 		
 		for (let k, v in capab.switch) {
-			uci_section(output, 'network.switch');
+			uci_section(output, 'network switch');
 			uci_set_string(output, 'network.@switch[-1].name', v.name);
 			uci_set_boolean(output, 'network.@switch[-1].reset', v.reset);
 			uci_set_boolean(output, 'network.@switch[-1].enable_vlan', v.enable);

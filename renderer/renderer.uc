@@ -888,6 +888,8 @@ return /** @lends uCentral.prototype */ {
 
 		/** @lends uCentral.prototype */
 		return render('templates/toplevel.uc', {
+			fs,
+
 			b,
 			s,
 			tryinclude,
