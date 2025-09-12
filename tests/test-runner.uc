@@ -53,13 +53,25 @@ function repeat(str, count) {
 }
 
 let total_results = {
-	total_tests: 0,
-	passed_tests: 0, 
-	failed_tests: 0,
-	test_suites: 0,
-	passed_suites: 0,
-	failed_suites: 0,
-	failed_suite_names: []
+	unit: {
+		total_tests: 0,
+		passed_tests: 0, 
+		failed_tests: 0,
+		test_suites: 0,
+		passed_suites: 0,
+		failed_suites: 0,
+		failed_suite_names: []
+	},
+	integration: {
+		total_tests: 0,
+		passed_tests: 0, 
+		failed_tests: 0,
+		test_suites: 0,
+		passed_suites: 0,
+		failed_suites: 0,
+		failed_suite_names: [],
+		boards_tested: []
+	}
 };
 
 function main() {
@@ -101,34 +113,46 @@ function main() {
 		{ name: "Ethernet Base Template", run_tests: ethernet_tests },
 		
 		// Integration tests
-		{ name: "Base Integration", run_tests: base_integration_tests },
+		{ name: "Base Integration", run_tests: base_integration_tests, type: "integration", boards: ["eap101"] },
 	];
 	
 	printf("Found %d test suites\n\n", length(test_suites));
 	
 	// Run each test suite
 	for (let suite in test_suites) {
-		total_results.test_suites++;
+		let suite_type = suite.type || "unit";
+		let target_results = total_results[suite_type];
+		
+		target_results.test_suites++;
 		
 		try {
 			let results = suite.run_tests();
 			
 			// Aggregate results
-			total_results.total_tests += results.passed + results.failed;
-			total_results.passed_tests += results.passed;
-			total_results.failed_tests += results.failed;
+			target_results.total_tests += results.passed + results.failed;
+			target_results.passed_tests += results.passed;
+			target_results.failed_tests += results.failed;
+			
+			// Track boards for integration tests
+			if (suite_type == "integration" && suite.boards) {
+				for (let board in suite.boards) {
+					if (index(target_results.boards_tested, board) == -1) {
+						push(target_results.boards_tested, board);
+					}
+				}
+			}
 			
 			if (results.failed > 0) {
-				total_results.failed_suites++;
-				push(total_results.failed_suite_names, results.suite_name);
+				target_results.failed_suites++;
+				push(target_results.failed_suite_names, results.suite_name);
 			} else {
-				total_results.passed_suites++;
+				target_results.passed_suites++;
 			}
 			
 		} catch (e) {
 			printf("✗ ERROR in %s: %s\n", suite.name, e);
-			total_results.failed_suites++;
-			push(total_results.failed_suite_names, suite.name);
+			target_results.failed_suites++;
+			push(target_results.failed_suite_names, suite.name);
 		}
 		
 		printf("\n");
@@ -137,15 +161,40 @@ function main() {
 	// Print final summary
 	printf("%s\n", repeat("=", 50));
 	printf("=== FINAL RESULTS ===\n");
-	printf("Test suites run: %d\n", total_results.test_suites);
-	printf("Suite results: %d passed, %d failed\n", total_results.passed_suites, total_results.failed_suites);
-	printf("Individual tests: %d total (%d passed, %d failed)\n", 
-		total_results.total_tests, total_results.passed_tests, total_results.failed_tests);
 	
-	if (total_results.failed_suites > 0) {
+	// Unit test results
+	printf("Unit tests: %d suites (%d passed, %d failed)\n", 
+		total_results.unit.test_suites, total_results.unit.passed_suites, total_results.unit.failed_suites);
+	printf("  Individual tests: %d total (%d passed, %d failed)\n", 
+		total_results.unit.total_tests, total_results.unit.passed_tests, total_results.unit.failed_tests);
+	
+	// Integration test results
+	if (total_results.integration.test_suites > 0) {
+		printf("Integration tests: %d suites (%d passed, %d failed)\n", 
+			total_results.integration.test_suites, total_results.integration.passed_suites, total_results.integration.failed_suites);
+		printf("  Individual tests: %d total (%d passed, %d failed)\n", 
+			total_results.integration.total_tests, total_results.integration.passed_tests, total_results.integration.failed_tests);
+		printf("  Boards tested: %s\n", join(", ", total_results.integration.boards_tested));
+	}
+	
+	// Overall totals
+	let total_suites = total_results.unit.test_suites + total_results.integration.test_suites;
+	let total_passed_suites = total_results.unit.passed_suites + total_results.integration.passed_suites;
+	let total_failed_suites = total_results.unit.failed_suites + total_results.integration.failed_suites;
+	let total_tests = total_results.unit.total_tests + total_results.integration.total_tests;
+	let total_passed_tests = total_results.unit.passed_tests + total_results.integration.passed_tests;
+	let total_failed_tests = total_results.unit.failed_tests + total_results.integration.failed_tests;
+	
+	printf("\nTotal: %d suites, %d tests (%d passed, %d failed)\n", 
+		total_suites, total_tests, total_passed_tests, total_failed_tests);
+	
+	if (total_failed_suites > 0) {
 		printf("\nFailed test suites:\n");
-		for (let suite_name in total_results.failed_suite_names) {
-			printf("  - %s\n", suite_name);
+		for (let suite_name in total_results.unit.failed_suite_names) {
+			printf("  - %s (unit)\n", suite_name);
+		}
+		for (let suite_name in total_results.integration.failed_suite_names) {
+			printf("  - %s (integration)\n", suite_name);
 		}
 		exit(1);
 	}
