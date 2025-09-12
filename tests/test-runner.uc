@@ -38,6 +38,7 @@ import { run_tests as wifi_scan_tests } from './unit/metrics/wifi_scan/test-wifi
 
 // Base templates
 import { run_tests as unit_tests } from './unit/base/unit/test-unit.uc';
+import { run_tests as timeout_tests } from './unit/base/timeout/test-timeout.uc';
 
 function repeat(str, count) {
 	let result = "";
@@ -92,6 +93,7 @@ function main() {
 		
 		// Base templates
 		{ name: "Unit Base Template", run_tests: unit_tests },
+		{ name: "Timeout Base Template", run_tests: timeout_tests },
 	];
 	
 	printf("Found %d test suites\n\n", length(test_suites));

@@ -1,0 +1,2 @@
+# Basic unit configuration
+set ucentral.timeouts.validate=30
