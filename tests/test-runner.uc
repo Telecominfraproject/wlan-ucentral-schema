@@ -37,7 +37,7 @@ import { run_tests as wifi_frames_tests } from './unit/metrics/wifi_frames/test-
 import { run_tests as wifi_scan_tests } from './unit/metrics/wifi_scan/test-wifi_scan.uc';
 
 // Base templates
-// (Base template imports will be added here as they are created)
+import { run_tests as unit_tests } from './unit/base/unit/test-unit.uc';
 
 function repeat(str, count) {
 	let result = "";
@@ -91,7 +91,7 @@ function main() {
 		{ name: "WiFi Scan Metrics", run_tests: wifi_scan_tests },
 		
 		// Base templates
-		// (Base template tests will be added here as they are created)
+		{ name: "Unit Base Template", run_tests: unit_tests },
 	];
 	
 	printf("Found %d test suites\n\n", length(test_suites));

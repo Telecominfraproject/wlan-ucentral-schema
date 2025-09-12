@@ -1,0 +1,6 @@
+# Basic unit configuration
+set system.@system[-1].description='Full Config Device'
+set system.@system[-1].hostname='full-ap-01'
+set system.@system[-1].notes='Main Office, Rack 3'
+set system.@system[-1].timezone='CET-1CEST,M3.5.0,M10.5.0/3'
+set system.@system[-1].leds_off=0

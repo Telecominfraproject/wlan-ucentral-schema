@@ -1,0 +1,10 @@
+{
+  "unit": {
+    "name": "Test Device",
+    "hostname": "test-ap-01",
+    "location": "Building A, Floor 2",
+    "timezone": "UTC",
+    "leds_active": true,
+    "random_password": false
+  }
+}
