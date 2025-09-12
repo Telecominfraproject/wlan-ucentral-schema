@@ -461,6 +461,22 @@ function create_board_test_context(test_data, board_data, capabilities) {
 	context.board = board_data;
 	context.capab = capabilities;
 	
+	// Enhanced wiphy mock based on board capabilities
+	context.wiphy = {
+		lookup_by_band: function(band) {
+			let phys = [];
+			for (let phy_path, phy_data in capabilities.wifi || {}) {
+				if (index(phy_data.band, band) >= 0) {
+					push(phys, {
+						...phy_data,
+						path: phy_path
+					});
+				}
+			}
+			return phys;
+		}
+	};
+	
 	return context;
 };
 
