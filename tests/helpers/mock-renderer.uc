@@ -453,5 +453,16 @@ function create_test_context(overrides) {
 	return result;
 }
 
-// Export the function
-export { create_test_context };
+// Create board-specific test context with real device data
+function create_board_test_context(test_data, board_data, capabilities) {
+	let context = create_test_context(test_data);
+	
+	// Add board-specific data to context
+	context.board = board_data;
+	context.capab = capabilities;
+	
+	return context;
+};
+
+// Export the functions
+export { create_test_context, create_board_test_context };
