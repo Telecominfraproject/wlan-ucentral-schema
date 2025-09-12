@@ -1,0 +1,8 @@
+set network.lan1=device
+set network.lan1.name='lan1'
+set network.lan1.ifname='lan1'
+set network.lan1.enabled=1
+set network.lan2=device
+set network.lan2.name='lan2'
+set network.lan2.ifname='lan2'
+set network.lan2.enabled=1
