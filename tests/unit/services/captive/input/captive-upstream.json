@@ -1,12 +1,14 @@
 {
-  "uuid": "12345678-1234-1234-1234-123456789012",
+  "uuid": 1,
   "interfaces": [
     {
-      "name": "upstream",
+      "name": "WAN",
       "role": "upstream",
       "ethernet": [
         {
-          "select-ports": ["WAN"]
+          "select-ports": [
+            "WAN"
+          ]
         }
       ],
       "ipv4": {
@@ -15,12 +17,16 @@
       "ssids": [
         {
           "name": "PublicWiFi",
-          "wifi-bands": ["2G"],
+          "wifi-bands": [
+            "2G"
+          ],
           "bss-mode": "ap",
           "encryption": {
             "proto": "none"
           },
-          "services": ["captive"]
+          "services": [
+            "captive"
+          ]
         }
       ]
     }

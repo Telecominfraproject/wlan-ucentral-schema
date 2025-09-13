@@ -10,8 +10,13 @@
       "role": "upstream",
       "services": [],
       "ethernet": [
-        {"select_ports": ["WAN"]}
+        {
+          "select_ports": [
+            "WAN"
+          ]
+        }
       ]
     }
-  ]
+  ],
+  "uuid": 1
 }

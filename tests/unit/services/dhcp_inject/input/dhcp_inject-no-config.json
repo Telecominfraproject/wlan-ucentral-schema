@@ -1,12 +1,28 @@
 {
-  "uuid": "12345678-1234-1234-1234-123456789012",
+  "uuid": 1,
   "interfaces": [
+    {
+      "name": "WAN",
+      "role": "upstream",
+      "ethernet": [
+        {
+          "select-ports": [
+            "WAN"
+          ]
+        }
+      ],
+      "ipv4": {
+        "addressing": "dynamic"
+      }
+    },
     {
       "name": "downstream",
       "role": "downstream",
       "ethernet": [
         {
-          "select-ports": ["LAN*"]
+          "select-ports": [
+            "LAN*"
+          ]
         }
       ],
       "ipv4": {
@@ -16,7 +32,9 @@
       "ssids": [
         {
           "name": "TestWiFi",
-          "wifi-bands": ["2G"],
+          "wifi-bands": [
+            "2G"
+          ],
           "bss-mode": "ap",
           "encryption": {
             "proto": "psk2",

@@ -1,12 +1,28 @@
 {
-  "uuid": "12345678-1234-1234-1234-123456789012",
+  "uuid": 1,
   "interfaces": [
+    {
+      "name": "WAN",
+      "role": "upstream",
+      "ethernet": [
+        {
+          "select-ports": [
+            "WAN"
+          ]
+        }
+      ],
+      "ipv4": {
+        "addressing": "dynamic"
+      }
+    },
     {
       "name": "downstream",
       "role": "downstream",
       "ethernet": [
         {
-          "select-ports": ["LAN*"]
+          "select-ports": [
+            "LAN*"
+          ]
         }
       ],
       "ipv4": {
@@ -19,12 +35,17 @@
       "ssids": [
         {
           "name": "PublicWiFi",
-          "wifi-bands": ["2G", "5G"],
+          "wifi-bands": [
+            "2G",
+            "5G"
+          ],
           "bss-mode": "ap",
           "encryption": {
             "proto": "none"
           },
-          "services": ["captive"]
+          "services": [
+            "captive"
+          ]
         }
       ]
     }
@@ -32,8 +53,14 @@
   "services": {
     "captive": {
       "auth-mode": "click-to-continue",
-      "walled-garden-fqdn": ["google.com", "facebook.com"],
-      "walled-garden-ipaddr": ["8.8.8.8", "1.1.1.1"]
+      "walled-garden-fqdn": [
+        "google.com",
+        "facebook.com"
+      ],
+      "walled-garden-ipaddr": [
+        "8.8.8.8",
+        "1.1.1.1"
+      ]
     }
   }
 }

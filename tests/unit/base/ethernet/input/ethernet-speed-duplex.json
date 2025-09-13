@@ -1,8 +1,27 @@
 {
-	"ports": {
-		"select_ports": ["WAN"],
-		"enabled": true,
-		"speed": 1000,
-		"duplex": "full"
-	}
+  "ports": {
+    "select_ports": [
+      "WAN"
+    ],
+    "enabled": true,
+    "speed": 1000,
+    "duplex": "full"
+  },
+  "uuid": 1,
+  "interfaces": [
+    {
+      "name": "WAN",
+      "role": "upstream",
+      "ethernet": [
+        {
+          "select-ports": [
+            "WAN"
+          ]
+        }
+      ],
+      "ipv4": {
+        "addressing": "dynamic"
+      }
+    }
+  ]
 }

@@ -1,13 +1,17 @@
 {
-  "uuid": "12345678-1234-1234-1234-123456789012",
+  "uuid": 1,
   "interfaces": [
     {
-      "name": "upstream",
-      "role": "upstream", 
-      "services": ["dhcp-relay"],
+      "name": "WAN",
+      "role": "upstream",
+      "services": [
+        "dhcp-relay"
+      ],
       "ethernet": [
         {
-          "select-ports": ["WAN"]
+          "select-ports": [
+            "WAN"
+          ]
         }
       ],
       "ipv4": {
@@ -17,10 +21,14 @@
     {
       "name": "downstream",
       "role": "downstream",
-      "services": ["dhcp-relay"],
+      "services": [
+        "dhcp-relay"
+      ],
       "ethernet": [
         {
-          "select-ports": ["LAN*"]
+          "select-ports": [
+            "LAN*"
+          ]
         }
       ],
       "ipv4": {
@@ -33,7 +41,10 @@
     "dhcp-relay": true
   },
   "dhcp_relay": {
-    "select_ports": ["eth0", "eth1"],
+    "select_ports": [
+      "eth0",
+      "eth1"
+    ],
     "vlans": [
       {
         "vlan": 100,
@@ -42,7 +53,7 @@
         "remote_id_format": "remote-%m"
       },
       {
-        "vlan": 200, 
+        "vlan": 200,
         "relay_server": "192.168.200.1"
       }
     ]

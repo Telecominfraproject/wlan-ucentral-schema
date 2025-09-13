@@ -10,7 +10,11 @@
   "metrics": {
     "telemetry": {
       "interval": 300,
-      "types": ["client.associate", "wifi.start", "dhcp.ack"]
+      "types": [
+        "client.associate",
+        "wifi.start",
+        "dhcp.ack"
+      ]
     }
   }
 }

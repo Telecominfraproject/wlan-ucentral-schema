@@ -10,7 +10,10 @@
   "metrics": {
     "telemetry": {
       "interval": 600,
-      "types": ["dns.query", "dhcp.discover"]
+      "types": [
+        "dns.query",
+        "dhcp.discover"
+      ]
     }
   }
 }

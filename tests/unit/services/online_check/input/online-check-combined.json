@@ -1,11 +1,34 @@
 {
   "services": {
     "online_check": {
-      "ping_hosts": ["8.8.8.8"],
-      "download_hosts": ["www.example.org"],
+      "ping_hosts": [
+        "8.8.8.8"
+      ],
+      "download_hosts": [
+        "www.example.org"
+      ],
       "check_interval": 120,
       "check_threshold": 3,
-      "action": ["leds"]
+      "action": [
+        "leds"
+      ]
     }
-  }
+  },
+  "uuid": 1,
+  "interfaces": [
+    {
+      "name": "WAN",
+      "role": "upstream",
+      "ethernet": [
+        {
+          "select-ports": [
+            "WAN"
+          ]
+        }
+      ],
+      "ipv4": {
+        "addressing": "dynamic"
+      }
+    }
+  ]
 }

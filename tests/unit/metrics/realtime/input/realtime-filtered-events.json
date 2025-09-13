@@ -9,7 +9,12 @@
   ],
   "metrics": {
     "realtime": {
-      "types": ["client.associate", "invalid.event", "wifi.start", "another.invalid"]
+      "types": [
+        "client.associate",
+        "invalid.event",
+        "wifi.start",
+        "another.invalid"
+      ]
     }
   }
 }

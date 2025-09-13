@@ -7,18 +7,32 @@
   },
   "interfaces": [
     {
-      "role": "upstream", 
-      "services": ["lldp"],
+      "role": "upstream",
+      "services": [
+        "lldp"
+      ],
       "ethernet": [
-        {"select_ports": ["WAN"]}
+        {
+          "select_ports": [
+            "WAN"
+          ]
+        }
       ]
     },
     {
       "role": "downstream",
-      "services": ["lldp"], 
+      "services": [
+        "lldp"
+      ],
       "ethernet": [
-        {"select_ports": ["LAN1", "LAN2"]}
+        {
+          "select_ports": [
+            "LAN1",
+            "LAN2"
+          ]
+        }
       ]
     }
-  ]
+  ],
+  "uuid": 1
 }
