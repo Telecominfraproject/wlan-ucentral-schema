@@ -98,10 +98,16 @@ try {
         output += sprintf("\n-----%s-----\n%s\n--------\n", path, file_info.content);
     }
 
-    // Write debug output (same as test frameworks do)
-    let debug_path = board_name ? sprintf("%s-%s", input_file, board_name) : input_file;
-    debug_path = replace(debug_path, /\.json$/, ""); // Remove .json extension
-    context.files.write_debug_output(test_dir + "/" + debug_path, output);
+    // Write debug output with clean structure for integration tests
+    if (test_type == "integration") {
+        // For integration tests: /tmp/ucentral-test-output/full/eap101/ssh.uci
+        let test_name = replace(input_file, /\.json$/, ""); // Remove .json extension
+        context.files.write_debug_output(sprintf("full/%s/%s", board_name, test_name), output);
+    } else {
+        // For unit tests: keep existing path structure
+        let debug_path = replace(input_file, /\.json$/, "");
+        context.files.write_debug_output(test_dir + "/" + debug_path, output);
+    }
 
     // Output result
     printf("%s", output);
