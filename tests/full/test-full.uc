@@ -2,12 +2,12 @@
 
 "use strict";
 
-import { FullIntegrationTestFramework } from '../../helpers/test-framework.uc';
+import { FullIntegrationTestFramework } from '../helpers/test-framework.uc';
 
 export function run_tests() {
 	let framework = FullIntegrationTestFramework(
 		"Full Configuration Integration Tests",
-		"integration/full"
+		"full"
 	);
 	
 	// Generate test cases for all example files
