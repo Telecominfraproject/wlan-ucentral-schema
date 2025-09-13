@@ -5,7 +5,8 @@
 import * as fs from 'fs';
 import {
 	read_board_file, is_capabilities_file, is_board_file, is_qos_file,
-	load_board_capabilities, load_wiphy_data
+	load_board_capabilities, load_wiphy_data, create_base_context_objects,
+	create_standard_context_properties, apply_context_overrides
 } from './test-utils.uc';
 
 // Real filesystem access for reading actual board configuration files
@@ -441,101 +442,42 @@ function create_test_context(overrides) {
 	// Initialize with board capabilities (unit tests use eap101 by default)
 	let board = 'eap101';
 	let capabilities = mock_capab(board);
-	mock_ethernet = create_ethernet(capabilities, mock_fs, null);
 
-	// Create board-specific cursor
-	let cursor = create_mock_cursor(board);
+	// Create base context objects using shared utility
+	let base_objects = create_base_context_objects(board, capabilities, create_mock_cursor, mock_fs);
 
-	// Initialize wiphy with real board wiphy data
-	mock_wiphy = create_wiphy(cursor, function(fmt, ...args) {
-		printf("[W] " + sprintf(fmt, ...args) + "\n");
-	});
-	// Load real wiphy data from board-specific wiphy.json
-	mock_wiphy.phys = load_wiphy_data(board);
-
-	// Initialize routing table
-	mock_routing_table = create_routing_table();
-
-	// Initialize captive portal manager
-	mock_captive = create_captive();
+	// Update global mock variables (needed for backwards compatibility)
+	mock_ethernet = base_objects.ethernet;
+	mock_wiphy = base_objects.wiphy;
+	mock_routing_table = base_objects.routing_table;
+	mock_captive = base_objects.captive;
 
 	// Reset mock files state for clean test runs
 	mock_files.clear_generated_files();
 
+	// Build result using shared utilities
 	let result = {
-		// Basic functions
-		b, s,
-
-		// UCI helpers
-		uci_cmd,
-		uci_set_string,
-		uci_set_boolean,
-		uci_set_number,
-		uci_list_string,
-		uci_section,
-		uci_named_section,
-		uci_output,
-		uci_comment,
+		...create_standard_context_properties(),
 
 		// Mock system objects
-		cursor: cursor,
+		cursor: base_objects.cursor,
 		conn: mock_conn,
 		fs: mock_fs,
 		capab: capabilities,
 		restrict: mock_restrict,
 		default_config: mock_default_config,
 		services: mock_services,
-		ethernet: mock_ethernet,
-		wiphy: mock_wiphy,
-		routing_table: mock_routing_table,
-		captive: mock_captive,
+		ethernet: base_objects.ethernet,
+		wiphy: base_objects.wiphy,
+		routing_table: base_objects.routing_table,
+		captive: base_objects.captive,
 		files: mock_files,
 		events: mock_events,
-		shell: mock_shell,
-
-		// Mock utility functions
-		warn: function(fmt, ...args) {
-			printf("[W] " + sprintf(fmt, ...args) + "\n");
-		},
-		error: function(fmt, ...args) {
-			printf("[E] " + sprintf(fmt, ...args) + "\n");
-		},
-		info: function(fmt, ...args) {
-			printf("[I] " + sprintf(fmt, ...args) + "\n");
-		},
-
+		shell: mock_shell
 	};
 
-	// Manually merge overrides
-	if (overrides) {
-		for (let key, value in overrides) {
-			// Don't override the services mock object
-			if (key != 'services') {
-				result[key] = value;
-			}
-		}
-
-		// Extract individual services from services object
-		if (overrides.services) {
-			for (let service_name, service_config in overrides.services) {
-				result[service_name] = service_config;
-			}
-		}
-
-		// Extract individual metrics from metrics object
-		if (overrides.metrics) {
-			for (let metric_name, metric_config in overrides.metrics) {
-				result[metric_name] = metric_config;
-			}
-		}
-	}
-
-	// Set test state in services mock for lookup_interfaces
-	if (overrides && overrides.state) {
-		result.services._test_state = overrides.state;
-	} else if (overrides) {
-		result.services._test_state = overrides;
-	}
+	// Apply overrides using shared utility
+	result = apply_context_overrides(result, overrides, mock_services);
 
 	// Set global state for ethernet library functions
 	global.state = overrides || {};
@@ -548,23 +490,14 @@ function create_board_test_context(test_data, board_data, capabilities, board_na
 	// Use the board name passed from the test framework, default to eap101
 	board_name ??= 'eap101';
 
-	// Initialize ethernet with actual board capabilities
-	mock_ethernet = create_ethernet(capabilities, mock_fs, null);
+	// Create board-specific context objects using shared utility
+	let base_objects = create_base_context_objects(board_name, capabilities, create_mock_cursor, mock_fs);
 
-	// Create board-specific cursor
-	let cursor = create_mock_cursor(board_name);
-
-	// Initialize wiphy with board-specific wiphy data
-	mock_wiphy = create_wiphy(cursor, function(fmt, ...args) {
-		printf("[W] " + sprintf(fmt, ...args) + "\n");
-	});
-	mock_wiphy.phys = load_wiphy_data(board_name);
-
-	// Initialize routing table
-	mock_routing_table = create_routing_table();
-
-	// Initialize captive portal manager
-	mock_captive = create_captive();
+	// Update global mock variables (needed for backwards compatibility)
+	mock_ethernet = base_objects.ethernet;
+	mock_wiphy = base_objects.wiphy;
+	mock_routing_table = base_objects.routing_table;
+	mock_captive = base_objects.captive;
 
 	// Reset mock files state for clean test runs
 	mock_files.clear_generated_files();
@@ -575,8 +508,12 @@ function create_board_test_context(test_data, board_data, capabilities, board_na
 	context.board = board_data;
 	context.capab = capabilities;
 
-	// Override cursor with board-specific one
-	context.cursor = cursor;
+	// Override with board-specific objects
+	context.cursor = base_objects.cursor;
+	context.ethernet = base_objects.ethernet;
+	context.wiphy = base_objects.wiphy;
+	context.routing_table = base_objects.routing_table;
+	context.captive = base_objects.captive;
 
 	return context;
 };
@@ -586,23 +523,14 @@ function create_integration_test_context(board_data, capabilities, board_name) {
 	// Use the board name passed from the test framework, default to eap101
 	board_name ??= 'eap101';
 
-	// Initialize ethernet with actual board capabilities
-	mock_ethernet = create_ethernet(capabilities, mock_fs, null);
+	// Create board-specific context objects using shared utility
+	let base_objects = create_base_context_objects(board_name, capabilities, create_mock_cursor, mock_fs);
 
-	// Create board-specific cursor
-	let cursor = create_mock_cursor(board_name);
-
-	// Initialize wiphy with board-specific wiphy data
-	mock_wiphy = create_wiphy(cursor, function(fmt, ...args) {
-		printf("[W] " + sprintf(fmt, ...args) + "\n");
-	});
-	mock_wiphy.phys = load_wiphy_data(board_name);
-
-	// Initialize routing table
-	mock_routing_table = create_routing_table();
-
-	// Initialize captive portal manager
-	mock_captive = create_captive();
+	// Update global mock variables (needed for backwards compatibility)
+	mock_ethernet = base_objects.ethernet;
+	mock_wiphy = base_objects.wiphy;
+	mock_routing_table = base_objects.routing_table;
+	mock_captive = base_objects.captive;
 
 	// Reset mock files state for clean test runs
 	mock_files.clear_generated_files();
@@ -611,46 +539,23 @@ function create_integration_test_context(board_data, capabilities, board_name) {
 	let capabilities_for_context = mock_capab(board_name);
 
 	let result = {
-		// Basic functions
-		b, s,
-
-		// UCI helpers
-		uci_cmd,
-		uci_set_string,
-		uci_set_boolean,
-		uci_set_number,
-		uci_list_string,
-		uci_section,
-		uci_named_section,
-		uci_output,
-		uci_comment,
+		...create_standard_context_properties(),
 
 		// Mock system objects (no service config overrides)
-		cursor: cursor,
+		cursor: base_objects.cursor,
 		conn: mock_conn,
 		fs: mock_fs,
 		capab: capabilities_for_context,
 		restrict: mock_restrict,
 		default_config: mock_default_config,
 		services: mock_services,
-		ethernet: mock_ethernet,
-		wiphy: mock_wiphy,
-		routing_table: mock_routing_table,
-		captive: mock_captive,
+		ethernet: base_objects.ethernet,
+		wiphy: base_objects.wiphy,
+		routing_table: base_objects.routing_table,
+		captive: base_objects.captive,
 		files: mock_files,
 		events: mock_events,
-		shell: mock_shell,
-
-		// Mock utility functions
-		warn: function(fmt, ...args) {
-			printf("[W] " + sprintf(fmt, ...args) + "\n");
-		},
-		error: function(fmt, ...args) {
-			printf("[E] " + sprintf(fmt, ...args) + "\n");
-		},
-		info: function(fmt, ...args) {
-			printf("[I] " + sprintf(fmt, ...args) + "\n");
-		},
+		shell: mock_shell
 	};
 
 	// Don't set any override state for integration tests - services will be passed via context.state
@@ -673,32 +578,17 @@ function create_full_test_context(state, board_data, capabilities, board_name) {
 	// Set the test state for services mock to use the actual validated state
 	context.services._test_state = state;
 
-	// Set global state for ethereum library functions
+	// Set global state for ethernet library functions
 	global.state = state;
 	context.capab = capabilities;
 	context.restrict = {};
 	context.default_config = mock_default_config;
 	context.latency = mock_latency;
 	context.local_profile = mock_local_profile;
-	
-	// Add all UCI helper functions
-	context.uci_cmd = uci_cmd;
-	context.uci_set_string = uci_set_string;
-	context.uci_set_boolean = uci_set_boolean;
-	context.uci_set_number = uci_set_number;
-	context.uci_set_raw = uci_set_raw;
-	context.uci_list_string = uci_list_string;
-	context.uci_list_number = uci_list_number;
-	context.uci_section = uci_section;
-	context.uci_named_section = uci_named_section;
-	context.uci_set = uci_set;
-	context.uci_list = uci_list;
-	context.uci_output = uci_output;
-	context.uci_comment = uci_comment;
-	
-	// Add utility functions
+
+	// Add utility functions (UCI helpers already included via create_standard_context_properties)
 	context.tryinclude = tryinclude;
-	
+
 	return context;
 };
 
