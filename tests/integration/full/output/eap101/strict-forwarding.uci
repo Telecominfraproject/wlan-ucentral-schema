@@ -112,11 +112,12 @@ set event.wifi.filter='*'
 # Wireless Configuration
 set wireless.radio1.disabled=0
 set wireless.radio1.ucentral_path='/radios/0'
-set wireless.radio1.htmode=HE20
+[W] Selected radio does not support requested HT mode HE80, falling back to HE40
+set wireless.radio1.htmode=HE40
 set wireless.radio1.txantenna=3
 set wireless.radio1.rxantenna=3
 set wireless.radio1.noscan=1
-set wireless.radio1.channel=1
+set wireless.radio1.channel=0
 set wireless.radio1.beacon_int=
 set wireless.radio1.country='CA'
 set wireless.radio1.require_mode=
@@ -127,41 +128,6 @@ set wireless.radio1.maxassoc=
 set wireless.radio1.maxassoc_ignore_probe=0
 set wireless.radio1.reconf=1
 set wireless.radio1.acs_exclude_dfs=0
-
-# Wireless Configuration
-set wireless.radio0.disabled=0
-set wireless.radio0.ucentral_path='/radios/1'
-set wireless.radio0.htmode=HE80
-set wireless.radio0.txantenna=3
-set wireless.radio0.rxantenna=3
-set wireless.radio0.noscan=1
-set wireless.radio0.channel=36
-set wireless.radio0.beacon_int=
-set wireless.radio0.country='CA'
-set wireless.radio0.require_mode=
-set wireless.radio0.txpower=
-set wireless.radio0.legacy_rates=0
-set wireless.radio0.chan_bw=
-set wireless.radio0.maxassoc=
-set wireless.radio0.maxassoc_ignore_probe=0
-set wireless.radio0.reconf=1
-set wireless.radio0.acs_exclude_dfs=0
-add_list wireless.radio0.channels=36
-add_list wireless.radio0.channels=44
-add_list wireless.radio0.channels=52
-add_list wireless.radio0.channels=60
-add_list wireless.radio0.channels=100
-add_list wireless.radio0.channels=108
-add_list wireless.radio0.channels=116
-add_list wireless.radio0.channels=124
-add_list wireless.radio0.channels=132
-add_list wireless.radio0.channels=140
-add_list wireless.radio0.channels=149
-add_list wireless.radio0.channels=157
-add_list wireless.radio0.channels=165
-add_list wireless.radio0.channels=173
-add_list wireless.radio0.channels=184
-add_list wireless.radio0.channels=192
 add network bridge-vlan
 set network.@bridge-vlan[-1].device=up
 set network.@bridge-vlan[-1].vlan=4090
@@ -373,28 +339,30 @@ set wireless.@wifi-vlan[-1].iface=up0v0_0_0_0
 set wireless.@wifi-vlan[-1].name='v#'
 set wireless.@wifi-vlan[-1].vid='*'
 
-set wireless.up0v0_0_1_0=wifi-iface
-set wireless.up0v0_0_1_0.ucentral_path='/interfaces/0/ssids/0'
-set wireless.up0v0_0_1_0.uci_section='up0v0_0_1_0'
-set wireless.up0v0_0_1_0.device=radio0
+# Wireless configuration
 
-set wireless.up0v0_0_1_0.network=up0v0
-set wireless.up0v0_0_1_0.ssid='OpenWifi'
-set wireless.up0v0_0_1_0.mode='ap'
-set wireless.up0v0_0_1_0.bssid=
-set wireless.up0v0_0_1_0.wds='0'
-set wireless.up0v0_0_1_0.wpa_disable_eapol_key_retries='0'
-set wireless.up0v0_0_1_0.vendor_elements='dd0448d01700'
-set wireless.up0v0_0_1_0.disassoc_low_ack='0'
-set wireless.up0v0_0_1_0.auth_cache='1'
+set wireless.up0v0_1_0_1=wifi-iface
+set wireless.up0v0_1_0_1.ucentral_path='/interfaces/0/ssids/1'
+set wireless.up0v0_1_0_1.uci_section='up0v0_1_0_1'
+set wireless.up0v0_1_0_1.device=radio1
+
+set wireless.up0v0_1_0_1.network=up0v0
+set wireless.up0v0_1_0_1.ssid='OpenWifi-isolate'
+set wireless.up0v0_1_0_1.mode='ap'
+set wireless.up0v0_1_0_1.bssid=
+set wireless.up0v0_1_0_1.wds='0'
+set wireless.up0v0_1_0_1.wpa_disable_eapol_key_retries='0'
+set wireless.up0v0_1_0_1.vendor_elements='dd0448d01700'
+set wireless.up0v0_1_0_1.disassoc_low_ack='0'
+set wireless.up0v0_1_0_1.auth_cache='1'
 
 
 
 # Crypto settings
-set wireless.up0v0_0_1_0.ieee80211w=1
-set wireless.up0v0_0_1_0.sae_pwe=
-set wireless.up0v0_0_1_0.encryption=psk2
-set wireless.up0v0_0_1_0.key='OpenWifi'
+set wireless.up0v0_1_0_1.ieee80211w=1
+set wireless.up0v0_1_0_1.sae_pwe=
+set wireless.up0v0_1_0_1.encryption=psk2
+set wireless.up0v0_1_0_1.key='OpenWifi'
 
 
 
@@ -405,18 +373,18 @@ set wireless.up0v0_0_1_0.key='OpenWifi'
 
 
 # AP specific setings
-set wireless.up0v0_0_1_0.proxy_arp=1
-set wireless.up0v0_0_1_0.hidden=0
-set wireless.up0v0_0_1_0.time_advertisement=0
-set wireless.up0v0_0_1_0.isolate=0
-set wireless.up0v0_0_1_0.bridge_isolate=0
-set wireless.up0v0_0_1_0.max_inactivity='300'
-set wireless.up0v0_0_1_0.uapsd=0
-set wireless.up0v0_0_1_0.rts_threshold=
-set wireless.up0v0_0_1_0.multicast_to_unicast=1
-set wireless.up0v0_0_1_0.maxassoc=
-set wireless.up0v0_0_1_0.dtim_period=2
-set wireless.up0v0_0_1_0.strict_forwarding=0
+set wireless.up0v0_1_0_1.proxy_arp=1
+set wireless.up0v0_1_0_1.hidden=0
+set wireless.up0v0_1_0_1.time_advertisement=0
+set wireless.up0v0_1_0_1.isolate=0
+set wireless.up0v0_1_0_1.bridge_isolate=0
+set wireless.up0v0_1_0_1.max_inactivity='300'
+set wireless.up0v0_1_0_1.uapsd=0
+set wireless.up0v0_1_0_1.rts_threshold=
+set wireless.up0v0_1_0_1.multicast_to_unicast=1
+set wireless.up0v0_1_0_1.maxassoc=
+set wireless.up0v0_1_0_1.dtim_period=2
+set wireless.up0v0_1_0_1.strict_forwarding=1
 
 
 
@@ -424,7 +392,7 @@ set wireless.up0v0_0_1_0.strict_forwarding=0
 
 
 
-set wireless.up0v0_0_1_0.multi_psk=0
+set wireless.up0v0_1_0_1.multi_psk=0
 
 
 
@@ -434,7 +402,7 @@ set wireless.up0v0_0_1_0.multi_psk=0
 
 
 add wireless wifi-vlan
-set wireless.@wifi-vlan[-1].iface=up0v0_0_1_0
+set wireless.@wifi-vlan[-1].iface=up0v0_1_0_1
 set wireless.@wifi-vlan[-1].name='v#'
 set wireless.@wifi-vlan[-1].vid='*'
 
@@ -604,135 +572,3 @@ set dhcp.down1v0.dhcpv6=disabled
 set dhcp.down1v0.ndp=disabled
 set dhcp.down1v0.prefix_filter=
 set dhcp.down1v0.dns_service=1
-
-# Wireless configuration
-
-set wireless.down1v0_0_0_0=wifi-iface
-set wireless.down1v0_0_0_0.ucentral_path='/interfaces/1/ssids/0'
-set wireless.down1v0_0_0_0.uci_section='down1v0_0_0_0'
-set wireless.down1v0_0_0_0.device=radio1
-
-set wireless.down1v0_0_0_0.network=down1v0
-set wireless.down1v0_0_0_0.ssid='OpenWifi'
-set wireless.down1v0_0_0_0.mode='ap'
-set wireless.down1v0_0_0_0.bssid=
-set wireless.down1v0_0_0_0.wds='0'
-set wireless.down1v0_0_0_0.wpa_disable_eapol_key_retries='0'
-set wireless.down1v0_0_0_0.vendor_elements='dd0448d01700'
-set wireless.down1v0_0_0_0.disassoc_low_ack='0'
-set wireless.down1v0_0_0_0.auth_cache='1'
-
-
-
-# Crypto settings
-set wireless.down1v0_0_0_0.ieee80211w=1
-set wireless.down1v0_0_0_0.sae_pwe=
-set wireless.down1v0_0_0_0.encryption=psk2
-set wireless.down1v0_0_0_0.key='OpenWifi'
-
-
-
-
-
-
-
-
-
-# AP specific setings
-set wireless.down1v0_0_0_0.proxy_arp=1
-set wireless.down1v0_0_0_0.hidden=0
-set wireless.down1v0_0_0_0.time_advertisement=0
-set wireless.down1v0_0_0_0.isolate=0
-set wireless.down1v0_0_0_0.bridge_isolate=0
-set wireless.down1v0_0_0_0.max_inactivity='300'
-set wireless.down1v0_0_0_0.uapsd=0
-set wireless.down1v0_0_0_0.rts_threshold=
-set wireless.down1v0_0_0_0.multicast_to_unicast=1
-set wireless.down1v0_0_0_0.maxassoc=
-set wireless.down1v0_0_0_0.dtim_period=2
-set wireless.down1v0_0_0_0.strict_forwarding=0
-
-
-
-
-
-
-
-set wireless.down1v0_0_0_0.multi_psk=0
-
-
-
-
-
-
-
-
-add wireless wifi-vlan
-set wireless.@wifi-vlan[-1].iface=down1v0_0_0_0
-set wireless.@wifi-vlan[-1].name='v#'
-set wireless.@wifi-vlan[-1].vid='*'
-
-set wireless.down1v0_0_1_0=wifi-iface
-set wireless.down1v0_0_1_0.ucentral_path='/interfaces/1/ssids/0'
-set wireless.down1v0_0_1_0.uci_section='down1v0_0_1_0'
-set wireless.down1v0_0_1_0.device=radio0
-
-set wireless.down1v0_0_1_0.network=down1v0
-set wireless.down1v0_0_1_0.ssid='OpenWifi'
-set wireless.down1v0_0_1_0.mode='ap'
-set wireless.down1v0_0_1_0.bssid=
-set wireless.down1v0_0_1_0.wds='0'
-set wireless.down1v0_0_1_0.wpa_disable_eapol_key_retries='0'
-set wireless.down1v0_0_1_0.vendor_elements='dd0448d01700'
-set wireless.down1v0_0_1_0.disassoc_low_ack='0'
-set wireless.down1v0_0_1_0.auth_cache='1'
-
-
-
-# Crypto settings
-set wireless.down1v0_0_1_0.ieee80211w=1
-set wireless.down1v0_0_1_0.sae_pwe=
-set wireless.down1v0_0_1_0.encryption=psk2
-set wireless.down1v0_0_1_0.key='OpenWifi'
-
-
-
-
-
-
-
-
-
-# AP specific setings
-set wireless.down1v0_0_1_0.proxy_arp=1
-set wireless.down1v0_0_1_0.hidden=0
-set wireless.down1v0_0_1_0.time_advertisement=0
-set wireless.down1v0_0_1_0.isolate=0
-set wireless.down1v0_0_1_0.bridge_isolate=0
-set wireless.down1v0_0_1_0.max_inactivity='300'
-set wireless.down1v0_0_1_0.uapsd=0
-set wireless.down1v0_0_1_0.rts_threshold=
-set wireless.down1v0_0_1_0.multicast_to_unicast=1
-set wireless.down1v0_0_1_0.maxassoc=
-set wireless.down1v0_0_1_0.dtim_period=2
-set wireless.down1v0_0_1_0.strict_forwarding=0
-
-
-
-
-
-
-
-set wireless.down1v0_0_1_0.multi_psk=0
-
-
-
-
-
-
-
-
-add wireless wifi-vlan
-set wireless.@wifi-vlan[-1].iface=down1v0_0_1_0
-set wireless.@wifi-vlan[-1].name='v#'
-set wireless.@wifi-vlan[-1].vid='*'
