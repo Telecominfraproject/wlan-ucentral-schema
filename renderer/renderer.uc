@@ -9,6 +9,7 @@ import { ipcalc } from 'libs.ipcalc';
 import { create_ethernet } from 'libs/ethernet.uc';
 import { create_wiphy } from 'libs/wiphy.uc';
 import { create_routing_table } from 'libs/routing_table.uc';
+import { create_captive } from 'libs/captive.uc';
 import { 
 	b, s, uci_cmd, uci_set_string, uci_set_boolean, uci_set_number, uci_set_raw,
 	uci_list_string, uci_list_number, uci_section, uci_named_section, 
@@ -453,42 +454,8 @@ let shell = {
 // Create routing table instance using shared library
 let routing_table = create_routing_table();
 
-/**
- * @class uCentral.captive
- * @classdesc
- *
- * The captive portal utility class allows assigning consecutive names to wifi-ifaces.
- */
-
-/** @lends uCentral.captive.prototype */
-
-let captive = {
-	interfaces: {},
-
-	next: 0,
-
-	/**
-	 * Allocate a route table index for the given ID
-	 *
-	 * @param {string} id  The ID to lookup or reserve
-	 * @returns {number} The table number allocated for the given ID
-	 */
-	get: function(name) {
-		let iface = this.next++;
-		push(this.interfaces[name].iface, iface);
-		return iface;
-	},
-
-	/**
-	 * Add an interface
-	 */
-	interface: function(name, config) {
-		this.interfaces[name] = {};
-		for (let k, v in config)
-			this.interfaces[name][k] = v;
-		this.interfaces[name].iface = [];
-	},
-};
+// Create captive instance using shared library
+let captive = create_captive();
 
 /**
  * @class uCentral.latency
