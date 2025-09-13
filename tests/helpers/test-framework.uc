@@ -232,7 +232,7 @@ export function IntegrationTestFramework(template_path, test_title, test_dir) {
                     expected_output = "";
                 }
 
-                let context = create_board_test_context(test_data, board_data, capabilities);
+                let context = create_board_test_context(test_data, board_data, capabilities, board_name);
 
                 for (let key, value in test_data.template_vars || {}) {
                     context[key] = value;
@@ -359,7 +359,7 @@ export function FullIntegrationTestFramework(test_title, test_dir) {
                 mock_toplevel(state);
 
                 // Create enhanced context for toplevel.uc
-                let context = create_full_test_context(state, board_data, capabilities);
+                let context = create_full_test_context(state, board_data, capabilities, board_name);
                 
                 // Render with toplevel.uc (full configuration)
                 let abs_path = fs.realpath("../renderer/templates/toplevel.uc");
