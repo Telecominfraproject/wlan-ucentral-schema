@@ -167,4 +167,4 @@ export function create_wiphy(cursor, warn) {
 			return phy.section + 'net' + phy.networks;
 		}
 	};
-}
+};

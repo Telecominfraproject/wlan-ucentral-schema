@@ -5,7 +5,11 @@
 import * as fs from 'fs';
 import { create_test_context, create_board_test_context, create_full_test_context } from './mock-renderer.uc';
 import { validate } from './schemareader.uc';
-import { mock_toplevel } from './test-utils.uc';
+import {
+	mock_toplevel, report_test_pass, report_test_fail, report_test_error,
+	create_diff_files, load_test_files, load_test_board_data,
+	process_test_output, format_test_suite_results
+} from './test-utils.uc';
 
 // Test framework class to consolidate common testing logic
 export function TestFramework(template_path, test_title, test_dir) {
@@ -21,22 +25,15 @@ export function TestFramework(template_path, test_title, test_dir) {
 
         run_test: function(test_name, input_file, expected_file) {
             printf("Running test: %s\n", test_name);
-            
+
             try {
-                // Load test data (paths relative to test directory)
-                let input_path = sprintf("%s/%s", this.test_dir, input_file);
-                let output_path = sprintf("%s/%s", this.test_dir, expected_file);
-                let raw_input = fs.readfile(input_path);
-                let test_data = json(raw_input);
-                let expected_output = fs.readfile(output_path);
-                
-                // Handle empty expected files
-                if (expected_output === null || expected_output === false) {
-                    expected_output = "";
-                }
-              
+                // Load test files using shared utility
+                let test_files = load_test_files(this.test_dir, input_file, expected_file);
+                let test_data = test_files.test_data;
+                let expected_output = test_files.expected_output;
+
                 // Initialize state like toplevel.uc does
-		mock_toplevel(test_data);
+                mock_toplevel(test_data);
 
                 // Create test context (mock events already included by default)
                 let context = create_test_context(test_data);
@@ -45,53 +42,21 @@ export function TestFramework(template_path, test_title, test_dir) {
                 for (let key, value in test_data.template_vars || {}) {
                     context[key] = value;
                 }
-                
-                // Clear any previous generated files
-                context.files.clear_generated_files();
-                
-                // Render template
-                let abs_path = fs.realpath ? fs.realpath(this.template_path) : this.template_path;
-                let output = render(abs_path, context);
-                
-                // Add generated files to output
-                let generated_files = context.files.get_generated_files();
-                for (let path, file_info in generated_files) {
-                    output += sprintf("\n-----%s-----\n%s\n--------\n", path, file_info.content);
-                }
-                
-                // Write debug output to /tmp/ucentral-test-output/
-                context.files.write_debug_output(this.test_dir + "/" + test_name, output);
-                
-                // Normalize whitespace for comparison
-                output = trim(output);
+
+                // Process test output using shared utility
+                let output = process_test_output(context, this.template_path, test_name, this.test_dir);
+
+                // Normalize expected output for comparison
                 expected_output = trim(expected_output);
-                
+
                 // Compare output
                 if (output == expected_output) {
-                    printf("✓ PASS: %s\n", test_name);
+                    report_test_pass(test_name);
                     this.test_results.passed++;
                 } else {
-                    printf("✗ FAIL: %s\n", test_name);
-                    // Create diff directory
-                    try { fs.mkdir("/tmp/ucentral-test-diff"); } catch (e) {}
-                    
-                    // Write expected and actual to temp files for diff
-                    let temp_expected = "/tmp/ucentral-test-diff/expected_" + test_name + ".uci";
-                    let temp_actual = "/tmp/ucentral-test-diff/actual_" + test_name + ".uci";
-                    let fd_exp = fs.open(temp_expected, "w");
-                    if (fd_exp) { fd_exp.write(expected_output); fd_exp.close(); }
-                    let fd_act = fs.open(temp_actual, "w");
-                    if (fd_act) { fd_act.write(output); fd_act.close(); }
-                    
-                    // Show diff
-                    let diff_cmd = sprintf("diff -u %s %s", temp_expected, temp_actual);
-                    let diff_output = fs.popen(diff_cmd);
-                    if (diff_output) {
-                        let diff_result = diff_output.read("all");
-                        diff_output.close();
-                        printf("Diff:\n%s\n", diff_result);
-                    }
-                    
+                    report_test_fail(test_name);
+                    create_diff_files(test_name, null, expected_output, output);
+
                     this.test_results.failed++;
                     push(this.test_results.errors, {
                         test: test_name,
@@ -100,52 +65,27 @@ export function TestFramework(template_path, test_title, test_dir) {
                     });
                 }
             } catch (e) {
-                printf("✗ ERROR: %s - %s\n", test_name, e);
-                if (e.stacktrace && e.stacktrace[0]?.context) {
-                    printf("  Error: %s\n", e.stacktrace[0].context);
-                }
+                report_test_error(test_name, null, e);
                 this.test_results.failed++;
                 push(this.test_results.errors, {
                     test: test_name,
                     error: e.message || e
                 });
             }
-            
+
             printf("\n");
         },
 
         run_tests: function(test_cases) {
             printf("=== %s ===\n\n", this.test_title);
-            
+
             // Run all test cases
             for (let test_case in test_cases) {
                 this.run_test(test_case.name, test_case.input, test_case.output);
             }
-            
-            // Print summary
-            printf("=== Test Results ===\n");
-            printf("Passed: %d\n", this.test_results.passed);
-            printf("Failed: %d\n", this.test_results.failed);
-            
-            if (this.test_results.failed > 0) {
-                printf("\nFailures:\n");
-                for (let error in this.test_results.errors) {
-                    printf("- %s\n", error.test);
-                    if (error.error) {
-                        printf("  Error: %s\n", error.error);
-                    }
-                }
-            } else {
-                printf("All %s tests passed!\n", this.test_title);
-            }
-            
-            // Return results for aggregation
-            return {
-                passed: this.test_results.passed,
-                failed: this.test_results.failed,
-                errors: this.test_results.errors,
-                suite_name: this.test_title
-            };
+
+            // Format and return results using shared utility
+            return format_test_suite_results(this.test_results, this.test_title);
         }
     };
 };
@@ -200,105 +140,58 @@ export function IntegrationTestFramework(template_path, test_title, test_dir) {
             printf("Running test: %s (board: %s)\n", test_name, board_name);
 
             try {
-                let input_path = sprintf("%s/%s", this.test_dir, input_file);
-                let test_data = json(fs.readfile(input_path));
+                // Load test files and board data using shared utilities
+                let test_files = load_test_files(this.test_dir, input_file, expected_file, board_name);
+                let test_data = test_files.test_data;
+                let expected_output = test_files.expected_output;
+                let board_info = load_test_board_data(board_name);
+                let board_data = board_info.board_data;
+                let capabilities = board_info.capabilities;
 
-                let board_dir = sprintf("boards/%s", board_name);
-                let board_data = json(fs.readfile(sprintf("%s/board.json", board_dir)));
-                let capabilities = json(fs.readfile(sprintf("%s/capabilities.json", board_dir)));
-
-                let output_path = sprintf("%s/output/%s/%s", this.test_dir, board_name, expected_file);
-                let expected_output = fs.readfile(output_path);
-
-                if (expected_output === null || expected_output === false) {
-                    expected_output = "";
-                }
-
+                // Create board test context
                 let context = create_board_test_context(test_data, board_data, capabilities, board_name);
 
+                // Add template vars to context
                 for (let key, value in test_data.template_vars || {}) {
                     context[key] = value;
                 }
-                
-                context.files.clear_generated_files();
-                
-                let abs_path = fs.realpath ? fs.realpath(this.template_path) : this.template_path;
-                let output = render(abs_path, context);
-                
-                let generated_files = context.files.get_generated_files();
-                for (let path, file_info in generated_files) {
-                    output += sprintf("\n-----%s-----\n%s\n--------\n", path, file_info.content);
-                }
-                
-                // Write debug output to /tmp/ucentral-test-output/
-                context.files.write_debug_output(test_name + "-" + board_name, output);
-                
-                output = trim(output);
+
+                // Process test output using shared utility
+                let output = process_test_output(context, this.template_path, test_name, this.test_dir, board_name);
+
+                // Normalize expected output for comparison
                 expected_output = trim(expected_output);
-                
+
+                // Compare output
                 if (output == expected_output) {
-                    printf("✓ PASS: %s (%s)\n", test_name, board_name);
+                    report_test_pass(test_name, board_name);
                     this.test_results.passed++;
                 } else {
-                    printf("✗ FAIL: %s (%s)\n", test_name, board_name);
-                    // Create diff directory
-                    try { fs.mkdir("/tmp/ucentral-test-diff"); } catch (e) {}
-                    
-                    // Write expected and actual to temp files for diff
-                    let temp_expected = "/tmp/ucentral-test-diff/expected_" + test_name + "-" + board_name + ".uci";
-                    let temp_actual = "/tmp/ucentral-test-diff/actual_" + test_name + "-" + board_name + ".uci";
-                    let fd_exp = fs.open(temp_expected, "w");
-                    if (fd_exp) { fd_exp.write(expected_output); fd_exp.close(); }
-                    let fd_act = fs.open(temp_actual, "w");
-                    if (fd_act) { fd_act.write(output); fd_act.close(); }
-                    
-                    // Show diff
-                    let diff_cmd = sprintf("diff -u %s %s", temp_expected, temp_actual);
-                    let diff_output = fs.popen(diff_cmd);
-                    if (diff_output) {
-                        let diff_result = diff_output.read("all");
-                        diff_output.close();
-                        printf("Diff:\n%s\n", diff_result);
-                    }
-                    
+                    report_test_fail(test_name, board_name);
+                    create_diff_files(test_name, board_name, expected_output, output);
                     this.test_results.failed++;
                 }
             } catch (e) {
-                printf("✗ ERROR: %s (%s) - %s\n", test_name, board_name, e);
-                if (e.stacktrace && e.stacktrace[0]?.context) {
-                    printf("  Error: %s\n", e.stacktrace[0].context);
-                }
+                report_test_error(test_name, board_name, e);
                 this.test_results.failed++;
             }
-            
+
             printf("\n");
         },
         
         run_tests: function(test_cases, boards) {
             printf("=== %s ===\n\n", this.test_title);
-            
+
             this.test_results = { passed: 0, failed: 0, errors: [] };
-            
+
             for (let test_case in test_cases) {
                 for (let board in boards) {
                     this.run_board_test(test_case.name, test_case.input, board, test_case.output);
                 }
             }
-            
-            printf("=== Test Results ===\n");
-            printf("Passed: %d\n", this.test_results.passed);
-            printf("Failed: %d\n", this.test_results.failed);
-            
-            if (this.test_results.failed == 0) {
-                printf("All %s tests passed!\n", this.test_title);
-            }
-            
-            return {
-                passed: this.test_results.passed,
-                failed: this.test_results.failed,
-                errors: this.test_results.errors,
-                suite_name: this.test_title
-            };
+
+            // Format and return results using shared utility
+            return format_test_suite_results(this.test_results, this.test_title);
         }
     };
 };
@@ -314,13 +207,9 @@ export function FullIntegrationTestFramework(test_title, test_dir) {
             printf("Running full test: %s (board: %s)\n", test_name, board_name);
 
             try {
-                // Load expected output for comparison
-                let output_path = sprintf("%s/output/%s/%s", this.test_dir, board_name, expected_file);
-                let expected_output = fs.readfile(output_path);
-
-                if (expected_output === null || expected_output === false) {
-                    expected_output = "";
-                }
+                // Load expected output using shared utility (simpler path handling)
+                let test_files = load_test_files(this.test_dir, input_file, expected_file, board_name);
+                let expected_output = test_files.expected_output;
 
                 // Use separate process to avoid file descriptor leaks
                 // Combine stdout and stderr to see all output including errors
@@ -329,7 +218,7 @@ export function FullIntegrationTestFramework(test_title, test_dir) {
 
                 let proc = fs.popen(cmd);
                 if (!proc) {
-                    printf("✗ ERROR: %s (%s) - Failed to start test process\n", test_name, board_name);
+                    report_test_error(test_name, board_name, "Failed to start test process");
                     this.test_results.failed++;
                     return;
                 }
@@ -338,36 +227,28 @@ export function FullIntegrationTestFramework(test_title, test_dir) {
                 let exit_code = proc.close();
 
                 if (exit_code !== 0) {
-                    printf("✗ ERROR: %s (%s) - Process failed with code %d\n", test_name, board_name, exit_code);
+                    let error_msg = sprintf("Process failed with code %d", exit_code);
+                    report_test_error(test_name, board_name, error_msg);
                     printf("Process output:\n%s\n", actual_output);
                     this.test_results.failed++;
                     return;
                 }
 
-                // Compare output
+                // Compare output using normalized comparison
                 actual_output = trim(actual_output);
                 expected_output = trim(expected_output);
 
                 if (actual_output == expected_output) {
-                    printf("✓ PASS: %s (%s)\n", test_name, board_name);
+                    report_test_pass(test_name, board_name);
                     this.test_results.passed++;
                 } else {
-                    printf("✗ FAIL: %s (%s)\n", test_name, board_name);
-                    // Create diff files
-                    try { fs.mkdir("/tmp/ucentral-test-diff"); } catch (e) {}
-
-                    let temp_expected = "/tmp/ucentral-test-diff/expected_" + test_name + "-" + board_name + ".uci";
-                    let temp_actual = "/tmp/ucentral-test-diff/actual_" + test_name + "-" + board_name + ".uci";
-                    let fd_exp = fs.open(temp_expected, "w");
-                    if (fd_exp) { fd_exp.write(expected_output); fd_exp.close(); }
-                    let fd_act = fs.open(temp_actual, "w");
-                    if (fd_act) { fd_act.write(actual_output); fd_act.close(); }
-
+                    report_test_fail(test_name, board_name);
+                    create_diff_files(test_name, board_name, expected_output, actual_output);
                     this.test_results.failed++;
                 }
 
             } catch (e) {
-                printf("✗ ERROR: %s (%s) - %s\n", test_name, board_name, e);
+                report_test_error(test_name, board_name, e);
                 this.test_results.failed++;
             }
 
@@ -377,7 +258,6 @@ export function FullIntegrationTestFramework(test_title, test_dir) {
         run_tests: function(test_cases, boards) {
             printf("=== %s ===\n\n", this.test_title);
 
-
             this.test_results = { passed: 0, failed: 0, errors: [] };
 
             for (let test_case in test_cases) {
@@ -385,21 +265,9 @@ export function FullIntegrationTestFramework(test_title, test_dir) {
                     this.run_full_test(test_case.name, test_case.input, board, test_case.output);
                 }
             }
-            
-            printf("=== Test Results ===\n");
-            printf("Passed: %d\n", this.test_results.passed);
-            printf("Failed: %d\n", this.test_results.failed);
-            
-            if (this.test_results.failed == 0) {
-                printf("All %s tests passed!\n", this.test_title);
-            }
-            
-            return {
-                passed: this.test_results.passed,
-                failed: this.test_results.failed,
-                errors: this.test_results.errors,
-                suite_name: this.test_title
-            };
+
+            // Format and return results using shared utility
+            return format_test_suite_results(this.test_results, this.test_title);
         }
     };
 };
