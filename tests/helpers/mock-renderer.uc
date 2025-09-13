@@ -251,11 +251,54 @@ let mock_services = {
 		return interfaces;
 	},
 	lookup_services: function() {
-		return ["log", "ssh", "ntp", "lldp", "ieee8021x"]; // Common services
+		// Dynamic service discovery like the real renderer
+		let rv = [];
+		let fs_real = require("fs");
+
+		for (let incfile in fs_real.glob("../renderer/templates/services/*.uc")) {
+			let m = match(incfile, /^.+\/([^\/]+)\.uc$/);
+			if (m)
+				push(rv, m[1]);
+		}
+
+		return rv;
 	},
 	lookup_metrics: function() {
-		// Mock implementation - return common metrics found in tests
-		return ["health", "statistics", "telemetry", "realtime", "wifi_frames", "wifi_scan", "dhcp_snooping"];
+		// Dynamic metrics discovery like the real renderer
+		let rv = [];
+		let fs_real = require("fs");
+
+		for (let incfile in fs_real.glob("../renderer/templates/metric/*.uc")) {
+			let m = match(incfile, /^.+\/([^\/]+)\.uc$/);
+			if (m)
+				push(rv, m[1]);
+		}
+
+		return rv;
+	},
+	lookup_ssids_by_mpsk: function() {
+		// Check for SSIDs with MPSK configuration (like the real implementation)
+		let mpsk = false;
+
+		if (this._test_state && this._test_state.interfaces) {
+			for (let interface in this._test_state.interfaces) {
+				if (!interface.ssids)
+					continue;
+				for (let ssid in interface.ssids) {
+					if (!ssid?.enhanced_mpsk)
+						continue;
+					if ((ssid?.encryption?.proto && type(ssid.encryption.proto) == 'string' &&
+					    ssid.encryption.proto == "mpsk-radius") ||
+					    (type(ssid.multi_psk) == 'bool' && ssid.multi_psk))
+						mpsk = true;
+					else if (!length(ssid.multi_psk))
+						continue;
+					mpsk = true;
+				}
+			}
+		}
+
+		return mpsk;
 	},
 	_test_state: null // Will be set by test context
 };
@@ -556,8 +599,8 @@ function create_board_test_context(test_data, board_data, capabilities, board_na
 
 // Create full test context for toplevel.uc rendering
 function create_full_test_context(state, board_data, capabilities, board_name) {
-	let context = create_board_test_context({}, board_data, capabilities, board_name);
-	
+	let context = create_board_test_context(state, board_data, capabilities, board_name);
+
 	// Add the validated state and all globals that renderer.uc passes to toplevel.uc
 	context.state = state;
 	context.location = '/';
