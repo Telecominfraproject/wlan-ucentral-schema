@@ -1,3 +1,4 @@
+# WPA2 Enterprise with external Radius server, 802.11r (Fast Transition) and 802.llk (Neighbour Report)
 {
 	"uuid": 2,
 	"radios": [

@@ -1,0 +1,148 @@
+{
+	"interfaces": [
+		{
+			"bridge": {
+				"mtu": 1500
+			},
+			"ethernet": [
+				{
+					"select-ports": [
+						"LAN*"
+					]
+				}
+			],
+			"ipv4": {
+				"addressing": "static",
+				"dhcp": {
+					"lease-count": 100,
+					"lease-first": 10,
+					"lease-time": "6h",
+					"use-dns": "8.8.8.8"
+				},
+				"send-hostname": true,
+				"subnet": "192.168.1.1/24"
+			},
+			"name": "LAN",
+			"role": "downstream",
+			"services": [
+				"ssh",
+				"lldp"
+			],
+			"ssids": [
+				{
+					"bss-mode": "ap",
+					"encryption": {
+						"ieee80211w": "optional",
+						"key": "00000000",
+						"proto": "psk2"
+					},
+					"name": "5A-Ian-eap112-route",
+					"wifi-bands": [
+						"5G"
+					]
+				}
+			]
+		},
+		{
+			"broad-band": {
+				"access-point-name": "internet",
+				"authentication-type": "none",
+				"modem-type": "wwan",
+				"packet-data-protocol": "dual-stack",
+				"password": "",
+				"pin-code": "",
+				"protocol": "wwan",
+				"user-name": ""
+			},
+			"ethernet": [
+				{
+					"select-ports": [
+						"WAN*"
+					]
+				}
+			],
+			"ipv4": {
+				"addressing": "dynamic"
+			},
+			"name": "WAN",
+			"role": "upstream",
+			"services": [
+				"ssh",
+				"lldp"
+			]
+		}
+	],
+	"metrics": {
+		"dhcp-snooping": {
+			"filters": [
+				"ack",
+				"discover",
+				"offer",
+				"request",
+				"solicit",
+				"reply",
+				"renew"
+			]
+		},
+		"health": {
+			"interval": 60
+		},
+		"statistics": {
+			"interval": 150,
+			"types": [
+				"ssids",
+				"lldp",
+				"clients"
+			]
+		},
+		"wifi-frames": {
+			"filtes": [
+				"probe",
+				"auth",
+				"assoc",
+				"disassoc",
+				"deauth",
+				"local-deauth",
+				"inactive-deauth",
+				"key-mismatch",
+				"beacon-report",
+				"radar-detected"
+			]
+		}
+	},
+	"radios": [
+		{
+			"band": "5G",
+			"channel": "auto",
+			"channel-mode": "VHT",
+			"channel-width": 80,
+			"country": "US",
+			"tx-power": 20
+		},
+		{
+			"band": "2G",
+			"channel": "auto",
+			"channel-mode": "HT",
+			"channel-width": 20,
+			"country": "US",
+			"tx-power": 20
+		}
+	],
+	"services": {
+		"http-port": {
+			"port": 80
+		},
+		"lldp": {
+			"describe": "ecCLOUD-OpenWiFi",
+			"location": "universe"
+		},
+		"ssh": {
+			"password-authentication": true,
+			"port": 22
+		}
+	},
+	"unit": {
+		"leds-active": true
+	},
+	"uuid": 1731919490
+}
