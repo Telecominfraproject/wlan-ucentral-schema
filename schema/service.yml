@@ -9,8 +9,6 @@ properties:
     $ref: "https://ucentral.io/schema/v1/service/ssh/"
   ntp:
     $ref: "https://ucentral.io/schema/v1/service/ntp/"
-  mdns:
-    $ref: "https://ucentral.io/schema/v1/service/mdns/"
   log:
     $ref: "https://ucentral.io/schema/v1/service/log/"
   igmp:

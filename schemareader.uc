@@ -7013,33 +7013,6 @@ function instantiateServiceNtp(location, value, errors) {
 	return value;
 }
 
-function instantiateServiceMdns(location, value, errors) {
-	if (type(value) == "object") {
-		let obj = {};
-
-		function parseEnable(location, value, errors) {
-			if (type(value) != "bool")
-				push(errors, [ location, "must be of type boolean" ]);
-
-			return value;
-		}
-
-		if (exists(value, "enable")) {
-			obj.enable = parseEnable(location + "/enable", value["enable"], errors);
-		}
-		else {
-			obj.enable = false;
-		}
-
-		return obj;
-	}
-
-	if (type(value) != "object")
-		push(errors, [ location, "must be of type object" ]);
-
-	return value;
-}
-
 function instantiateServiceLog(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
@@ -10365,10 +10338,6 @@ function instantiateService(location, value, errors) {
 
 		if (exists(value, "ntp")) {
 			obj.ntp = instantiateServiceNtp(location + "/ntp", value["ntp"], errors);
-		}
-
-		if (exists(value, "mdns")) {
-			obj.mdns = instantiateServiceMdns(location + "/mdns", value["mdns"], errors);
 		}
 
 		if (exists(value, "log")) {
