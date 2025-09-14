@@ -332,13 +332,18 @@ export function format_test_suite_results(test_results, suite_name) {
 	printf("Failed: %d\n", test_results.failed);
 
 	if (test_results.failed > 0) {
-		printf("\nFailures:\n");
+		printf("\nFailed tests:\n");
 		for (let error in test_results.errors) {
-			printf("- %s\n", error.test);
+			if (error.board) {
+				printf("- %s (%s)\n", error.test, error.board);
+			} else {
+				printf("- %s\n", error.test);
+			}
 			if (error.error) {
 				printf("  Error: %s\n", error.error);
 			}
 		}
+		printf("\n");
 	} else {
 		printf("All %s tests passed!\n", suite_name);
 	}
