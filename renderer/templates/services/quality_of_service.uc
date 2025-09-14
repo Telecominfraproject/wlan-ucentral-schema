@@ -78,7 +78,7 @@ function generate_qosify_rules() {
 	if (!has_qos_enabled())
 		return;
 	
-	let file = fs.open("/tmp/qosify.conf", "w");
+	let inputfile = fs.open('/usr/share/ucentral/qos.json', "r");
 	
 	// Generate classifier rules
 	if (has_classifier_rules()) {
@@ -92,7 +92,7 @@ function generate_qosify_rules() {
 							port_spec += sprintf("-%d", port.range_end);
 						
 						let reclassify_prefix = port.reclassify ? "" : "+";
-						file.write(sprintf("%s:%s %s%s\n", proto, port_spec, reclassify_prefix, class.dscp));
+						inputfile.write(sprintf("%s:%s %s%s\n", proto, port_spec, reclassify_prefix, class.dscp));
 					}
 				}
 			}
@@ -102,7 +102,7 @@ function generate_qosify_rules() {
 				for (let fqdn in class.dns) {
 					let domain = fqdn.suffix_matching ? sprintf("*.%s", fqdn.fqdn) : fqdn.fqdn;
 					let reclassify_prefix = fqdn.reclassify ? "" : "+";
-					file.write(sprintf("dns:%s %s%s\n", domain, reclassify_prefix, class.dscp));
+					inputfile.write(sprintf("dns:%s %s%s\n", domain, reclassify_prefix, class.dscp));
 				}
 			}
 		}
@@ -114,7 +114,7 @@ function generate_qosify_rules() {
 		// Will be implemented during services functionality enhancement
 	}
 	
-	file.close();
+	inputfile.close();
 }
 
 // Main logic
