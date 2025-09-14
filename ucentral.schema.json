@@ -2653,17 +2653,6 @@
                 }
             }
         },
-        "service.http": {
-            "type": "object",
-            "properties": {
-                "http-port": {
-                    "type": "integer",
-                    "maximum": 65535,
-                    "minimum": 1,
-                    "default": 80
-                }
-            }
-        },
         "service.igmp": {
             "type": "object",
             "properties": {
@@ -3824,9 +3813,6 @@
                 },
                 "log": {
                     "$ref": "#/$defs/service.log"
-                },
-                "http": {
-                    "$ref": "#/$defs/service.http"
                 },
                 "igmp": {
                     "$ref": "#/$defs/service.igmp"

@@ -77,9 +77,6 @@
 		}
 	],
 	"services": {
-		"http": {
-			"http-port": 80
-		},
 		"ssh": {
 			"port": 22
 		}

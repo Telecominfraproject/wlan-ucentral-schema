@@ -205,19 +205,12 @@
 			"describe": "uCentral",
 			"location": "universe"
 		},
-		"http": {
-			"http-port": 80
-		},
 		"ntp": {
 			"servers": [
 				"0.openwrt.pool.ntp.org",
 				"1.openwrt.pool.ntp.org"
 			],
 			"local-server": true
-		},
-		"rtty": {
-			"host": "websocket.usync.org",
-			"token": "7049cb6b7949ba06c6b356d76f0f6275"
 		},
 		"ssh": {
 			"port": 22
