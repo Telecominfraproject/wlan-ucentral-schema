@@ -3194,20 +3194,6 @@
                 }
             }
         },
-        "service.facebook-wifi": {
-            "type": "object",
-            "properties": {
-                "vendor-id": {
-                    "type": "string"
-                },
-                "gateway-id": {
-                    "type": "string"
-                },
-                "secret": {
-                    "type": "string"
-                }
-            }
-        },
         "service.airtime-fairness": {
             "type": "object",
             "properties": {
@@ -3894,9 +3880,6 @@
                 },
                 "quality-of-service": {
                     "$ref": "#/$defs/service.quality-of-service"
-                },
-                "facebook-wifi": {
-                    "$ref": "#/$defs/service.facebook-wifi"
                 },
                 "airtime-fairness": {
                     "$ref": "#/$defs/service.airtime-fairness"

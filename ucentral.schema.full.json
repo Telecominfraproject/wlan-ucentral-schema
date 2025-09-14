@@ -3939,24 +3939,6 @@
                         }
                     }
                 },
-                "facebook-wifi": {
-                    "description": "This section describes the FaceBook Wifi behaviour of the unit.",
-                    "type": "object",
-                    "properties": {
-                        "vendor-id": {
-                            "description": "The Vendors ID.",
-                            "type": "string"
-                        },
-                        "gateway-id": {
-                            "description": "The Gateways ID.",
-                            "type": "string"
-                        },
-                        "secret": {
-                            "description": "The Device specific secret",
-                            "type": "string"
-                        }
-                    }
-                },
                 "airtime-fairness": {
                     "description": "This section configures Airtime Fairness (ATF) to manage bandwidth allocation\nbetween wireless clients. ATF dynamically adjusts client weights based on traffic\npatterns to ensure fair wireless resource distribution and optimize performance.\n",
                     "type": "object",
