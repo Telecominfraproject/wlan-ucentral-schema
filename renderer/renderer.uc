@@ -448,6 +448,13 @@ let shell = {
 	system_password: function(passwd) {
 		system("(echo " + passwd + "; sleep 1; echo " + passwd + ") | passwd root");
 		conn.call("ucentral", "password", { passwd });
+	},
+
+	/**
+	 * Execute system command
+	 */
+	system: function(command) {
+		return system(command);
 	}
 };
 
