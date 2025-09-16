@@ -1,9 +1,9 @@
 description:
-  Define the interfaces on which the dhcp shall be relayed.
+  This section can be used to setup NAT logging on the AP.
 type: object
 properties:
   enabled:
     description:
-      Whether the NAT logging is enabled.
+      This option defines if NAT logging shall be enabled.
     type: boolean
     default: false
