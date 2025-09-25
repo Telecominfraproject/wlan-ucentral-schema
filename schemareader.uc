@@ -5292,7 +5292,7 @@ function instantiateServiceCaptiveUam(location, value, errors) {
 			obj.mac_auth = parseMacAuth(location + "/mac-auth", value["mac-auth"], errors);
 		}
 		else {
-			obj.mac_auth = "default";
+			obj.mac_auth = false;
 		}
 
 		function parseRadiusGwProxy(location, value, errors) {

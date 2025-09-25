@@ -1968,7 +1968,7 @@
                 },
                 "mac-auth": {
                     "type": "boolean",
-                    "default": "default"
+                    "default": false
                 },
                 "radius-gw-proxy": {
                     "type": "boolean",
