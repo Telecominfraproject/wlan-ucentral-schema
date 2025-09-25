@@ -2248,7 +2248,7 @@
                 "mac-auth": {
                     "description": "Try to authenticate new clients using macauth.",
                     "type": "boolean",
-                    "default": "default"
+                    "default": false
                 },
                 "radius-gw-proxy": {
                     "description": "Tunnel all radius traffic via the radius-gw-proxy.",
