@@ -1,5 +1,5 @@
 {% let ifaces = services.lookup_interfaces_by_ssids("dhcp-inject") %}
-{% if (!length(ifaces)) { return } %}
+{% if (!length(ifaces)) return %}
 {% let upstreams = [] %}
 {% for (let iface in ifaces): %}
 {%    if (iface.role == "upstream") { push(upstreams, iface) } %}
