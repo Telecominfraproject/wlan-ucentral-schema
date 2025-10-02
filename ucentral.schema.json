@@ -2972,49 +2972,6 @@
                 }
             }
         },
-        "service.wifi-steering": {
-            "type": "object",
-            "properties": {
-                "mode": {
-                    "type": "string",
-                    "enum": [
-                        "local",
-                        "none"
-                    ],
-                    "examples": [
-                        "local"
-                    ]
-                },
-                "assoc-steering": {
-                    "type": "boolean",
-                    "default": false
-                },
-                "required-snr": {
-                    "type": "integer",
-                    "default": 0
-                },
-                "required-probe-snr": {
-                    "type": "integer",
-                    "default": 0
-                },
-                "required-roam-snr": {
-                    "type": "integer",
-                    "default": 0
-                },
-                "load-kick-threshold": {
-                    "type": "integer",
-                    "default": 0
-                },
-                "auto-channel": {
-                    "type": "boolean",
-                    "default": false
-                },
-                "ipv6": {
-                    "type": "boolean",
-                    "default": false
-                }
-            }
-        },
         "service.quality-of-service.class-selector": {
             "type": "string",
             "enum": [
@@ -3717,9 +3674,6 @@
                 },
                 "data-plane": {
                     "$ref": "#/$defs/service.data-plane"
-                },
-                "wifi-steering": {
-                    "$ref": "#/$defs/service.wifi-steering"
                 },
                 "quality-of-service": {
                     "$ref": "#/$defs/service.quality-of-service"
