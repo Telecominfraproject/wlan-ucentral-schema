@@ -181,6 +181,10 @@
                             "type": "number"
                         }
                     },
+                    "chanUtil": {
+                        "description": "The channel utilization percentage.",
+                        "type": "number"
+                    },
                     "channel_width": {
                         "type": "number",
                         "description": "The channel width currently being used.",
