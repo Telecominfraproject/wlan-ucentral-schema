@@ -446,12 +446,6 @@ function create_test_context(overrides) {
 	// Create base context objects using shared utility
 	let base_objects = create_base_context_objects(board, capabilities, create_mock_cursor, mock_fs);
 
-	// Update global mock variables (needed for backwards compatibility)
-	mock_ethernet = base_objects.ethernet;
-	mock_wiphy = base_objects.wiphy;
-	mock_routing_table = base_objects.routing_table;
-	mock_captive = base_objects.captive;
-
 	// Reset mock files state for clean test runs
 	mock_files.clear_generated_files();
 
@@ -490,12 +484,6 @@ function create_board_test_context(test_data, board_data, capabilities, board_na
 	// Create board-specific context objects using shared utility
 	let base_objects = create_base_context_objects(board_name, capabilities, create_mock_cursor, mock_fs);
 
-	// Update global mock variables (needed for backwards compatibility)
-	mock_ethernet = base_objects.ethernet;
-	mock_wiphy = base_objects.wiphy;
-	mock_routing_table = base_objects.routing_table;
-	mock_captive = base_objects.captive;
-
 	// Reset mock files state for clean test runs
 	mock_files.clear_generated_files();
 
@@ -522,12 +510,6 @@ function create_integration_test_context(board_data, capabilities, board_name) {
 
 	// Create board-specific context objects using shared utility
 	let base_objects = create_base_context_objects(board_name, capabilities, create_mock_cursor, mock_fs);
-
-	// Update global mock variables (needed for backwards compatibility)
-	mock_ethernet = base_objects.ethernet;
-	mock_wiphy = base_objects.wiphy;
-	mock_routing_table = base_objects.routing_table;
-	mock_captive = base_objects.captive;
 
 	// Reset mock files state for clean test runs
 	mock_files.clear_generated_files();
