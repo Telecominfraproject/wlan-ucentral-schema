@@ -1,159 +1,250 @@
 
-add firewall zone
-set firewall.@zone[-1].name={{ s(name) }}
-{% if (interface.role == 'upstream'): %}
-set firewall.@zone[-1].input='REJECT'
-set firewall.@zone[-1].output='ACCEPT'
-set firewall.@zone[-1].forward='REJECT'
-set firewall.@zone[-1].masq=1
-set firewall.@zone[-1].mtu_fix=1
-{% else %}
-set firewall.@zone[-1].input='REJECT'
-set firewall.@zone[-1].output='ACCEPT'
-set firewall.@zone[-1].forward='ACCEPT'
-
-add firewall forwarding
-set firewall.@forwarding[-1].src={{ s(name) }}
-set firewall.@forwarding[-1].dest='{{ s(dest || ethernet.find_interface("upstream", interface.vlan.id)) }}'
-{% endif %}
-{% for (let network in networks || ethernet.calculate_names(interface)): %}
-add_list firewall.@zone[-1].network={{ s(network) }}
-{% endfor %}
-
-add firewall rule
-set firewall.@rule[-1].name='Allow-Ping'
-set firewall.@rule[-1].src={{ s(name) }}
-set firewall.@rule[-1].proto='icmp'
-set firewall.@rule[-1].icmp_type='echo-request'
-set firewall.@rule[-1].family='ipv4'
-set firewall.@rule[-1].target='ACCEPT'
-
-add firewall rule
-set firewall.@rule[-1].name='Allow-IGMP'
-set firewall.@rule[-1].src={{ s(name) }}
-set firewall.@rule[-1].proto='igmp'
-set firewall.@rule[-1].family='ipv4'
-set firewall.@rule[-1].target='ACCEPT'
-
-
-{% if (ipv4_mode || !ipv6_mode): %}
-add firewall rule
-set firewall.@rule[-1].name='Support-UDP-Traceroute'
-set firewall.@rule[-1].src={{ s(name) }}
-set firewall.@rule[-1].dest_port='33434:33689'
-set firewall.@rule[-1].proto='udp'
-set firewall.@rule[-1].family='ipv4'
-set firewall.@rule[-1].target='REJECT'
-set firewall.@rule[-1].enabled='false'
-
-add firewall rule
-set firewall.@rule[-1].name='Allow-DHCP-Renew'
-set firewall.@rule[-1].src={{ s(name) }}
-set firewall.@rule[-1].proto='udp'
-set firewall.@rule[-1].dest_port='68'
-set firewall.@rule[-1].target='ACCEPT'
-set firewall.@rule[-1].family='ipv4'
-{% endif %}
-
-{%   if (ipv6_mode || !ipv4_mode): %}
-add firewall rule
-set firewall.@rule[-1].name='Allow-DHCPv6'
-set firewall.@rule[-1].src={{ s(name) }}
-set firewall.@rule[-1].proto='udp'
-set firewall.@rule[-1].src_ip='fc00::/6'
-set firewall.@rule[-1].dest_ip='fc00::/6'
-set firewall.@rule[-1].dest_port='546'
-set firewall.@rule[-1].family='ipv6'
-set firewall.@rule[-1].target='ACCEPT'
-
-add firewall rule
-set firewall.@rule[-1].name='Allow-MLD'
-set firewall.@rule[-1].src={{ s(name) }}
-set firewall.@rule[-1].proto='icmp'
-set firewall.@rule[-1].src_ip='fe80::/10'
-set firewall.@rule[-1].icmp_type='130/0'
-set firewall.@rule[-1].icmp_type='131/0'
-set firewall.@rule[-1].icmp_type='132/0'
-set firewall.@rule[-1].icmp_type='143/0'
-set firewall.@rule[-1].family='ipv6'
-set firewall.@rule[-1].target='ACCEPT'
-
-add firewall rule
-set firewall.@rule[-1].name='Allow-ICMPv6-Input'
-set firewall.@rule[-1].src={{ s(name) }}
-set firewall.@rule[-1].proto='icmp'
-add_list firewall.@rule[-1].icmp_type='echo-request'
-add_list firewall.@rule[-1].icmp_type='echo-reply'
-add_list firewall.@rule[-1].icmp_type='destination-unreachable'
-add_list firewall.@rule[-1].icmp_type='packet-too-big'
-add_list firewall.@rule[-1].icmp_type='time-exceeded'
-add_list firewall.@rule[-1].icmp_type='bad-header'
-add_list firewall.@rule[-1].icmp_type='unknown-header-type'
-add_list firewall.@rule[-1].icmp_type='router-solicitation'
-add_list firewall.@rule[-1].icmp_type='neighbour-solicitation'
-add_list firewall.@rule[-1].icmp_type='router-advertisement'
-add_list firewall.@rule[-1].icmp_type='neighbour-advertisement'
-set firewall.@rule[-1].limit='1000/sec'
-set firewall.@rule[-1].family='ipv6'
-set firewall.@rule[-1].target='ACCEPT'
-
-add firewall rule
-set firewall.@rule[-1].name='Allow-ICMPv6-Forward'
-set firewall.@rule[-1].src={{ s(name) }}
-set firewall.@rule[-1].dest='*'
-set firewall.@rule[-1].proto='icmp'
-add_list firewall.@rule[-1].icmp_type='echo-request'
-add_list firewall.@rule[-1].icmp_type='echo-reply'
-add_list firewall.@rule[-1].icmp_type='destination-unreachable'
-add_list firewall.@rule[-1].icmp_type='packet-too-big'
-add_list firewall.@rule[-1].icmp_type='time-exceeded'
-add_list firewall.@rule[-1].icmp_type='bad-header'
-add_list firewall.@rule[-1].icmp_type='unknown-header-type'
-set firewall.@rule[-1].limit='1000/sec'
-set firewall.@rule[-1].family='ipv6'
-set firewall.@rule[-1].target='ACCEPT'
-{% endif %}
-
-{% if (interface.role == "downstream"): %}
-add firewall rule
-set firewall.@rule[-1].name='Allow-DNS-{{ name }}'
-set firewall.@rule[-1].src={{ s(name) }}
-set firewall.@rule[-1].dest_port='53'
-add_list firewall.@rule[-1].proto='tcp'
-add_list firewall.@rule[-1].proto='udp'
-set firewall.@rule[-1].target='ACCEPT'
-
-add firewall rule
-set firewall.@rule[-1].name='Allow-DHCP-{{ name }}'
-set firewall.@rule[-1].src={{ s(name) }}
-set firewall.@rule[-1].dest_port=67
-set firewall.@rule[-1].family='ipv4'
-set firewall.@rule[-1].proto='udp'
-set firewall.@rule[-1].target='ACCEPT'
-
-add firewall rule
-set firewall.@rule[-1].name='Allow-DHCPv6-{{ name }}'
-set firewall.@rule[-1].src={{ s(name) }}
-set firewall.@rule[-1].dest_port=547
-set firewall.@rule[-1].family='ipv6'
-set firewall.@rule[-1].proto='udp'
-set firewall.@rule[-1].target='ACCEPT'
-{% endif %}
-
-{% if (interface.role == 'downstream' && interface?.ipv4?.disallow_upstream_subnet):
-      for (let subnet in interface.ipv4.disallow_upstream_subnet):
-%}
-add firewall rule
-set firewall.@rule[-1].name='Reject-{{ subnet }}-subnet-{{name}}'
-set firewall.@rule[-1].src={{ s(name) }}
-set firewall.@rule[-1].dest='{{ s(dest || ethernet.find_interface("upstream", interface.vlan.id)) }}'
-set firewall.@rule[-1].dest_ip='{{ s(subnet) }}'
-set firewall.@rule[-1].proto='all'
-set firewall.@rule[-1].target='DROP'
-{%    endfor
-    endif %}
 {%
-	for (let forward in interface.ipv4?.port_forward)
+	// Constants
+	const ICMPV6_INPUT_TYPES = [
+		'echo-request', 'echo-reply', 'destination-unreachable', 'packet-too-big',
+		'time-exceeded', 'bad-header', 'unknown-header-type', 'router-solicitation',
+		'neighbour-solicitation', 'router-advertisement', 'neighbour-advertisement'
+	];
+
+	const ICMPV6_FORWARD_TYPES = [
+		'echo-request', 'echo-reply', 'destination-unreachable', 'packet-too-big',
+		'time-exceeded', 'bad-header', 'unknown-header-type'
+	];
+
+	const MLD_ICMP_TYPES = ['130/0', '131/0', '132/0', '143/0'];
+
+	// Helper functions
+
+	// is_ functions - boolean checks/validation
+	function is_upstream_interface() {
+		return interface.role == 'upstream';
+	}
+
+	function is_downstream_interface() {
+		return interface.role == 'downstream';
+	}
+
+	function has_ipv4_mode() {
+		return ipv4_mode && !ipv6_mode;
+	}
+
+	function has_ipv6_mode() {
+		return ipv6_mode && !ipv4_mode;
+	}
+
+	function has_both_ip_modes() {
+		return ipv4_mode && ipv6_mode;
+	}
+
+	function has_disallowed_subnets() {
+		return interface.role == 'downstream' && interface?.ipv4?.disallow_upstream_subnet;
+	}
+
+	// Configuration generation functions
+	function generate_firewall_zone() {
+		let output = [];
+
+		uci_comment(output, '# generated by interface/firewall.uc');
+		uci_comment(output, '### generate firewall zone');
+		uci_section(output, 'firewall zone');
+		uci_set_string(output, 'firewall.@zone[-1].name', name);
+
+		if (is_upstream_interface()) {
+			uci_set_string(output, 'firewall.@zone[-1].input', 'REJECT');
+			uci_set_string(output, 'firewall.@zone[-1].output', 'ACCEPT');
+			uci_set_string(output, 'firewall.@zone[-1].forward', 'REJECT');
+			uci_set_number(output, 'firewall.@zone[-1].masq', 1);
+			uci_set_number(output, 'firewall.@zone[-1].mtu_fix', 1);
+		} else {
+			uci_set_string(output, 'firewall.@zone[-1].input', 'REJECT');
+			uci_set_string(output, 'firewall.@zone[-1].output', 'ACCEPT');
+			uci_set_string(output, 'firewall.@zone[-1].forward', 'ACCEPT');
+
+			uci_comment(output, '### generate downstream forwarding');
+			uci_section(output, 'firewall forwarding');
+			uci_set_string(output, 'firewall.@forwarding[-1].src', name);
+			uci_set_string(output, 'firewall.@forwarding[-1].dest', dest || ethernet.find_interface("upstream", interface.vlan.id));
+		}
+
+		for (let network in networks || ethernet.calculate_names(interface))
+			uci_list_string(output, 'firewall.@zone[-1].network', network);
+
+		return uci_output(output);
+	}
+
+	function generate_basic_firewall_rules() {
+		let output = [];
+
+		uci_comment(output, '### generate basic firewall rules');
+
+		// Allow Ping
+		uci_section(output, 'firewall rule');
+		uci_set_string(output, 'firewall.@rule[-1].name', 'Allow-Ping');
+		uci_set_string(output, 'firewall.@rule[-1].src', name);
+		uci_set_string(output, 'firewall.@rule[-1].proto', 'icmp');
+		uci_set_string(output, 'firewall.@rule[-1].icmp_type', 'echo-request');
+		uci_set_string(output, 'firewall.@rule[-1].family', 'ipv4');
+		uci_set_string(output, 'firewall.@rule[-1].target', 'ACCEPT');
+
+		// Allow IGMP
+		uci_section(output, 'firewall rule');
+		uci_set_string(output, 'firewall.@rule[-1].name', 'Allow-IGMP');
+		uci_set_string(output, 'firewall.@rule[-1].src', name);
+		uci_set_string(output, 'firewall.@rule[-1].proto', 'igmp');
+		uci_set_string(output, 'firewall.@rule[-1].family', 'ipv4');
+		uci_set_string(output, 'firewall.@rule[-1].target', 'ACCEPT');
+
+		return uci_output(output);
+	}
+
+	function generate_ipv4_specific_rules() {
+		if (!ipv4_mode && ipv6_mode)
+			return '';
+
+		let output = [];
+
+		uci_comment(output, '### generate IPv4 specific rules');
+
+		// Support UDP Traceroute
+		uci_section(output, 'firewall rule');
+		uci_set_string(output, 'firewall.@rule[-1].name', 'Support-UDP-Traceroute');
+		uci_set_string(output, 'firewall.@rule[-1].src', name);
+		uci_set_string(output, 'firewall.@rule[-1].dest_port', '33434:33689');
+		uci_set_string(output, 'firewall.@rule[-1].proto', 'udp');
+		uci_set_string(output, 'firewall.@rule[-1].family', 'ipv4');
+		uci_set_string(output, 'firewall.@rule[-1].target', 'REJECT');
+		uci_set_string(output, 'firewall.@rule[-1].enabled', 'false');
+
+		// Allow DHCP Renew
+		uci_section(output, 'firewall rule');
+		uci_set_string(output, 'firewall.@rule[-1].name', 'Allow-DHCP-Renew');
+		uci_set_string(output, 'firewall.@rule[-1].src', name);
+		uci_set_string(output, 'firewall.@rule[-1].proto', 'udp');
+		uci_set_string(output, 'firewall.@rule[-1].dest_port', '68');
+		uci_set_string(output, 'firewall.@rule[-1].target', 'ACCEPT');
+		uci_set_string(output, 'firewall.@rule[-1].family', 'ipv4');
+
+		return uci_output(output);
+	}
+
+	function generate_ipv6_specific_rules() {
+		if (!ipv6_mode && ipv4_mode)
+			return '';
+
+		let output = [];
+
+		uci_comment(output, '### generate IPv6 specific rules');
+
+		// Allow DHCPv6
+		uci_section(output, 'firewall rule');
+		uci_set_string(output, 'firewall.@rule[-1].name', 'Allow-DHCPv6');
+		uci_set_string(output, 'firewall.@rule[-1].src', name);
+		uci_set_string(output, 'firewall.@rule[-1].proto', 'udp');
+		uci_set_string(output, 'firewall.@rule[-1].src_ip', 'fc00::/6');
+		uci_set_string(output, 'firewall.@rule[-1].dest_ip', 'fc00::/6');
+		uci_set_string(output, 'firewall.@rule[-1].dest_port', '546');
+		uci_set_string(output, 'firewall.@rule[-1].family', 'ipv6');
+		uci_set_string(output, 'firewall.@rule[-1].target', 'ACCEPT');
+
+		// Allow MLD
+		uci_section(output, 'firewall rule');
+		uci_set_string(output, 'firewall.@rule[-1].name', 'Allow-MLD');
+		uci_set_string(output, 'firewall.@rule[-1].src', name);
+		uci_set_string(output, 'firewall.@rule[-1].proto', 'icmp');
+		uci_set_string(output, 'firewall.@rule[-1].src_ip', 'fe80::/10');
+		for (let icmp_type in MLD_ICMP_TYPES)
+			uci_set_string(output, 'firewall.@rule[-1].icmp_type', icmp_type);
+		uci_set_string(output, 'firewall.@rule[-1].family', 'ipv6');
+		uci_set_string(output, 'firewall.@rule[-1].target', 'ACCEPT');
+
+		// Allow ICMPv6 Input
+		uci_section(output, 'firewall rule');
+		uci_set_string(output, 'firewall.@rule[-1].name', 'Allow-ICMPv6-Input');
+		uci_set_string(output, 'firewall.@rule[-1].src', name);
+		uci_set_string(output, 'firewall.@rule[-1].proto', 'icmp');
+		for (let icmp_type in ICMPV6_INPUT_TYPES)
+			uci_list_string(output, 'firewall.@rule[-1].icmp_type', icmp_type);
+		uci_set_string(output, 'firewall.@rule[-1].limit', '1000/sec');
+		uci_set_string(output, 'firewall.@rule[-1].family', 'ipv6');
+		uci_set_string(output, 'firewall.@rule[-1].target', 'ACCEPT');
+
+		// Allow ICMPv6 Forward
+		uci_section(output, 'firewall rule');
+		uci_set_string(output, 'firewall.@rule[-1].name', 'Allow-ICMPv6-Forward');
+		uci_set_string(output, 'firewall.@rule[-1].src', name);
+		uci_set_string(output, 'firewall.@rule[-1].dest', '*');
+		uci_set_string(output, 'firewall.@rule[-1].proto', 'icmp');
+		for (let icmp_type in ICMPV6_FORWARD_TYPES)
+			uci_list_string(output, 'firewall.@rule[-1].icmp_type', icmp_type);
+		uci_set_string(output, 'firewall.@rule[-1].limit', '1000/sec');
+		uci_set_string(output, 'firewall.@rule[-1].family', 'ipv6');
+		uci_set_string(output, 'firewall.@rule[-1].target', 'ACCEPT');
+
+		return uci_output(output);
+	}
+
+	function generate_downstream_service_rules() {
+		if (!is_downstream_interface())
+			return '';
+
+		let output = [];
+
+		uci_comment(output, '### generate downstream service rules');
+
+		// Allow DNS
+		uci_section(output, 'firewall rule');
+		uci_set_string(output, `firewall.@rule[-1].name`, `Allow-DNS-${name}`);
+		uci_set_string(output, 'firewall.@rule[-1].src', name);
+		uci_set_string(output, 'firewall.@rule[-1].dest_port', '53');
+		uci_list_string(output, 'firewall.@rule[-1].proto', 'tcp');
+		uci_list_string(output, 'firewall.@rule[-1].proto', 'udp');
+		uci_set_string(output, 'firewall.@rule[-1].target', 'ACCEPT');
+
+		// Allow DHCP
+		uci_section(output, 'firewall rule');
+		uci_set_string(output, `firewall.@rule[-1].name`, `Allow-DHCP-${name}`);
+		uci_set_string(output, 'firewall.@rule[-1].src', name);
+		uci_set_number(output, 'firewall.@rule[-1].dest_port', 67);
+		uci_set_string(output, 'firewall.@rule[-1].family', 'ipv4');
+		uci_set_string(output, 'firewall.@rule[-1].proto', 'udp');
+		uci_set_string(output, 'firewall.@rule[-1].target', 'ACCEPT');
+
+		// Allow DHCPv6
+		uci_section(output, 'firewall rule');
+		uci_set_string(output, `firewall.@rule[-1].name`, `Allow-DHCPv6-${name}`);
+		uci_set_string(output, 'firewall.@rule[-1].src', name);
+		uci_set_number(output, 'firewall.@rule[-1].dest_port', 547);
+		uci_set_string(output, 'firewall.@rule[-1].family', 'ipv6');
+		uci_set_string(output, 'firewall.@rule[-1].proto', 'udp');
+		uci_set_string(output, 'firewall.@rule[-1].target', 'ACCEPT');
+
+		return uci_output(output);
+	}
+
+	function generate_subnet_restriction_rules() {
+		if (!has_disallowed_subnets())
+			return '';
+
+		let output = [];
+
+		uci_comment(output, '### generate subnet restriction rules');
+
+		for (let subnet in interface.ipv4.disallow_upstream_subnet) {
+			uci_section(output, 'firewall rule');
+			uci_set_string(output, `firewall.@rule[-1].name`, `Reject-${subnet}-subnet-${name}`);
+			uci_set_string(output, 'firewall.@rule[-1].src', name);
+			uci_set_string(output, 'firewall.@rule[-1].dest', dest || ethernet.find_interface("upstream", interface.vlan.id));
+			uci_set_string(output, 'firewall.@rule[-1].dest_ip', subnet);
+			uci_set_string(output, 'firewall.@rule[-1].proto', 'all');
+			uci_set_string(output, 'firewall.@rule[-1].target', 'DROP');
+		}
+
+		return uci_output(output);
+	}
+
+	// Main logic - port forwards and traffic allows
+	for (let forward in interface.ipv4?.port_forward) {
 		include('firewall/forward.uc', {
 			forward,
 			family: 'ipv4',
@@ -161,8 +252,9 @@ set firewall.@rule[-1].target='DROP'
 			destination_zone: name,
 			destination_subnet: interface.ipv4.subnet
 		});
+	}
 
-	for (let forward in interface.ipv6?.port_forward)
+	for (let forward in interface.ipv6?.port_forward) {
 		include('firewall/forward.uc', {
 			forward,
 			family: 'ipv6',
@@ -170,8 +262,9 @@ set firewall.@rule[-1].target='DROP'
 			destination_zone: name,
 			destination_subnet: interface.ipv6.subnet
 		});
+	}
 
-	for (let allow in interface.ipv6?.traffic_allow)
+	for (let allow in interface.ipv6?.traffic_allow) {
 		include('firewall/allow.uc', {
 			allow,
 			family: 'ipv6',
@@ -179,4 +272,12 @@ set firewall.@rule[-1].target='DROP'
 			destination_zone: name,
 			destination_subnet: interface.ipv6.subnet
 		});
+	}
 %}
+
+{{ generate_firewall_zone() }}
+{{ generate_basic_firewall_rules() }}
+{{ generate_ipv4_specific_rules() }}
+{{ generate_ipv6_specific_rules() }}
+{{ generate_downstream_service_rules() }}
+{{ generate_subnet_restriction_rules() }}
