@@ -3,6 +3,9 @@
 "use strict";
 
 import * as fs from 'fs';
+
+// Real filesystem access for reading actual board configuration files
+let fs_real = require("fs");
 import { 
 	b, s, uci_cmd, uci_set_string, uci_set_boolean, uci_set_number, uci_set_raw,
 	uci_list_string, uci_list_number, uci_section, uci_named_section, 
@@ -23,8 +26,7 @@ function create_mock_cursor(board) {
 			// Load real wifi device data when wireless config is requested
 			if (config == "wireless" && !this._wifi_devices) {
 				try {
-					let fs_real = require("fs");
-					let wifi_devices_content = fs_real.readfile(sprintf("boards/%s/wifi_devices.json", this._board));
+						let wifi_devices_content = fs_real.readfile(sprintf("boards/%s/wifi_devices.json", this._board));
 					let wifi_data = json(wifi_devices_content);
 					this._wifi_devices = wifi_data.devices || [];
 				} catch (e) {
@@ -85,7 +87,6 @@ let mock_fs = {
 			read: function(size) {
 				if (index(path, "capabilities.json") >= 0) {
 					// Read actual capabilities file from tests/boards/
-					let fs_real = require("fs");
 					let real_path = path;
 					// If path doesn't start with tests/, prepend it
 					if (!match(path, /^tests\//)) {
@@ -99,7 +100,6 @@ let mock_fs = {
 				}
 				if (index(path, "board.json") >= 0) {
 					// Read actual board file from tests/boards/
-					let fs_real = require("fs");
 					let real_path = path;
 					// If path doesn't start with tests/, prepend it
 					if (!match(path, /^tests\//)) {
@@ -113,7 +113,6 @@ let mock_fs = {
 				}
 				if (index(path, "qos.json") >= 0 || index(path, "/usr/share/ucentral/qos.json") >= 0) {
 					// Read the actual qos.json file
-					let fs_real = require("fs");
 					return fs_real.readfile("../../../../renderer/qos.json");
 				}
 				return "";
@@ -125,7 +124,6 @@ let mock_fs = {
 	readfile: function(path) {
 		if (index(path, "capabilities.json") >= 0) {
 			// Read actual capabilities file from tests/boards/
-			let fs_real = require("fs");
 			let real_path = path;
 			// If path doesn't start with tests/, prepend it
 			if (!match(path, /^tests\//)) {
@@ -139,7 +137,6 @@ let mock_fs = {
 		}
 		if (index(path, "board.json") >= 0) {
 			// Read actual board file from tests/boards/
-			let fs_real = require("fs");
 			let real_path = path;
 			// If path doesn't start with tests/, prepend it
 			if (!match(path, /^tests\//)) {
@@ -253,7 +250,6 @@ let mock_services = {
 	lookup_services: function() {
 		// Dynamic service discovery like the real renderer
 		let rv = [];
-		let fs_real = require("fs");
 
 		for (let incfile in fs_real.glob("../renderer/templates/services/*.uc")) {
 			let m = match(incfile, /^.+\/([^\/]+)\.uc$/);
@@ -266,7 +262,6 @@ let mock_services = {
 	lookup_metrics: function() {
 		// Dynamic metrics discovery like the real renderer
 		let rv = [];
-		let fs_real = require("fs");
 
 		for (let incfile in fs_real.glob("../renderer/templates/metric/*.uc")) {
 			let m = match(incfile, /^.+\/([^\/]+)\.uc$/);
@@ -471,7 +466,6 @@ function create_test_context(overrides) {
 	});
 	// Load real wiphy data from board-specific wiphy.json
 	try {
-		let fs_real = require("fs");
 		let wiphy_path = sprintf("boards/%s/wiphy.json", board);
 		let wiphy_content = fs_real.readfile(wiphy_path);
 		let wiphy_data = json(wiphy_content);
@@ -576,7 +570,6 @@ function create_board_test_context(test_data, board_data, capabilities, board_na
 		printf("[W] " + sprintf(fmt, ...args) + "\n");
 	});
 	try {
-		let fs_real = require("fs");
 		let wiphy_path = sprintf("boards/%s/wiphy.json", board_name);
 		let wiphy_content = fs_real.readfile(wiphy_path);
 		let wiphy_data = json(wiphy_content);
