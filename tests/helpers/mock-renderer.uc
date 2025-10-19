@@ -198,6 +198,23 @@ let mock_services = {
 		}
 		return ssids;
 	},
+	lookup_interfaces_by_ssids: function(service) {
+		// Return interfaces that have SSIDs requesting the specified service
+		let interfaces = [];
+		if (this._test_state && this._test_state.interfaces) {
+			for (let iface in this._test_state.interfaces) {
+				if (iface.ssids) {
+					for (let ssid in iface.ssids) {
+						if (ssid.services && index(ssid.services, service) >= 0) {
+							push(interfaces, iface);
+							break; // Don't add the same interface multiple times
+						}
+					}
+				}
+			}
+		}
+		return interfaces;
+	},
 	lookup_services: function() {
 		return ["log", "ssh", "ntp", "lldp", "ieee8021x"]; // Common services
 	},
