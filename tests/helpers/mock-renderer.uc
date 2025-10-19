@@ -3,6 +3,10 @@
 "use strict";
 
 import * as fs from 'fs';
+import {
+	read_board_file, is_capabilities_file, is_board_file, is_qos_file,
+	load_board_capabilities, load_wiphy_data
+} from './test-utils.uc';
 
 // Real filesystem access for reading actual board configuration files
 let fs_real = require("fs");
@@ -87,33 +91,13 @@ let mock_fs = {
 		// Mock file operations
 		return {
 			read: function(size) {
-				if (index(path, "capabilities.json") >= 0) {
-					// Read actual capabilities file from tests/boards/
-					let real_path = path;
-					// If path doesn't start with tests/, prepend it
-					if (!match(path, /^tests\//)) {
-						real_path = "tests/" + path;
-					}
-					try {
-						return fs_real.readfile(real_path);
-					} catch (e) {
-						die(sprintf("Failed to read capabilities file: %s (%s)", real_path, e));
-					}
+				if (is_capabilities_file(path)) {
+					return read_board_file(path, "capabilities");
 				}
-				if (index(path, "board.json") >= 0) {
-					// Read actual board file from tests/boards/
-					let real_path = path;
-					// If path doesn't start with tests/, prepend it
-					if (!match(path, /^tests\//)) {
-						real_path = "tests/" + path;
-					}
-					try {
-						return fs_real.readfile(real_path);
-					} catch (e) {
-						die(sprintf("Failed to read board file: %s (%s)", real_path, e));
-					}
+				if (is_board_file(path)) {
+					return read_board_file(path, "board");
 				}
-				if (index(path, "qos.json") >= 0 || index(path, "/usr/share/ucentral/qos.json") >= 0) {
+				if (is_qos_file(path)) {
 					// Read the actual qos.json file
 					return fs_real.readfile("../../../../renderer/qos.json");
 				}
@@ -124,31 +108,11 @@ let mock_fs = {
 		};
 	},
 	readfile: function(path) {
-		if (index(path, "capabilities.json") >= 0) {
-			// Read actual capabilities file from tests/boards/
-			let real_path = path;
-			// If path doesn't start with tests/, prepend it
-			if (!match(path, /^tests\//)) {
-				real_path = "tests/" + path;
-			}
-			try {
-				return fs_real.readfile(real_path);
-			} catch (e) {
-				die(sprintf("Failed to read capabilities file: %s (%s)", real_path, e));
-			}
+		if (is_capabilities_file(path)) {
+			return read_board_file(path, "capabilities");
 		}
-		if (index(path, "board.json") >= 0) {
-			// Read actual board file from tests/boards/
-			let real_path = path;
-			// If path doesn't start with tests/, prepend it
-			if (!match(path, /^tests\//)) {
-				real_path = "tests/" + path;
-			}
-			try {
-				return fs_real.readfile(real_path);
-			} catch (e) {
-				die(sprintf("Failed to read board file: %s (%s)", real_path, e));
-			}
+		if (is_board_file(path)) {
+			return read_board_file(path, "board");
 		}
 		return null;
 	},
@@ -185,8 +149,7 @@ let mock_fs = {
 
 // Load capabilities from board data
 function mock_capab(board) {
-	board ??= 'eap101';
-	return json(fs.readfile(sprintf("boards/%s/capabilities.json", board)));
+	return load_board_capabilities(board);
 }
 
 
@@ -488,14 +451,7 @@ function create_test_context(overrides) {
 		printf("[W] " + sprintf(fmt, ...args) + "\n");
 	});
 	// Load real wiphy data from board-specific wiphy.json
-	try {
-		let wiphy_path = sprintf("boards/%s/wiphy.json", board);
-		let wiphy_content = fs_real.readfile(wiphy_path);
-		let wiphy_data = json(wiphy_content);
-		mock_wiphy.phys = wiphy_data;
-	} catch (e) {
-		die(sprintf("Failed to read wiphy data from %s: %s", wiphy_path, e));
-	}
+	mock_wiphy.phys = load_wiphy_data(board);
 
 	// Initialize routing table
 	mock_routing_table = create_routing_table();
@@ -602,14 +558,7 @@ function create_board_test_context(test_data, board_data, capabilities, board_na
 	mock_wiphy = create_wiphy(cursor, function(fmt, ...args) {
 		printf("[W] " + sprintf(fmt, ...args) + "\n");
 	});
-	try {
-		let wiphy_path = sprintf("boards/%s/wiphy.json", board_name);
-		let wiphy_content = fs_real.readfile(wiphy_path);
-		let wiphy_data = json(wiphy_content);
-		mock_wiphy.phys = wiphy_data;
-	} catch (e) {
-		die(sprintf("Failed to read board wiphy data from %s: %s", sprintf("boards/%s/wiphy.json", board_name), e));
-	}
+	mock_wiphy.phys = load_wiphy_data(board_name);
 
 	// Initialize routing table
 	mock_routing_table = create_routing_table();
@@ -647,14 +596,7 @@ function create_integration_test_context(board_data, capabilities, board_name) {
 	mock_wiphy = create_wiphy(cursor, function(fmt, ...args) {
 		printf("[W] " + sprintf(fmt, ...args) + "\n");
 	});
-	try {
-		let wiphy_path = sprintf("boards/%s/wiphy.json", board_name);
-		let wiphy_content = fs_real.readfile(wiphy_path);
-		let wiphy_data = json(wiphy_content);
-		mock_wiphy.phys = wiphy_data;
-	} catch (e) {
-		die(sprintf("Failed to read board wiphy data from %s: %s", sprintf("boards/%s/wiphy.json", board_name), e));
-	}
+	mock_wiphy.phys = load_wiphy_data(board_name);
 
 	// Initialize routing table
 	mock_routing_table = create_routing_table();

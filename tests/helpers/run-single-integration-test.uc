@@ -5,15 +5,7 @@
 
 import { validate } from './schemareader.uc';
 import { create_full_test_context } from './mock-renderer.uc';
-
-// Mock toplevel initialization logic
-function mock_toplevel(state) {
-    if (!state.interfaces) state.interfaces = [];
-    for (let i, interface in state.interfaces) {
-        interface.index = i;
-        if (!interface.vlan) interface.vlan = { id: 0 };
-    }
-}
+import { mock_toplevel } from './test-utils.uc';
 
 // Get command line arguments
 let args = ARGV;

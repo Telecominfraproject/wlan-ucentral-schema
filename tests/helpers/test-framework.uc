@@ -5,25 +5,7 @@
 import * as fs from 'fs';
 import { create_test_context, create_board_test_context, create_full_test_context } from './mock-renderer.uc';
 import { validate } from './schemareader.uc';
-
-// Mock toplevel initialization logic - moved from mock-renderer.uc
-function mock_toplevel(state) {
-    // Initialize interfaces array if it doesn't exist
-    if (!state.interfaces) {
-        state.interfaces = [];
-    }
-
-    // Initialize VLAN properties like toplevel.uc does
-    let vlans = [];
-    for (let i, interface in state.interfaces) {
-        interface.index = i; // Set interface index
-
-        // Note: We'll rely on the real ethernet mock for VLAN logic
-        if (!interface.vlan) {
-            interface.vlan = { id: 0 }; // Default VLAN like toplevel.uc
-        }
-    }
-}
+import { mock_toplevel } from './test-utils.uc';
 
 // Test framework class to consolidate common testing logic
 export function TestFramework(template_path, test_title, test_dir) {
