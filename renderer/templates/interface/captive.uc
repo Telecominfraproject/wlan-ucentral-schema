@@ -15,19 +15,19 @@ if (config.web_root) {
 	let web_root = fs.open('/tmp/ucentral/web-root.tar', 'w');
 	web_root.write(b64dec(config.web_root));
 	web_root.close();
-	system('tar x -C /tmp/ucentral/www-uspot -f /tmp/ucentral/web-root.tar');
+	shell.system('tar x -C /tmp/ucentral/www-uspot -f /tmp/ucentral/web-root.tar');
 } else if (config.web_root_url) {
-	system(`/usr/share/ucentral/download-webroot.sh ${config.web_root_url} ${config.web_root_checksum}`);
+	shell.system(`/usr/share/ucentral/download-webroot.sh ${config.web_root_url} ${config.web_root_checksum}`);
 	let stat = fs.stat('/etc/ucentral/web-root.tar.gz');
 	if (!stat) {
 		warn('unable to download captive portal web-root');
 		return;		
 	}
 	fs.mkdir('/tmp/ucentral/www-uspot');
-	system('tar xz -C /tmp/ucentral/www-uspot -f /etc/ucentral/web-root.tar.gz');
+	shell.system('tar xz -C /tmp/ucentral/www-uspot -f /etc/ucentral/web-root.tar.gz');
 } else {
 	fs.mkdir('/tmp/ucentral/');
-	system('cp -r /www-uspot /tmp/ucentral/');
+	shell.system('cp -r /www-uspot /tmp/ucentral/');
 }
 
 if (captive.radius_gw_proxy)

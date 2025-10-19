@@ -377,7 +377,7 @@ let mock_files = {
 	}
 };
 
-// Mock shell object for password management
+// Mock shell object for password management and system calls
 let mock_shell = {
 	system_password: function(password) {
 		// Mock implementation - in real system this would set system password
@@ -385,6 +385,11 @@ let mock_shell = {
 	},
 	password: function(password) {
 		// Mock implementation - in real system this would set random password
+		return 0;
+	},
+	system: function(command) {
+		// Mock implementation - make system calls no-ops during testing
+		// This prevents tar/cp commands from failing in captive template tests
 		return 0;
 	}
 };
