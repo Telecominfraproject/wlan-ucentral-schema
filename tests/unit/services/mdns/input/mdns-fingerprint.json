@@ -1,0 +1,71 @@
+{
+  "uuid": "12345678-1234-1234-1234-123456789012",
+  "interfaces": [
+    {
+      "name": "upstream",
+      "role": "upstream",
+      "services": [],
+      "ethernet": [
+        {
+          "select-ports": ["WAN"]
+        }
+      ],
+      "ipv4": {
+        "addressing": "dynamic"
+      }
+    },
+    {
+      "name": "downstream", 
+      "role": "downstream",
+      "services": [],
+      "ethernet": [
+        {
+          "select-ports": ["LAN*"]
+        }
+      ],
+      "ipv4": {
+        "addressing": "static",
+        "subnet": "192.168.1.1/24"
+      }
+    }
+  ],
+  "services": {
+    "mdns": {}
+  },
+  "template_vars": {
+    "state": {
+      "services": {
+        "fingerprint": true
+      },
+      "interfaces": [
+        {
+          "name": "upstream",
+          "role": "upstream",
+          "services": [],
+          "ethernet": [
+            {
+              "select-ports": ["WAN"]
+            }
+          ],
+          "ipv4": {
+            "addressing": "dynamic"
+          }
+        },
+        {
+          "name": "downstream", 
+          "role": "downstream",
+          "services": [],
+          "ethernet": [
+            {
+              "select-ports": ["LAN*"]
+            }
+          ],
+          "ipv4": {
+            "addressing": "static",
+            "subnet": "192.168.1.1/24"
+          }
+        }
+      ]
+    }
+  }
+}
