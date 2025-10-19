@@ -3,7 +3,7 @@
 "use strict";
 
 import * as fs from 'fs';
-import { create_test_context } from './mock-renderer.uc';
+import { create_test_context, create_board_test_context } from './mock-renderer.uc';
 
 // Test framework class to consolidate common testing logic
 export function TestFramework(template_path, test_title, test_dir) {
@@ -158,4 +158,94 @@ export function create_base_test_cases(template_name, test_names) {
         });
     }
     return test_cases;
+};
+// Integration test framework for board-specific tests
+export function IntegrationTestFramework(template_path, test_title, test_dir) {
+    return {
+        template_path: template_path,
+        test_title: test_title,
+        test_dir: test_dir || ".",
+        test_results: { passed: 0, failed: 0, errors: [] },
+        
+        run_board_test: function(test_name, input_file, board_name, expected_file) {
+            printf("Running test: %s (board: %s)\n", test_name, board_name);
+            
+            try {
+                let input_path = sprintf("%s/%s", this.test_dir, input_file);
+                let test_data = json(fs.readfile(input_path));
+                
+                let board_dir = sprintf("boards/%s", board_name);
+                let board_data = json(fs.readfile(sprintf("%s/board.json", board_dir)));
+                let capabilities = json(fs.readfile(sprintf("%s/capabilities.json", board_dir)));
+                
+                let output_path = sprintf("%s/output/%s/%s", this.test_dir, board_name, expected_file);
+                let expected_output = fs.readfile(output_path);
+                
+                if (expected_output === null || expected_output === false) {
+                    expected_output = "";
+                }
+                
+                let context = create_board_test_context(test_data, board_data, capabilities);
+                
+                for (let key, value in test_data.template_vars || {}) {
+                    context[key] = value;
+                }
+                
+                context.files.clear_generated_files();
+                
+                let abs_path = fs.realpath ? fs.realpath(this.template_path) : this.template_path;
+                let output = render(abs_path, context);
+                
+                let generated_files = context.files.get_generated_files();
+                for (let path, file_info in generated_files) {
+                    output += sprintf("\n-----%s-----\n%s\n--------\n", path, file_info.content);
+                }
+                
+                output = trim(output);
+                expected_output = trim(expected_output);
+                
+                if (output == expected_output) {
+                    printf("✓ PASS: %s (%s)\n", test_name, board_name);
+                    this.test_results.passed++;
+                } else {
+                    printf("✗ FAIL: %s (%s)\n", test_name, board_name);
+                    printf("Expected:\n%s\n", expected_output);
+                    printf("Got:\n%s\n", output);
+                    this.test_results.failed++;
+                }
+            } catch (e) {
+                printf("✗ ERROR: %s (%s) - %s\n", test_name, board_name, e);
+                this.test_results.failed++;
+            }
+            
+            printf("\n");
+        },
+        
+        run_tests: function(test_cases, boards) {
+            printf("=== %s ===\n\n", this.test_title);
+            
+            this.test_results = { passed: 0, failed: 0, errors: [] };
+            
+            for (let test_case in test_cases) {
+                for (let board in boards) {
+                    this.run_board_test(test_case.name, test_case.input, board, test_case.output);
+                }
+            }
+            
+            printf("=== Test Results ===\n");
+            printf("Passed: %d\n", this.test_results.passed);
+            printf("Failed: %d\n", this.test_results.failed);
+            
+            if (this.test_results.failed == 0) {
+                printf("All %s tests passed!\n", this.test_title);
+            }
+            
+            return {
+                passed: this.test_results.passed,
+                failed: this.test_results.failed,
+                errors: this.test_results.errors,
+                suite_name: this.test_title
+            };
+        }
+    };
 };
