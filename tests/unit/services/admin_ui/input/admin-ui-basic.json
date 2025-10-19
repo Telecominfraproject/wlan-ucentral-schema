@@ -1,0 +1,15 @@
+{
+  "template_vars": {
+    "admin_ui": {
+      "wifi_ssid": "Maverick"
+    }
+  },
+  "state": {
+    "interfaces": [],
+    "services": {
+      "admin_ui": {
+        "wifi_ssid": "Maverick"
+      }
+    }
+  }
+}
