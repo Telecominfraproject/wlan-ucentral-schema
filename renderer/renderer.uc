@@ -5,6 +5,7 @@
 let uci = require("uci");
 let ubus = require("ubus");
 let fs = require("fs");
+let math = require("math");
 import { ipcalc } from 'libs.ipcalc';
 import { create_ethernet } from 'libs/ethernet.uc';
 import { create_wiphy } from 'libs/wiphy.uc';
@@ -426,7 +427,6 @@ let shell = {
 		let passwd = "openwifi";
 
 		if (random) {
-			let math = require("math");
 			passwd = '';
 			for (let i = 0; i < 32; i++) {
 				let r = math.rand() % 62;
@@ -556,6 +556,9 @@ return /** @lends uCentral.prototype */ {
 
 			/** @member {uCentral.ipcalc} */
 			ipcalc,
+
+			/** @member {uCentral.math} */
+			math,
 
 			/** @member {uCentral.services} */
 			services,

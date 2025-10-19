@@ -74,7 +74,6 @@ set uspot.@credentials[-1].interface={{ s(section) }}
 
 {% if (config.auth_mode == 'uam'): %}
 {%
-let math = require('math');
 let challenge = "";
 for (let i = 0; i < 16; i++)
 	challenge += sprintf('%02x', math.rand() % 255);
