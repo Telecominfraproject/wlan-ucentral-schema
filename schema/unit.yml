@@ -4,42 +4,64 @@ description:
 type: object
 properties:
   name:
-    description:
-      This is a free text field, stating the administrative name of the
-      device. It may contain spaces and special characters.
+    description: |
+      The administrative name of the device used for identification and management purposes.
+      This descriptive label appears in management interfaces and system logs.
+      It may contain spaces and special characters to provide meaningful context.
+      Example: "Building A - Floor 2 - Conference Room AP"
     type: string
   hostname:
-    description:
-      The hostname that shall be set on the device. If this field is not set,
-      then the devices serial number is used.
+    description: |
+      The network hostname assigned to the device for DNS and network identification.
+      Must follow standard hostname conventions (alphanumeric, hyphens, no spaces).
+      If not specified, the device's serial number will be used as the hostname.
+      This value appears in DHCP requests, mDNS broadcasts, and system prompts.
+      Example: "conference-room-ap-01"
     type: string
     format: hostname
   location:
-    description:
-      This is a free text field, stating the location of the  device. It
-      may contain spaces and special characters.
+    description: |
+      Physical location or deployment site of the device for asset tracking and maintenance.
+      This field helps technicians locate devices for service and troubleshooting.
+      It may contain spaces and special characters for detailed location information.
+      Example: "Building A, Floor 2, Room 201, Ceiling tile C3"
     type: string
   timezone:
-    description:
-      This allows you to change the TZ of the device.
+    description: |
+      System timezone configuration that determines local time for logs, scheduled tasks, and reports.
+      Accepts standard timezone identifiers (e.g., "UTC", "America/New_York") or POSIX TZ strings.
+      Proper timezone setting ensures accurate timestamps and correct execution of time-based rules.
+      If not specified, the device defaults to UTC.
     type: string
     examples:
     - UTC
     - EST5
     - CET-1CEST,M3.5.0,M10.5.0/3
   leds-active:
-    description:
-      This allows forcing all LEDs off.
+    description: |
+      Controls the operational state of all LED indicators on the device.
+      When set to true (default), LEDs operate normally showing system status.
+      When set to false, all LEDs are disabled for environments requiring minimal light emission.
+      Useful in hospitality settings, bedrooms, or light-sensitive installations.
     type: boolean
     default: true
   random-password:
-    description:
-      The device shall create a random root password and tell the gateway about it.
+    description: |
+      Enables automatic generation of a secure random password for the root/admin account.
+      When enabled, the device generates a cryptographically strong password at boot
+      and reports it to the management gateway for secure storage and retrieval.
+      This enhances security by ensuring each device has a unique administrative password.
+      Cannot be used together with system-password.
     type: boolean
     default: false
   system-password:
-    description:
-      System-config string that holds the password for main (root / admin) user to apply.
+    description: |
+      Sets a specific password for the root/admin account on the device.
+      The password should be provided in plaintext and will be securely hashed on the device.
+      Use this for environments requiring a standardized administrative password.
+      For enhanced security, consider using random-password instead.
+      Cannot be used together with random-password.
+      Example: "MySecureP@ssw0rd!"
     type: string
   beacon-advertisement:
     description:
@@ -47,15 +69,23 @@ properties:
     type: object
     properties:
       device-name:
-        description:
-          Add an IE containing the device's name to beacons.
+        description: |
+          Includes the device's administrative name in WiFi beacon frames as a vendor-specific
+          Information Element (IE). This allows WiFi scanners and management tools to identify
+          the device without authentication. Useful for troubleshooting and site surveys.
         type: boolean
       device-serial:
-        description:
-          Add an IE containing the device's serial to beacons.
+        description: |
+          Includes the device's serial number in WiFi beacon frames as a vendor-specific
+          Information Element (IE). This enables automated inventory management and device
+          discovery by management systems scanning the wireless environment.
         type: boolean
       network-id:
-        description:
-          A provider specific ID for the network/venue that the device is part of.
+        description: |
+          A provider-defined numeric identifier for the network or venue where the device operates.
+          This ID is broadcast in beacon frames to help client devices and management systems
+          identify which network group or location the access point belongs to.
+          Useful for multi-venue deployments or network segmentation.
+          Example: 12345 for "Campus Network A"
         type: integer
 
