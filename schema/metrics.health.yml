@@ -1,30 +1,58 @@
-description:
-  Health check gets executed periodically and will report a health value
-  between 0-100 indicating how healthy the device thinks it is
+description: |
+  Health monitoring configuration for periodic system health assessment and reporting.
+  The health monitoring system performs various connectivity and service checks, then
+  reports an overall health score between 0-100 indicating device operational status.
+  This enables proactive monitoring of network connectivity, DHCP functionality, and
+  DNS resolution capabilities for troubleshooting and maintenance purposes.
 type: object
 properties:
   interval:
-    description:
-      The reporting interval defined in seconds.
+    description: |
+      Health check execution and reporting interval in seconds.
+      Defines how frequently the system performs all enabled health checks
+      and reports the calculated health score to the management system.
+      Lower values provide more responsive monitoring but increase system overhead.
+      Example: 300 seconds (5 minutes) provides balanced monitoring frequency.
     type: integer
     minimum: 60
   dhcp-local:
-    description:
-      This is makes the AP probe local downstream DHCP servers.
+    description: |
+      Enable probing of local downstream DHCP servers for connectivity verification.
+      When enabled, the access point periodically attempts to contact DHCP servers
+      on downstream (LAN) interfaces to verify they are responsive and functioning.
+      This helps detect issues with local DHCP infrastructure that could impact
+      client connectivity and IP address assignment.
+      Example: Enable to monitor internal DHCP server health on LAN networks.
     type: boolean
     default: true
   dhcp-remote:
-    description:
-      This is makes the AP probe remote upstream DHCP servers.
+    description: |
+      Enable probing of remote upstream DHCP servers for connectivity verification.
+      When enabled, the access point attempts to contact DHCP servers on upstream
+      (WAN) interfaces to verify external DHCP infrastructure availability.
+      This helps detect issues with ISP or upstream network DHCP services that
+      could affect the access point's own IP address acquisition and connectivity.
+      Example: Enable to monitor upstream ISP DHCP server availability.
     type: boolean
     default: false
   dns-local:
-    description:
-      This is makes the AP probe DNS servers.
+    description: |
+      Enable probing of local DNS servers for name resolution verification.
+      When enabled, the access point performs DNS queries against local DNS servers
+      (typically on downstream interfaces) to verify they are responsive and can
+      resolve domain names correctly. This helps detect DNS infrastructure issues
+      that could impact client internet connectivity and application functionality.
+      Example: Enable to monitor local DNS server health and resolution capability.
     type: boolean
     default: true
   dns-remote:
-    description:
-      This is makes the AP probe DNS servers.
+    description: |
+      Enable probing of remote DNS servers for external name resolution verification.
+      When enabled, the access point performs DNS queries against external DNS servers
+      (typically public DNS servers like 8.8.8.8 or ISP DNS servers) to verify
+      internet connectivity and external domain name resolution capability.
+      This helps detect upstream connectivity issues that could prevent clients
+      from accessing internet resources and web services.
+      Example: Enable to monitor external DNS connectivity and internet reachability.
     type: boolean
     default: true
