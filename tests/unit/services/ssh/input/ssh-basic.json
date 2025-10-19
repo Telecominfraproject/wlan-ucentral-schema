@@ -1,0 +1,43 @@
+{
+  "uuid": "12345678-1234-1234-1234-123456789012",
+  "interfaces": [
+    {
+      "name": "upstream",
+      "role": "upstream",
+      "services": ["ssh"],
+      "ethernet": [
+        {
+          "select-ports": ["WAN"]
+        }
+      ],
+      "ipv4": {
+        "addressing": "dynamic"
+      }
+    },
+    {
+      "name": "downstream", 
+      "role": "downstream",
+      "services": ["ssh"],
+      "ethernet": [
+        {
+          "select-ports": ["LAN*"]
+        }
+      ],
+      "ipv4": {
+        "addressing": "static",
+        "subnet": "192.168.1.1/24"
+      }
+    }
+  ],
+  "services": {
+    "ssh": {
+      "port": 22,
+      "password_authentication": true,
+      "idle_timeout": 300,
+      "authorized_keys": [
+        "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC... user@example.com",
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI... admin@example.com"
+      ]
+    }
+  }
+}
