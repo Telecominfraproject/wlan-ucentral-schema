@@ -1,15 +1,25 @@
-description:
-  This section describes the band steering behaviour of the unit.
+description: |
+  This section configures Radio Resource Management (RRM) functionality for wireless optimization.
+  RRM provides automated radio frequency planning and optimization capabilities including
+  channel utilization monitoring, automatic channel selection, and interference mitigation.
 type: object
 properties:
   beacon-request-assoc:
-    description:
-      Tell stations to send a beacon request scan when they associate.
+    description: |
+      Request beacon reports from clients when they associate to the access point.
+      This enables RRM to gather information about surrounding wireless environment
+      from the client's perspective, improving radio optimization decisions.
+      Example: Enable to collect neighbor AP information from clients for better
+      channel planning and interference analysis.
     type: boolean
     default: true
   station-stats-interval:
-    description:
-      Periodically send station statistics every N seconds.
+    description: |
+      Interval in seconds for collecting and reporting station statistics.
+      This controls how frequently RRM gathers performance metrics from connected clients
+      including signal strength, data rates, and traffic patterns for optimization analysis.
+      Set to 0 to disable periodic statistics collection.
+      Example: Set to 60 for statistics collection every minute.
     type: number
   chanutil:
     $ref: "https://ucentral.io/schema/v1/service/rrm/chanutil/"
