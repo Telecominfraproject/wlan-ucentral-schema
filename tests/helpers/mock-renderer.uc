@@ -364,6 +364,18 @@ let mock_files = {
 	}
 };
 
+// Mock shell object for password management
+let mock_shell = {
+	system_password: function(password) {
+		// Mock implementation - in real system this would set system password
+		return 0;
+	},
+	password: function(password) {
+		// Mock implementation - in real system this would set random password
+		return 0;
+	}
+};
+
 // Create test context with all mocks  
 function create_test_context(overrides) {
 	let result = {
@@ -392,6 +404,7 @@ function create_test_context(overrides) {
 		ethernet: mock_ethernet,
 		files: mock_files,
 		events: mock_events,
+		shell: mock_shell,
 		
 		// Mock utility functions
 		warn: function(fmt, ...args) {
