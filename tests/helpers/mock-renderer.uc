@@ -11,31 +11,63 @@ import {
 import { create_ethernet } from '../../renderer/libs/ethernet.uc';
 import { create_wiphy } from '../../renderer/libs/wiphy.uc';
 
-// Mock UCI cursor
-let mock_cursor = {
-	load: function(config) {
-		// Mock loading UCI config
-	},
-	get_all: function(config, section) {
-		// Return mock system data
-		if (config == "system" && section == "@system[-1]") {
-			return { hostname: "mock-hostname" };
+// Create mock cursor factory that uses board-specific data
+function create_mock_cursor(board) {
+	board ??= 'eap101';
+
+	return {
+		_wifi_devices: null, // Will be loaded from wifi_devices.json
+		_board: board,
+
+		load: function(config) {
+			// Load real wifi device data when wireless config is requested
+			if (config == "wireless" && !this._wifi_devices) {
+				try {
+					let fs_real = require("fs");
+					let wifi_devices_content = fs_real.readfile(sprintf("boards/%s/wifi_devices.json", this._board));
+					let wifi_data = json(wifi_devices_content);
+					this._wifi_devices = wifi_data.devices || [];
+				} catch (e) {
+					die(sprintf("Failed to read wifi devices data for board %s: %s", this._board, e));
+				}
+			}
+		},
+
+		foreach: function(config, type, callback) {
+			if (config == "wireless" && type == "wifi-device") {
+				// Ensure wifi devices are loaded
+				this.load("wireless");
+				// Call callback for each wifi device
+				for (let device in this._wifi_devices) {
+					let result = callback(device);
+					// If callback returns false, stop iteration
+					if (result === false)
+						break;
+				}
+			}
+		},
+
+		get_all: function(config, section) {
+			// Return mock system data
+			if (config == "system" && section == "@system[-1]") {
+				return { hostname: "mock-hostname" };
+			}
+			if (config == "system" && section == "@certificates[-1]") {
+				return {
+					ca: "/etc/ssl/ca.pem",
+					cert: "/etc/ssl/cert.pem",
+					key: "/etc/ssl/key.pem"
+				};
+			}
+			return {};
+		},
+		get: function(config, section, option) {
+			if (config == "ucentral" && section == "config" && option == "serial")
+				return "mock-serial-123";
+			return null;
 		}
-		if (config == "system" && section == "@certificates[-1]") {
-			return {
-				ca: "/etc/ssl/ca.pem",
-				cert: "/etc/ssl/cert.pem", 
-				key: "/etc/ssl/key.pem"
-			};
-		}
-		return {};
-	},
-	get: function(config, section, option) {
-		if (config == "ucentral" && section == "config" && option == "serial")
-			return "mock-serial-123";
-		return null;
-	}
-};
+	};
+}
 
 // Mock ubus connection
 let mock_conn = {
@@ -142,6 +174,7 @@ function mock_capab(board) {
 	board ??= 'eap101';
 	return json(fs.readfile(sprintf("boards/%s/capabilities.json", board)));
 }
+
 
 // Mock restrictions (empty for developer mode)
 let mock_restrict = {};
@@ -381,23 +414,27 @@ let mock_wiphy;
 
 // Create test context with all mocks
 function create_test_context(overrides) {
-	// Initialize ethernet with real board capabilities (unit tests use eap101)
-	let capabilities = mock_capab(null);
+	// Initialize with board capabilities (unit tests use eap101 by default)
+	let board = 'eap101';
+	let capabilities = mock_capab(board);
 	mock_ethernet = create_ethernet(capabilities, mock_fs, null);
 
+	// Create board-specific cursor
+	let cursor = create_mock_cursor(board);
+
 	// Initialize wiphy with real board wiphy data
-	mock_wiphy = create_wiphy(mock_cursor, function(fmt, ...args) {
+	mock_wiphy = create_wiphy(cursor, function(fmt, ...args) {
 		printf("[W] " + sprintf(fmt, ...args) + "\n");
 	});
-	// Load real wiphy data from board-specific wiphy.json (unit tests always use eap101)
+	// Load real wiphy data from board-specific wiphy.json
 	try {
 		let fs_real = require("fs");
-		let wiphy_path = "boards/eap101/wiphy.json";
+		let wiphy_path = sprintf("boards/%s/wiphy.json", board);
 		let wiphy_content = fs_real.readfile(wiphy_path);
 		let wiphy_data = json(wiphy_content);
 		mock_wiphy.phys = wiphy_data;
 	} catch (e) {
-		die(sprintf("Failed to read wiphy data from %s: %s", "boards/eap101/wiphy.json", e));
+		die(sprintf("Failed to read wiphy data from %s: %s", wiphy_path, e));
 	}
 
 
@@ -417,7 +454,7 @@ function create_test_context(overrides) {
 		uci_comment,
 
 		// Mock system objects
-		cursor: mock_cursor,
+		cursor: cursor,
 		conn: mock_conn,
 		fs: mock_fs,
 		capab: capabilities,
@@ -481,17 +518,22 @@ function create_test_context(overrides) {
 }
 
 // Create board-specific test context with real device data
-function create_board_test_context(test_data, board_data, capabilities) {
+function create_board_test_context(test_data, board_data, capabilities, board_name) {
+	// Use the board name passed from the test framework, default to eap101
+	board_name ??= 'eap101';
+
 	// Initialize ethernet with actual board capabilities
 	mock_ethernet = create_ethernet(capabilities, mock_fs, null);
 
-	// Initialize wiphy with board-specific wiphy data (integration tests use board-specific file)
-	mock_wiphy = create_wiphy(mock_cursor, function(fmt, ...args) {
+	// Create board-specific cursor
+	let cursor = create_mock_cursor(board_name);
+
+	// Initialize wiphy with board-specific wiphy data
+	mock_wiphy = create_wiphy(cursor, function(fmt, ...args) {
 		printf("[W] " + sprintf(fmt, ...args) + "\n");
 	});
 	try {
 		let fs_real = require("fs");
-		let board_name = "eap101"; // TODO: make this dynamic based on board_data
 		let wiphy_path = sprintf("boards/%s/wiphy.json", board_name);
 		let wiphy_content = fs_real.readfile(wiphy_path);
 		let wiphy_data = json(wiphy_content);
@@ -506,19 +548,19 @@ function create_board_test_context(test_data, board_data, capabilities) {
 	context.board = board_data;
 	context.capab = capabilities;
 
-	// Wiphy is already set up in create_test_context with real board data
+	// Override cursor with board-specific one
+	context.cursor = cursor;
 
 	return context;
 };
 
 // Create full test context for toplevel.uc rendering
-function create_full_test_context(state, board_data, capabilities) {
-	let context = create_board_test_context({}, board_data, capabilities);
+function create_full_test_context(state, board_data, capabilities, board_name) {
+	let context = create_board_test_context({}, board_data, capabilities, board_name);
 	
 	// Add the validated state and all globals that renderer.uc passes to toplevel.uc
 	context.state = state;
 	context.location = '/';
-	context.cursor = mock_cursor;
 	context.capab = capabilities;
 	context.restrict = {};
 	context.default_config = mock_default_config;

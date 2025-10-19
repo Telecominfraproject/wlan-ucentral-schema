@@ -1,0 +1,16 @@
+{
+        "devices": [
+                {
+                        ".name": "radio0",
+                        "path": "platform/soc/c000000.wifi",
+                        "radio": null,
+                        "scanning": 0
+                },
+                {
+                        ".name": "radio1",
+                        "path": "platform/soc/c000000.wifi+1",
+                        "radio": null,
+                        "scanning": 0
+                }
+        ]
+}
