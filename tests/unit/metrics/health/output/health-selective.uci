@@ -1,0 +1,6 @@
+### generate health monitoring configuration
+set state.health.interval=120
+set state.health.dhcp_local=1
+set state.health.dhcp_remote=1
+set state.health.dns_local=0
+set state.health.dns_remote=0
