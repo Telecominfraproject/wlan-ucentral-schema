@@ -13,6 +13,7 @@ import {
 } from '../../renderer/libs/uci_helpers.uc';
 import { create_ethernet } from '../../renderer/libs/ethernet.uc';
 import { create_wiphy } from '../../renderer/libs/wiphy.uc';
+import { create_routing_table } from '../../renderer/libs/routing_table.uc';
 
 // Create mock cursor factory that uses board-specific data
 function create_mock_cursor(board) {
@@ -449,6 +450,9 @@ let mock_ethernet;
 // Create wiphy instance using shared library (initialized in test context)
 let mock_wiphy;
 
+// Create routing table instance using shared library
+let mock_routing_table;
+
 
 // Create test context with all mocks
 function create_test_context(overrides) {
@@ -474,6 +478,11 @@ function create_test_context(overrides) {
 		die(sprintf("Failed to read wiphy data from %s: %s", wiphy_path, e));
 	}
 
+	// Initialize routing table
+	mock_routing_table = create_routing_table();
+
+	// Reset mock files state for clean test runs
+	mock_files.clear_generated_files();
 
 	let result = {
 		// Basic functions
@@ -500,6 +509,7 @@ function create_test_context(overrides) {
 		services: mock_services,
 		ethernet: mock_ethernet,
 		wiphy: mock_wiphy,
+		routing_table: mock_routing_table,
 		files: mock_files,
 		events: mock_events,
 		shell: mock_shell,
@@ -577,6 +587,12 @@ function create_board_test_context(test_data, board_data, capabilities, board_na
 	} catch (e) {
 		die(sprintf("Failed to read board wiphy data from %s: %s", sprintf("boards/%s/wiphy.json", board_name), e));
 	}
+
+	// Initialize routing table
+	mock_routing_table = create_routing_table();
+
+	// Reset mock files state for clean test runs
+	mock_files.clear_generated_files();
 
 	let context = create_test_context(test_data);
 
