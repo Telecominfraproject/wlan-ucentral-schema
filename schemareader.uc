@@ -8661,52 +8661,6 @@ function instantiateServiceQualityOfService(location, value, errors) {
 	return value;
 }
 
-function instantiateServiceFacebookWifi(location, value, errors) {
-	if (type(value) == "object") {
-		let obj = {};
-
-		function parseVendorId(location, value, errors) {
-			if (type(value) != "string")
-				push(errors, [ location, "must be of type string" ]);
-
-			return value;
-		}
-
-		if (exists(value, "vendor-id")) {
-			obj.vendor_id = parseVendorId(location + "/vendor-id", value["vendor-id"], errors);
-		}
-
-		function parseGatewayId(location, value, errors) {
-			if (type(value) != "string")
-				push(errors, [ location, "must be of type string" ]);
-
-			return value;
-		}
-
-		if (exists(value, "gateway-id")) {
-			obj.gateway_id = parseGatewayId(location + "/gateway-id", value["gateway-id"], errors);
-		}
-
-		function parseSecret(location, value, errors) {
-			if (type(value) != "string")
-				push(errors, [ location, "must be of type string" ]);
-
-			return value;
-		}
-
-		if (exists(value, "secret")) {
-			obj.secret = parseSecret(location + "/secret", value["secret"], errors);
-		}
-
-		return obj;
-	}
-
-	if (type(value) != "object")
-		push(errors, [ location, "must be of type object" ]);
-
-	return value;
-}
-
 function instantiateServiceAirtimeFairness(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
@@ -10575,10 +10529,6 @@ function instantiateService(location, value, errors) {
 
 		if (exists(value, "quality-of-service")) {
 			obj.quality_of_service = instantiateServiceQualityOfService(location + "/quality-of-service", value["quality-of-service"], errors);
-		}
-
-		if (exists(value, "facebook-wifi")) {
-			obj.facebook_wifi = instantiateServiceFacebookWifi(location + "/facebook-wifi", value["facebook-wifi"], errors);
 		}
 
 		if (exists(value, "airtime-fairness")) {
