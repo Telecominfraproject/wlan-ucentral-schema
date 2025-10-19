@@ -227,7 +227,7 @@ export function report_test_error(test_name, board_name, error) {
 		printf("✗ ERROR: %s - %s\n", test_name, error);
 	}
 
-	// Show error context if available
+	// Show error context if available (same pattern as original code)
 	if (error.stacktrace && error.stacktrace[0]?.context) {
 		printf("  Error: %s\n", error.stacktrace[0].context);
 	}

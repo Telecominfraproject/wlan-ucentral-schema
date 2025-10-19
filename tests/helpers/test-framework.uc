@@ -218,7 +218,7 @@ export function FullIntegrationTestFramework(test_title, test_dir) {
 
                 let proc = fs.popen(cmd);
                 if (!proc) {
-                    report_test_error(test_name, board_name, "Failed to start test process");
+                    printf("✗ ERROR: %s (%s) - Failed to start test process\n", test_name, board_name);
                     this.test_results.failed++;
                     return;
                 }
@@ -227,8 +227,7 @@ export function FullIntegrationTestFramework(test_title, test_dir) {
                 let exit_code = proc.close();
 
                 if (exit_code !== 0) {
-                    let error_msg = sprintf("Process failed with code %d", exit_code);
-                    report_test_error(test_name, board_name, error_msg);
+                    printf("✗ ERROR: %s (%s) - Process failed with code %d\n", test_name, board_name, exit_code);
                     printf("Process output:\n%s\n", actual_output);
                     this.test_results.failed++;
                     return;
