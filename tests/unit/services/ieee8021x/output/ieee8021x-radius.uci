@@ -1,0 +1,17 @@
+# IEEE8021x service configuration
+
+add ieee8021x config 
+set ieee8021x.@config[-1].ca='/etc/ssl/ca.pem'
+set ieee8021x.@config[-1].cert='/etc/ssl/cert.pem'
+set ieee8021x.@config[-1].key='/etc/ssl/key.pem'
+set ieee8021x.@config[-1].nas_identifier='test-nas'
+set ieee8021x.@config[-1].auth_server_addr='192.168.1.10'
+set ieee8021x.@config[-1].auth_server_port='1812'
+set ieee8021x.@config[-1].auth_server_secret='secret123'
+set ieee8021x.@config[-1].acct_server_addr='192.168.1.11'
+set ieee8021x.@config[-1].acct_server_port='1813'
+set ieee8021x.@config[-1].acct_server_secret='acct_secret'
+set ieee8021x.@config[-1].coa_server_addr='192.168.1.12'
+set ieee8021x.@config[-1].coa_server_port='3799'
+set ieee8021x.@config[-1].coa_server_secret='coa_secret'
+set ieee8021x.@config[-1].mac_address_bypass=1
