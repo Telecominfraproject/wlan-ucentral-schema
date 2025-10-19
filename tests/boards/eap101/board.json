@@ -1,0 +1,68 @@
+{
+	"model": {
+		"id": "edgecore,eap101",
+		"name": "EdgeCore EAP101"
+	},
+	"led": {
+		"wlan5g": {
+			"name": "WLAN5G",
+			"sysfs": "green:wifi5",
+			"trigger": "phy0tpt"
+		},
+		"wlan2g": {
+			"name": "WLAN2G",
+			"sysfs": "green:wifi2",
+			"trigger": "phy1tpt"
+		},
+		"lan1": {
+			"name": "lan1",
+			"sysfs": "green:lan1",
+			"type": "netdev",
+			"device": "eth1",
+			"mode": "link tx rx"
+		},
+		"lan2": {
+			"name": "lan2",
+			"sysfs": "green:lan2",
+			"type": "netdev",
+			"device": "eth2",
+			"mode": "link tx rx"
+		},
+		"poe": {
+			"name": "poe",
+			"sysfs": "green:wan",
+			"type": "netdev",
+			"device": "eth0",
+			"mode": "link tx rx"
+		},
+		"power": {
+			"name": "POWER",
+			"sysfs": "green:led_pwr",
+			"default": "on"
+		}
+	},
+	"switch": {
+		"switch0": {
+			"enable": false,
+			"reset": false
+		}
+	},
+	"network": {
+		"lan": {
+			"ports": [
+				"eth1",
+				"eth2"
+			],
+			"protocol": "static",
+			"macaddr": "90:3c:b3:bb:1c:1b"
+		},
+		"wan": {
+			"device": "eth0",
+			"protocol": "dhcp",
+			"macaddr": "90:3c:b3:bb:1c:1a"
+		}
+	},
+	"system": {
+		"label_macaddr": "90:3c:b3:bb:1c:1a"
+	}
+}
