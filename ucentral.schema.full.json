@@ -18,20 +18,20 @@
             "type": "object",
             "properties": {
                 "name": {
-                    "description": "This is a free text field, stating the administrative name of the device. It may contain spaces and special characters.",
+                    "description": "The administrative name of the device used for identification and management purposes.\nThis descriptive label appears in management interfaces and system logs.\nIt may contain spaces and special characters to provide meaningful context.\nExample: \"Building A - Floor 2 - Conference Room AP\"\n",
                     "type": "string"
                 },
                 "hostname": {
-                    "description": "The hostname that shall be set on the device. If this field is not set, then the devices serial number is used.",
+                    "description": "The network hostname assigned to the device for DNS and network identification.\nMust follow standard hostname conventions (alphanumeric, hyphens, no spaces).\nIf not specified, the device's serial number will be used as the hostname.\nThis value appears in DHCP requests, mDNS broadcasts, and system prompts.\nExample: \"conference-room-ap-01\"\n",
                     "type": "string",
                     "format": "hostname"
                 },
                 "location": {
-                    "description": "This is a free text field, stating the location of the  device. It may contain spaces and special characters.",
+                    "description": "Physical location or deployment site of the device for asset tracking and maintenance.\nThis field helps technicians locate devices for service and troubleshooting.\nIt may contain spaces and special characters for detailed location information.\nExample: \"Building A, Floor 2, Room 201, Ceiling tile C3\"\n",
                     "type": "string"
                 },
                 "timezone": {
-                    "description": "This allows you to change the TZ of the device.",
+                    "description": "System timezone configuration that determines local time for logs, scheduled tasks, and reports.\nAccepts standard timezone identifiers (e.g., \"UTC\", \"America/New_York\") or POSIX TZ strings.\nProper timezone setting ensures accurate timestamps and correct execution of time-based rules.\nIf not specified, the device defaults to UTC.\n",
                     "type": "string",
                     "examples": [
                         "UTC",
@@ -40,17 +40,17 @@
                     ]
                 },
                 "leds-active": {
-                    "description": "This allows forcing all LEDs off.",
+                    "description": "Controls the operational state of all LED indicators on the device.\nWhen set to true (default), LEDs operate normally showing system status.\nWhen set to false, all LEDs are disabled for environments requiring minimal light emission.\nUseful in hospitality settings, bedrooms, or light-sensitive installations.\n",
                     "type": "boolean",
                     "default": true
                 },
                 "random-password": {
-                    "description": "The device shall create a random root password and tell the gateway about it.",
+                    "description": "Enables automatic generation of a secure random password for the root/admin account.\nWhen enabled, the device generates a cryptographically strong password at boot\nand reports it to the management gateway for secure storage and retrieval.\nThis enhances security by ensuring each device has a unique administrative password.\nCannot be used together with system-password.\n",
                     "type": "boolean",
                     "default": false
                 },
                 "system-password": {
-                    "description": "System-config string that holds the password for main (root / admin) user to apply.",
+                    "description": "Sets a specific password for the root/admin account on the device.\nThe password should be provided in plaintext and will be securely hashed on the device.\nUse this for environments requiring a standardized administrative password.\nFor enhanced security, consider using random-password instead.\nCannot be used together with random-password.\nExample: \"MySecureP@ssw0rd!\"\n",
                     "type": "string"
                 },
                 "beacon-advertisement": {
@@ -58,15 +58,15 @@
                     "type": "object",
                     "properties": {
                         "device-name": {
-                            "description": "Add an IE containing the device's name to beacons.",
+                            "description": "Includes the device's administrative name in WiFi beacon frames as a vendor-specific\nInformation Element (IE). This allows WiFi scanners and management tools to identify\nthe device without authentication. Useful for troubleshooting and site surveys.\n",
                             "type": "boolean"
                         },
                         "device-serial": {
-                            "description": "Add an IE containing the device's serial to beacons.",
+                            "description": "Includes the device's serial number in WiFi beacon frames as a vendor-specific\nInformation Element (IE). This enables automated inventory management and device\ndiscovery by management systems scanning the wireless environment.\n",
                             "type": "boolean"
                         },
                         "network-id": {
-                            "description": "A provider specific ID for the network/venue that the device is part of.",
+                            "description": "A provider-defined numeric identifier for the network or venue where the device operates.\nThis ID is broadcast in beacon frames to help client devices and management systems\nidentify which network group or location the access point belongs to.\nUseful for multi-venue deployments or network segmentation.\nExample: 12345 for \"Campus Network A\"\n",
                             "type": "integer"
                         }
                     }
@@ -4605,20 +4605,20 @@
                     "type": "object",
                     "properties": {
                         "wifi-ssid": {
-                            "description": "The name of the admin ssid.",
+                            "description": "The SSID (network name) for the administrative WiFi interface. This creates\na special recovery network that allows device access even when the main\nconfiguration has issues. The interface will be created with a static IP\n(10.254.254.1/24) and basic services (SSH, HTTP) enabled.\nExample: \"Admin-Network\" or \"Recovery-WiFi\"\n",
                             "type": "string",
                             "default": "Maverick",
                             "maxLength": 32,
                             "minLength": 1
                         },
                         "wifi-key": {
-                            "description": "The Pre Shared Key (PSK) that is used for encryption on the BSS.",
+                            "description": "The Pre Shared Key (PSK) used for WPA2 encryption on the admin interface.\nIf not specified, the network will be open (no encryption). When set, the\nadmin WiFi network will use WPA2-PSK security. Must be between 8-63 characters.\nExample: \"SecureAdminPassword123\"\n",
                             "type": "string",
                             "maxLength": 63,
                             "minLength": 8
                         },
                         "wifi-bands": {
-                            "description": "The band that the SSID should be broadcasted on. The configuration layer will use the first matching band.",
+                            "description": "The radio bands on which the admin SSID should be broadcast. The system will\nuse the first available matching band from the list. If not specified, defaults\nto both 2.4GHz and 5GHz bands for maximum compatibility.\nExample: [\"5G\"] for 5GHz-only operation, or [\"2G\", \"5G\"] for dual-band\n",
                             "type": "array",
                             "items": {
                                 "type": "string",
@@ -4633,7 +4633,7 @@
                             }
                         },
                         "offline-trigger": {
-                            "description": "The admin-ui will be spawned when this offline threshold was exceeded.",
+                            "description": "The time threshold (in seconds) that triggers automatic admin UI activation\nwhen the device loses connectivity. When the device is offline for longer than\nthis duration, the admin interface will automatically become available to allow\nlocal recovery access. This helps recover devices that have lost remote management.\nExample: 300 for 5 minutes, 3600 for 1 hour\n",
                             "type": "number"
                         }
                     }
@@ -5053,16 +5053,21 @@
             "type": "object",
             "properties": {
                 "statistics": {
-                    "description": "Statistics are traffic counters, neighbor tables, ...",
+                    "description": "Configure periodic statistics collection and reporting. This metric enables \nmonitoring of various system subsystems and network components through regular \ndata collection intervals. Statistics include traffic counters, client \nassociations, neighbor information, and other operational metrics that help \ntrack system health and performance.\n",
                     "type": "object",
                     "properties": {
                         "interval": {
-                            "description": "The reporting interval defined in seconds.",
+                            "description": "The reporting interval in seconds that defines how frequently statistics \nare collected and reported. This controls the balance between monitoring \ngranularity and system resource usage.\n\nMinimum value is 60 seconds to prevent excessive system load. Common \nvalues are 300 seconds (5 minutes) for regular monitoring or 120 seconds \n(2 minutes) for more detailed tracking.\n",
                             "type": "integer",
-                            "minimum": 60
+                            "minimum": 60,
+                            "examples": [
+                                120,
+                                300,
+                                600
+                            ]
                         },
                         "types": {
-                            "description": "A list of names of subsystems that shall be reported periodically.",
+                            "description": "Array of subsystem types to monitor and report statistics for. Each type \nrepresents a different category of operational data that can be collected \nindependently.\n\nAvailable statistics types:\n- ssids: Wireless network statistics including client counts, traffic \n  volumes, and association metrics per SSID\n- lldp: Link Layer Discovery Protocol information about neighboring \n  network devices and topology\n- clients: Connected client device information including association \n  status, signal strength, and traffic statistics  \n- tid-stats: Traffic Identifier statistics for analyzing different \n  types of network traffic flows and QoS metrics\n",
                             "type": "array",
                             "items": {
                                 "type": "string",
@@ -5071,48 +5076,63 @@
                                     "lldp",
                                     "clients",
                                     "tid-stats"
+                                ],
+                                "examples": [
+                                    [
+                                        "ssids",
+                                        "clients"
+                                    ],
+                                    [
+                                        "lldp"
+                                    ],
+                                    [
+                                        "ssids",
+                                        "lldp",
+                                        "clients",
+                                        "tid-stats"
+                                    ]
                                 ]
                             }
                         }
                     }
                 },
                 "health": {
-                    "description": "Health check gets executed periodically and will report a health value between 0-100 indicating how healthy the device thinks it is",
+                    "description": "Health monitoring configuration for periodic system health assessment and reporting.\nThe health monitoring system performs various connectivity and service checks, then\nreports an overall health score between 0-100 indicating device operational status.\nThis enables proactive monitoring of network connectivity, DHCP functionality, and\nDNS resolution capabilities for troubleshooting and maintenance purposes.\n",
                     "type": "object",
                     "properties": {
                         "interval": {
-                            "description": "The reporting interval defined in seconds.",
+                            "description": "Health check execution and reporting interval in seconds.\nDefines how frequently the system performs all enabled health checks\nand reports the calculated health score to the management system.\nLower values provide more responsive monitoring but increase system overhead.\nExample: 300 seconds (5 minutes) provides balanced monitoring frequency.\n",
                             "type": "integer",
                             "minimum": 60
                         },
                         "dhcp-local": {
-                            "description": "This is makes the AP probe local downstream DHCP servers.",
+                            "description": "Enable probing of local downstream DHCP servers for connectivity verification.\nWhen enabled, the access point periodically attempts to contact DHCP servers\non downstream (LAN) interfaces to verify they are responsive and functioning.\nThis helps detect issues with local DHCP infrastructure that could impact\nclient connectivity and IP address assignment.\nExample: Enable to monitor internal DHCP server health on LAN networks.\n",
                             "type": "boolean",
                             "default": true
                         },
                         "dhcp-remote": {
-                            "description": "This is makes the AP probe remote upstream DHCP servers.",
+                            "description": "Enable probing of remote upstream DHCP servers for connectivity verification.\nWhen enabled, the access point attempts to contact DHCP servers on upstream\n(WAN) interfaces to verify external DHCP infrastructure availability.\nThis helps detect issues with ISP or upstream network DHCP services that\ncould affect the access point's own IP address acquisition and connectivity.\nExample: Enable to monitor upstream ISP DHCP server availability.\n",
                             "type": "boolean",
                             "default": false
                         },
                         "dns-local": {
-                            "description": "This is makes the AP probe DNS servers.",
+                            "description": "Enable probing of local DNS servers for name resolution verification.\nWhen enabled, the access point performs DNS queries against local DNS servers\n(typically on downstream interfaces) to verify they are responsive and can\nresolve domain names correctly. This helps detect DNS infrastructure issues\nthat could impact client internet connectivity and application functionality.\nExample: Enable to monitor local DNS server health and resolution capability.\n",
                             "type": "boolean",
                             "default": true
                         },
                         "dns-remote": {
-                            "description": "This is makes the AP probe DNS servers.",
+                            "description": "Enable probing of remote DNS servers for external name resolution verification.\nWhen enabled, the access point performs DNS queries against external DNS servers\n(typically public DNS servers like 8.8.8.8 or ISP DNS servers) to verify\ninternet connectivity and external domain name resolution capability.\nThis helps detect upstream connectivity issues that could prevent clients\nfrom accessing internet resources and web services.\nExample: Enable to monitor external DNS connectivity and internet reachability.\n",
                             "type": "boolean",
                             "default": true
                         }
                     }
                 },
                 "wifi-frames": {
-                    "description": "Define which types of ieee802.11 management frames shall be sent up to the controller.",
+                    "description": "Configure IEEE 802.11 management frame monitoring and reporting. This metric \nenables selective capture and forwarding of specific WiFi management frame \ntypes to the cloud for analysis, troubleshooting, and security monitoring.\nWhen no filters are specified, all management frames are captured using a \nwildcard filter.\n",
                     "type": "object",
                     "properties": {
                         "filters": {
-                            "description": "A list of the management frames types that shall be sent to the backend.",
+                            "description": "Array of IEEE 802.11 management frame types to monitor and forward to \nthe backend. Each frame type represents a specific category of wireless \nmanagement activity that can be captured for analysis.\n\nAvailable frame types:\n- probe: Probe request/response frames for network discovery\n- auth: Authentication frames during connection establishment\n- assoc: Association request/response frames for client connection\n- disassoc: Disassociation frames when clients disconnect normally\n- deauth: Deauthentication frames for forced disconnections\n- local-deauth: Locally initiated deauthentication events\n- inactive-deauth: Deauthentication due to client inactivity\n- key-mismatch: Authentication failures due to incorrect credentials\n- beacon-report: Beacon report frames for radio environment monitoring\n- radar-detected: Radar detection events affecting channel usage\n- sta-authorized: Station authorization completion events\n- ft-finish: Fast transition (802.11r) completion events\n\nIf no filters are specified, all management frames are captured using \na wildcard '*' filter. The first specified filter replaces the default \nconfiguration, and subsequent filters are added to the list.\n",
                             "type": "array",
                             "items": {
                                 "type": "string",
@@ -5129,6 +5149,21 @@
                                     "radar-detected",
                                     "sta-authorized",
                                     "ft-finish"
+                                ],
+                                "examples": [
+                                    [
+                                        "probe",
+                                        "auth",
+                                        "assoc"
+                                    ],
+                                    [
+                                        "deauth",
+                                        "local-deauth",
+                                        "key-mismatch"
+                                    ],
+                                    [
+                                        "beacon-report"
+                                    ]
                                 ]
                             }
                         }
@@ -5157,49 +5192,74 @@
                     }
                 },
                 "wifi-scan": {
-                    "description": "Define the behaviour of the periodic wifi scanning interface.",
+                    "description": "Configure periodic WiFi environment scanning for site surveys and RF \nanalysis. This metric enables automatic scanning of surrounding wireless \nnetworks to collect information about neighboring access points, channel \nutilization, and radio environment conditions. The collected scan data \nhelps with channel optimization, interference analysis, and network planning.\n",
                     "type": "object",
                     "properties": {
                         "interval": {
-                            "description": "The periodicity at which the scan shall be performed.",
-                            "type": "integer"
+                            "description": "The scanning interval in seconds that defines how frequently WiFi \nenvironment scans are performed. This controls the balance between \nmaintaining current RF awareness and minimizing scanning overhead \non the radio interfaces.\n\nTypical values range from 60 seconds (1 minute) for detailed monitoring \nin dynamic environments to 600 seconds (10 minutes) or more for stable \nenvironments. Frequent scanning provides better RF intelligence but may \nimpact client performance during scan periods.\n",
+                            "type": "integer",
+                            "examples": [
+                                60,
+                                120,
+                                300,
+                                600
+                            ]
                         },
                         "verbose": {
-                            "description": "Add capabilities, v/ht_oper, ... to the resulting scan info.",
-                            "type": "boolean"
+                            "description": "Enable collection of detailed capability and operational information \nfrom discovered access points. When enabled, the scan results include \nadditional technical details beyond basic network identification.\n\nVerbose information includes:\n- Device capabilities and supported features\n- HT (High Throughput) and VHT (Very High Throughput) operation parameters\n- Channel width and MIMO configuration details\n- Advanced 802.11 feature support\n\nThis detailed information is valuable for comprehensive RF analysis \nand competitive intelligence but increases data volume and processing \noverhead. Defaults to false.\n",
+                            "type": "boolean",
+                            "default": false
                         },
                         "information-elements": {
-                            "description": "Add all IEs to the resulting scan info.",
-                            "type": "boolean"
+                            "description": "Include raw Information Elements (IEs) from beacon and probe response \nframes in the scan results. Information Elements contain detailed \ntechnical parameters and vendor-specific data from each discovered \naccess point.\n\nWhen enabled, the complete IE data provides the most comprehensive \nview of neighboring networks, including vendor extensions, advanced \nfeatures, and non-standard implementations. This is particularly \nuseful for:\n- Deep RF analysis and troubleshooting\n- Vendor identification and feature detection  \n- Security analysis and compliance monitoring\n- Research and development purposes\n\nNote that raw IE data significantly increases the size of scan results \nand should be used judiciously. Defaults to false.\n",
+                            "type": "boolean",
+                            "default": false
                         }
                     }
                 },
                 "telemetry": {
-                    "description": "Configure the unsolicited telemetry stream.",
+                    "description": "Configure unsolicited telemetry streaming for continuous monitoring and \nanalysis. This metric enables bulk collection and forwarding of event data \nto the cloud at regular intervals, providing continuous visibility into \ndevice operations and network behavior. Events are validated against the \nsystem's event registry before being configured for streaming.\n",
                     "type": "object",
                     "properties": {
                         "interval": {
-                            "description": "The reporting interval defined in seconds.",
-                            "type": "integer"
+                            "description": "The reporting interval in seconds that controls how frequently telemetry \ndata is collected and transmitted to the cloud. This setting balances \nmonitoring frequency with bandwidth usage and system performance.\n\nTypical values range from 120 seconds (2 minutes) for detailed monitoring \nto 600 seconds (10 minutes) for standard operational telemetry. The \ninterval should be chosen based on monitoring requirements and network \ncapacity.\n",
+                            "type": "integer",
+                            "examples": [
+                                120,
+                                300,
+                                600,
+                                900
+                            ]
                         },
                         "types": {
-                            "description": "The event types that get added to telemetry.",
+                            "description": "Array of event type identifiers to include in the telemetry stream.\nOnly event types that exist in the system's event registry (/etc/events.json)\nwill be configured - invalid types are silently filtered out.\n\nEvent types represent different categories of operational data:\n- client.associate, client.disassociate: WiFi client connection events\n- wifi.start, wifi.stop: WiFi interface state changes\n- dhcp.ack, dhcp.discover: DHCP transaction events  \n- dns.query: DNS lookup events\n- Various system and network operational events\n\nThe telemetry stream aggregates these events for bulk transmission,\nunlike realtime metrics which forward events immediately.\n",
                             "type": "array",
                             "items": {
-                                "type": "string"
+                                "type": "string",
+                                "examples": [
+                                    "client.associate",
+                                    "wifi.start",
+                                    "dhcp.ack",
+                                    "dns.query"
+                                ]
                             }
                         }
                     }
                 },
                 "realtime": {
-                    "description": "Configure the realtime events that get sent to the cloud.",
+                    "description": "Configure realtime event monitoring and reporting. This metric enables \nfiltering and forwarding of specific event types to the cloud for real-time \nmonitoring and analysis. Events are validated against the system's available \nevent registry before being configured for forwarding.\n",
                     "type": "object",
                     "properties": {
                         "types": {
-                            "description": "The event types that get added to telemetry.",
+                            "description": "Array of event type identifiers to monitor and forward in real-time.\nOnly event types that exist in the system's event registry (/etc/events.json)\nwill be configured - invalid types are silently filtered out.\n\nCommon event types include:\n- client.associate, client.disassociate: WiFi client connection events\n- wifi.start, wifi.stop: WiFi interface state changes  \n- dhcp.ack, dhcp.discover: DHCP transaction events\n- dns.query: DNS lookup events\n",
                             "type": "array",
                             "items": {
-                                "type": "string"
+                                "type": "string",
+                                "examples": [
+                                    "client.associate",
+                                    "wifi.start",
+                                    "dhcp.ack"
+                                ]
                             }
                         }
                     }
@@ -5248,20 +5308,34 @@
             }
         },
         "timeouts": {
-            "description": "A device has certain properties that describe its identity and location. These properties are described inside this object.",
+            "description": "Configuration for device-to-cloud connection timeouts and retry behavior.\nThese settings control how the device handles loss of connectivity to the\nmanagement cloud and its recovery mechanisms.\n",
             "type": "object",
             "properties": {
                 "offline": {
-                    "description": "How long can the device be offline before it enters orphan state.",
-                    "type": "integer"
+                    "description": "Maximum duration (in seconds) the device can remain disconnected from the cloud\nbefore transitioning to orphan state. During this offline period, the device\ncontinues normal operation using its last known configuration. Once this timeout\nexpires, the device enters orphan mode and begins active cloud discovery.\nA longer timeout reduces unnecessary discovery attempts during temporary outages.\nExample: 3600 (1 hour) allows for brief network maintenance without triggering orphan mode.\n",
+                    "type": "integer",
+                    "examples": [
+                        3600,
+                        7200
+                    ]
                 },
                 "orphan": {
-                    "description": "The interval at which an orphaned device will try to discover the cloud.",
-                    "type": "integer"
+                    "description": "Retry interval (in seconds) for cloud discovery attempts when the device is in\norphan state. After losing cloud connectivity beyond the offline timeout, the\ndevice periodically attempts to re-establish connection at this interval.\nShorter intervals provide faster recovery but increase network traffic and CPU usage.\nExample: 120 (2 minutes) balances quick recovery with resource efficiency.\n",
+                    "type": "integer",
+                    "examples": [
+                        60,
+                        120,
+                        300
+                    ]
                 },
                 "validate": {
-                    "description": "How long the client has time to connect to the cloud before discovery is restarted.",
-                    "type": "integer"
+                    "description": "Grace period (in seconds) for the device to successfully connect to the cloud\nafter discovering it. If connection is not established within this timeout,\nthe device restarts the discovery process. This prevents the device from getting\nstuck attempting to connect to an unreachable cloud endpoint.\nExample: 60 (1 minute) provides reasonable time for TLS handshake and authentication.\n",
+                    "type": "integer",
+                    "examples": [
+                        30,
+                        60,
+                        90
+                    ]
                 }
             }
         },

@@ -3935,7 +3935,12 @@
             "properties": {
                 "interval": {
                     "type": "integer",
-                    "minimum": 60
+                    "minimum": 60,
+                    "examples": [
+                        120,
+                        300,
+                        600
+                    ]
                 },
                 "types": {
                     "type": "array",
@@ -3946,6 +3951,21 @@
                             "lldp",
                             "clients",
                             "tid-stats"
+                        ],
+                        "examples": [
+                            [
+                                "ssids",
+                                "clients"
+                            ],
+                            [
+                                "lldp"
+                            ],
+                            [
+                                "ssids",
+                                "lldp",
+                                "clients",
+                                "tid-stats"
+                            ]
                         ]
                     }
                 }
@@ -3996,6 +4016,21 @@
                             "radar-detected",
                             "sta-authorized",
                             "ft-finish"
+                        ],
+                        "examples": [
+                            [
+                                "probe",
+                                "auth",
+                                "assoc"
+                            ],
+                            [
+                                "deauth",
+                                "local-deauth",
+                                "key-mismatch"
+                            ],
+                            [
+                                "beacon-report"
+                            ]
                         ]
                     }
                 }
@@ -4025,13 +4060,21 @@
             "type": "object",
             "properties": {
                 "interval": {
-                    "type": "integer"
+                    "type": "integer",
+                    "examples": [
+                        60,
+                        120,
+                        300,
+                        600
+                    ]
                 },
                 "verbose": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "default": false
                 },
                 "information-elements": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "default": false
                 }
             }
         },
@@ -4039,12 +4082,24 @@
             "type": "object",
             "properties": {
                 "interval": {
-                    "type": "integer"
+                    "type": "integer",
+                    "examples": [
+                        120,
+                        300,
+                        600,
+                        900
+                    ]
                 },
                 "types": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "string",
+                        "examples": [
+                            "client.associate",
+                            "wifi.start",
+                            "dhcp.ack",
+                            "dns.query"
+                        ]
                     }
                 }
             }
@@ -4055,7 +4110,12 @@
                 "types": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "string",
+                        "examples": [
+                            "client.associate",
+                            "wifi.start",
+                            "dhcp.ack"
+                        ]
                     }
                 }
             }
@@ -4130,13 +4190,27 @@
             "type": "object",
             "properties": {
                 "offline": {
-                    "type": "integer"
+                    "type": "integer",
+                    "examples": [
+                        3600,
+                        7200
+                    ]
                 },
                 "orphan": {
-                    "type": "integer"
+                    "type": "integer",
+                    "examples": [
+                        60,
+                        120,
+                        300
+                    ]
                 },
                 "validate": {
-                    "type": "integer"
+                    "type": "integer",
+                    "examples": [
+                        30,
+                        60,
+                        90
+                    ]
                 }
             }
         }
