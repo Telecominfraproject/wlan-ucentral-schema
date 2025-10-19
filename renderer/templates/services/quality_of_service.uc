@@ -78,7 +78,6 @@ function generate_qosify_rules() {
 	if (!has_qos_enabled())
 		return;
 	
-	let fs = require("fs");
 	let file = fs.open("/tmp/qosify.conf", "w");
 	
 	// Generate classifier rules

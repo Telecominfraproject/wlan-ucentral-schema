@@ -1,6 +1,4 @@
 {%
-	let fs = require('fs');
-
 	// reject the config if there is no valid upstream configuration
 	if (!state.uuid) {
 		state.strict = true;
@@ -173,7 +171,6 @@
 	iterate_interfaces("upstream");
 	iterate_interfaces("downstream");
 
-	let fs = require('fs');
 	for (let name in fs.glob('/usr/share/ucentral/templates/third-party/*.uc')) {
 		name = split(fs.basename(name), '.')[0];
 		let config = state.third_party ? state.third_party[name] : {};

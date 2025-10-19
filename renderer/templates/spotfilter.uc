@@ -43,7 +43,6 @@ for (let name, data in captive.interfaces) {
 	for (let ipaddr in data.walled_garden_ipaddr)
 		push(config.config.whitelist[0].address, ipaddr);
 
-	let fs = require('fs');
 	let file = fs.open('/tmp/spotfilter-' + name + '.json', 'w');
 	file.write(config);
 	file.close();

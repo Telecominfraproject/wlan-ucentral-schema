@@ -9,7 +9,6 @@ function radius_proxy_tlv(server, port, name) {
 
 captive.interface(section, config);
 let name = split(section, '_')[0];
-let fs = require('fs');
 
 if (config.web_root) {
 	fs.mkdir('/tmp/ucentral/www-uspot');
