@@ -1,11 +1,34 @@
-description:
-  Define which types of ieee802.11 management frames shall be sent up to the
-  controller.
+description: |
+  Configure IEEE 802.11 management frame monitoring and reporting. This metric 
+  enables selective capture and forwarding of specific WiFi management frame 
+  types to the cloud for analysis, troubleshooting, and security monitoring.
+  When no filters are specified, all management frames are captured using a 
+  wildcard filter.
 type: object
 properties:
   filters:
-    description:
-      A list of the management frames types that shall be sent to the backend.
+    description: |
+      Array of IEEE 802.11 management frame types to monitor and forward to 
+      the backend. Each frame type represents a specific category of wireless 
+      management activity that can be captured for analysis.
+      
+      Available frame types:
+      - probe: Probe request/response frames for network discovery
+      - auth: Authentication frames during connection establishment
+      - assoc: Association request/response frames for client connection
+      - disassoc: Disassociation frames when clients disconnect normally
+      - deauth: Deauthentication frames for forced disconnections
+      - local-deauth: Locally initiated deauthentication events
+      - inactive-deauth: Deauthentication due to client inactivity
+      - key-mismatch: Authentication failures due to incorrect credentials
+      - beacon-report: Beacon report frames for radio environment monitoring
+      - radar-detected: Radar detection events affecting channel usage
+      - sta-authorized: Station authorization completion events
+      - ft-finish: Fast transition (802.11r) completion events
+      
+      If no filters are specified, all management frames are captured using 
+      a wildcard '*' filter. The first specified filter replaces the default 
+      configuration, and subsequent filters are added to the list.
     type: array
     items:
       type: string
@@ -22,3 +45,7 @@ properties:
         - radar-detected
         - sta-authorized
         - ft-finish
+      examples:
+        - ["probe", "auth", "assoc"]
+        - ["deauth", "local-deauth", "key-mismatch"]
+        - ["beacon-report"]
