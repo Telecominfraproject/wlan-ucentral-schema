@@ -1,0 +1,19 @@
+{
+  "template_vars": {
+    "lldp": {
+      "describe": "Test AP Description",
+      "location": "Building A, Floor 2"
+    }
+  },
+  "state": {
+    "interfaces": [
+      {
+        "role": "upstream",
+        "services": ["lldp"],
+        "ethernet": [
+          {"select_ports": ["WAN1"]}
+        ]
+      }
+    ]
+  }
+}
