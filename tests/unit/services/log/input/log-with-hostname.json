@@ -1,0 +1,14 @@
+{
+  "template_vars": {
+    "log": {
+      "host": "syslog.example.com",
+      "port": "1514",
+      "proto": "tcp", 
+      "size": "500",
+      "priority": "info"
+    }
+  },
+  "state": {
+    "unit": {}
+  }
+}
