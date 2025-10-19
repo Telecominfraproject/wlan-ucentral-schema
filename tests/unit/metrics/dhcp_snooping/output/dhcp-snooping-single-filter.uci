@@ -1,0 +1,8 @@
+# DHCP Snooping configuration
+set event.dhcp=event
+set event.dhcp.type=dhcp
+set event.dhcp.filter='*'
+add dhcpsnoop device
+set dhcpsnoop.@device[-1].name='downstream'
+set dhcpsnoop.@device[-1].ingress=1
+set dhcpsnoop.@device[-1].egress=1

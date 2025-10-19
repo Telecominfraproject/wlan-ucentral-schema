@@ -7,7 +7,7 @@
 set event.dhcp=event
 set event.dhcp.type=dhcp
 set event.dhcp.filter='*'
-{% for (let n, filter in dhcp_snooping.filters): %}
+{% for (let n, filter in (dhcp_snooping?.filters || [])): %}
 {{ n ? 'add_list' : 'set' }} event.dhcp.filter={{ filter }}
 {% endfor %}
 
