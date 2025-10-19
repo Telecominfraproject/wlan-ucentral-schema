@@ -1,22 +1,29 @@
 description:
-  This section can be used to configure the online check service.
+  Configure the online check service that monitors internet connectivity and
+  triggers recovery actions when connectivity is lost. The service periodically
+  tests connectivity using ping and/or HTTP download checks.
 type: object
 properties:
   ping-hosts:
     description:
-      Hosts that shall be pinged to find out if we are online.
+      List of host addresses to ping for connectivity testing. The service
+      sends ICMP ping requests to these hosts to determine if the device
+      has internet connectivity. Common choices are public DNS servers.
     type: array
     items:
       type: string
       format: uc-host
       examples:
-      - 192.168.1.10
+      - 8.8.8.8
+      - 1.1.1.1
+      - 192.168.1.1
   download-hosts:
     description:
-      URLs to which a http/s connection shall be established to
-      find out if we are online. The service will try to download
-      http://$string/online.txt and expects the content of that
-      file to be "Ok". HTTP 30x is support allowing https redirects.
+      List of hostnames for HTTP-based connectivity testing. The service
+      attempts to download http://$hostname/online.txt from each host and
+      expects the response content to be "Ok". This method can detect
+      captive portals and DNS issues that ping tests might miss. Supports
+      HTTP 30x redirects including HTTPS upgrades.
     type: array
     items:
       type: string
@@ -24,19 +31,25 @@ properties:
       - www.example.org
   check-interval:
     description:
-      The interval in seconds in between each online-check.
+      Time interval in seconds between connectivity checks. Lower values
+      provide faster detection of connectivity issues but increase system
+      load and network traffic.
     type: number
     default: 60
   check-threshold:
     description:
-      How often does the online check need to fail until the system
-      assumes that it has lost online connectivity.
+      Number of consecutive failed connectivity tests required before
+      the system considers itself offline and triggers recovery actions.
+      Higher values reduce false positives from temporary network issues.
     type: number
     default: 1
   action:
     description:
-      The action that the device shall execute when it has detected
-      that it is not online.
+      Recovery actions to execute when connectivity loss is detected.
+      Multiple actions can be specified and will be performed in sequence
+      to attempt to restore connectivity. Available actions are 'wifi'
+      (restart wireless interfaces) and 'leds' (flash LED indicators
+      to signal connectivity issues).
     type: array
     items:
       type: string
