@@ -413,7 +413,8 @@ export function build_context(config) {
 		captive: config.captive,
 		files: config.files,
 		events: config.events,
-		shell: config.shell
+		shell: config.shell,
+		math: config.math
 	};
 
 	// Add optional integration-specific properties if present

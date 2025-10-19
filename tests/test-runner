@@ -117,18 +117,6 @@ function print_usage() {
 	printf("  ./test-runner full copy-to-expected # Integration tests + copy outputs\n");
 }
 
-function copy_debug_to_expected(config) {
-	printf("\n=== Copying Debug Output to Expected ===\n");
-
-	if (config.run_full) {
-		copy_integration_outputs();
-	}
-
-	if (config.run_unit) {
-		copy_unit_outputs();
-	}
-}
-
 function copy_integration_outputs() {
 	printf("Copying integration test outputs...\n");
 
@@ -197,6 +185,18 @@ function copy_unit_outputs() {
 	}
 
 	printf("Copied %d unit test outputs\n", copied);
+}
+
+function copy_debug_to_expected(config) {
+	printf("\n=== Copying Debug Output to Expected ===\n");
+
+	if (config.run_full) {
+		copy_integration_outputs();
+	}
+
+	if (config.run_unit) {
+		copy_unit_outputs();
+	}
 }
 
 let total_results = {
