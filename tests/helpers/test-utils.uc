@@ -14,8 +14,6 @@ import { create_wiphy } from '../../renderer/libs/wiphy.uc';
 import { create_routing_table } from '../../renderer/libs/routing_table.uc';
 import { create_captive } from '../../renderer/libs/captive.uc';
 
-// Real filesystem access for reading actual board configuration files
-let fs_real = require("fs");
 
 // Mock toplevel initialization logic
 // Initializes interface arrays and sets up VLAN properties like toplevel.uc
@@ -47,7 +45,7 @@ export function read_board_file(path, file_type) {
 	}
 
 	try {
-		return fs_real.readfile(real_path);
+		return fs.readfile(real_path);
 	} catch (e) {
 		die(sprintf("Failed to read %s file: %s (%s)", file_type, real_path, e));
 	}
@@ -80,7 +78,7 @@ export function load_board_capabilities(board_name) {
 export function load_board_data(board_name) {
 	board_name ??= 'eap101';
 	try {
-		return json(fs_real.readfile(sprintf("boards/%s/board.json", board_name)));
+		return json(fs.readfile(sprintf("boards/%s/board.json", board_name)));
 	} catch (e) {
 		die(sprintf("Failed to load board data for %s: %s", board_name, e));
 	}
@@ -91,7 +89,7 @@ export function load_wiphy_data(board_name) {
 	board_name ??= 'eap101';
 	try {
 		let wiphy_path = sprintf("boards/%s/wiphy.json", board_name);
-		let wiphy_content = fs_real.readfile(wiphy_path);
+		let wiphy_content = fs.readfile(wiphy_path);
 		return json(wiphy_content);
 	} catch (e) {
 		die(sprintf("Failed to read wiphy data for %s: %s", board_name, e));
@@ -272,7 +270,7 @@ export function create_diff_files(test_name, board_name, expected_output, actual
 export function load_test_files(test_dir, input_file, expected_file, board_name) {
 	// Load input file
 	let input_path = sprintf("%s/%s", test_dir, input_file);
-	let test_data = json(fs_real.readfile(input_path));
+	let test_data = json(fs.readfile(input_path));
 
 	// Load expected output file
 	let output_path = expected_file;
@@ -282,7 +280,7 @@ export function load_test_files(test_dir, input_file, expected_file, board_name)
 		output_path = sprintf("%s/%s", test_dir, expected_file);
 	}
 
-	let expected_output = fs_real.readfile(output_path);
+	let expected_output = fs.readfile(output_path);
 	if (expected_output === null || expected_output === false) {
 		expected_output = "";
 	}
@@ -296,8 +294,8 @@ export function load_test_files(test_dir, input_file, expected_file, board_name)
 // Board data loading utilities - eliminates duplication in integration tests
 export function load_test_board_data(board_name) {
 	let board_dir = sprintf("boards/%s", board_name);
-	let board_data = json(fs_real.readfile(sprintf("%s/board.json", board_dir)));
-	let capabilities = json(fs_real.readfile(sprintf("%s/capabilities.json", board_dir)));
+	let board_data = json(fs.readfile(sprintf("%s/board.json", board_dir)));
+	let capabilities = json(fs.readfile(sprintf("%s/capabilities.json", board_dir)));
 
 	return {
 		board_data,
@@ -311,7 +309,7 @@ export function process_test_output(context, template_path, test_name, test_dir,
 	context.files.clear_generated_files();
 
 	// Render template
-	let abs_path = fs_real.realpath ? fs_real.realpath(template_path) : template_path;
+	let abs_path = fs.realpath ? fs.realpath(template_path) : template_path;
 	let output = render(abs_path, context);
 
 	// Add generated files to output
