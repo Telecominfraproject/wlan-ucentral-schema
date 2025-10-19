@@ -409,6 +409,13 @@ function create_test_context(overrides) {
 				result[service_name] = service_config;
 			}
 		}
+		
+		// Extract individual metrics from metrics object
+		if (overrides.metrics) {
+			for (let metric_name, metric_config in overrides.metrics) {
+				result[metric_name] = metric_config;
+			}
+		}
 	}
 	
 	// Set test state in services mock for lookup_interfaces
