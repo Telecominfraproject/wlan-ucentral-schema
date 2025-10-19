@@ -1,13 +1,11 @@
-#!/usr/bin/env ucode
-
 // WiFi frames metrics template unit tests
 
 "use strict";
 
 import { TestFramework, create_metric_test_cases } from '../../../helpers/test-framework.uc';
 
-function main() {
-	let framework = TestFramework("../../../../renderer/templates/metric/wifi_frames.uc", "WiFi Frames Metrics Template Tests");
+export function run_tests() {
+	let framework = TestFramework("../renderer/templates/metric/wifi_frames.uc", "WiFi Frames Metrics Template Tests", "unit/metrics/wifi_frames");
 	
 	let test_cases = create_metric_test_cases("wifi_frames", [
 		"wifi-frames-basic",
@@ -18,7 +16,5 @@ function main() {
 		"wifi-frames-security-events"
 	]);
 	
-	framework.run_tests(test_cases);
-}
-
-main();
+	return framework.run_tests(test_cases);
+};

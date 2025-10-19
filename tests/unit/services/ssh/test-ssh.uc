@@ -1,13 +1,11 @@
-#!/usr/bin/env ucode
-
 // SSH service template unit tests
 
 "use strict";
 
 import { TestFramework, create_service_test_cases } from '../../../helpers/test-framework.uc';
 
-function main() {
-	let framework = TestFramework("../../../../renderer/templates/services/ssh.uc", "SSH Service Template Tests");
+export function run_tests() {
+	let framework = TestFramework("../renderer/templates/services/ssh.uc", "SSH Service Template Tests", "unit/services/ssh");
 	
 	let test_cases = create_service_test_cases("ssh", [
 		"ssh-basic",
@@ -16,7 +14,5 @@ function main() {
 		"ssh-custom-port"
 	]);
 	
-	framework.run_tests(test_cases);
-}
-
-main();
+	return framework.run_tests(test_cases);
+};

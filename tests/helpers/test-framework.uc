@@ -6,10 +6,11 @@ import * as fs from 'fs';
 import { create_test_context } from './mock-renderer.uc';
 
 // Test framework class to consolidate common testing logic
-export function TestFramework(template_path, test_title) {
+export function TestFramework(template_path, test_title, test_dir) {
     return {
         template_path: template_path,
         test_title: test_title,
+        test_dir: test_dir || ".",
         test_results: {
             passed: 0,
             failed: 0,
@@ -20,9 +21,12 @@ export function TestFramework(template_path, test_title) {
             printf("Running test: %s\n", test_name);
             
             try {
-                // Load test data
-                let test_data = json(fs.readfile(input_file));
-                let expected_output = fs.readfile(expected_file);
+                // Load test data (paths relative to test directory)
+                let input_path = sprintf("%s/%s", this.test_dir, input_file);
+                let output_path = sprintf("%s/%s", this.test_dir, expected_file);
+                let raw_input = fs.readfile(input_path);
+                let test_data = json(raw_input);
+                let expected_output = fs.readfile(output_path);
                 
                 // Handle empty expected files
                 if (expected_output === null || expected_output === false) {
@@ -102,10 +106,17 @@ export function TestFramework(template_path, test_title) {
                         printf("  Error: %s\n", error.error);
                     }
                 }
-                exit(1);
+            } else {
+                printf("All %s tests passed!\n", this.test_title);
             }
             
-            printf("All %s tests passed!\n", this.test_title);
+            // Return results for aggregation
+            return {
+                passed: this.test_results.passed,
+                failed: this.test_results.failed,
+                errors: this.test_results.errors,
+                suite_name: this.test_title
+            };
         }
     };
 };
