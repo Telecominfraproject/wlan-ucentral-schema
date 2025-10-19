@@ -1,47 +1,100 @@
-description:
-  Define the vlans on which the dhcp shall be relayed.
+description: |
+  Configure DHCP relay service that forwards DHCP requests and responses between 
+  VLANs and upstream DHCP servers. This service enables centralized DHCP management 
+  by relaying DHCP traffic from client VLANs to designated DHCP servers on upstream 
+  networks. The service is automatically enabled when interfaces are configured with 
+  "dhcp-relay" in their services array and valid VLANs are specified.
 type: object
 properties:
   select-ports:
-    description:
-      The list of physical network devices that shall be used to fwd the
-      DHCP frames.
+    description: |
+      Array of physical network port selectors that define which upstream ports 
+      should be used for DHCP relay traffic. These ports connect to networks 
+      containing the DHCP servers that will handle requests from relay VLANs.
+      The DHCP relay service forwards client requests through these ports to 
+      reach the configured relay servers.
     type: array
     items:
       type: string
+      examples:
+        - "WAN"
+        - "eth0"
+        - "eth1"
+    examples:
+      - ["WAN"]
+      - ["eth0", "eth1"]
+      - ["LAN*"]
   vlans:
-    description:
-      The list of all vlans
+    description: |
+      Array of VLAN configurations that define which VLANs participate in DHCP 
+      relay and their associated relay servers. Each VLAN entry specifies the 
+      VLAN ID, target DHCP server, and optional circuit/remote ID formatting 
+      for DHCP option 82 relay agent information.
     type: array
     items:
       type: object
+      additionalProperties: false
+      required:
+        - vlan
+        - relay-server
       properties:
         vlan:
-          description:
-            The vlan id.
+          description: |
+            The VLAN ID (1-4094) that will participate in DHCP relay. 
+            DHCP requests from this VLAN will be forwarded to the 
+            specified relay server.
           type: number
+          minimum: 1
+          maximum: 4094
+          examples:
+            - 100
+            - 200
+            - 1001
         relay-server:
-          description:
-            The unicast target DHCP pool server where frames get relayed to.
+          description: |
+            The IP address of the upstream DHCP server that will handle 
+            DHCP requests for this VLAN. The relay service forwards client 
+            requests to this server and returns responses back to clients.
           type: string
           format: uc-ip
+          examples:
+            - "192.168.100.1"
+            - "10.0.1.10"
+            - "dhcp.example.com"
         circuit-id-format:
-          description:
-            This option selects what info shall be contained within a relayed
-            frame's circuit ID.
+          description: |
+            Optional DHCP option 82 circuit ID format that identifies the 
+            relay circuit. This information helps the DHCP server make 
+            per-circuit decisions about address assignment and options.
+            If not specified, defaults to "vlan-id" format.
           type: string
           enum:
-          - vlan-id
-          - ap-mac
-          - ssid
+            - vlan-id
+            - ap-mac  
+            - ssid
           default: vlan-id
+          examples:
+            - "vlan-id"
+            - "ap-mac"
         remote-id-format:
-          description:
-            This option selects what info shall be contained within a relayed
-            frame's remote ID.
+          description: |
+            Optional DHCP option 82 remote ID format that identifies the 
+            remote host or circuit. This provides additional context to 
+            help the DHCP server customize responses. If not specified, 
+            defaults to "ap-mac" format.
           type: string
           enum:
-          - vlan-id
-          - ap-mac
-          - ssid
+            - vlan-id
+            - ap-mac
+            - ssid  
           default: ap-mac
+          examples:
+            - "ap-mac"
+            - "vlan-id"
+    examples:
+      - - vlan: 100
+          relay-server: "192.168.100.1"
+          circuit-id-format: "vlan-id"
+          remote-id-format: "ap-mac"
+        - vlan: 200
+          relay-server: "192.168.200.1"
