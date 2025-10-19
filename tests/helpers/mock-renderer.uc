@@ -50,11 +50,35 @@ let mock_fs = {
 		// Mock file operations
 		return {
 			read: function(size) {
-				if (path.indexOf("capabilities.json") >= 0)
-					return '{"network": {"upstream": ["eth0"], "downstream": ["eth1"]}}';
-				if (path.indexOf("board.json") >= 0)
-					return '{"network": {"eth0": {"device": "eth0"}}}';
-				if (path.indexOf("qos.json") >= 0 || path.indexOf("/usr/share/ucentral/qos.json") >= 0) {
+				if (index(path, "capabilities.json") >= 0) {
+					// Read actual capabilities file from tests/boards/
+					let fs_real = require("fs");
+					let real_path = path;
+					// If path doesn't start with tests/, prepend it
+					if (!match(path, /^tests\//)) {
+						real_path = "tests/" + path;
+					}
+					try {
+						return fs_real.readfile(real_path);
+					} catch (e) {
+						die(sprintf("Failed to read capabilities file: %s (%s)", real_path, e));
+					}
+				}
+				if (index(path, "board.json") >= 0) {
+					// Read actual board file from tests/boards/
+					let fs_real = require("fs");
+					let real_path = path;
+					// If path doesn't start with tests/, prepend it
+					if (!match(path, /^tests\//)) {
+						real_path = "tests/" + path;
+					}
+					try {
+						return fs_real.readfile(real_path);
+					} catch (e) {
+						die(sprintf("Failed to read board file: %s (%s)", real_path, e));
+					}
+				}
+				if (index(path, "qos.json") >= 0 || index(path, "/usr/share/ucentral/qos.json") >= 0) {
 					// Read the actual qos.json file
 					let fs_real = require("fs");
 					return fs_real.readfile("../../../../renderer/qos.json");
@@ -66,10 +90,34 @@ let mock_fs = {
 		};
 	},
 	readfile: function(path) {
-		if (path.indexOf("capabilities.json") >= 0)
-			return '{"network": {"upstream": ["eth0"], "downstream": ["eth1"]}}';
-		if (path.indexOf("board.json") >= 0)
-			return '{"network": {"eth0": {"device": "eth0"}}}';
+		if (index(path, "capabilities.json") >= 0) {
+			// Read actual capabilities file from tests/boards/
+			let fs_real = require("fs");
+			let real_path = path;
+			// If path doesn't start with tests/, prepend it
+			if (!match(path, /^tests\//)) {
+				real_path = "tests/" + path;
+			}
+			try {
+				return fs_real.readfile(real_path);
+			} catch (e) {
+				die(sprintf("Failed to read capabilities file: %s (%s)", real_path, e));
+			}
+		}
+		if (index(path, "board.json") >= 0) {
+			// Read actual board file from tests/boards/
+			let fs_real = require("fs");
+			let real_path = path;
+			// If path doesn't start with tests/, prepend it
+			if (!match(path, /^tests\//)) {
+				real_path = "tests/" + path;
+			}
+			try {
+				return fs_real.readfile(real_path);
+			} catch (e) {
+				die(sprintf("Failed to read board file: %s (%s)", real_path, e));
+			}
+		}
 		return null;
 	},
 	stat: function(path) {
