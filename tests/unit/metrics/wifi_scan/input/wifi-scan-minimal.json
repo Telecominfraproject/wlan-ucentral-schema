@@ -1,0 +1,15 @@
+{
+  "uuid": 1,
+  "interfaces": [
+    {
+      "name": "WAN",
+      "role": "upstream",
+      "proto": "dhcp"
+    }
+  ],
+  "metrics": {
+    "wifi_scan": {
+      "interval": 60
+    }
+  }
+}

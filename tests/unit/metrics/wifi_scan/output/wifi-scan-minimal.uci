@@ -1,0 +1,4 @@
+
+set event.wifiscan.interval=60
+set event.wifiscan.verbose=0
+set event.wifiscan.information_elements=0
