@@ -3,8 +3,12 @@ description:
 type: object
 properties:
   mode:
-    description:
-      Enable this option if you would like to enable the MDNS server on the unit.
+    description: |
+      Fingerprint collection and reporting mode. Controls how device fingerprint
+      data is processed and when it is reported to the management system.
+      - "polled": Fingerprints are collected when requested by the management system
+      - "final": Fingerprints are reported after analysis is complete (recommended)
+      - "raw-data": Raw fingerprint data is sent immediately without processing
     type: string
     enum:
     - polled
@@ -12,22 +16,34 @@ properties:
     - raw-data
     default: final
   minimum-age:
-    description:
-      The minimum age a fingerprint must have before it is reported.
+    description: |
+      Minimum age in seconds that a device fingerprint must have before it is
+      reported to the management system. This prevents reporting of transient
+      or incomplete fingerprints. Example: With value 60, only fingerprints
+      that have been stable for at least 60 seconds are reported.
     type: number
     default: 60
   maximum-age:
-    description:
-      The age at which fingerprints get flushed from the local state.
+    description: |
+      Maximum age in seconds after which device fingerprints are removed from
+      local storage. This prevents memory buildup by cleaning up old fingerprint
+      data. Example: With value 3600, fingerprints older than 1 hour are
+      automatically deleted from local cache.
     type: number
     default: 60
   periodicity:
-    description:
-      This value defines the period at which entries get reported.
+    description: |
+      Reporting interval in seconds that defines how often fingerprint data is
+      sent to the management system. This controls the frequency of batch
+      reporting to balance network efficiency with data freshness.
+      Example: With value 600, fingerprint reports are sent every 10 minutes.
     type: number
     default: 600
   allow-wan:
-    description:
-      Allow fingerprinting devices found on the WAN port.
+    description: |
+      Enable fingerprinting of devices connected to WAN ports. When enabled,
+      the system will analyze and report fingerprints for devices detected on
+      upstream network interfaces. This is typically disabled for privacy and
+      security reasons as WAN devices are usually outside the local network.
     type: boolean
     default: false
