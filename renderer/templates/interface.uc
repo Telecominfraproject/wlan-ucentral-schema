@@ -20,10 +20,6 @@
 		return !!interface.conflicting;
 	}
 
-	function has_wireguard_overlay() {
-		return 'wireguard-overlay' in interface.services;
-	}
-
 	function has_vxlan_overlay() {
 		return 'vxlan-overlay' in interface.services;
 	}
@@ -107,11 +103,6 @@
 	function validate_interface_conflicts() {
 		if (has_conflicting_interface()) {
 			warn("Skipping conflicting interface declaration");
-			return false;
-		}
-
-		if (is_upstream_interface() && has_wireguard_overlay()) {
-			warn("Skipping interface. wireguard-overlay is not allowed on upstream interfaces.");
 			return false;
 		}
 
@@ -314,9 +305,6 @@
 		// anything else requires a bridge-vlan
 		include("interface/bridge-vlan.uc", { interface, name, eth_ports, this_vid, bridgedev, swconfig });
 
-	if (interface.role == "downstream" && "wireguard-overlay" in interface.services)
-		dest = 'unet';
-
 	include("interface/common.uc", {
 		name, this_vid, netdev,
 		ipv4_mode, ipv4: interface.ipv4 || {},
@@ -372,10 +360,4 @@
 %}
 {% if (tunnel_proto == 'mesh'): %}
 set network.{{ name }}.batman=1
-{% endif %}
-
-{% if (interface.role == "downstream" && "wireguard-overlay" in interface.services): %}
-add network rule
-set network.@rule[-1].in='{{name}}'
-set network.@rule[-1].lookup='{{ routing_table.get('wireguard_overlay') }}'
 {% endif %}

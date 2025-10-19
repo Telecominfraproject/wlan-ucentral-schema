@@ -3175,102 +3175,6 @@
                 }
             }
         },
-        "service.wireguard-overlay": {
-            "type": "object",
-            "properties": {
-                "proto": {
-                    "type": "string",
-                    "const": "wireguard-overlay"
-                },
-                "private-key": {
-                    "type": "string"
-                },
-                "peer-port": {
-                    "type": "integer",
-                    "maximum": 65535,
-                    "minimum": 1,
-                    "default": 3456
-                },
-                "peer-exchange-port": {
-                    "type": "integer",
-                    "maximum": 65535,
-                    "minimum": 1,
-                    "default": 3458
-                },
-                "root-node": {
-                    "type": "object",
-                    "properties": {
-                        "key": {
-                            "type": "string"
-                        },
-                        "endpoint": {
-                            "type": "string",
-                            "format": "uc-ip"
-                        },
-                        "ipaddr": {
-                            "type": "array",
-                            "items": {
-                                "type": "string",
-                                "format": "uc-ip"
-                            }
-                        }
-                    }
-                },
-                "hosts": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "name": {
-                                "type": "string"
-                            },
-                            "key": {
-                                "type": "string"
-                            },
-                            "endpoint": {
-                                "type": "string",
-                                "format": "uc-ip"
-                            },
-                            "subnet": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string",
-                                    "format": "uc-cidr"
-                                }
-                            },
-                            "ipaddr": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string",
-                                    "format": "uc-ip"
-                                }
-                            }
-                        }
-                    }
-                },
-                "vxlan": {
-                    "type": "object",
-                    "properties": {
-                        "port": {
-                            "type": "integer",
-                            "maximum": 65535,
-                            "minimum": 1,
-                            "default": 4789
-                        },
-                        "mtu": {
-                            "type": "integer",
-                            "maximum": 65535,
-                            "minimum": 256,
-                            "default": 1420
-                        },
-                        "isolate": {
-                            "type": "boolean",
-                            "default": true
-                        }
-                    }
-                }
-            }
-        },
         "service.gps": {
             "type": "object",
             "properties": {
@@ -3822,9 +3726,6 @@
                 },
                 "airtime-fairness": {
                     "$ref": "#/$defs/service.airtime-fairness"
-                },
-                "wireguard-overlay": {
-                    "$ref": "#/$defs/service.wireguard-overlay"
                 },
                 "captive": {
                     "$ref": "#/$defs/service.captive"
