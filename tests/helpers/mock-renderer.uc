@@ -265,6 +265,15 @@ let mock_ethernet = {
 			}
 		}
 		return ports;
+	},
+	lookup_by_interface_vlan: function(interface) {
+		// Mock function for VLAN interface lookup used by dhcp_snooping
+		// Returns array of interface names for upstream interfaces with VLANs
+		if (interface.vlan && interface.vlan.id) {
+			return [interface.name + "_" + interface.vlan.id];
+		} else {
+			return [interface.name || "upstream"];
+		}
 	}
 };
 
