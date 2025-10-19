@@ -2,6 +2,8 @@
 
 "use strict";
 
+import * as fs from 'fs';
+
 // Mock UCI cursor
 let mock_cursor = {
 	load: function(config) {
@@ -151,6 +153,26 @@ function uci_set_number(output, path, value) {
 	if (cmd) push(output, cmd);
 }
 
+function uci_set_raw(output, path, value) {
+	let cmd = uci_cmd('set', path, value, (v) => v);
+	if (cmd) push(output, cmd);
+}
+
+function uci_list_number(output, path, value) {
+	let cmd = uci_cmd('add_list', path, value, (v) => v);
+	if (cmd) push(output, cmd);
+}
+
+function uci_set(output, path, value) {
+	let cmd = uci_cmd('set', path, value, s);
+	if (cmd) push(output, cmd);
+}
+
+function uci_list(output, path, value) {
+	let cmd = uci_cmd('add_list', path, value, s);
+	if (cmd) push(output, cmd);
+}
+
 function uci_list_string(output, path, value) {
 	let cmd = uci_cmd('add_list', path, value, s);
 	if (cmd) push(output, cmd);
@@ -234,6 +256,10 @@ let mock_services = {
 	lookup_services: function() {
 		return ["log", "ssh", "ntp", "lldp", "ieee8021x"]; // Common services
 	},
+	lookup_metrics: function() {
+		// Mock implementation - return common metrics found in tests
+		return ["health", "statistics", "telemetry", "realtime", "wifi_frames", "wifi_scan", "dhcp_snooping"];
+	},
 	_test_state: null // Will be set by test context
 };
 
@@ -290,6 +316,31 @@ let mock_ethernet = {
 		} else {
 			return [interface.name || "upstream"];
 		}
+	},
+	has_vlan: function(interface) {
+		// Mock implementation matching renderer.uc
+		return interface.vlan && interface.vlan.id;
+	},
+	reserve_port: function(port) {
+		// Mock implementation - remove port from available ports
+		delete this.ports[port];
+	},
+	switch_by_interface_vlan: function(interface, raw) {
+		// Mock implementation - return null since most tests don't use switch config
+		return null;
+	},
+	calculate_names: function(interface) {
+		// Mock implementation - return simple name array
+		let name = this.calculate_name(interface);
+		return [name]; // Simplified - real version handles IPv4/IPv6 dual stack
+	},
+	calculate_ipv4_name: function(interface) {
+		// Mock implementation - return simple name
+		return this.calculate_name(interface);
+	},
+	calculate_ipv6_name: function(interface) {
+		// Mock implementation - return simple name
+		return this.calculate_name(interface);
 	}
 };
 
@@ -361,6 +412,24 @@ let mock_files = {
 		} catch (e) {
 			// Directory might not exist, ignore error
 		}
+	},
+	
+	write_debug_output: function(test_name, output) {
+		// Write test output to /tmp/ucentral-test-output/ for debugging
+		let debug_dir = "/tmp/ucentral-test-output";
+		try {
+			fs.mkdir(debug_dir);
+		} catch (e) {
+			// Directory might already exist
+		}
+		
+		let debug_file = debug_dir + "/" + test_name + ".uci";
+		let fd = fs.open(debug_file, "w");
+		if (fd) {
+			fd.write(output);
+			fd.close();
+			printf("Debug output written to: %s\n", debug_file);
+		}
 	}
 };
 
@@ -373,6 +442,38 @@ let mock_shell = {
 	password: function(password) {
 		// Mock implementation - in real system this would set random password
 		return 0;
+	}
+};
+
+// Mock latency object
+let mock_latency = {
+	// Mock latency measurement functions
+	write: function() {
+		// Mock implementation - do nothing
+	}
+};
+
+// Mock local_profile object
+let mock_local_profile = {
+	get: function() {
+		// Mock implementation - return null since most tests don't need profile data
+		return null;
+	}
+};
+
+// tryinclude function from renderer.uc
+function tryinclude(path, scope) {
+	if (!match(path, /^[A-Za-z0-9_\/-]+\.uc$/)) {
+		warn("Refusing to handle invalid include path '%s'", path);
+		return;
+	}
+	let parent_path = sourcepath(1, true);
+	assert(parent_path, "Unable to determine calling template path");
+	try {
+		include(parent_path + "/" + path, scope);
+	}
+	catch (e) {
+		warn("Unable to include path '%s': %s\n%s", path, e, e.stacktrace[0].context);
 	}
 };
 
@@ -480,18 +581,37 @@ function create_board_test_context(test_data, board_data, capabilities) {
 	return context;
 };
 
-// Create full test context for toplevel.uc rendering
+// Create full test context for toplevel.uc rendering  
 function create_full_test_context(state, board_data, capabilities) {
 	let context = create_board_test_context({}, board_data, capabilities);
 	
-	// Add the validated state
+	// Add the validated state and all globals that renderer.uc passes to toplevel.uc
 	context.state = state;
+	context.location = '/';
+	context.cursor = mock_cursor;
+	context.capab = capabilities;
+	context.restrict = {};
+	context.default_config = mock_default_config;
+	context.latency = mock_latency;
+	context.local_profile = mock_local_profile;
 	
-	// toplevel.uc expects these to be available in scope
-	context.cursor = context.cursor || mock_cursor;
-	context.conn = context.conn || mock_conn;
-	context.restrict = context.restrict || {};
-	context.default_config = context.default_config || mock_default_config;
+	// Add all UCI helper functions
+	context.uci_cmd = uci_cmd;
+	context.uci_set_string = uci_set_string;
+	context.uci_set_boolean = uci_set_boolean;
+	context.uci_set_number = uci_set_number;
+	context.uci_set_raw = uci_set_raw;
+	context.uci_list_string = uci_list_string;
+	context.uci_list_number = uci_list_number;
+	context.uci_section = uci_section;
+	context.uci_named_section = uci_named_section;
+	context.uci_set = uci_set;
+	context.uci_list = uci_list;
+	context.uci_output = uci_output;
+	context.uci_comment = uci_comment;
+	
+	// Add utility functions
+	context.tryinclude = tryinclude;
 	
 	return context;
 };
