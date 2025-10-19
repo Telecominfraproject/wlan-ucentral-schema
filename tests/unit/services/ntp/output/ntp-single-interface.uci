@@ -1,0 +1,12 @@
+set system.ntp.enable_server=1
+set system.ntp.use_dhcp=0
+delete system.ntp.server
+add_list system.ntp.server='192.168.1.100'
+add_list system.ntp.server='pool.ntp.org'
+
+add firewall rule
+set firewall.@rule[-1].name='Allow-ntp-management'
+set firewall.@rule[-1].src='management'
+set firewall.@rule[-1].dest_port='123'
+set firewall.@rule[-1].proto='udp'
+set firewall.@rule[-1].target='ACCEPT'
