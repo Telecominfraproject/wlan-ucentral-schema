@@ -46,6 +46,11 @@ let mock_fs = {
 					return '{"network": {"upstream": ["eth0"], "downstream": ["eth1"]}}';
 				if (path.indexOf("board.json") >= 0)
 					return '{"network": {"eth0": {"device": "eth0"}}}';
+				if (path.indexOf("qos.json") >= 0 || path.indexOf("/usr/share/ucentral/qos.json") >= 0) {
+					// Read the actual qos.json file
+					let fs_real = require("fs");
+					return fs_real.readfile("../../../../renderer/qos.json");
+				}
 				return "";
 			},
 			write: function(data) {},
