@@ -1,9 +1,3 @@
-{%
-let board = fs.readfile('/etc/board.json');
-if (board)
-	board = json(board);
-%}
-
 # Basic configuration
 set network.loopback=interface
 set network.loopback.ifname='lo'

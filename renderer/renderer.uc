@@ -13,6 +13,10 @@ let conn = ubus ? ubus.connect() : null;
 let capabfile = fs.open("/etc/ucentral/capabilities.json", "r");
 let capab = capabfile ? json(capabfile.read("all")) : null;
 
+let board = fs.readfile('/etc/board.json');
+if (board)
+	board = json(board);
+
 let pipe = fs.popen('fw_printenv developer');
 let developer = replace(pipe.read("all"), '\n', '');
 pipe.close();
