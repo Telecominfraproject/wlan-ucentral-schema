@@ -51,6 +51,11 @@ try {
 
     // Create context and render
     let context = create_full_test_context(state, board_data, capabilities, board_name);
+
+    // Debug: check if captive is available and has methods
+    printf("DEBUG: captive type: %s, has interface method: %s\n", type(context.captive), type(context.captive?.interface));
+    printf("DEBUG: captive keys: %s\n", join(", ", keys(context.captive || {})));
+
     let abs_path = fs.realpath("../renderer/templates/toplevel.uc");
     let output = render(abs_path, context);
 
