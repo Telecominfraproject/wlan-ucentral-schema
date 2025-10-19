@@ -1,46 +1,68 @@
-description:
-  This section describes the vlan behaviour of a logical network interface.
+description: |
+  This section configures Airtime Fairness (ATF) to manage bandwidth allocation
+  between wireless clients. ATF dynamically adjusts client weights based on traffic
+  patterns to ensure fair wireless resource distribution and optimize performance.
 type: object
 properties:
   voice-weight:
-    description:
-      Voice traffic does not get aggregated. As voice and video are both considered
-      priotity voice is considered to have a heavier weight when calculation priority
-      average.
+    description: |
+      Weight multiplier applied to voice traffic for priority calculations.
+      Since voice traffic is not aggregated and requires higher priority than video,
+      this weight provides additional priority when calculating traffic averages.
+      Higher values increase voice traffic priority.
     type: number
     default: 4
   packet-threshold:
-    description:
-      The amount of packets that need to be received for a specific type of traffic
-      before new averageg is calculated.
+    description: |
+      Number of packets that must be received for a specific traffic type before
+      a new traffic average is calculated. This prevents frequent weight changes
+      from small traffic bursts and ensures stable classification decisions.
+      Example: With threshold 100, traffic classification updates after every
+      100 packets of a specific type are processed.
     type: number
     default: 100
   bulk-threshold:
-    description:
-      This option is a percentual value. If more the X% of the traffic is bulk, we assign
-      the bulk weight.
+    description: |
+      Percentage threshold for bulk traffic classification. When more than this
+      percentage of a client's traffic is identified as bulk (e.g., file downloads,
+      backups), the client is assigned the bulk weight to reduce its airtime priority.
+      Example: With threshold 50, clients with more than 50% bulk traffic get
+      reduced priority to allow other clients better access.
     type: number
     default: 50
   priority-threshold:
-    description:
-      This option is a percentual value. If more the X% of the traffic is priority, we assign
-      the priority weight. Priority classification will take precedence over bulk.
+    description: |
+      Percentage threshold for priority traffic classification. When more than this
+      percentage of a client's traffic is identified as priority (e.g., voice, video,
+      gaming), the client is assigned the priority weight to increase its airtime access.
+      Priority classification takes precedence over bulk classification.
+      Example: With threshold 30, clients with more than 30% priority traffic get
+      increased airtime allocation.
     type: number
     default: 30
   weight-normal:
-    description:
-      The default ATF weight that UEs get assigned.
+    description: |
+      Default Airtime Fairness weight assigned to wireless clients (UEs) under
+      normal traffic conditions. This is the baseline weight used when clients
+      don't meet the thresholds for priority or bulk traffic classification.
+      Higher weight values provide more airtime access relative to other clients.
     type: number
     default: 256
   weight-priority:
-    description:
-      The default ATF weight that UEs get assigned when priority traffic above the configured
-      percentage is detected.
+    description: |
+      Enhanced Airtime Fairness weight assigned to wireless clients when priority
+      traffic exceeds the configured priority-threshold percentage. This higher weight
+      ensures priority applications (voice, video, gaming) receive sufficient airtime
+      for optimal performance. Should be higher than weight-normal to provide
+      preferential treatment.
     type: number
     default: 394
   weight-bulk:
-    description:
-      The default ATF weight that UEs get assigned when bulk traffic above the configured
-      percentage is detected.
+    description: |
+      Reduced Airtime Fairness weight assigned to wireless clients when bulk traffic
+      exceeds the configured bulk-threshold percentage. This lower weight limits
+      airtime for clients generating heavy background traffic (downloads, backups)
+      to prevent them from monopolizing wireless resources. Should be lower than
+      weight-normal to ensure fair access for other clients.
     type: number
     default: 128
