@@ -1,5 +1,4 @@
 {%
-	let fs = require('fs');
 	let phys = wiphy.lookup_by_band(radio.band);
 
 	if (!length(phys)) {

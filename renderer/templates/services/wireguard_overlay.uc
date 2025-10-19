@@ -47,7 +47,7 @@ let cfg = {
 	}
 };
 
-let pipe = require('fs').popen(sprintf('echo "%s" | wg pubkey', wireguard_overlay.private_key));
+let pipe = fs.popen(sprintf('echo "%s" | wg pubkey', wireguard_overlay.private_key));
 let pubkey = replace(pipe.read("all"), '\n', '');
 pipe.close();
 for (let host in wireguard_overlay.hosts)
