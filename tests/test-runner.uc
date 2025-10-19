@@ -43,7 +43,7 @@ import { run_tests as ethernet_tests } from './unit/base/ethernet/test-ethernet.
 import { run_tests as base_tests } from './unit/base/integration-base/test-base.uc';
 
 // Integration tests
-import { run_tests as full_integration_tests } from './integration/full/test-full.uc';
+import { run_tests as full_tests } from './full/test-full.uc';
 
 function repeat(str, count) {
 	let result = "";
@@ -115,7 +115,7 @@ function main() {
 		{ name: "Base Template Unit Tests", run_tests: base_tests },
 
 		// Integration tests
-		{ name: "Full Integration", run_tests: full_integration_tests, type: "integration", boards: ["eap101"] },
+		{ name: "Full Integration", run_tests: full_tests, type: "integration", boards: ["eap101"] },
 	];
 	
 	printf("Found %d test suites\n\n", length(test_suites));
