@@ -1,0 +1,31 @@
+
+add radsecproxy options
+add_list radsecproxy.@options[-1].ListenUDP='localhost:1812'
+add_list radsecproxy.@options[-1].ListenUDP='localhost:1813'
+
+add radsecproxy client
+set radsecproxy.@client[-1].name='client'
+set radsecproxy.@client[-1].host='localhost'
+set radsecproxy.@client[-1].type='udp'
+set radsecproxy.@client[-1].secret='guest-proxy-secret'
+
+
+
+
+set radsecproxy.server0auth=server
+set radsecproxy.@server[-1].name='server0auth'
+set radsecproxy.@server[-1].host='192.168.1.100'
+set radsecproxy.@server[-1].port='1812'
+set radsecproxy.@server[-1].secret='auth-secret-123'
+set radsecproxy.@server[-1].type='udp'
+set radsecproxy.server0acct=server
+set radsecproxy.@server[-1].name='server0acct'
+set radsecproxy.@server[-1].host='192.168.1.100'
+set radsecproxy.@server[-1].port='1813'
+set radsecproxy.@server[-1].secret='acct-secret-456'
+set radsecproxy.@server[-1].type='udp'
+add radsecproxy realm
+set radsecproxy.@realm[-1].name='guest.example.com'
+set radsecproxy.@realm[-1].server='server0auth'
+set radsecproxy.@realm[-1].accountingServer='server0acct'
+
