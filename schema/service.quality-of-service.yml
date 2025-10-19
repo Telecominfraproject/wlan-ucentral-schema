@@ -1,5 +1,7 @@
-description:
-  This section describes the QoS behaviour of the unit.
+description: |
+  This section configures Quality of Service (QoS) traffic classification and bandwidth shaping.
+  QoS allows prioritization of network traffic to ensure better performance for critical applications
+  like VoIP, video streaming, and gaming over bulk data transfers.
 type: object
 properties:
   select-ports:
@@ -11,15 +13,19 @@ properties:
       type: string
       default: WAN
   bandwidth-up:
-    description:
-      Defines the upload bandwidth of this device. If it is not known or the device is
-      attached to a shared medium, this value needs to be 0.
+    description: |
+      Specifies the maximum upload bandwidth in megabits per second (Mbps) for traffic shaping.
+      Set to 0 to disable upload bandwidth limiting or when the actual bandwidth is unknown.
+      This is used by the QoS engine to properly shape outbound traffic flows.
+      Example: Set to 100 for a 100 Mbps upload connection.
     type: integer
     default: 0
   bandwidth-down:
-    description:
-      Defines the download bandwidth of this device. If it is not known or the device is
-      attached to a shared medium, this value needs to be 0.
+    description: |
+      Specifies the maximum download bandwidth in megabits per second (Mbps) for traffic shaping.
+      Set to 0 to disable download bandwidth limiting or when the actual bandwidth is unknown.
+      This is used by the QoS engine to properly shape inbound traffic flows.
+      Example: Set to 500 for a 500 Mbps download connection.
     type: integer
     default: 0
   bulk-detection:
@@ -40,8 +46,12 @@ properties:
         type: number
         default: 0
   services:
-    description:
-      A list of predefined named services that shall be classified according to the communities DB.
+    description: |
+      A list of predefined service names for automatic traffic classification.
+      Services are defined in the community QoS database and include popular applications
+      like 'zoom', 'netflix', 'gaming', 'voip', etc. Use 'all' to enable all available services.
+      Each service automatically configures appropriate DSCP marking and port/domain matching rules.
+      Example: ["zoom", "netflix", "voip"] enables QoS for these specific applications.
     type: array
     items:
       type: string
@@ -54,9 +64,13 @@ properties:
       type: object
       properties:
         dscp:
-          description:
-            The differentiated services code point that shall be assigned to packet that match
-            the rules of this entry.
+          description: |
+            The Differentiated Services Code Point (DSCP) marking to apply to matching packets.
+            DSCP values control traffic prioritization in the network. Common values include:
+            - EF (Expedited Forwarding) for real-time traffic like VoIP
+            - AF41-AF43 for video streaming
+            - CS0 for best-effort traffic
+            - CS1 for bulk/background traffic
           $ref: 'https://ucentral.io/schema/v1/service/quality-of-service/class-selector/'
           default: CS1
         ports:
@@ -76,16 +90,23 @@ properties:
                 - udp
                 default: any
               port:
-                description:
-                  The port of this match rule.
+                description: |
+                  The TCP/UDP port number to match for traffic classification.
+                  Can be combined with range-end to specify a port range.
+                  Example: 80 for HTTP, 443 for HTTPS, 5060 for SIP.
                 type: integer
               range-end:
-                description:
-                  The last port of this match rule if it is a port range.
+                description: |
+                  The ending port number when defining a port range for classification.
+                  Used together with 'port' to specify a range like 'port: 5060, range-end: 5070'.
+                  Leave unset when matching a single port number.
                 type: integer
               reclassify:
-                description:
-                  Ignore the ToS/DSCP of packets and reclassify them.
+                description: |
+                  Controls whether to override existing DSCP markings on matching packets.
+                  When true (default), applies the new DSCP marking regardless of existing values.
+                  When false, only marks packets that don't already have DSCP markings.
+                  Set to false to preserve upstream QoS markings.
                 type: boolean
                 default: true
         dns:
@@ -96,16 +117,26 @@ properties:
             type: object
             properties:
               fqdn:
+                description: |
+                  The fully qualified domain name to match for traffic classification.
+                  Can be an exact domain or used with suffix-matching for wildcard behavior.
+                  Example: 'netflix.com' or 'zoom.us' for application-specific classification.
                 type: string
                 format: uc-fqdn
               suffix-matching:
-                description:
-                  Match for all suffixes of the FQDN.
+                description: |
+                  Controls whether to match subdomains of the specified FQDN.
+                  When true (default), matches all subdomains like '*.example.com'.
+                  When false, matches only the exact domain specified.
+                  Example: true matches both 'api.zoom.us' and 'web.zoom.us' for FQDN 'zoom.us'.
                 type: boolean
                 default: true
               reclassify:
-                description:
-                  Ignore the ToS/DSCP of packets and reclassify them.
+                description: |
+                  Controls whether to override existing DSCP markings on matching packets.
+                  When true (default), applies the new DSCP marking regardless of existing values.
+                  When false, only marks packets that don't already have DSCP markings.
+                  Set to false to preserve upstream QoS markings.
                 type: boolean
                 default: true
 
