@@ -1,0 +1,13 @@
+# DHCP Snooping configuration
+add dhcpsnoop device
+set dhcpsnoop.@device[-1].name='upstream_100'
+set dhcpsnoop.@device[-1].ingress=1
+set dhcpsnoop.@device[-1].egress=1
+add dhcpsnoop device
+set dhcpsnoop.@device[-1].name='downstream1'
+set dhcpsnoop.@device[-1].ingress=1
+set dhcpsnoop.@device[-1].egress=1
+add dhcpsnoop device
+set dhcpsnoop.@device[-1].name='downstream2'
+set dhcpsnoop.@device[-1].ingress=1
+set dhcpsnoop.@device[-1].egress=1
