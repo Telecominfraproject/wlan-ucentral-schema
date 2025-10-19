@@ -9,6 +9,7 @@ import {
 	uci_set, uci_list, uci_output, uci_comment
 } from '../../renderer/libs/uci_helpers.uc';
 import { create_ethernet } from '../../renderer/libs/ethernet.uc';
+import { create_wiphy } from '../../renderer/libs/wiphy.uc';
 
 // Mock UCI cursor
 let mock_cursor = {
@@ -374,12 +375,30 @@ function tryinclude(path, scope) {
 // Create ethernet instance using shared library (initialized in test context)
 let mock_ethernet;
 
+// Create wiphy instance using shared library (initialized in test context)
+let mock_wiphy;
+
 
 // Create test context with all mocks
 function create_test_context(overrides) {
 	// Initialize ethernet with real board capabilities (unit tests use eap101)
 	let capabilities = mock_capab(null);
 	mock_ethernet = create_ethernet(capabilities, mock_fs, null);
+
+	// Initialize wiphy with real board wiphy data
+	mock_wiphy = create_wiphy(mock_cursor, function(fmt, ...args) {
+		printf("[W] " + sprintf(fmt, ...args) + "\n");
+	});
+	// Load real wiphy data from board-specific wiphy.json (unit tests always use eap101)
+	try {
+		let fs_real = require("fs");
+		let wiphy_path = "boards/eap101/wiphy.json";
+		let wiphy_content = fs_real.readfile(wiphy_path);
+		let wiphy_data = json(wiphy_content);
+		mock_wiphy.phys = wiphy_data;
+	} catch (e) {
+		die(sprintf("Failed to read wiphy data from %s: %s", "boards/eap101/wiphy.json", e));
+	}
 
 
 	let result = {
@@ -406,6 +425,7 @@ function create_test_context(overrides) {
 		default_config: mock_default_config,
 		services: mock_services,
 		ethernet: mock_ethernet,
+		wiphy: mock_wiphy,
 		files: mock_files,
 		events: mock_events,
 		shell: mock_shell,
@@ -465,27 +485,28 @@ function create_board_test_context(test_data, board_data, capabilities) {
 	// Initialize ethernet with actual board capabilities
 	mock_ethernet = create_ethernet(capabilities, mock_fs, null);
 
+	// Initialize wiphy with board-specific wiphy data (integration tests use board-specific file)
+	mock_wiphy = create_wiphy(mock_cursor, function(fmt, ...args) {
+		printf("[W] " + sprintf(fmt, ...args) + "\n");
+	});
+	try {
+		let fs_real = require("fs");
+		let board_name = "eap101"; // TODO: make this dynamic based on board_data
+		let wiphy_path = sprintf("boards/%s/wiphy.json", board_name);
+		let wiphy_content = fs_real.readfile(wiphy_path);
+		let wiphy_data = json(wiphy_content);
+		mock_wiphy.phys = wiphy_data;
+	} catch (e) {
+		die(sprintf("Failed to read board wiphy data from %s: %s", sprintf("boards/%s/wiphy.json", board_name), e));
+	}
+
 	let context = create_test_context(test_data);
 
 	// Add board-specific data to context
 	context.board = board_data;
 	context.capab = capabilities;
 
-	// Enhanced wiphy mock based on board capabilities
-	context.wiphy = {
-		lookup_by_band: function(band) {
-			let phys = [];
-			for (let phy_path, phy_data in capabilities.wifi || {}) {
-				if (index(phy_data.band, band) >= 0) {
-					push(phys, {
-						...phy_data,
-						path: phy_path
-					});
-				}
-			}
-			return phys;
-		}
-	};
+	// Wiphy is already set up in create_test_context with real board data
 
 	return context;
 };
