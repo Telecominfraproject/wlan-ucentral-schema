@@ -1,0 +1,55 @@
+{
+  "uuid": "12345678-1234-1234-1234-123456789012",
+  "interfaces": [
+    {
+      "name": "upstream",
+      "role": "upstream", 
+      "services": ["dhcp-relay"],
+      "ethernet": [
+        {
+          "select-ports": ["WAN"]
+        }
+      ],
+      "ipv4": {
+        "addressing": "dynamic"
+      }
+    },
+    {
+      "name": "downstream",
+      "role": "downstream",
+      "services": ["dhcp-relay"],
+      "ethernet": [
+        {
+          "select-ports": ["LAN*"]
+        }
+      ],
+      "ipv4": {
+        "addressing": "static",
+        "subnet": "192.168.1.1/24"
+      }
+    }
+  ],
+  "services": {
+    "dhcp-relay": true
+  },
+  "dhcp_relay": {
+    "select_ports": ["eth0", "eth1"],
+    "vlans": [
+      {
+        "vlan": 100,
+        "relay_server": "192.168.100.1",
+        "circuit_id_format": "circuit-%i",
+        "remote_id_format": "remote-%m"
+      },
+      {
+        "vlan": 200, 
+        "relay_server": "192.168.200.1"
+      }
+    ]
+  },
+  "template_vars": {
+    "state": {
+      "services": {}
+    }
+  }
+}
