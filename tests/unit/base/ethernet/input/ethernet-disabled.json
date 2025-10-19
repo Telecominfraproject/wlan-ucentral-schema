@@ -1,0 +1,8 @@
+{
+	"template_vars": {
+		"ports": {
+			"select_ports": ["LAN3"],
+			"enabled": false
+		}
+	}
+}

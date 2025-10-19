@@ -1,0 +1,10 @@
+{
+	"template_vars": {
+		"ports": {
+			"select_ports": ["WAN"],
+			"enabled": true,
+			"speed": 1000,
+			"duplex": "full"
+		}
+	}
+}
