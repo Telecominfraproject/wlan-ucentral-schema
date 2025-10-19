@@ -1,0 +1,12 @@
+
+# Dhcp Inject service configuration
+
+set dhcpinject.uplink=device
+add_list dhcpinject.uplink.port=eth0
+
+set dhcpinject.ssids=ssids
+add_list dhcpinject.ssids.ssid='TestWiFi'
+add_list dhcpinject.ssids.ssid='GuestWiFi'
+
+set dhcpinject.dhcpinject=dhcpinject
+set dhcpinject.dhcpinject.iface_count=0
