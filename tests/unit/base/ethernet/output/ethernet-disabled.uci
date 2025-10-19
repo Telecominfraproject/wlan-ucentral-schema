@@ -1,0 +1,4 @@
+set network.lan3=device
+set network.lan3.name='lan3'
+set network.lan3.ifname='lan3'
+set network.lan3.enabled=0

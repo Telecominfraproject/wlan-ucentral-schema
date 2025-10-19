@@ -1,0 +1,6 @@
+set network.eth1=device
+set network.eth1.name='eth1'
+set network.eth1.ifname='eth1'
+set network.eth1.enabled=1
+set network.eth1.speed=100
+set network.eth1.duplex=0
