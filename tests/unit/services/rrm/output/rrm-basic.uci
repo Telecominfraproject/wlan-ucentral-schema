@@ -1,9 +1,10 @@
+### generate RRM base configuration
 set rrmd.@base[0].beacon_request_assoc=1
 set rrmd.@base[0].station_stats_interval=60
-# RRM policy configuration for Optimization based on Channel Utilization
-	add rrmd policy
-	set rrmd.@policy[-1].name='chanutil'
-	set rrmd.@policy[-1].interval=300000
-	set rrmd.@policy[-1].threshold=70
-	set rrmd.@policy[-1].consecutive_threshold_breach=2
-	set rrmd.@policy[-1].algo=2
+### generate RRM channel utilization policy
+add rrmd policy
+set rrmd.@policy[-1].name='chanutil'
+set rrmd.@policy[-1].interval=300000
+set rrmd.@policy[-1].threshold=70
+set rrmd.@policy[-1].consecutive_threshold_breach=2
+set rrmd.@policy[-1].algo=2
