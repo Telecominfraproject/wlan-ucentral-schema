@@ -405,6 +405,14 @@ let mock_local_profile = {
 	}
 };
 
+// Mock math object for deterministic test output
+let mock_math = {
+	rand: function() {
+		// Return static value for reproducible tests
+		return 42;
+	}
+};
+
 // tryinclude function from renderer.uc
 function tryinclude(path, scope) {
 	if (!match(path, /^[A-Za-z0-9_\/-]+\.uc$/)) {
@@ -461,7 +469,8 @@ function create_test_context(overrides) {
 		captive: base_objects.captive,
 		files: mock_files,
 		events: mock_events,
-		shell: mock_shell
+		shell: mock_shell,
+		math: mock_math
 	});
 
 	// Apply overrides using shared utility
@@ -529,7 +538,8 @@ function create_integration_test_context(board_data, capabilities, board_name) {
 		captive: base_objects.captive,
 		files: mock_files,
 		events: mock_events,
-		shell: mock_shell
+		shell: mock_shell,
+		math: mock_math
 	});
 
 	// Don't set any override state for integration tests - services will be passed via context.state
