@@ -1,0 +1,4 @@
+# Configure GPS
+set gps.@gps[-1].disabled=0
+set gps.@gps[-1].adjust_time=0
+set gps.@gps[-1].baudrate='9600'
