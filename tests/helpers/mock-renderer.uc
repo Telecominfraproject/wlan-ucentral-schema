@@ -9,8 +9,6 @@ import {
 	create_standard_context_properties, apply_context_overrides, build_context
 } from './test-utils.uc';
 
-// Real filesystem access for reading actual board configuration files
-let fs_real = require("fs");
 import { 
 	b, s, uci_cmd, uci_set_string, uci_set_boolean, uci_set_number, uci_set_raw,
 	uci_list_string, uci_list_number, uci_section, uci_named_section, 
@@ -33,7 +31,7 @@ function create_mock_cursor(board) {
 			// Load real wifi device data when wireless config is requested
 			if (config == "wireless" && !this._wifi_devices) {
 				try {
-						let wifi_devices_content = fs_real.readfile(sprintf("boards/%s/wifi_devices.json", this._board));
+						let wifi_devices_content = fs.readfile(sprintf("boards/%s/wifi_devices.json", this._board));
 					let wifi_data = json(wifi_devices_content);
 					this._wifi_devices = wifi_data.devices || [];
 				} catch (e) {
@@ -100,7 +98,7 @@ let mock_fs = {
 				}
 				if (is_qos_file(path)) {
 					// Read the actual qos.json file
-					return fs_real.readfile("../../../../renderer/qos.json");
+					return fs.readfile("../../../../renderer/qos.json");
 				}
 				return "";
 			},
@@ -127,7 +125,7 @@ let mock_fs = {
 		if (path == '/tmp/ucentral' || path == '/tmp/ucentral/') {
 			// Use real fs to create test directory
 			try {
-				fs_real.mkdir('/tmp/ucentral-test');
+				fs.mkdir('/tmp/ucentral-test');
 			} catch (e) {
 				// Directory might already exist
 			}
@@ -232,7 +230,7 @@ let mock_services = {
 		// Dynamic service discovery like the real renderer
 		let rv = [];
 
-		for (let incfile in fs_real.glob("../renderer/templates/services/*.uc")) {
+		for (let incfile in fs.glob("../renderer/templates/services/*.uc")) {
 			let m = match(incfile, /^.+\/([^\/]+)\.uc$/);
 			if (m)
 				push(rv, m[1]);
@@ -244,7 +242,7 @@ let mock_services = {
 		// Dynamic metrics discovery like the real renderer
 		let rv = [];
 
-		for (let incfile in fs_real.glob("../renderer/templates/metric/*.uc")) {
+		for (let incfile in fs.glob("../renderer/templates/metric/*.uc")) {
 			let m = match(incfile, /^.+\/([^\/]+)\.uc$/);
 			if (m)
 				push(rv, m[1]);
