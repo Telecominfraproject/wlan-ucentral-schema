@@ -1,0 +1,8 @@
+{
+  "unit": {
+    "name": "Dark Device",
+    "hostname": "dark-ap",
+    "leds_active": false,
+    "random_password": false
+  }
+}

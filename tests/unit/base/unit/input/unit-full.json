@@ -1,0 +1,15 @@
+{
+  "unit": {
+    "name": "Full Config Device",
+    "hostname": "full-ap-01",
+    "location": "Main Office, Rack 3",
+    "timezone": "CET-1CEST,M3.5.0,M10.5.0/3",
+    "leds_active": true,
+    "system_password": "ComplexPass@2024",
+    "beacon_advertisement": {
+      "device_name": true,
+      "device_serial": true,
+      "network_id": 12345
+    }
+  }
+}

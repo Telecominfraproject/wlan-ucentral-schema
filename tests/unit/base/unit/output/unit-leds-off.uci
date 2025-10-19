@@ -1,0 +1,4 @@
+# Basic unit configuration
+set system.@system[-1].description='Dark Device'
+set system.@system[-1].hostname='dark-ap'
+set system.@system[-1].leds_off=1

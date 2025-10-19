@@ -1,0 +1,2 @@
+# Basic unit configuration
+set system.@system[-1].leds_off=1

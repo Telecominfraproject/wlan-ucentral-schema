@@ -1,0 +1,6 @@
+# Basic unit configuration
+set system.@system[-1].description='Test Device'
+set system.@system[-1].hostname='test-ap-01'
+set system.@system[-1].notes='Building A, Floor 2'
+set system.@system[-1].timezone='UTC'
+set system.@system[-1].leds_off=0
