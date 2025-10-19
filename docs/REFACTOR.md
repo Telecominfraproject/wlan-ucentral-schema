@@ -54,7 +54,17 @@ This approach ensures:
 
 **Important**: If you encounter missing mock functionality during test development, **do not implement empty/stub mocks**. Instead, stop and request guidance for implementing a proper mock that accurately simulates the real system behavior. Empty mocks can hide template issues and lead to false confidence in test results.
 
-**Deliverable**: Complete test suite with **all tests passing** against current template.
+**Git Workflow**: 
+```bash
+git add tests/unit/services/[service]/
+git commit -s -m "tests: add [service] test cases
+
+- Add comprehensive test coverage for [service] service template
+- [List specific test scenarios]
+- All test cases pass against current template"
+```
+
+**Deliverable**: Complete test suite with **all tests passing** against current template and **committed to git**.
 
 ### Step 2: Refactor Template  
 
@@ -88,7 +98,20 @@ This approach ensures:
 - Traceability comment hierarchy
 - Error handling patterns
 
-**Deliverable**: Refactored template with **all tests passing** and modern code organization.
+**Git Workflow**:
+```bash
+git add renderer/templates/services/[service].uc tests/unit/services/[service]/output/
+git commit -s -m "services/[service]: update to new templating pattern
+
+- Organize helper functions by prefix (has_, is_, validate_)
+- Extract configuration generation into focused functions
+- Use UCI helpers for consistent output formatting
+- Add traceability comments for debugging
+- Implement early validation with proper error handling
+- All tests pass with updated expected outputs"
+```
+
+**Deliverable**: Refactored template with **all tests passing** and modern code organization, **committed to git**.
 
 ### Step 3: Validate Schema Documentation
 
@@ -103,15 +126,14 @@ This approach ensures:
 2. **Review all configuration fields** and validate each has:
    - **Clear description** explaining the field's purpose and behavior
    - **Proper examples** where helpful (especially for complex fields)
-   - **Appropriate constraints** (min/max values, enums, formats)
-   - **Sensible defaults** where applicable
+   - **Note**: Only descriptions may be improved - do NOT add constraints, modify defaults, or make other schema changes
 
 3. **Schema Description Quality Standards**:
    - **Purpose**: What does this field control/configure?
    - **Behavior**: How does it affect system operation?
    - **Context**: When would you use this setting?
    - **Examples**: Show realistic usage (for complex fields)
-   - **Constraints**: Explain limitations or valid ranges
+   - **Important**: Focus only on improving description text - do not modify constraints, defaults, or other schema properties
 
 4. **Enhancement Examples**:
    ```yaml
@@ -119,21 +141,32 @@ This approach ensures:
    port:
      description: SSH port
      type: integer
+     default: 22
    
-   # Good description  
+   # Good description (only description improved)
    port:
      description: |
        This option defines which network port the SSH server shall be available on.
        Standard SSH port is 22, but can be changed for security purposes.
+       Example: Set to 2222 for non-standard SSH access.
      type: integer
-     minimum: 1024
-     maximum: 65535
      default: 22
    ```
 
-5. **Update missing or inadequate descriptions** to meet quality standards
+5. **Update missing or inadequate descriptions** to meet quality standards (descriptions only - no other schema changes)
 
-**Deliverable**: Service schema with **comprehensive field descriptions** meeting documentation standards.
+**Git Workflow**:
+```bash
+git add schema/service.[service].yml
+git commit -s -m "schema: validate [service] field descriptions
+
+- Review all [service] service configuration fields 
+- Enhance field descriptions with clear purpose and behavior explanations
+- Add examples for complex fields where helpful
+- All [service] configuration options now have comprehensive documentation"
+```
+
+**Deliverable**: Service schema with **comprehensive field descriptions** meeting documentation standards, **committed to git**.
 
 ## Commit Message Examples
 
@@ -171,6 +204,8 @@ schema: validate ssh field descriptions
 - Ensure all constraints and defaults are properly documented
 - All SSH configuration options now have comprehensive documentation
 ```
+
+**Important**: Do not add any AI assistant references (like "Generated with Claude Code") to commit messages. Keep commit messages focused on the technical changes made.
 
 ## Quality Gates
 
@@ -233,6 +268,8 @@ See recent commits for SSH service refactoring:
 This process has been successfully applied to:
 - IEEE 802.1X service (commits 02fbc95, 5dcdb5a)
 - SSH service (commits 8556b89, 99649cc)
+- MDNS service (commits ab8bef1, 7f6962a, 57fe465)
+- NTP service (commits 788c368, 41762f0, [schema validation pending])
 - Log service (earlier refactoring)
 - LLDP service (earlier refactoring)
 
