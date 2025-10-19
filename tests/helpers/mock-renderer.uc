@@ -182,6 +182,22 @@ let mock_services = {
 		}
 		return interfaces;
 	},
+	lookup_ssids: function(service) {
+		// Return SSIDs that have the requested service
+		let ssids = [];
+		if (this._test_state && this._test_state.interfaces) {
+			for (let iface in this._test_state.interfaces) {
+				if (iface.ssids) {
+					for (let ssid in iface.ssids) {
+						if (ssid.services && index(ssid.services, service) >= 0) {
+							push(ssids, ssid);
+						}
+					}
+				}
+			}
+		}
+		return ssids;
+	},
 	lookup_services: function() {
 		return ["log", "ssh", "ntp", "lldp", "ieee8021x"]; // Common services
 	},
@@ -216,6 +232,22 @@ let mock_ethernet = {
 	find_interface: function(role, vlan_id) {
 		// Mock interface lookup
 		return role + (vlan_id ? "_" + vlan_id : "");
+	},
+	lookup_by_select_ports: function(select_ports) {
+		// Convert select_ports array to actual port names
+		let ports = [];
+		if (select_ports) {
+			for (let port in select_ports) {
+				if (port == "WAN") {
+					push(ports, "eth0");
+				} else if (port == "LAN*") {
+					push(ports, "eth1");
+				} else {
+					push(ports, lc(port));
+				}
+			}
+		}
+		return ports;
 	}
 };
 
