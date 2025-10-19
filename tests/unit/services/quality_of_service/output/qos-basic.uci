@@ -1,0 +1,8 @@
+
+set qosify.@defaults[0].bulk_trigger_pps=1000
+set qosify.@defaults[0].dscp_bulk=CS1
+
+set qosify.eth0=device
+set qosify.eth0.name='eth0'
+set qosify.eth0.bandwidth_up='100mbit'
+set qosify.eth0.bandwidth_down='500mbit'
