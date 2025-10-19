@@ -1,11 +1,25 @@
-description:
-  Define the interfaces on which the dhcp shall be relayed.
+description: |
+  Configure DHCP injection service that enables DHCP traffic forwarding between 
+  uplink ports and wireless SSIDs. This service allows wireless clients to receive 
+  DHCP responses from upstream DHCP servers by forwarding DHCP requests and responses 
+  through selected physical network ports. The service is automatically enabled when 
+  SSIDs are configured with "dhcp-inject" in their services array.
 type: object
 properties:
   select-ports:
-    description:
-      The list of physical network devices that shall be used to fwd the
-      DHCP frames.
+    description: |
+      Array of physical network port selectors that define which uplink ports 
+      should be used for DHCP traffic forwarding. These ports act as the bridge 
+      between wireless SSIDs requesting DHCP injection and upstream DHCP servers.
+      If not specified, defaults to "eth0" for backward compatibility.
     type: array
     items:
       type: string
+      examples:
+        - "WAN"
+        - "eth0" 
+        - "eth1"
+    examples:
+      - ["WAN"]
+      - ["eth0", "eth1"]
+      - ["LAN*"]
