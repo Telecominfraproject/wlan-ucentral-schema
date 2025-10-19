@@ -1,18 +1,42 @@
-description:
-  A device has certain properties that describe its identity and location.
-  These properties are described inside this object.
+description: |
+  Configuration for device-to-cloud connection timeouts and retry behavior.
+  These settings control how the device handles loss of connectivity to the
+  management cloud and its recovery mechanisms.
 type: object
 properties:
   offline:
-    description:
-      How long can the device be offline before it enters orphan state.
+    description: |
+      Maximum duration (in seconds) the device can remain disconnected from the cloud
+      before transitioning to orphan state. During this offline period, the device
+      continues normal operation using its last known configuration. Once this timeout
+      expires, the device enters orphan mode and begins active cloud discovery.
+      A longer timeout reduces unnecessary discovery attempts during temporary outages.
+      Example: 3600 (1 hour) allows for brief network maintenance without triggering orphan mode.
     type: integer
+    examples:
+    - 3600
+    - 7200
   orphan:
-    description:
-      The interval at which an orphaned device will try to discover the cloud.
+    description: |
+      Retry interval (in seconds) for cloud discovery attempts when the device is in
+      orphan state. After losing cloud connectivity beyond the offline timeout, the
+      device periodically attempts to re-establish connection at this interval.
+      Shorter intervals provide faster recovery but increase network traffic and CPU usage.
+      Example: 120 (2 minutes) balances quick recovery with resource efficiency.
     type: integer
+    examples:
+    - 60
+    - 120
+    - 300
   validate:
-    description:
-      How long the client has time to connect to the cloud before discovery is restarted.
+    description: |
+      Grace period (in seconds) for the device to successfully connect to the cloud
+      after discovering it. If connection is not established within this timeout,
+      the device restarts the discovery process. This prevents the device from getting
+      stuck attempting to connect to an unreachable cloud endpoint.
+      Example: 60 (1 minute) provides reasonable time for TLS handshake and authentication.
     type: integer
-
+    examples:
+    - 30
+    - 60
+    - 90
