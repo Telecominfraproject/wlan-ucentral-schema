@@ -1,3 +1,5 @@
 /jsdoc.conf.json
-docs/
+docs/*.html
+docs/*.css
+docs/*.js
 node_modules
