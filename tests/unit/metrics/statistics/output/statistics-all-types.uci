@@ -1,0 +1,7 @@
+
+# Statistics configuration
+set state.stats.interval=120
+add_list state.stats.types=ssids
+add_list state.stats.types=lldp
+add_list state.stats.types=clients
+add_list state.stats.types=tid-stats
