@@ -390,3 +390,47 @@ export function run_test_via_process(test_type, template_path, test_dir, input_f
 		exit_code: exit_code
 	};
 };
+
+// Standardized context builder - eliminates mutation patterns in favor of declarative construction
+// Uses preferred result = { ... } pattern consistently across all context creation functions
+export function build_context(config) {
+	let result = {
+		...create_standard_context_properties(),
+
+		// Core objects
+		cursor: config.cursor,
+		conn: config.conn,
+		fs: config.fs,
+
+		// Capabilities and restrictions
+		capab: config.capab,
+		restrict: config.restrict,
+		default_config: config.default_config,
+
+		// Service and utility objects
+		services: config.services,
+		ethernet: config.ethernet,
+		wiphy: config.wiphy,
+		routing_table: config.routing_table,
+		captive: config.captive,
+		files: config.files,
+		events: config.events,
+		shell: config.shell
+	};
+
+	// Add optional integration-specific properties if present
+	if (config.state)
+		result.state = config.state;
+	if (config.location)
+		result.location = config.location;
+	if (config.board)
+		result.board = config.board;
+	if (config.latency)
+		result.latency = config.latency;
+	if (config.local_profile)
+		result.local_profile = config.local_profile;
+	if (config.tryinclude)
+		result.tryinclude = config.tryinclude;
+
+	return result;
+};

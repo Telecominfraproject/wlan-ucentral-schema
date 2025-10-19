@@ -6,7 +6,7 @@ import * as fs from 'fs';
 import {
 	read_board_file, is_capabilities_file, is_board_file, is_qos_file,
 	load_board_capabilities, load_wiphy_data, create_base_context_objects,
-	create_standard_context_properties, apply_context_overrides
+	create_standard_context_properties, apply_context_overrides, build_context
 } from './test-utils.uc';
 
 // Real filesystem access for reading actual board configuration files
@@ -455,11 +455,8 @@ function create_test_context(overrides) {
 	// Reset mock files state for clean test runs
 	mock_files.clear_generated_files();
 
-	// Build result using shared utilities
-	let result = {
-		...create_standard_context_properties(),
-
-		// Mock system objects
+	// Build result using standardized context builder
+	let result = build_context({
 		cursor: base_objects.cursor,
 		conn: mock_conn,
 		fs: mock_fs,
@@ -474,7 +471,7 @@ function create_test_context(overrides) {
 		files: mock_files,
 		events: mock_events,
 		shell: mock_shell
-	};
+	});
 
 	// Apply overrides using shared utility
 	result = apply_context_overrides(result, overrides, mock_services);
@@ -502,20 +499,20 @@ function create_board_test_context(test_data, board_data, capabilities, board_na
 	// Reset mock files state for clean test runs
 	mock_files.clear_generated_files();
 
-	let context = create_test_context(test_data);
+	// Get base context for test data with overrides
+	let base_context = create_test_context(test_data);
 
-	// Add board-specific data to context
-	context.board = board_data;
-	context.capab = capabilities;
-
-	// Override with board-specific objects
-	context.cursor = base_objects.cursor;
-	context.ethernet = base_objects.ethernet;
-	context.wiphy = base_objects.wiphy;
-	context.routing_table = base_objects.routing_table;
-	context.captive = base_objects.captive;
-
-	return context;
+	// Build result using standardized context builder (declarative approach)
+	return build_context({
+		...base_context,
+		cursor: base_objects.cursor,
+		capab: capabilities,
+		ethernet: base_objects.ethernet,
+		wiphy: base_objects.wiphy,
+		routing_table: base_objects.routing_table,
+		captive: base_objects.captive,
+		board: board_data
+	});
 };
 
 // Create integration test context without override logic
@@ -538,10 +535,8 @@ function create_integration_test_context(board_data, capabilities, board_name) {
 	// Initialize with board capabilities (no overrides logic)
 	let capabilities_for_context = mock_capab(board_name);
 
-	let result = {
-		...create_standard_context_properties(),
-
-		// Mock system objects (no service config overrides)
+	// Build result using standardized context builder (declarative approach)
+	let result = build_context({
 		cursor: base_objects.cursor,
 		conn: mock_conn,
 		fs: mock_fs,
@@ -556,7 +551,7 @@ function create_integration_test_context(board_data, capabilities, board_name) {
 		files: mock_files,
 		events: mock_events,
 		shell: mock_shell
-	};
+	});
 
 	// Don't set any override state for integration tests - services will be passed via context.state
 
@@ -569,27 +564,26 @@ function create_integration_test_context(board_data, capabilities, board_name) {
 // Create full test context for toplevel.uc rendering
 function create_full_test_context(state, board_data, capabilities, board_name) {
 	// For integration tests, don't use the override logic - create clean context
-	let context = create_integration_test_context(board_data, capabilities, board_name);
-
-	// Add the validated state and all globals that renderer.uc passes to toplevel.uc
-	context.state = state;
-	context.location = '/';
+	let base_context = create_integration_test_context(board_data, capabilities, board_name);
 
 	// Set the test state for services mock to use the actual validated state
-	context.services._test_state = state;
+	base_context.services._test_state = state;
 
 	// Set global state for ethernet library functions
 	global.state = state;
-	context.capab = capabilities;
-	context.restrict = {};
-	context.default_config = mock_default_config;
-	context.latency = mock_latency;
-	context.local_profile = mock_local_profile;
 
-	// Add utility functions (UCI helpers already included via create_standard_context_properties)
-	context.tryinclude = tryinclude;
-
-	return context;
+	// Build result using standardized context builder (declarative approach)
+	return build_context({
+		...base_context,
+		state: state,
+		location: '/',
+		capab: capabilities,
+		restrict: {},
+		default_config: mock_default_config,
+		latency: mock_latency,
+		local_profile: mock_local_profile,
+		tryinclude: tryinclude
+	});
 };
 
 // Export the functions
