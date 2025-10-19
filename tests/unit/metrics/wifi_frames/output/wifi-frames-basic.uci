@@ -1,0 +1,7 @@
+
+# Wifi-frame reporting configuration
+set event.wifi=event
+set event.wifi.type=wifi
+set event.wifi.filter=probe
+add_list event.wifi.filter=auth
+add_list event.wifi.filter=assoc

@@ -1,0 +1,19 @@
+{
+  "uuid": 1,
+  "interfaces": [
+    {
+      "name": "WAN",
+      "role": "upstream",
+      "proto": "dhcp"
+    }
+  ],
+  "metrics": {
+    "wifi_frames": {
+      "filters": [
+        "probe", "auth", "assoc", "disassoc", "deauth",
+        "local-deauth", "inactive-deauth", "key-mismatch", 
+        "beacon-report", "radar-detected", "sta-authorized", "ft-finish"
+      ]
+    }
+  }
+}
