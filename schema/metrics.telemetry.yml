@@ -1,15 +1,44 @@
-description:
-  Configure the unsolicited telemetry stream.
+description: |
+  Configure unsolicited telemetry streaming for continuous monitoring and 
+  analysis. This metric enables bulk collection and forwarding of event data 
+  to the cloud at regular intervals, providing continuous visibility into 
+  device operations and network behavior. Events are validated against the 
+  system's event registry before being configured for streaming.
 type: object
 properties:
   interval:
-    description:
-      The reporting interval defined in seconds.
+    description: |
+      The reporting interval in seconds that controls how frequently telemetry 
+      data is collected and transmitted to the cloud. This setting balances 
+      monitoring frequency with bandwidth usage and system performance.
+      
+      Typical values range from 120 seconds (2 minutes) for detailed monitoring 
+      to 600 seconds (10 minutes) for standard operational telemetry. The 
+      interval should be chosen based on monitoring requirements and network 
+      capacity.
     type: integer
+    examples: [120, 300, 600, 900]
   types:
-    description:
-      The event types that get added to telemetry.
+    description: |
+      Array of event type identifiers to include in the telemetry stream.
+      Only event types that exist in the system's event registry (/etc/events.json)
+      will be configured - invalid types are silently filtered out.
+      
+      Event types represent different categories of operational data:
+      - client.associate, client.disassociate: WiFi client connection events
+      - wifi.start, wifi.stop: WiFi interface state changes
+      - dhcp.ack, dhcp.discover: DHCP transaction events  
+      - dns.query: DNS lookup events
+      - Various system and network operational events
+      
+      The telemetry stream aggregates these events for bulk transmission,
+      unlike realtime metrics which forward events immediately.
     type: array
     items:
       type: string
+      examples:
+        - "client.associate"
+        - "wifi.start" 
+        - "dhcp.ack"
+        - "dns.query"
 
