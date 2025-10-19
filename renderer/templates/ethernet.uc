@@ -4,10 +4,10 @@
 set network.{{ nport }}=device
 set network.{{ nport }}.name={{ s(port) }}
 set network.{{ nport }}.ifname={{ s(port) }}
-set network.{{ nport }}.enabled={{ ports.enabled }}
+set network.{{ nport }}.enabled={{ b(ports.enabled) }}
 {% if (!ports.speed && !ports.duplex) continue %}
 set network.{{ nport }}.speed={{ ports.speed }}
-set network.{{ nport }}.duplex={{ ports.duplex == "full" ? true : false }}
+set network.{{ nport }}.duplex={{ b(ports.duplex == "full") }}
 
 {% endfor %}
 {%
