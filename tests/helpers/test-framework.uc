@@ -205,6 +205,9 @@ export function IntegrationTestFramework(template_path, test_title, test_dir) {
                     output += sprintf("\n-----%s-----\n%s\n--------\n", path, file_info.content);
                 }
                 
+                // Write debug output to /tmp/ucentral-test-output/
+                context.files.write_debug_output(test_name + "-" + board_name, output);
+                
                 output = trim(output);
                 expected_output = trim(expected_output);
                 
