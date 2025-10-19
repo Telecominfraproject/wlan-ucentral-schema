@@ -1,11 +1,27 @@
-description:
-  DHCP snooping allows us to intercept DHCP packages on interface that are
-  bridged, where DHCP is not offered as a service by the AP.
+description: |
+  DHCP snooping metrics configuration for monitoring DHCP traffic on bridged interfaces.
+  This enables capturing and reporting DHCP message exchanges on interfaces where
+  the access point acts as a bridge rather than providing DHCP services directly.
+  DHCP snooping provides visibility into client IP address assignments, DHCP server
+  interactions, and network behavior for troubleshooting and monitoring purposes.
 type: object
 properties:
   filters:
-    description:
-      A list of the message types that shall be sent to the backend.
+    description: |
+      List of DHCP message types to capture and report to the backend for monitoring.
+      When specified, only the selected message types will be reported. If empty or
+      omitted, all DHCP traffic will be captured (equivalent to wildcard '*' filter).
+      
+      Message types correspond to different phases of DHCP operations:
+      - 'discover': Client broadcasts to find available DHCP servers
+      - 'offer': DHCP server responds with IP address offer
+      - 'request': Client requests specific IP address from server
+      - 'ack': Server confirms IP address assignment
+      - 'solicit': DHCPv6 client initiates address request
+      - 'reply': DHCPv6 server responds with configuration
+      - 'renew': Client requests lease renewal
+      
+      Example: Use ['ack', 'discover'] to monitor only successful assignments and client requests.
     type: array
     items:
       type: string
