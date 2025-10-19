@@ -1,0 +1,53 @@
+
+add radsecproxy options
+add_list radsecproxy.@options[-1].ListenUDP='localhost:1812'
+add_list radsecproxy.@options[-1].ListenUDP='localhost:1813'
+
+add radsecproxy client
+set radsecproxy.@client[-1].name='client'
+set radsecproxy.@client[-1].host='localhost'
+set radsecproxy.@client[-1].type='udp'
+set radsecproxy.@client[-1].secret='mixed-proxy-secret'
+
+
+
+set radsecproxy.tls0=tls
+set radsecproxy.@tls[-1].name='tls0'
+set radsecproxy.@tls[-1].CACertificateFile='/etc/ssl/ca.pem'
+set radsecproxy.@tls[-1].certificateFile='/etc/ssl/cert.pem'
+set radsecproxy.@tls[-1].certificateKeyFile='/etc/ssl/key.pem'
+set radsecproxy.@tls[-1].certificateKeyPassword=''
+
+set radsecproxy.server0=server
+set radsecproxy.@server[-1].name='server0'
+set radsecproxy.@server[-1].dynamicLookupCommand='/usr/libexec/naptr_lookup.sh'
+set radsecproxy.@server[-1].type='tls'
+set radsecproxy.@server[-1].tls='tls0'
+set radsecproxy.@server[-1].statusServer='0'
+set radsecproxy.@server[-1].certificateNameCheck='0'
+add radsecproxy realm
+set radsecproxy.@realm[-1].name='secure.example.com'
+set radsecproxy.@realm[-1].server='server0'
+set radsecproxy.@realm[-1].accountingServer='server0'
+
+
+
+
+
+set radsecproxy.server1auth=server
+set radsecproxy.@server[-1].name='server1auth'
+set radsecproxy.@server[-1].host='192.168.2.100'
+set radsecproxy.@server[-1].port='1812'
+set radsecproxy.@server[-1].secret='legacy-auth-secret'
+set radsecproxy.@server[-1].type='udp'
+add radsecproxy realm
+set radsecproxy.@realm[-1].name='legacy.example.com'
+set radsecproxy.@realm[-1].server='server1auth'
+
+
+
+
+
+add radsecproxy realm
+set radsecproxy.@realm[-1].name='banned.example.com'
+set radsecproxy.@realm[-1].replyMessage='Realm access denied'
