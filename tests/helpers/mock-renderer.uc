@@ -373,7 +373,6 @@ let mock_files = {
 		if (fd) {
 			fd.write(output);
 			fd.close();
-			printf("Debug output written to: %s\n", debug_file);
 		}
 	}
 };
