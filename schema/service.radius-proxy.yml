@@ -1,15 +1,15 @@
 description:
-  This section can be used to setup a radius security proxy instance (radsecproxy).
+  This section configures a RADIUS security proxy instance (radsecproxy) to forward RADIUS requests to upstream servers.
 type: object
 properties:
   proxy-secret:
     description:
-      The radius secret used to communicate with the proxy.
+      The RADIUS secret used by clients to communicate with the proxy.
     type: string
     default: secret
   realms:
     description:
-      The various realms that we can proxy to.
+      Array of realm configurations defining how to handle different RADIUS realms.
     type: array
     items:
       anyOf:
@@ -17,87 +17,86 @@ properties:
         properties:
           protocol:
             description:
-              Defines whether the real should use radsec or normal radius.
+              Defines whether the realm should use radsec (RADIUS over TLS) or normal radius.
             type: string
             enum:
             - radsec
             default: radsec
           realm:
             description:
-              The realm that that this server shall be used for.
+              Array of realm names that this server configuration applies to.
             type: array
             items:
               type: string
               default: '*'
           auto-discover:
             description:
-              Auto discover radsec server address via realm DNS NAPTR record.
+              Auto-discover radsec server address via realm DNS NAPTR record instead of using host/port.
             type: boolean
             default: false
           host:
             description:
-              The remote proxy server that the device shall connect to.
+              The remote radsec server hostname or IP address to connect to.
             type: string
             format: uc-host
             examples:
             - 192.168.1.10
           port:
             description:
-              The remote proxy port that the device shall connect to.
+              The remote radsec server port to connect to.
             type: integer
             maximum: 65535
             default: 2083
           secret:
             description:
-              The radius secret that will be used for the connection.
+              The RADIUS shared secret used for the radsec connection.
             type: string
           use-local-certificates:
             description:
-              The device will use its local certificate bundle for the TLS setup and
-              ignores all other certificate options in this section.
+              Use the device's local certificate bundle for TLS setup instead of custom certificates.
             type: boolean
             default: false
           ca-certificate:
             description:
-               The local servers CA bundle.
+              Base64-encoded CA certificate bundle for validating the radsec server certificate.
             type: string
           certificate:
             description:
-               The local servers certificate.
+              Base64-encoded client certificate for mutual TLS authentication with the radsec server.
             type: string
           private-key:
             description:
-              The local servers private key/
+              Base64-encoded private key corresponding to the client certificate.
             type: string
           private-key-password:
             description:
-              The password required to read the private key.
+              Password required to decrypt the private key (if encrypted).
             type: string
       - type: object
         properties:
           protocol:
             description:
-              Defines whether the real should use radsec or normal radius.
+              Defines whether the realm should use radsec (RADIUS over TLS) or normal radius.
             type: string
             enum:
             - radius
           realm:
             description:
-              The realm that that this server shall be used for.
+              Array of realm names that this server configuration applies to.
             type: array
             items:
               type: string
               default: '*'
           auth-server:
             description:
-              The URI of our Radius server.
+              The hostname or IP address of the RADIUS authentication server.
             type: string
             format: uc-host
             examples:
             - 192.168.1.10
           auth-port:
             description:
-              The network port of our Radius server.
+              The network port of the RADIUS authentication/accounting server.
             type: integer
             maximum: 65535
             minimum: 1024
@@ -105,20 +104,20 @@ properties:
             - 1812
           auth-secret:
             description:
-              The shared Radius authentication secret.
+              The shared RADIUS secret for server communication.
             type: string
             examples:
             - secret
           acct-server:
             description:
-              The URI of our Radius server.
+              The hostname or IP address of the RADIUS authentication server.
             type: string
             format: uc-host
             examples:
             - 192.168.1.10
           acct-port:
             description:
-              The network port of our Radius server.
+              The network port of the RADIUS authentication/accounting server.
             type: integer
             maximum: 65535
             minimum: 1024
@@ -126,7 +125,7 @@ properties:
             - 1812
           acct-secret:
             description:
-              The shared Radius authentication secret.
+              The shared RADIUS secret for server communication.
             type: string
             examples:
             - secret
@@ -134,20 +133,20 @@ properties:
         properties:
           protocol:
             description:
-              Defines whether the real should use radsec or normal radius.
+              Defines whether the realm should use radsec (RADIUS over TLS) or normal radius.
             type: string
             enum:
             - block
           realm:
             description:
-              The realm that that this server shall be used for.
+              Array of realm names that this server configuration applies to.
             type: array
             items:
               type: string
               default: '*'
           message:
             description:
-              The message that is sent when a realm is blocked.
+              The message sent in the RADIUS Access-Reject response when a realm is blocked.
             type: string
             items:
               type: string
