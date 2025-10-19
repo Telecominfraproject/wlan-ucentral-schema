@@ -3014,19 +3014,6 @@
                 }
             }
         },
-        "service.http": {
-            "description": "Enable the webserver with the on-boarding webui",
-            "type": "object",
-            "properties": {
-                "http-port": {
-                    "description": "The port that the HTTP server should run on.",
-                    "type": "integer",
-                    "maximum": 65535,
-                    "minimum": 1,
-                    "default": 80
-                }
-            }
-        },
         "service.igmp": {
             "description": "This section allows enabling the IGMP/Multicast proxy",
             "type": "object",
@@ -4386,9 +4373,6 @@
                 },
                 "log": {
                     "$ref": "#/$defs/service.log"
-                },
-                "http": {
-                    "$ref": "#/$defs/service.http"
                 },
                 "igmp": {
                     "$ref": "#/$defs/service.igmp"

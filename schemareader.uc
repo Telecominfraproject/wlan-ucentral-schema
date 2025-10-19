@@ -7147,42 +7147,6 @@ function instantiateServiceLog(location, value, errors) {
 	return value;
 }
 
-function instantiateServiceHttp(location, value, errors) {
-	if (type(value) == "object") {
-		let obj = {};
-
-		function parseHttpPort(location, value, errors) {
-			if (type(value) in [ "int", "double" ]) {
-				if (value > 65535)
-					push(errors, [ location, "must be lower than or equal to 65535" ]);
-
-				if (value < 1)
-					push(errors, [ location, "must be bigger than or equal to 1" ]);
-
-			}
-
-			if (type(value) != "int")
-				push(errors, [ location, "must be of type integer" ]);
-
-			return value;
-		}
-
-		if (exists(value, "http-port")) {
-			obj.http_port = parseHttpPort(location + "/http-port", value["http-port"], errors);
-		}
-		else {
-			obj.http_port = 80;
-		}
-
-		return obj;
-	}
-
-	if (type(value) != "object")
-		push(errors, [ location, "must be of type object" ]);
-
-	return value;
-}
-
 function instantiateServiceIgmp(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
@@ -10409,10 +10373,6 @@ function instantiateService(location, value, errors) {
 
 		if (exists(value, "log")) {
 			obj.log = instantiateServiceLog(location + "/log", value["log"], errors);
-		}
-
-		if (exists(value, "http")) {
-			obj.http = instantiateServiceHttp(location + "/http", value["http"], errors);
 		}
 
 		if (exists(value, "igmp")) {
