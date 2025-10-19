@@ -24,7 +24,7 @@ set network.up_none.ifname='up'
 set network.up_none.proto='none'
 
 ### generate switch configuration
-add network.switch
+add network switch
 set network.@switch[-1].name='switch0'
 set network.@switch[-1].reset=0
 set network.@switch[-1].enable_vlan=0

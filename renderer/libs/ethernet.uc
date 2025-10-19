@@ -225,4 +225,4 @@ function create_ethernet(ports, capab, fs, swconfig) {
 	};
 }
 
-export { ethernet };
+export { create_ethernet };
