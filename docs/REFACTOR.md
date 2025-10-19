@@ -2,7 +2,10 @@
 
 This document outlines the standardized process for refactoring ucode templates to follow the new design patterns while maintaining comprehensive test coverage and schema documentation.
 
-This process applies to both **service templates** (`renderer/templates/services/`) and **metric templates** (`renderer/templates/metric/`).
+This process applies to:
+- **Service templates** (`renderer/templates/services/`) - Service-specific configurations
+- **Metric templates** (`renderer/templates/metric/`) - Metrics and monitoring configurations  
+- **Base templates** (`renderer/templates/`) - Core system templates (interface, radio, etc.)
 
 ## Overview
 
@@ -26,6 +29,7 @@ This approach ensures:
 **Commit Pattern**: 
 - Services: `tests: add [service] test cases`  
 - Metrics: `tests: add [metric] metric test cases`
+- Base: `tests: add [base] base template test cases`
 
 **Objective**: Build comprehensive test suite that captures current template behavior exactly.
 
@@ -48,6 +52,14 @@ This approach ensures:
    ├── output/          # Expected UCI outputs  
    └── test-[metric].uc # Test script
    ```
+   
+   **For Base Templates:**
+   ```
+   tests/unit/base/[template]/
+   ├── input/           # JSON test fixtures
+   ├── output/          # Expected UCI/file outputs  
+   └── test-[template].uc # Test script
+   ```
 
 2. **Design test scenarios** covering:
    
@@ -64,6 +76,13 @@ This approach ensures:
    - Complex filter configurations and multiple types
    - Interface-specific metrics (where applicable)
    - Custom intervals and thresholds
+   
+   **For Base Templates:**
+   - Core system configurations (interfaces, radios, switches)
+   - Multiple interface types (upstream, downstream, etc.)
+   - Complex VLAN and bridge configurations
+   - Radio band and channel settings
+   - Error conditions and validation scenarios
 
 3. **Generate expected outputs** by running existing template against test fixtures
 
@@ -94,6 +113,14 @@ git commit -s -m "tests: add [metric] metric test cases
 - Add comprehensive test coverage for [metric] metrics template
 - [List specific test scenarios]
 - All test cases pass against current template"
+
+# For base templates
+git add tests/unit/base/[template]/
+git commit -s -m "tests: add [template] base template test cases
+
+- Add comprehensive test coverage for [template] base template
+- [List specific test scenarios]
+- All test cases pass against current template"
 ```
 
 **Deliverable**: Complete test suite with **all tests passing** against current template and **committed to git**.
@@ -103,6 +130,7 @@ git commit -s -m "tests: add [metric] metric test cases
 **Commit Pattern**: 
 - Services: `services/[service]: update to new templating pattern`
 - Metrics: `metrics/[metric]: update to new templating pattern`
+- Base: `base/[template]: update to new templating pattern`
 
 **Objective**: Modernize template code organization while preserving exact functional behavior.
 
@@ -155,6 +183,17 @@ git commit -s -m "metrics/[metric]: update to new templating pattern
 - Add traceability comments for debugging
 - Implement early validation with proper error handling
 - All tests pass with updated expected outputs"
+
+# For base templates
+git add renderer/templates/[template].uc tests/unit/base/[template]/output/
+git commit -s -m "base/[template]: update to new templating pattern
+
+- Organize helper functions by prefix (has_, is_, validate_)
+- Extract configuration generation into focused functions
+- Use UCI helpers for consistent output formatting
+- Add traceability comments for debugging
+- Implement early validation with proper error handling
+- All tests pass with updated expected outputs"
 ```
 
 **Deliverable**: Refactored template with **all tests passing** and modern code organization, **committed to git**.
@@ -164,6 +203,7 @@ git commit -s -m "metrics/[metric]: update to new templating pattern
 **Commit Pattern**: 
 - Services: `schema: validate [service] field descriptions`
 - Metrics: `schema: validate [metric] metrics field descriptions`
+- Base: `schema: validate [component] field descriptions`
 
 **Objective**: Ensure all configuration fields have clear, comprehensive descriptions in the schema.
 
