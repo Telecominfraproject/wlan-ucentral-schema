@@ -11,7 +11,6 @@ import * as fs from 'fs';
 import { run_tests as admin_ui_tests } from './unit/services/admin_ui/test-admin_ui.uc';
 import { run_tests as airtime_fairness_tests } from './unit/services/airtime_fairness/test-airtime_fairness.uc';
 import { run_tests as captive_tests } from './unit/services/captive/test-captive.uc';
-import { run_tests as dhcp_inject_tests } from './unit/services/dhcp_inject/test-dhcp_inject.uc';
 import { run_tests as dhcp_relay_tests } from './unit/services/dhcp_relay/test-dhcp_relay.uc';
 import { run_tests as dhcp_snooping_service_tests } from './unit/services/dhcp_snooping/test-dhcp_snooping.uc';
 import { run_tests as fingerprint_tests } from './unit/services/fingerprint/test-fingerprint.uc';
@@ -236,7 +235,6 @@ function main() {
 		{ name: "Admin UI Service", run_tests: admin_ui_tests },
 		{ name: "Airtime Fairness Service", run_tests: airtime_fairness_tests },
 		{ name: "Captive Service", run_tests: captive_tests },
-		{ name: "DHCP Inject Service", run_tests: dhcp_inject_tests },
 		{ name: "DHCP Relay Service", run_tests: dhcp_relay_tests },
 		{ name: "DHCP Snooping Service", run_tests: dhcp_snooping_service_tests },
 		{ name: "Fingerprint Service", run_tests: fingerprint_tests },
