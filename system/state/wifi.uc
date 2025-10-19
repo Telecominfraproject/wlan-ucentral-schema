@@ -13,9 +13,49 @@ let mesh = require('wifi.mesh');
 /* Collect data via ubus */
 let wifistatus = global.ubus.call("network.wireless", "status");
 
+/* Discover WDS STA dynamic interfaces (e.g., wlan2.sta1) */
+function discover_wds_interfaces() {
+	let wds_interfaces = [];
+
+	for (let radio, data in wifistatus) {
+		for (let k, vap in data.interfaces) {
+			let base_ifname = vap.ifname;
+			let wds_pattern = "/sys/class/net/" + base_ifname + ".sta*";
+			let wds_paths = fs.glob(wds_pattern);
+
+			for (let wds_path in wds_paths) {
+				let wds_ifname = split(wds_path, "/")[-1];
+				push(wds_interfaces, wds_ifname);
+			}
+		}
+	}
+
+	return wds_interfaces;
+}
+
+/* Collect stations from both regular and WDS interfaces */
+function collect_all_stations() {
+	let all_stations = { ...stations };
+	let wds_interfaces = discover_wds_interfaces();
+
+	for (let wds_ifname in wds_interfaces) {
+		try {
+			let wds_stations = global.ubus.call("hostapd." + wds_ifname, "get_clients");
+			if (wds_stations && length(wds_stations))
+				all_stations[wds_ifname] = wds_stations;
+		} catch (e) {
+			// WDS interface has no clients or hostapd call failed
+		}
+	}
+
+	return all_stations;
+}
+
+let all_stations = collect_all_stations();
+
 // Set up stations lookup for other modules
 let stations_lookup = {};
-for (let k, v in stations) {
+for (let k, v in all_stations) {
 	stations_lookup[k] = {};
 	for (let assoc in v)
 		stations_lookup[k][assoc.station] = assoc;
@@ -106,14 +146,25 @@ export function collect_wifi_ssids(iface) {
 			ssid.mode = wif.mode;
 			ssid.bssid = wif.bssid;
 			ssid.frequency = uniq(wif.frequency);
-			for (let k, v in stations) {
+			for (let k, v in all_stations) {
 				let vlan = split(k, '-v');
-				if (vlan[0] != vap.ifname)
-					continue;
-				if (vlan[1])
-					for (let k, assoc in v)
-						assoc.dynamic_vlan = +vlan[1];
-				ssid.associations = [ ...(ssid.associations || []), ...v ];
+				let wds = split(k, '.sta');
+
+				// Handle regular VAP interfaces (including VLAN tagged)
+				if (vlan[0] == vap.ifname) {
+					if (vlan[1])
+						for (let k, assoc in v)
+							assoc.dynamic_vlan = +vlan[1];
+					ssid.associations = [ ...(ssid.associations || []), ...v ];
+				}
+				// Handle WDS STA interfaces (e.g., wlan2.sta1)
+				else if (wds[0] == vap.ifname && wds[1]) {
+					for (let assoc in v) {
+						assoc.wds_interface = k;
+						assoc.connection_type = "WDS-STA";
+					}
+					ssid.associations = [ ...(ssid.associations || []), ...v ];
+				}
 			}
 			for (let assoc in ssid.associations) {
 				let fp = fingerprint_module.get_fingerprint_for_mac(assoc.station, null);
@@ -135,7 +186,8 @@ export function collect_wifi_ssids(iface) {
 					}
 				}
 
-				assoc.delta_counters = telemetry_module.stations_deltas(assoc, vap.ifname, global.previous);
+				let delta_iface = assoc.wds_interface || vap.ifname;
+				assoc.delta_counters = telemetry_module.stations_deltas(assoc, delta_iface, global.previous);
 			}
 
 			ssid.iface = vap.ifname;
