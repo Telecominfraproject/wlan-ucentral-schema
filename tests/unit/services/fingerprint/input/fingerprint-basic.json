@@ -1,0 +1,22 @@
+{
+  "template_vars": {
+    "fingerprint": {
+      "mode": "final",
+      "minimum_age": 60,
+      "maximum_age": 60,
+      "periodicity": 600,
+      "allow_wan": false
+    }
+  },
+  "state": {
+    "services": {
+      "fingerprint": {
+        "mode": "final",
+        "minimum_age": 60,
+        "maximum_age": 60,
+        "periodicity": 600,
+        "allow_wan": false
+      }
+    }
+  }
+}

@@ -1,0 +1,6 @@
+set state.fingerprint=fingerprint
+set state.fingerprint.mode='polled'
+set state.fingerprint.min_age='120'
+set state.fingerprint.max_age='1800'
+set state.fingerprint.period='300'
+set state.fingerprint.allow_wan=1
