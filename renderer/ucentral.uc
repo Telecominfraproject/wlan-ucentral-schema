@@ -3,7 +3,7 @@ push(REQUIRE_SEARCH_PATH,
 	"/usr/lib/ucode/*.so",
 	"/usr/share/ucentral/*.uc");
 
-let schemareader = require("schemareader");
+import * as schemareader from 'schemareader';
 let renderer = require("renderer");
 let fs = require("fs");
 let ubus = require("ubus").connect();
