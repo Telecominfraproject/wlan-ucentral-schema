@@ -1,6 +1,8 @@
+
 ### generate RRM base configuration
 set rrmd.@base[0].beacon_request_assoc=0
 set rrmd.@base[0].station_stats_interval=120
+
 ### generate RRM channel utilization policy
 add rrmd policy
 set rrmd.@policy[-1].name='chanutil'

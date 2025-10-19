@@ -33,6 +33,7 @@ set radsecproxy.@realm[-1].name='corp.example.com'
 set radsecproxy.@realm[-1].server='server0'
 set radsecproxy.@realm[-1].accountingServer='server0'
 
+
 -----/tmp/mock/ca0-----
 (null)
 --------
