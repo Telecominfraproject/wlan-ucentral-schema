@@ -8,6 +8,7 @@ let fs = require("fs");
 import { ipcalc } from 'libs.ipcalc';
 import { create_ethernet } from 'libs/ethernet.uc';
 import { create_wiphy } from 'libs/wiphy.uc';
+import { create_routing_table } from 'libs/routing_table.uc';
 import { 
 	b, s, uci_cmd, uci_set_string, uci_set_boolean, uci_set_number, uci_set_raw,
 	uci_list_string, uci_list_number, uci_section, uci_named_section, 
@@ -449,32 +450,8 @@ let shell = {
 	}
 };
 
-/**
- * @class uCentral.routing_table
- * @classdesc
- *
- * The routing table utility class allows querying system routing tables.
- */
-
-/** @lends uCentral.routing_table.prototype */
-
-let routing_table = {
-	used_tables: {},
-
-	next: 1,
-
-	/**
-	 * Allocate a route table index for the given ID
-	 *
-	 * @param {string} id  The ID to lookup or reserve
-	 * @returns {number} The table number allocated for the given ID
-	 */
-	get: function(id) {
-		if (!this.used_tables[id])
-			this.used_tables[id] = this.next++;
-		return this.used_tables[id];
-	}
-};
+// Create routing table instance using shared library
+let routing_table = create_routing_table();
 
 /**
  * @class uCentral.captive
