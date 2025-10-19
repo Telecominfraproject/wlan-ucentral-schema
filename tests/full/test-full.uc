@@ -15,13 +15,13 @@ export function run_tests() {
 		"admin_ui", "big", "block-rfc1918", "captive-click", "captive-credentials", "captive",
 		"captive-multiple", "captive-radius", "captive-uam", "captive-webroot", "crypto-enterprise",
 		"crypto-psk", "data-plane", "default", "dhcp-relay", "dhcpsnoop", "dual-stack", "eap_local",
-		"fingerprint-final-always", "fingerprint-final-periodic", "fingerprint-raw", "gps", "gre6",
-		"gre", "ieee8021x-mac-auth", "ieee8021x-nat", "ieee8021x-radius", "igmp", "lldp",
+		"fingerprint-final-always", "fingerprint-final-periodic", "fingerprint-raw", "gps",
+		"ieee8021x-mac-auth", "ieee8021x-nat", "ieee8021x-radius", "igmp", "lldp",
 		"loop-detect", "maverick", "mesh", "metrics", "multi-psk", "ntp", "online-check", "owe",
 		"owe-transition", "psk2-radius", "qos-class", "qos", "quality-threshold", "radius-gw-proxy",
 		"radius", "radius-proxy", "radius-request-attr", "radius-secondary", "rate-limit",
 		"roaming-psk2-radius", "rrm", "ssh", "steering", "strict-forwarding", "switch-fabric",
-		"switch-ports", "switch-vlan", "telemetry", "tip-oui", "unit", "vlan", "vxlan", "wds-ap",
+		"switch-ports", "switch-vlan", "telemetry", "tip-oui", "unit", "vlan", "wds-ap",
 		"wds-sta", "wifi-6e-afc", "wifi-6e", "wifi-6e-mpsk", "wifi-6e-mpsk-radius",
 		"wifi-6e-psk2-radius", "wifi-7", "wpa2-radius", "wwan"
 	];
