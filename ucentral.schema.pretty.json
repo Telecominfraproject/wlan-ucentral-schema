@@ -2044,7 +2044,7 @@
             }
         },
         "service.captive.click": {
-            "description": "This section can be used to setup a captive portal on the AP with a click-to-continue splash page.",
+            "description": "Configure captive portal with click-to-continue authentication. This is the \nsimplest captive portal mode where users only need to click a \"Continue\" or \n\"Accept\" button to gain network access. No credentials are required, making \nit ideal for terms-of-service acceptance or basic splash page scenarios.\n",
             "type": "object",
             "properties": {
                 "auth-mode": {
@@ -2055,7 +2055,7 @@
             }
         },
         "service.captive.radius": {
-            "description": "This section can be used to setup a captive portal on the AP with a click-to-continue splash page.",
+            "description": "Configure captive portal with RADIUS authentication. This mode requires \nusers to provide credentials (username/password) that are validated \nagainst a RADIUS server. Supports both authentication and accounting \nwith separate server configurations and provides enterprise-grade \nauthentication integration.\n",
             "type": "object",
             "properties": {
                 "auth-mode": {
@@ -2064,58 +2064,77 @@
                     "const": "radius"
                 },
                 "auth-server": {
-                    "description": "The URI of our Radius Authentication server.",
+                    "description": "Hostname or IP address of the RADIUS authentication server that will \nvalidate user credentials. This server handles authentication requests \nwhen users attempt to log in through the captive portal.\n",
                     "type": "string",
                     "format": "uc-host",
                     "examples": [
-                        "192.168.1.10"
+                        "192.168.1.10",
+                        "radius.company.com",
+                        "10.0.1.100"
                     ]
                 },
                 "auth-port": {
-                    "description": "The network port of our Radius Authentication server.",
+                    "description": "Network port number for the RADIUS authentication server. Standard \nRADIUS authentication port is 1812, but can be customized based on \nserver configuration.\n",
                     "type": "integer",
                     "maximum": 65535,
                     "minimum": 1024,
-                    "default": 1812
+                    "default": 1812,
+                    "examples": [
+                        1812,
+                        1645
+                    ]
                 },
                 "auth-secret": {
-                    "description": "The shared Radius authentication Authentication secret.",
+                    "description": "Shared secret for RADIUS authentication server communication. This \npre-shared key must match the configuration on the RADIUS server \nand is used to encrypt communication between the captive portal \nand authentication server.\n",
                     "type": "string",
                     "examples": [
-                        "secret"
+                        "shared-secret-123",
+                        "radius-auth-key"
                     ]
                 },
                 "acct-server": {
-                    "description": "The URI of our Radius Authentication server.",
+                    "description": "Hostname or IP address of the RADIUS accounting server that will \ntrack user session information, data usage, and connection timing. \nCan be the same as auth-server or a separate accounting-specific server.\n",
                     "type": "string",
                     "format": "uc-host",
                     "examples": [
-                        "192.168.1.10"
+                        "192.168.1.11",
+                        "accounting.company.com",
+                        "10.0.1.101"
                     ]
                 },
                 "acct-port": {
-                    "description": "The network port of our Radius Authentication server.",
+                    "description": "Network port number for the RADIUS accounting server. Standard \nRADIUS accounting port is 1813, but can be customized based on \nserver configuration.\n",
                     "type": "integer",
                     "maximum": 65535,
                     "minimum": 1024,
-                    "default": 1812
+                    "default": 1813,
+                    "examples": [
+                        1813,
+                        1646
+                    ]
                 },
                 "acct-secret": {
-                    "description": "The shared Radius authentication Authentication secret.",
+                    "description": "Shared secret for RADIUS accounting server communication. This \npre-shared key must match the configuration on the RADIUS accounting \nserver and is used to encrypt session and usage data transmission.\n",
                     "type": "string",
                     "examples": [
-                        "secret"
+                        "accounting-secret-456",
+                        "radius-acct-key"
                     ]
                 },
                 "acct-interval": {
-                    "description": "The timeout used for interim messages.",
+                    "description": "Interval in seconds for sending interim accounting updates to the \nRADIUS accounting server. These updates provide ongoing session \ninformation including data usage and connection status during \nactive user sessions.\n",
                     "type": "integer",
-                    "default": 600
+                    "default": 600,
+                    "examples": [
+                        300,
+                        600,
+                        1800
+                    ]
                 }
             }
         },
         "service.captive.credentials": {
-            "description": "This section can be used to setup a captive portal on the AP with a credentials splash page.",
+            "description": "Configure captive portal with local credential-based authentication. This mode \nallows users to authenticate using locally stored username/password pairs. \nIdeal for guest networks or environments where simple local authentication \nis sufficient without requiring external authentication infrastructure.\n",
             "type": "object",
             "properties": {
                 "auth-mode": {
@@ -2124,19 +2143,49 @@
                     "const": "credentials"
                 },
                 "credentials": {
-                    "description": "The list of local username/password pairs that can be used to login.",
+                    "description": "Array of username/password pairs for local authentication. Users must \nprovide one of these credential pairs to gain network access through \nthe captive portal. Each credential entry requires both username and \npassword fields for authentication validation.\n",
                     "type": "array",
                     "items": {
                         "type": "object",
                         "properties": {
                             "username": {
-                                "type": "string"
+                                "description": "Username for local authentication. Must be unique within the \ncredentials array for proper authentication operation.\n",
+                                "type": "string",
+                                "examples": [
+                                    "guest001",
+                                    "visitor",
+                                    "temp_user"
+                                ]
                             },
                             "password": {
-                                "type": "string"
+                                "description": "Password for the corresponding username. Will be stored in the device \nconfiguration and used for authentication validation.\n",
+                                "type": "string",
+                                "examples": [
+                                    "SecurePass123",
+                                    "GuestNetwork2024!",
+                                    "TemporaryAccess456"
+                                ]
                             }
                         }
-                    }
+                    },
+                    "examples": [
+                        [
+                            {
+                                "username": "guest",
+                                "password": "WelcomeGuest123"
+                            },
+                            {
+                                "username": "visitor",
+                                "password": "TempAccess456"
+                            }
+                        ],
+                        [
+                            {
+                                "username": "demo_user",
+                                "password": "Demo2024Pass!"
+                            }
+                        ]
+                    ]
                 }
             }
         },
@@ -2279,41 +2328,88 @@
                     "type": "object",
                     "properties": {
                         "walled-garden-fqdn": {
-                            "description": "The list of FQDNs that a non-authenticated client is allowed to connect to.",
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        },
-                        "walled-garden-ipaddr": {
-                            "description": "The list of IP addresses that a non-authenticated client is allowed to connect to.",
+                            "description": "Array of domain names (FQDNs) that non-authenticated clients are allowed \nto access without authentication. These domains bypass the captive portal \nand can be used for essential services like DNS, NTP, or corporate login \npages. Useful for allowing access to authentication servers or required \nservices before user login.\n",
                             "type": "array",
                             "items": {
                                 "type": "string",
-                                "format": "uc-ip"
-                            }
+                                "examples": [
+                                    "google.com",
+                                    "login.company.com",
+                                    "ntp.pool.org"
+                                ]
+                            },
+                            "examples": [
+                                [
+                                    "google.com",
+                                    "facebook.com"
+                                ],
+                                [
+                                    "login.company.com",
+                                    "auth.enterprise.net"
+                                ]
+                            ]
+                        },
+                        "walled-garden-ipaddr": {
+                            "description": "Array of IP addresses that non-authenticated clients are allowed to \naccess without authentication. These IP addresses bypass the captive \nportal and can be used for essential services like DNS servers, NTP \nservers, or authentication infrastructure. Clients can reach these \naddresses before completing captive portal authentication.\n",
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "format": "uc-ip",
+                                "examples": [
+                                    "8.8.8.8",
+                                    "1.1.1.1",
+                                    "192.168.1.100"
+                                ]
+                            },
+                            "examples": [
+                                [
+                                    "8.8.8.8",
+                                    "1.1.1.1"
+                                ],
+                                [
+                                    "192.168.100.1",
+                                    "10.0.1.53"
+                                ]
+                            ]
                         },
                         "web-root": {
-                            "description": "A base64 encoded TAR file with the custom web-root.",
+                            "description": "Base64-encoded TAR file containing a custom web root directory for \nthe captive portal. This allows complete customization of the captive \nportal interface including HTML, CSS, JavaScript, and images. The TAR \nfile will be extracted to provide the web content served to users.\n",
                             "type": "string",
                             "format": "uc-base64"
                         },
                         "web-root-url": {
-                            "description": "A URL where the webroot should be downloaded from.",
-                            "type": "string"
+                            "description": "URL from which to download a custom web root TAR file for the captive \nportal. This provides an alternative to embedding the web root directly \nin the configuration. The downloaded file will be extracted to customize \nthe captive portal user interface.\n",
+                            "type": "string",
+                            "examples": [
+                                "https://portal.company.com/captive-portal.tar.gz",
+                                "http://assets.local/portal/custom-ui.tar"
+                            ]
                         },
                         "web-root-checksum": {
-                            "description": "The SHA256 of the file located at web-root-url.",
-                            "type": "string"
+                            "description": "SHA256 checksum of the file located at web-root-url. This ensures \nthe integrity of the downloaded web root file and prevents tampering \nor corruption during download. The system will verify this checksum \nbefore extracting the custom web root.\n",
+                            "type": "string",
+                            "examples": [
+                                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                            ]
                         },
                         "idle-timeout": {
-                            "description": "How long may a client be idle before getting removed.",
+                            "description": "Maximum time in seconds that an authenticated client can remain idle \n(no network activity) before being automatically logged out and \nrequired to re-authenticate through the captive portal. This prevents \nindefinite sessions and ensures periodic re-authentication.\n",
                             "type": "integer",
-                            "default": 600
+                            "default": 600,
+                            "examples": [
+                                300,
+                                1800,
+                                3600
+                            ]
                         },
                         "session-timeout": {
-                            "description": "How long may a client be idle before getting removed.",
-                            "type": "integer"
+                            "description": "Maximum duration in seconds that a client session can remain active \nbefore automatic logout, regardless of activity level. After this \ntime expires, clients must re-authenticate through the captive portal. \nThis enforces periodic re-authentication for security purposes.\n",
+                            "type": "integer",
+                            "examples": [
+                                1800,
+                                7200,
+                                28800
+                            ]
                         }
                     }
                 }
@@ -2861,13 +2957,16 @@
             }
         },
         "service.mdns": {
-            "description": "This section can be used to configure the MDNS server.",
+            "description": "This section configures the multicast DNS (mDNS) service on the access point.\nmDNS enables automatic service discovery on local networks, allowing devices \nto discover and connect to services without manual configuration. This is \ncommonly used for printer discovery, media streaming, and other local services.\n",
             "type": "object",
             "properties": {
                 "enable": {
-                    "description": "Enable this option if you would like to enable the MDNS server on the unit.",
+                    "description": "Enable the mDNS service on the access point. When enabled, the service will \nrun on all interfaces configured with the 'mdns' service, or on all interfaces \nif the fingerprint service is also enabled. The service listens on UDP port 5353 \nand requires appropriate firewall rules to function properly.\n",
                     "type": "boolean",
-                    "default": false
+                    "default": false,
+                    "examples": [
+                        true
+                    ]
                 }
             }
         },
@@ -3093,16 +3192,16 @@
             }
         },
         "service.radius-proxy": {
-            "description": "This section can be used to setup a radius security proxy instance (radsecproxy).",
+            "description": "This section configures a RADIUS security proxy instance (radsecproxy) to forward RADIUS requests to upstream servers.",
             "type": "object",
             "properties": {
                 "proxy-secret": {
-                    "description": "The radius secret used to communicate with the proxy.",
+                    "description": "The RADIUS secret used by clients to communicate with the proxy.",
                     "type": "string",
                     "default": "secret"
                 },
                 "realms": {
-                    "description": "The various realms that we can proxy to.",
+                    "description": "Array of realm configurations defining how to handle different RADIUS realms.",
                     "type": "array",
                     "items": {
                         "anyOf": [
@@ -3110,7 +3209,7 @@
                                 "type": "object",
                                 "properties": {
                                     "protocol": {
-                                        "description": "Defines whether the real should use radsec or normal radius.",
+                                        "description": "Defines whether the realm should use radsec (RADIUS over TLS) or normal radius.",
                                         "type": "string",
                                         "enum": [
                                             "radsec"
@@ -3118,7 +3217,7 @@
                                         "default": "radsec"
                                     },
                                     "realm": {
-                                        "description": "The realm that that this server shall be used for.",
+                                        "description": "Array of realm names that this server configuration applies to.",
                                         "type": "array",
                                         "items": {
                                             "type": "string",
@@ -3126,12 +3225,12 @@
                                         }
                                     },
                                     "auto-discover": {
-                                        "description": "Auto discover radsec server address via realm DNS NAPTR record.",
+                                        "description": "Auto-discover radsec server address via realm DNS NAPTR record instead of using host/port.",
                                         "type": "boolean",
                                         "default": false
                                     },
                                     "host": {
-                                        "description": "The remote proxy server that the device shall connect to.",
+                                        "description": "The remote radsec server hostname or IP address to connect to.",
                                         "type": "string",
                                         "format": "uc-host",
                                         "examples": [
@@ -3139,34 +3238,34 @@
                                         ]
                                     },
                                     "port": {
-                                        "description": "The remote proxy port that the device shall connect to.",
+                                        "description": "The remote radsec server port to connect to.",
                                         "type": "integer",
                                         "maximum": 65535,
                                         "default": 2083
                                     },
                                     "secret": {
-                                        "description": "The radius secret that will be used for the connection.",
+                                        "description": "The RADIUS shared secret used for the radsec connection.",
                                         "type": "string"
                                     },
                                     "use-local-certificates": {
-                                        "description": "The device will use its local certificate bundle for the TLS setup and ignores all other certificate options in this section.",
+                                        "description": "Use the device's local certificate bundle for TLS setup instead of custom certificates.",
                                         "type": "boolean",
                                         "default": false
                                     },
                                     "ca-certificate": {
-                                        "description": "The local servers CA bundle.",
+                                        "description": "Base64-encoded CA certificate bundle for validating the radsec server certificate.",
                                         "type": "string"
                                     },
                                     "certificate": {
-                                        "description": "The local servers certificate.",
+                                        "description": "Base64-encoded client certificate for mutual TLS authentication with the radsec server.",
                                         "type": "string"
                                     },
                                     "private-key": {
-                                        "description": "The local servers private key/",
+                                        "description": "Base64-encoded private key corresponding to the client certificate.",
                                         "type": "string"
                                     },
                                     "private-key-password": {
-                                        "description": "The password required to read the private key.",
+                                        "description": "Password required to decrypt the private key (if encrypted).",
                                         "type": "string"
                                     }
                                 }
@@ -3175,14 +3274,14 @@
                                 "type": "object",
                                 "properties": {
                                     "protocol": {
-                                        "description": "Defines whether the real should use radsec or normal radius.",
+                                        "description": "Defines whether the realm should use radsec (RADIUS over TLS) or normal radius.",
                                         "type": "string",
                                         "enum": [
                                             "radius"
                                         ]
                                     },
                                     "realm": {
-                                        "description": "The realm that that this server shall be used for.",
+                                        "description": "Array of realm names that this server configuration applies to.",
                                         "type": "array",
                                         "items": {
                                             "type": "string",
@@ -3190,7 +3289,7 @@
                                         }
                                     },
                                     "auth-server": {
-                                        "description": "The URI of our Radius server.",
+                                        "description": "The hostname or IP address of the RADIUS authentication server.",
                                         "type": "string",
                                         "format": "uc-host",
                                         "examples": [
@@ -3198,7 +3297,7 @@
                                         ]
                                     },
                                     "auth-port": {
-                                        "description": "The network port of our Radius server.",
+                                        "description": "The network port of the RADIUS authentication/accounting server.",
                                         "type": "integer",
                                         "maximum": 65535,
                                         "minimum": 1024,
@@ -3207,14 +3306,14 @@
                                         ]
                                     },
                                     "auth-secret": {
-                                        "description": "The shared Radius authentication secret.",
+                                        "description": "The shared RADIUS secret for server communication.",
                                         "type": "string",
                                         "examples": [
                                             "secret"
                                         ]
                                     },
                                     "acct-server": {
-                                        "description": "The URI of our Radius server.",
+                                        "description": "The hostname or IP address of the RADIUS authentication server.",
                                         "type": "string",
                                         "format": "uc-host",
                                         "examples": [
@@ -3222,7 +3321,7 @@
                                         ]
                                     },
                                     "acct-port": {
-                                        "description": "The network port of our Radius server.",
+                                        "description": "The network port of the RADIUS authentication/accounting server.",
                                         "type": "integer",
                                         "maximum": 65535,
                                         "minimum": 1024,
@@ -3231,7 +3330,7 @@
                                         ]
                                     },
                                     "acct-secret": {
-                                        "description": "The shared Radius authentication secret.",
+                                        "description": "The shared RADIUS secret for server communication.",
                                         "type": "string",
                                         "examples": [
                                             "secret"
@@ -3243,14 +3342,14 @@
                                 "type": "object",
                                 "properties": {
                                     "protocol": {
-                                        "description": "Defines whether the real should use radsec or normal radius.",
+                                        "description": "Defines whether the realm should use radsec (RADIUS over TLS) or normal radius.",
                                         "type": "string",
                                         "enum": [
                                             "block"
                                         ]
                                     },
                                     "realm": {
-                                        "description": "The realm that that this server shall be used for.",
+                                        "description": "Array of realm names that this server configuration applies to.",
                                         "type": "array",
                                         "items": {
                                             "type": "string",
@@ -3258,7 +3357,7 @@
                                         }
                                     },
                                     "message": {
-                                        "description": "The message that is sent when a realm is blocked.",
+                                        "description": "The message sent in the RADIUS Access-Reject response when a realm is blocked.",
                                         "type": "string",
                                         "items": {
                                             "type": "string",
@@ -3273,22 +3372,24 @@
             }
         },
         "service.online-check": {
-            "description": "This section can be used to configure the online check service.",
+            "description": "Configure the online check service that monitors internet connectivity and triggers recovery actions when connectivity is lost. The service periodically tests connectivity using ping and/or HTTP download checks.",
             "type": "object",
             "properties": {
                 "ping-hosts": {
-                    "description": "Hosts that shall be pinged to find out if we are online.",
+                    "description": "List of host addresses to ping for connectivity testing. The service sends ICMP ping requests to these hosts to determine if the device has internet connectivity. Common choices are public DNS servers.",
                     "type": "array",
                     "items": {
                         "type": "string",
                         "format": "uc-host",
                         "examples": [
-                            "192.168.1.10"
+                            "8.8.8.8",
+                            "1.1.1.1",
+                            "192.168.1.1"
                         ]
                     }
                 },
                 "download-hosts": {
-                    "description": "URLs to which a http/s connection shall be established to find out if we are online. The service will try to download http://$string/online.txt and expects the content of that file to be \"Ok\". HTTP 30x is support allowing https redirects.",
+                    "description": "List of hostnames for HTTP-based connectivity testing. The service attempts to download http://$hostname/online.txt from each host and expects the response content to be \"Ok\". This method can detect captive portals and DNS issues that ping tests might miss. Supports HTTP 30x redirects including HTTPS upgrades.",
                     "type": "array",
                     "items": {
                         "type": "string",
@@ -3298,17 +3399,17 @@
                     }
                 },
                 "check-interval": {
-                    "description": "The interval in seconds in between each online-check.",
+                    "description": "Time interval in seconds between connectivity checks. Lower values provide faster detection of connectivity issues but increase system load and network traffic.",
                     "type": "number",
                     "default": 60
                 },
                 "check-threshold": {
-                    "description": "How often does the online check need to fail until the system assumes that it has lost online connectivity.",
+                    "description": "Number of consecutive failed connectivity tests required before the system considers itself offline and triggers recovery actions. Higher values reduce false positives from temporary network issues.",
                     "type": "number",
                     "default": 1
                 },
                 "action": {
-                    "description": "The action that the device shall execute when it has detected that it is not online.",
+                    "description": "Recovery actions to execute when connectivity loss is detected. Multiple actions can be specified and will be performed in sequence to attempt to restore connectivity. Available actions are 'wifi' (restart wireless interfaces) and 'leds' (flash LED indicators to signal connectivity issues).",
                     "type": "array",
                     "items": {
                         "type": "string",
@@ -3426,7 +3527,7 @@
             ]
         },
         "service.quality-of-service": {
-            "description": "This section describes the QoS behaviour of the unit.",
+            "description": "This section configures Quality of Service (QoS) traffic classification and bandwidth shaping.\nQoS allows prioritization of network traffic to ensure better performance for critical applications\nlike VoIP, video streaming, and gaming over bulk data transfers.\n",
             "type": "object",
             "properties": {
                 "select-ports": {
@@ -3438,12 +3539,12 @@
                     }
                 },
                 "bandwidth-up": {
-                    "description": "Defines the upload bandwidth of this device. If it is not known or the device is attached to a shared medium, this value needs to be 0.",
+                    "description": "Specifies the maximum upload bandwidth in megabits per second (Mbps) for traffic shaping.\nSet to 0 to disable upload bandwidth limiting or when the actual bandwidth is unknown.\nThis is used by the QoS engine to properly shape outbound traffic flows.\nExample: Set to 100 for a 100 Mbps upload connection.\n",
                     "type": "integer",
                     "default": 0
                 },
                 "bandwidth-down": {
-                    "description": "Defines the download bandwidth of this device. If it is not known or the device is attached to a shared medium, this value needs to be 0.",
+                    "description": "Specifies the maximum download bandwidth in megabits per second (Mbps) for traffic shaping.\nSet to 0 to disable download bandwidth limiting or when the actual bandwidth is unknown.\nThis is used by the QoS engine to properly shape inbound traffic flows.\nExample: Set to 500 for a 500 Mbps download connection.\n",
                     "type": "integer",
                     "default": 0
                 },
@@ -3464,7 +3565,7 @@
                     }
                 },
                 "services": {
-                    "description": "A list of predefined named services that shall be classified according to the communities DB.",
+                    "description": "A list of predefined service names for automatic traffic classification.\nServices are defined in the community QoS database and include popular applications\nlike 'zoom', 'netflix', 'gaming', 'voip', etc. Use 'all' to enable all available services.\nEach service automatically configures appropriate DSCP marking and port/domain matching rules.\nExample: [\"zoom\", \"netflix\", \"voip\"] enables QoS for these specific applications.\n",
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -3477,7 +3578,7 @@
                         "type": "object",
                         "properties": {
                             "dscp": {
-                                "description": "The differentiated services code point that shall be assigned to packet that match the rules of this entry.",
+                                "description": "The Differentiated Services Code Point (DSCP) marking to apply to matching packets.\nDSCP values control traffic prioritization in the network. Common values include:\n- EF (Expedited Forwarding) for real-time traffic like VoIP\n- AF41-AF43 for video streaming\n- CS0 for best-effort traffic\n- CS1 for bulk/background traffic\n",
                                 "$ref": "#/$defs/service.quality-of-service.class-selector",
                                 "default": "CS1"
                             },
@@ -3498,15 +3599,15 @@
                                             "default": "any"
                                         },
                                         "port": {
-                                            "description": "The port of this match rule.",
+                                            "description": "The TCP/UDP port number to match for traffic classification.\nCan be combined with range-end to specify a port range.\nExample: 80 for HTTP, 443 for HTTPS, 5060 for SIP.\n",
                                             "type": "integer"
                                         },
                                         "range-end": {
-                                            "description": "The last port of this match rule if it is a port range.",
+                                            "description": "The ending port number when defining a port range for classification.\nUsed together with 'port' to specify a range like 'port: 5060, range-end: 5070'.\nLeave unset when matching a single port number.\n",
                                             "type": "integer"
                                         },
                                         "reclassify": {
-                                            "description": "Ignore the ToS/DSCP of packets and reclassify them.",
+                                            "description": "Controls whether to override existing DSCP markings on matching packets.\nWhen true (default), applies the new DSCP marking regardless of existing values.\nWhen false, only marks packets that don't already have DSCP markings.\nSet to false to preserve upstream QoS markings.\n",
                                             "type": "boolean",
                                             "default": true
                                         }
@@ -3520,16 +3621,17 @@
                                     "type": "object",
                                     "properties": {
                                         "fqdn": {
+                                            "description": "The fully qualified domain name to match for traffic classification.\nCan be an exact domain or used with suffix-matching for wildcard behavior.\nExample: 'netflix.com' or 'zoom.us' for application-specific classification.\n",
                                             "type": "string",
                                             "format": "uc-fqdn"
                                         },
                                         "suffix-matching": {
-                                            "description": "Match for all suffixes of the FQDN.",
+                                            "description": "Controls whether to match subdomains of the specified FQDN.\nWhen true (default), matches all subdomains like '*.example.com'.\nWhen false, matches only the exact domain specified.\nExample: true matches both 'api.zoom.us' and 'web.zoom.us' for FQDN 'zoom.us'.\n",
                                             "type": "boolean",
                                             "default": true
                                         },
                                         "reclassify": {
-                                            "description": "Ignore the ToS/DSCP of packets and reclassify them.",
+                                            "description": "Controls whether to override existing DSCP markings on matching packets.\nWhen true (default), applies the new DSCP marking regardless of existing values.\nWhen false, only marks packets that don't already have DSCP markings.\nSet to false to preserve upstream QoS markings.\n",
                                             "type": "boolean",
                                             "default": true
                                         }
@@ -3560,41 +3662,41 @@
             }
         },
         "service.airtime-fairness": {
-            "description": "This section describes the vlan behaviour of a logical network interface.",
+            "description": "This section configures Airtime Fairness (ATF) to manage bandwidth allocation\nbetween wireless clients. ATF dynamically adjusts client weights based on traffic\npatterns to ensure fair wireless resource distribution and optimize performance.\n",
             "type": "object",
             "properties": {
                 "voice-weight": {
-                    "description": "Voice traffic does not get aggregated. As voice and video are both considered priotity voice is considered to have a heavier weight when calculation priority average.",
+                    "description": "Weight multiplier applied to voice traffic for priority calculations.\nSince voice traffic is not aggregated and requires higher priority than video,\nthis weight provides additional priority when calculating traffic averages.\nHigher values increase voice traffic priority.\n",
                     "type": "number",
                     "default": 4
                 },
                 "packet-threshold": {
-                    "description": "The amount of packets that need to be received for a specific type of traffic before new averageg is calculated.",
+                    "description": "Number of packets that must be received for a specific traffic type before\na new traffic average is calculated. This prevents frequent weight changes\nfrom small traffic bursts and ensures stable classification decisions.\nExample: With threshold 100, traffic classification updates after every\n100 packets of a specific type are processed.\n",
                     "type": "number",
                     "default": 100
                 },
                 "bulk-threshold": {
-                    "description": "This option is a percentual value. If more the X% of the traffic is bulk, we assign the bulk weight.",
+                    "description": "Percentage threshold for bulk traffic classification. When more than this\npercentage of a client's traffic is identified as bulk (e.g., file downloads,\nbackups), the client is assigned the bulk weight to reduce its airtime priority.\nExample: With threshold 50, clients with more than 50% bulk traffic get\nreduced priority to allow other clients better access.\n",
                     "type": "number",
                     "default": 50
                 },
                 "priority-threshold": {
-                    "description": "This option is a percentual value. If more the X% of the traffic is priority, we assign the priority weight. Priority classification will take precedence over bulk.",
+                    "description": "Percentage threshold for priority traffic classification. When more than this\npercentage of a client's traffic is identified as priority (e.g., voice, video,\ngaming), the client is assigned the priority weight to increase its airtime access.\nPriority classification takes precedence over bulk classification.\nExample: With threshold 30, clients with more than 30% priority traffic get\nincreased airtime allocation.\n",
                     "type": "number",
                     "default": 30
                 },
                 "weight-normal": {
-                    "description": "The default ATF weight that UEs get assigned.",
+                    "description": "Default Airtime Fairness weight assigned to wireless clients (UEs) under\nnormal traffic conditions. This is the baseline weight used when clients\ndon't meet the thresholds for priority or bulk traffic classification.\nHigher weight values provide more airtime access relative to other clients.\n",
                     "type": "number",
                     "default": 256
                 },
                 "weight-priority": {
-                    "description": "The default ATF weight that UEs get assigned when priority traffic above the configured percentage is detected.",
+                    "description": "Enhanced Airtime Fairness weight assigned to wireless clients when priority\ntraffic exceeds the configured priority-threshold percentage. This higher weight\nensures priority applications (voice, video, gaming) receive sufficient airtime\nfor optimal performance. Should be higher than weight-normal to provide\npreferential treatment.\n",
                     "type": "number",
                     "default": 394
                 },
                 "weight-bulk": {
-                    "description": "The default ATF weight that UEs get assigned when bulk traffic above the configured percentage is detected.",
+                    "description": "Reduced Airtime Fairness weight assigned to wireless clients when bulk traffic\nexceeds the configured bulk-threshold percentage. This lower weight limits\nairtime for clients generating heavy background traffic (downloads, backups)\nto prevent them from monopolizing wireless resources. Should be lower than\nweight-normal to ensure fair access for other clients.\n",
                     "type": "number",
                     "default": 128
                 }
@@ -3716,16 +3818,16 @@
             }
         },
         "service.gps": {
-            "description": "This section can be used to configure a GPS dongle",
+            "description": "Configure GPS dongle functionality for location services and time synchronization.\nThis service enables the system to receive GPS coordinates and optionally synchronize \nthe system clock with GPS time. Requires a compatible GPS dongle connected via serial.\n",
             "type": "object",
             "properties": {
                 "adjust-time": {
-                    "description": "Adjust the systems clock upon a successful GPS lock.",
+                    "description": "Enable automatic system clock synchronization when GPS achieves a valid position fix.\nWhen enabled, the system will update its internal clock to match GPS time, providing\naccurate timekeeping even without internet connectivity. This is useful for precise\ntiming requirements or when NTP servers are unavailable.\n",
                     "type": "boolean",
                     "default": false
                 },
                 "baud-rate": {
-                    "description": "The baudrate used by the attached GPS dongle",
+                    "description": "Serial communication baud rate for the GPS dongle. Must match the baud rate\nconfigured on the GPS device to establish proper communication. Common rates\nvary by GPS module manufacturer - consult device documentation for supported\nrates. Most consumer GPS modules default to 9600 baud.\nExample: For u-blox modules, 9600 is typical; for some SiRF modules, 4800 is common.\n",
                     "type": "integer",
                     "enum": [
                         2400,
@@ -3737,53 +3839,109 @@
             }
         },
         "service.dhcp-relay": {
-            "description": "Define the vlans on which the dhcp shall be relayed.",
+            "description": "Configure DHCP relay service that forwards DHCP requests and responses between \nVLANs and upstream DHCP servers. This service enables centralized DHCP management \nby relaying DHCP traffic from client VLANs to designated DHCP servers on upstream \nnetworks. The service is automatically enabled when interfaces are configured with \n\"dhcp-relay\" in their services array and valid VLANs are specified.\n",
             "type": "object",
             "properties": {
                 "select-ports": {
-                    "description": "The list of physical network devices that shall be used to fwd the DHCP frames.",
+                    "description": "Array of physical network port selectors that define which upstream ports \nshould be used for DHCP relay traffic. These ports connect to networks \ncontaining the DHCP servers that will handle requests from relay VLANs.\nThe DHCP relay service forwards client requests through these ports to \nreach the configured relay servers.\n",
                     "type": "array",
                     "items": {
-                        "type": "string"
-                    }
+                        "type": "string",
+                        "examples": [
+                            "WAN",
+                            "eth0",
+                            "eth1"
+                        ]
+                    },
+                    "examples": [
+                        [
+                            "WAN"
+                        ],
+                        [
+                            "eth0",
+                            "eth1"
+                        ],
+                        [
+                            "LAN*"
+                        ]
+                    ]
                 },
                 "vlans": {
-                    "description": "The list of all vlans",
+                    "description": "Array of VLAN configurations that define which VLANs participate in DHCP \nrelay and their associated relay servers. Each VLAN entry specifies the \nVLAN ID, target DHCP server, and optional circuit/remote ID formatting \nfor DHCP option 82 relay agent information.\n",
                     "type": "array",
                     "items": {
                         "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "vlan",
+                            "relay-server"
+                        ],
                         "properties": {
                             "vlan": {
-                                "description": "The vlan id.",
-                                "type": "number"
+                                "description": "The VLAN ID (1-4094) that will participate in DHCP relay. \nDHCP requests from this VLAN will be forwarded to the \nspecified relay server.\n",
+                                "type": "number",
+                                "minimum": 1,
+                                "maximum": 4094,
+                                "examples": [
+                                    100,
+                                    200,
+                                    1001
+                                ]
                             },
                             "relay-server": {
-                                "description": "The unicast target DHCP pool server where frames get relayed to.",
+                                "description": "The IP address of the upstream DHCP server that will handle \nDHCP requests for this VLAN. The relay service forwards client \nrequests to this server and returns responses back to clients.\n",
                                 "type": "string",
-                                "format": "uc-ip"
+                                "format": "uc-ip",
+                                "examples": [
+                                    "192.168.100.1",
+                                    "10.0.1.10",
+                                    "dhcp.example.com"
+                                ]
                             },
                             "circuit-id-format": {
-                                "description": "This option selects what info shall be contained within a relayed frame's circuit ID.",
+                                "description": "Optional DHCP option 82 circuit ID format that identifies the \nrelay circuit. This information helps the DHCP server make \nper-circuit decisions about address assignment and options.\nIf not specified, defaults to \"vlan-id\" format.\n",
                                 "type": "string",
                                 "enum": [
                                     "vlan-id",
                                     "ap-mac",
                                     "ssid"
                                 ],
-                                "default": "vlan-id"
+                                "default": "vlan-id",
+                                "examples": [
+                                    "vlan-id",
+                                    "ap-mac"
+                                ]
                             },
                             "remote-id-format": {
-                                "description": "This option selects what info shall be contained within a relayed frame's remote ID.",
+                                "description": "Optional DHCP option 82 remote ID format that identifies the \nremote host or circuit. This provides additional context to \nhelp the DHCP server customize responses. If not specified, \ndefaults to \"ap-mac\" format.\n",
                                 "type": "string",
                                 "enum": [
                                     "vlan-id",
                                     "ap-mac",
                                     "ssid"
                                 ],
-                                "default": "ap-mac"
+                                "default": "ap-mac",
+                                "examples": [
+                                    "ap-mac",
+                                    "vlan-id"
+                                ]
                             }
                         }
-                    }
+                    },
+                    "examples": [
+                        [
+                            {
+                                "vlan": 100,
+                                "relay-server": "192.168.100.1",
+                                "circuit-id-format": "vlan-id",
+                                "remote-id-format": "ap-mac"
+                            },
+                            {
+                                "vlan": 200,
+                                "relay-server": "192.168.200.1"
+                            }
+                        ]
+                    ]
                 }
             }
         },
@@ -3825,16 +3983,16 @@
             }
         },
         "service.rrm.chanutil": {
-            "description": "RRM policy based on Channel Utilization for optimization.",
+            "description": "RRM policy configuration for automatic channel optimization based on channel utilization monitoring.\nThis policy continuously monitors airtime utilization and triggers channel changes when\nutilization exceeds configured thresholds, helping to maintain optimal wireless performance\nby moving to less congested channels.\n",
             "type": "object",
             "properties": {
                 "interval": {
-                    "description": "The interval to check channel utilization (in seconds).",
+                    "description": "Monitoring interval in seconds for checking channel utilization levels.\nDefines how frequently RRM measures airtime usage on the current channel\nto determine if optimization is needed. Lower values provide more responsive\noptimization but increase system overhead.\nExample: 300 seconds (5 minutes) for balanced monitoring frequency.\n",
                     "type": "number",
                     "minimum": 240
                 },
                 "threshold": {
-                    "description": "The airtime utilization threshold.",
+                    "description": "Channel utilization threshold as a percentage (0-99) that triggers optimization.\nWhen measured airtime utilization exceeds this value for the configured number\nof consecutive checks, RRM will attempt to find and switch to a less congested channel.\nHigher values reduce sensitivity to temporary congestion but may delay necessary\nchannel changes. Lower values provide more aggressive optimization.\nExample: 70% threshold provides good balance between stability and responsiveness.\n",
                     "type": "number",
                     "minimum": 0,
                     "maximum": 99,
@@ -3843,12 +4001,12 @@
                     ]
                 },
                 "consecutive-threshold-breach": {
-                    "description": "The number of times the Channel Utilization is higher than the threshold before triggering channel optimization.",
+                    "description": "Number of consecutive monitoring intervals where utilization must exceed the threshold\nbefore triggering channel optimization. This prevents unnecessary channel changes due\nto temporary spikes in utilization and ensures stable operation. Higher values increase\nstability but reduce responsiveness to persistent congestion.\nExample: 2 consecutive breaches ensures congestion is sustained before optimization.\n",
                     "type": "integer",
                     "minimum": 1
                 },
                 "algo": {
-                    "description": "The algorithm for channel optimization.",
+                    "description": "Channel selection algorithm to use when optimization is triggered.\n- 'rcs' (Radio Channel Selection): Basic channel selection based on utilization measurements\n- 'acs' (Automatic Channel Selection): Advanced algorithm considering interference,\n  noise floor, and neighboring AP presence for optimal channel selection\nRCS provides faster decisions while ACS offers more comprehensive analysis.\nExample: Use 'acs' for environments with complex interference patterns.\n",
                     "type": "string",
                     "examples": [
                         "rcs",
@@ -3858,16 +4016,16 @@
             }
         },
         "service.rrm": {
-            "description": "This section describes the band steering behaviour of the unit.",
+            "description": "This section configures Radio Resource Management (RRM) functionality for wireless optimization.\nRRM provides automated radio frequency planning and optimization capabilities including\nchannel utilization monitoring, automatic channel selection, and interference mitigation.\n",
             "type": "object",
             "properties": {
                 "beacon-request-assoc": {
-                    "description": "Tell stations to send a beacon request scan when they associate.",
+                    "description": "Request beacon reports from clients when they associate to the access point.\nThis enables RRM to gather information about surrounding wireless environment\nfrom the client's perspective, improving radio optimization decisions.\nExample: Enable to collect neighbor AP information from clients for better\nchannel planning and interference analysis.\n",
                     "type": "boolean",
                     "default": true
                 },
                 "station-stats-interval": {
-                    "description": "Periodically send station statistics every N seconds.",
+                    "description": "Interval in seconds for collecting and reporting station statistics.\nThis controls how frequently RRM gathers performance metrics from connected clients\nincluding signal strength, data rates, and traffic patterns for optimization analysis.\nSet to 0 to disable periodic statistics collection.\nExample: Set to 60 for statistics collection every minute.\n",
                     "type": "number"
                 },
                 "chanutil": {
@@ -3880,7 +4038,7 @@
             "type": "object",
             "properties": {
                 "mode": {
-                    "description": "Enable this option if you would like to enable the MDNS server on the unit.",
+                    "description": "Fingerprint collection and reporting mode. Controls how device fingerprint\ndata is processed and when it is reported to the management system.\n- \"polled\": Fingerprints are collected when requested by the management system\n- \"final\": Fingerprints are reported after analysis is complete (recommended)\n- \"raw-data\": Raw fingerprint data is sent immediately without processing\n",
                     "type": "string",
                     "enum": [
                         "polled",
@@ -3890,22 +4048,22 @@
                     "default": "final"
                 },
                 "minimum-age": {
-                    "description": "The minimum age a fingerprint must have before it is reported.",
+                    "description": "Minimum age in seconds that a device fingerprint must have before it is\nreported to the management system. This prevents reporting of transient\nor incomplete fingerprints. Example: With value 60, only fingerprints\nthat have been stable for at least 60 seconds are reported.\n",
                     "type": "number",
                     "default": 60
                 },
                 "maximum-age": {
-                    "description": "The age at which fingerprints get flushed from the local state.",
+                    "description": "Maximum age in seconds after which device fingerprints are removed from\nlocal storage. This prevents memory buildup by cleaning up old fingerprint\ndata. Example: With value 3600, fingerprints older than 1 hour are\nautomatically deleted from local cache.\n",
                     "type": "number",
                     "default": 60
                 },
                 "periodicity": {
-                    "description": "This value defines the period at which entries get reported.",
+                    "description": "Reporting interval in seconds that defines how often fingerprint data is\nsent to the management system. This controls the frequency of batch\nreporting to balance network efficiency with data freshness.\nExample: With value 600, fingerprint reports are sent every 10 minutes.\n",
                     "type": "number",
                     "default": 600
                 },
                 "allow-wan": {
-                    "description": "Allow fingerprinting devices found on the WAN port.",
+                    "description": "Enable fingerprinting of devices connected to WAN ports. When enabled,\nthe system will analyze and report fingerprints for devices detected on\nupstream network interfaces. This is typically disabled for privacy and\nsecurity reasons as WAN devices are usually outside the local network.\n",
                     "type": "boolean",
                     "default": false
                 }
@@ -4233,15 +4391,32 @@
             }
         },
         "service.dhcp-inject": {
-            "description": "Define the interfaces on which the dhcp shall be relayed.",
+            "description": "Configure DHCP injection service that enables DHCP traffic forwarding between \nuplink ports and wireless SSIDs. This service allows wireless clients to receive \nDHCP responses from upstream DHCP servers by forwarding DHCP requests and responses \nthrough selected physical network ports. The service is automatically enabled when \nSSIDs are configured with \"dhcp-inject\" in their services array.\n",
             "type": "object",
             "properties": {
                 "select-ports": {
-                    "description": "The list of physical network devices that shall be used to fwd the DHCP frames.",
+                    "description": "Array of physical network port selectors that define which uplink ports \nshould be used for DHCP traffic forwarding. These ports act as the bridge \nbetween wireless SSIDs requesting DHCP injection and upstream DHCP servers.\nIf not specified, defaults to \"eth0\" for backward compatibility.\n",
                     "type": "array",
                     "items": {
-                        "type": "string"
-                    }
+                        "type": "string",
+                        "examples": [
+                            "WAN",
+                            "eth0",
+                            "eth1"
+                        ]
+                    },
+                    "examples": [
+                        [
+                            "WAN"
+                        ],
+                        [
+                            "eth0",
+                            "eth1"
+                        ],
+                        [
+                            "LAN*"
+                        ]
+                    ]
                 }
             }
         },
@@ -4409,11 +4584,11 @@
             }
         },
         "metrics.dhcp-snooping": {
-            "description": "DHCP snooping allows us to intercept DHCP packages on interface that are bridged, where DHCP is not offered as a service by the AP.",
+            "description": "DHCP snooping metrics configuration for monitoring DHCP traffic on bridged interfaces.\nThis enables capturing and reporting DHCP message exchanges on interfaces where\nthe access point acts as a bridge rather than providing DHCP services directly.\nDHCP snooping provides visibility into client IP address assignments, DHCP server\ninteractions, and network behavior for troubleshooting and monitoring purposes.\n",
             "type": "object",
             "properties": {
                 "filters": {
-                    "description": "A list of the message types that shall be sent to the backend.",
+                    "description": "List of DHCP message types to capture and report to the backend for monitoring.\nWhen specified, only the selected message types will be reported. If empty or\nomitted, all DHCP traffic will be captured (equivalent to wildcard '*' filter).\n\nMessage types correspond to different phases of DHCP operations:\n- 'discover': Client broadcasts to find available DHCP servers\n- 'offer': DHCP server responds with IP address offer\n- 'request': Client requests specific IP address from server\n- 'ack': Server confirms IP address assignment\n- 'solicit': DHCPv6 client initiates address request\n- 'reply': DHCPv6 server responds with configuration\n- 'renew': Client requests lease renewal\n\nExample: Use ['ack', 'discover'] to monitor only successful assignments and client requests.\n",
                     "type": "array",
                     "items": {
                         "type": "string",

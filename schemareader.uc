@@ -4927,7 +4927,7 @@ function instantiateServiceCaptiveRadius(location, value, errors) {
 			obj.acct_port = parseAcctPort(location + "/acct-port", value["acct-port"], errors);
 		}
 		else {
-			obj.acct_port = 1812;
+			obj.acct_port = 1813;
 		}
 
 		function parseAcctSecret(location, value, errors) {
@@ -9249,6 +9249,15 @@ function instantiateServiceDhcpRelay(location, value, errors) {
 						let obj = {};
 
 						function parseVlan(location, value, errors) {
+							if (type(value) in [ "int", "double" ]) {
+								if (value > 4094)
+									push(errors, [ location, "must be lower than or equal to 4094" ]);
+
+								if (value < 1)
+									push(errors, [ location, "must be bigger than or equal to 1" ]);
+
+							}
+
 							if (!(type(value) in [ "int", "double" ]))
 								push(errors, [ location, "must be of type number" ]);
 
@@ -9257,6 +9266,9 @@ function instantiateServiceDhcpRelay(location, value, errors) {
 
 						if (exists(value, "vlan")) {
 							obj.vlan = parseVlan(location + "/vlan", value["vlan"], errors);
+						}
+						else {
+							push(errors, [ location, "is required" ]);
 						}
 
 						function parseRelayServer(location, value, errors) {
@@ -9274,6 +9286,9 @@ function instantiateServiceDhcpRelay(location, value, errors) {
 
 						if (exists(value, "relay-server")) {
 							obj.relay_server = parseRelayServer(location + "/relay-server", value["relay-server"], errors);
+						}
+						else {
+							push(errors, [ location, "is required" ]);
 						}
 
 						function parseCircuitIdFormat(location, value, errors) {
