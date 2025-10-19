@@ -1,6 +1,9 @@
-description:
-  This section can be used to setup a captive portal on the AP with a
-  click-to-continue splash page.
+description: |
+  Configure captive portal with RADIUS authentication. This mode requires 
+  users to provide credentials (username/password) that are validated 
+  against a RADIUS server. Supports both authentication and accounting 
+  with separate server configurations and provides enterprise-grade 
+  authentication integration.
 type: object
 properties:
   auth-mode:
@@ -9,47 +12,79 @@ properties:
     type: string
     const: radius
   auth-server:
-    description:
-       The URI of our Radius Authentication server.
+    description: |
+      Hostname or IP address of the RADIUS authentication server that will 
+      validate user credentials. This server handles authentication requests 
+      when users attempt to log in through the captive portal.
     type: string
     format: uc-host
     examples:
-    - 192.168.1.10
+      - "192.168.1.10"
+      - "radius.company.com"
+      - "10.0.1.100"
   auth-port:
-    description:
-       The network port of our Radius Authentication server.
+    description: |
+      Network port number for the RADIUS authentication server. Standard 
+      RADIUS authentication port is 1812, but can be customized based on 
+      server configuration.
     type: integer
     maximum: 65535
     minimum: 1024
     default: 1812
+    examples:
+      - 1812
+      - 1645
   auth-secret:
-    description:
-      The shared Radius authentication Authentication secret.
+    description: |
+      Shared secret for RADIUS authentication server communication. This 
+      pre-shared key must match the configuration on the RADIUS server 
+      and is used to encrypt communication between the captive portal 
+      and authentication server.
     type: string
     examples:
-    - secret
+      - "shared-secret-123"
+      - "radius-auth-key"
   acct-server:
-    description:
-       The URI of our Radius Authentication server.
+    description: |
+      Hostname or IP address of the RADIUS accounting server that will 
+      track user session information, data usage, and connection timing. 
+      Can be the same as auth-server or a separate accounting-specific server.
     type: string
     format: uc-host
     examples:
-    - 192.168.1.10
+      - "192.168.1.11"
+      - "accounting.company.com"
+      - "10.0.1.101"
   acct-port:
-    description:
-       The network port of our Radius Authentication server.
+    description: |
+      Network port number for the RADIUS accounting server. Standard 
+      RADIUS accounting port is 1813, but can be customized based on 
+      server configuration.
     type: integer
     maximum: 65535
     minimum: 1024
-    default: 1812
+    default: 1813
+    examples:
+      - 1813
+      - 1646
   acct-secret:
-    description:
-      The shared Radius authentication Authentication secret.
+    description: |
+      Shared secret for RADIUS accounting server communication. This 
+      pre-shared key must match the configuration on the RADIUS accounting 
+      server and is used to encrypt session and usage data transmission.
     type: string
     examples:
-    - secret
+      - "accounting-secret-456"
+      - "radius-acct-key"
   acct-interval:
-    description:
-       The timeout used for interim messages.
+    description: |
+      Interval in seconds for sending interim accounting updates to the 
+      RADIUS accounting server. These updates provide ongoing session 
+      information including data usage and connection status during 
+      active user sessions.
     type: integer
     default: 600
+    examples:
+      - 300
+      - 600
+      - 1800

@@ -1,6 +1,8 @@
-description:
-  This section can be used to setup a captive portal on the AP with a
-  click-to-continue splash page.
+description: |
+  Configure captive portal with click-to-continue authentication. This is the 
+  simplest captive portal mode where users only need to click a "Continue" or 
+  "Accept" button to gain network access. No credentials are required, making 
+  it ideal for terms-of-service acceptance or basic splash page scenarios.
 type: object
 properties:
   auth-mode:

@@ -7,37 +7,87 @@ allOf:
   - type: object
     properties:
       walled-garden-fqdn:
-        description:
-          The list of FQDNs that a non-authenticated client is allowed to connect to.
+        description: |
+          Array of domain names (FQDNs) that non-authenticated clients are allowed 
+          to access without authentication. These domains bypass the captive portal 
+          and can be used for essential services like DNS, NTP, or corporate login 
+          pages. Useful for allowing access to authentication servers or required 
+          services before user login.
         type: array
         items:
           type: string
+          examples:
+            - "google.com"
+            - "login.company.com" 
+            - "ntp.pool.org"
+        examples:
+          - ["google.com", "facebook.com"]
+          - ["login.company.com", "auth.enterprise.net"]
       walled-garden-ipaddr:
-        description:
-          The list of IP addresses that a non-authenticated client is allowed to connect to.
+        description: |
+          Array of IP addresses that non-authenticated clients are allowed to 
+          access without authentication. These IP addresses bypass the captive 
+          portal and can be used for essential services like DNS servers, NTP 
+          servers, or authentication infrastructure. Clients can reach these 
+          addresses before completing captive portal authentication.
         type: array
         items:
           type: string
           format: uc-ip
+          examples:
+            - "8.8.8.8"
+            - "1.1.1.1"
+            - "192.168.1.100"
+        examples:
+          - ["8.8.8.8", "1.1.1.1"]
+          - ["192.168.100.1", "10.0.1.53"]
       web-root:
-        description:
-          A base64 encoded TAR file with the custom web-root.
+        description: |
+          Base64-encoded TAR file containing a custom web root directory for 
+          the captive portal. This allows complete customization of the captive 
+          portal interface including HTML, CSS, JavaScript, and images. The TAR 
+          file will be extracted to provide the web content served to users.
         type: string
         format: uc-base64
       web-root-url:
-        description:
-          A URL where the webroot should be downloaded from.
+        description: |
+          URL from which to download a custom web root TAR file for the captive 
+          portal. This provides an alternative to embedding the web root directly 
+          in the configuration. The downloaded file will be extracted to customize 
+          the captive portal user interface.
         type: string
+        examples:
+          - "https://portal.company.com/captive-portal.tar.gz"
+          - "http://assets.local/portal/custom-ui.tar"
       web-root-checksum:
-        description:
-          The SHA256 of the file located at web-root-url.
+        description: |
+          SHA256 checksum of the file located at web-root-url. This ensures 
+          the integrity of the downloaded web root file and prevents tampering 
+          or corruption during download. The system will verify this checksum 
+          before extracting the custom web root.
         type: string
+        examples:
+          - "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
       idle-timeout:
-        description:
-          How long may a client be idle before getting removed.
+        description: |
+          Maximum time in seconds that an authenticated client can remain idle 
+          (no network activity) before being automatically logged out and 
+          required to re-authenticate through the captive portal. This prevents 
+          indefinite sessions and ensures periodic re-authentication.
         type: integer
         default: 600
+        examples:
+          - 300
+          - 1800
+          - 3600
       session-timeout:
-        description:
-          How long may a client be idle before getting removed.
+        description: |
+          Maximum duration in seconds that a client session can remain active 
+          before automatic logout, regardless of activity level. After this 
+          time expires, clients must re-authenticate through the captive portal. 
+          This enforces periodic re-authentication for security purposes.
         type: integer
+        examples:
+          - 1800
+          - 7200
+          - 28800
