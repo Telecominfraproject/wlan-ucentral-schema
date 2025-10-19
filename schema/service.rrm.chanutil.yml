@@ -1,28 +1,49 @@
-description:
-  RRM policy based on Channel Utilization for optimization.
+description: |
+  RRM policy configuration for automatic channel optimization based on channel utilization monitoring.
+  This policy continuously monitors airtime utilization and triggers channel changes when
+  utilization exceeds configured thresholds, helping to maintain optimal wireless performance
+  by moving to less congested channels.
 type: object
 properties:
   interval:
-    description:
-      The interval to check channel utilization (in seconds).
+    description: |
+      Monitoring interval in seconds for checking channel utilization levels.
+      Defines how frequently RRM measures airtime usage on the current channel
+      to determine if optimization is needed. Lower values provide more responsive
+      optimization but increase system overhead.
+      Example: 300 seconds (5 minutes) for balanced monitoring frequency.
     type: number
     minimum: 240
   threshold:
-    description:
-      The airtime utilization threshold.
+    description: |
+      Channel utilization threshold as a percentage (0-99) that triggers optimization.
+      When measured airtime utilization exceeds this value for the configured number
+      of consecutive checks, RRM will attempt to find and switch to a less congested channel.
+      Higher values reduce sensitivity to temporary congestion but may delay necessary
+      channel changes. Lower values provide more aggressive optimization.
+      Example: 70% threshold provides good balance between stability and responsiveness.
     type: number
     minimum: 0
     maximum: 99
     examples:
     - 50
   consecutive-threshold-breach:
-    description:
-      The number of times the Channel Utilization is higher than the threshold before triggering channel optimization.
+    description: |
+      Number of consecutive monitoring intervals where utilization must exceed the threshold
+      before triggering channel optimization. This prevents unnecessary channel changes due
+      to temporary spikes in utilization and ensures stable operation. Higher values increase
+      stability but reduce responsiveness to persistent congestion.
+      Example: 2 consecutive breaches ensures congestion is sustained before optimization.
     type: integer
     minimum: 1
   algo:
-    description:
-      The algorithm for channel optimization.
+    description: |
+      Channel selection algorithm to use when optimization is triggered.
+      - 'rcs' (Radio Channel Selection): Basic channel selection based on utilization measurements
+      - 'acs' (Automatic Channel Selection): Advanced algorithm considering interference,
+        noise floor, and neighboring AP presence for optimal channel selection
+      RCS provides faster decisions while ACS offers more comprehensive analysis.
+      Example: Use 'acs' for environments with complex interference patterns.
     type: string
     examples:
     - rcs
