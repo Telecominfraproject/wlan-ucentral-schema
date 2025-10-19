@@ -11,8 +11,6 @@ properties:
     $ref: "https://ucentral.io/schema/v1/service/ntp/"
   mdns:
     $ref: "https://ucentral.io/schema/v1/service/mdns/"
-  rtty:
-    $ref: "https://ucentral.io/schema/v1/service/rtty/"
   log:
     $ref: "https://ucentral.io/schema/v1/service/log/"
   http:
