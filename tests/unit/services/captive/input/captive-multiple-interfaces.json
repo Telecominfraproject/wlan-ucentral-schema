@@ -1,12 +1,28 @@
 {
-  "uuid": "12345678-1234-1234-1234-123456789012",
+  "uuid": 1,
   "interfaces": [
+    {
+      "name": "WAN",
+      "role": "upstream",
+      "ethernet": [
+        {
+          "select-ports": [
+            "WAN"
+          ]
+        }
+      ],
+      "ipv4": {
+        "addressing": "dynamic"
+      }
+    },
     {
       "name": "downstream1",
       "role": "downstream",
       "ethernet": [
         {
-          "select-ports": ["LAN1"]
+          "select-ports": [
+            "LAN1"
+          ]
         }
       ],
       "ipv4": {
@@ -19,12 +35,16 @@
       "ssids": [
         {
           "name": "PublicWiFi1",
-          "wifi-bands": ["2G"],
+          "wifi-bands": [
+            "2G"
+          ],
           "bss-mode": "ap",
           "encryption": {
             "proto": "none"
           },
-          "services": ["captive"]
+          "services": [
+            "captive"
+          ]
         }
       ]
     },
@@ -33,7 +53,9 @@
       "role": "downstream",
       "ethernet": [
         {
-          "select-ports": ["LAN2"]
+          "select-ports": [
+            "LAN2"
+          ]
         }
       ],
       "ipv4": {
@@ -46,12 +68,16 @@
       "ssids": [
         {
           "name": "PublicWiFi2",
-          "wifi-bands": ["5G"],
+          "wifi-bands": [
+            "5G"
+          ],
           "bss-mode": "ap",
           "encryption": {
             "proto": "none"
           },
-          "services": ["captive"]
+          "services": [
+            "captive"
+          ]
         }
       ]
     }

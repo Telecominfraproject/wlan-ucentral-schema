@@ -20,7 +20,10 @@
   "interfaces": [
     {
       "role": "upstream",
-      "ieee8021x_ports": ["eth0"]
+      "ieee8021x_ports": [
+        "eth0"
+      ]
     }
-  ]
+  ],
+  "uuid": 1
 }

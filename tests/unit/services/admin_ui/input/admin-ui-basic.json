@@ -1,8 +1,24 @@
 {
-  "interfaces": [],
+  "interfaces": [
+    {
+      "name": "WAN",
+      "role": "upstream",
+      "ethernet": [
+        {
+          "select-ports": [
+            "WAN"
+          ]
+        }
+      ],
+      "ipv4": {
+        "addressing": "dynamic"
+      }
+    }
+  ],
   "services": {
     "admin_ui": {
       "wifi_ssid": "Maverick"
     }
-  }
+  },
+  "uuid": 1
 }

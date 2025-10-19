@@ -1,12 +1,14 @@
 {
-  "uuid": "12345678-1234-1234-1234-123456789012",
+  "uuid": 1,
   "interfaces": [
     {
-      "name": "upstream",
+      "name": "WAN",
       "role": "upstream",
       "ethernet": [
         {
-          "select-ports": ["WAN"]
+          "select-ports": [
+            "WAN"
+          ]
         }
       ],
       "ipv4": {
@@ -15,10 +17,12 @@
     },
     {
       "name": "downstream",
-      "role": "downstream", 
+      "role": "downstream",
       "ethernet": [
         {
-          "select-ports": ["LAN*"]
+          "select-ports": [
+            "LAN*"
+          ]
         }
       ],
       "ipv4": {
@@ -28,14 +32,19 @@
       "ssids": [
         {
           "name": "TestWiFi",
-          "wifi-bands": ["2G", "5G"],
+          "wifi-bands": [
+            "2G",
+            "5G"
+          ],
           "bss-mode": "ap",
           "encryption": {
             "proto": "psk2",
             "key": "testpassword123",
             "ieee80211w": "optional"
           },
-          "services": ["dhcp-inject"]
+          "services": [
+            "dhcp-inject"
+          ]
         }
       ]
     }
@@ -44,6 +53,9 @@
     "dhcp-inject": true
   },
   "dhcp_inject": {
-    "select_ports": ["eth0", "eth1"]
+    "select_ports": [
+      "eth0",
+      "eth1"
+    ]
   }
 }

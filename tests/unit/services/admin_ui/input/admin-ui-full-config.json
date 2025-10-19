@@ -1,11 +1,30 @@
 {
-  "interfaces": [],
+  "interfaces": [
+    {
+      "name": "WAN",
+      "role": "upstream",
+      "ethernet": [
+        {
+          "select-ports": [
+            "WAN"
+          ]
+        }
+      ],
+      "ipv4": {
+        "addressing": "dynamic"
+      }
+    }
+  ],
   "services": {
     "admin_ui": {
       "wifi_ssid": "FullAdminUI",
       "wifi_key": "FullConfiguration2024",
-      "wifi_bands": ["2G", "5G"],
+      "wifi_bands": [
+        "2G",
+        "5G"
+      ],
       "offline_trigger": 300
     }
-  }
+  },
+  "uuid": 1
 }

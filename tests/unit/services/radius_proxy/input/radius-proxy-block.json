@@ -1,20 +1,40 @@
 {
-  "uuid": "12345678-1234-1234-1234-123456789012", 
+  "uuid": 1,
   "interfaces": [
+    {
+      "name": "WAN",
+      "role": "upstream",
+      "ethernet": [
+        {
+          "select-ports": [
+            "WAN"
+          ]
+        }
+      ],
+      "ipv4": {
+        "addressing": "dynamic"
+      }
+    },
     {
       "name": "downstream",
       "role": "downstream",
-      "services": ["radsecproxy"],
+      "services": [
+        "radsecproxy"
+      ],
       "ssids": [
         {
           "name": "Blocked-WiFi",
-          "wifi-bands": ["2G"],
-          "bss-mode": "ap", 
+          "wifi-bands": [
+            "2G"
+          ],
+          "bss-mode": "ap",
           "encryption": {
             "proto": "wpa2",
             "mode": "wpa2-enterprise"
           },
-          "services": ["radsecproxy"]
+          "services": [
+            "radsecproxy"
+          ]
         }
       ]
     }
@@ -25,7 +45,10 @@
       "realms": [
         {
           "protocol": "block",
-          "realm": ["blocked.example.com", "*.blocked.com"],
+          "realm": [
+            "blocked.example.com",
+            "*.blocked.com"
+          ],
           "message": "Access denied - realm blocked"
         }
       ]

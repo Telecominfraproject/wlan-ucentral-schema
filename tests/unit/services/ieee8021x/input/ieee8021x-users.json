@@ -8,7 +8,7 @@
           "password": "password123"
         },
         {
-          "name": "testuser2", 
+          "name": "testuser2",
           "password": "password456"
         }
       ]
@@ -16,8 +16,26 @@
   },
   "interfaces": [
     {
+      "name": "WAN",
+      "role": "upstream",
+      "ethernet": [
+        {
+          "select-ports": [
+            "WAN"
+          ]
+        }
+      ],
+      "ipv4": {
+        "addressing": "dynamic"
+      }
+    },
+    {
       "role": "downstream",
-      "ieee8021x_ports": ["eth1", "eth2"]
+      "ieee8021x_ports": [
+        "eth1",
+        "eth2"
+      ]
     }
-  ]
+  ],
+  "uuid": 1
 }

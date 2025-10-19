@@ -25,3 +25,4 @@ add radsecproxy realm
 set radsecproxy.@realm[-1].name='guest.example.com'
 set radsecproxy.@realm[-1].server='server0auth'
 set radsecproxy.@realm[-1].accountingServer='server0acct'
+

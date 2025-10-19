@@ -1,12 +1,28 @@
 {
-  "uuid": "12345678-1234-1234-1234-123456789012",
+  "uuid": 1,
   "interfaces": [
+    {
+      "name": "WAN",
+      "role": "upstream",
+      "ethernet": [
+        {
+          "select-ports": [
+            "WAN"
+          ]
+        }
+      ],
+      "ipv4": {
+        "addressing": "dynamic"
+      }
+    },
     {
       "name": "downstream",
       "role": "downstream",
       "ethernet": [
         {
-          "select-ports": ["LAN*"]
+          "select-ports": [
+            "LAN*"
+          ]
         }
       ],
       "ipv4": {
@@ -19,12 +35,16 @@
       "ssids": [
         {
           "name": "CorpWiFi",
-          "wifi-bands": ["5G"],
+          "wifi-bands": [
+            "5G"
+          ],
           "bss-mode": "ap",
           "encryption": {
             "proto": "none"
           },
-          "services": ["captive"]
+          "services": [
+            "captive"
+          ]
         }
       ]
     }
@@ -39,7 +59,9 @@
       "acct-port": 1813,
       "acct-secret": "acct_secret456",
       "acct-interval": 600,
-      "walled-garden-ipaddr": ["192.168.100.1"]
+      "walled-garden-ipaddr": [
+        "192.168.100.1"
+      ]
     }
   }
 }

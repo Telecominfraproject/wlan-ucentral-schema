@@ -9,7 +9,9 @@
   ],
   "metrics": {
     "wifi_frames": {
-      "filters": ["beacon-report"]
+      "filters": [
+        "beacon-report"
+      ]
     }
   }
 }

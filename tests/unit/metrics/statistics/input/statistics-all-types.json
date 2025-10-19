@@ -10,7 +10,12 @@
   "metrics": {
     "statistics": {
       "interval": 120,
-      "types": ["ssids", "lldp", "clients", "tid-stats"]
+      "types": [
+        "ssids",
+        "lldp",
+        "clients",
+        "tid-stats"
+      ]
     }
   }
 }

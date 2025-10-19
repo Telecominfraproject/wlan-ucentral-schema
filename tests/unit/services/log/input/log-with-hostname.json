@@ -3,10 +3,27 @@
     "log": {
       "host": "syslog.example.com",
       "port": "1514",
-      "proto": "tcp", 
+      "proto": "tcp",
       "size": "500",
       "priority": "info"
     }
   },
-  "unit": {}
+  "unit": {},
+  "uuid": 1,
+  "interfaces": [
+    {
+      "name": "WAN",
+      "role": "upstream",
+      "ethernet": [
+        {
+          "select-ports": [
+            "WAN"
+          ]
+        }
+      ],
+      "ipv4": {
+        "addressing": "dynamic"
+      }
+    }
+  ]
 }

@@ -1,13 +1,18 @@
 {
-  "uuid": "12345678-1234-1234-1234-123456789012",
+  "uuid": 1,
   "interfaces": [
     {
       "name": "downstream1",
       "role": "downstream",
-      "services": ["dhcp-snooping"],
+      "services": [
+        "dhcp-snooping"
+      ],
       "ethernet": [
         {
-          "select-ports": ["LAN1", "LAN2"]
+          "select-ports": [
+            "LAN1",
+            "LAN2"
+          ]
         }
       ],
       "ipv4": {
@@ -16,12 +21,17 @@
       }
     },
     {
-      "name": "downstream2", 
+      "name": "downstream2",
       "role": "downstream",
-      "services": ["dhcp-snooping"],
+      "services": [
+        "dhcp-snooping"
+      ],
       "ethernet": [
         {
-          "select-ports": ["LAN3", "LAN4"]
+          "select-ports": [
+            "LAN3",
+            "LAN4"
+          ]
         }
       ],
       "ipv4": {
@@ -30,12 +40,16 @@
       }
     },
     {
-      "name": "upstream",
+      "name": "WAN",
       "role": "upstream",
-      "services": ["dhcp-snooping"],
+      "services": [
+        "dhcp-snooping"
+      ],
       "ethernet": [
         {
-          "select-ports": ["WAN"]
+          "select-ports": [
+            "WAN"
+          ]
         }
       ],
       "ipv4": {
@@ -45,12 +59,20 @@
   ],
   "services": {
     "dhcp-snooping": {
-      "interfaces": ["downstream1", "downstream2", "upstream"]
+      "interfaces": [
+        "downstream1",
+        "downstream2",
+        "upstream"
+      ]
     }
   },
   "metrics": {
     "dhcp-snooping": {
-      "filters": ["ack", "discover", "offer"]
+      "filters": [
+        "ack",
+        "discover",
+        "offer"
+      ]
     }
   }
 }

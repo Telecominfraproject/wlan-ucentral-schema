@@ -1,21 +1,42 @@
 {
-  "uuid": "12345678-1234-1234-1234-123456789012",
+  "uuid": 1,
   "interfaces": [
+    {
+      "name": "WAN",
+      "role": "upstream",
+      "ethernet": [
+        {
+          "select-ports": [
+            "WAN"
+          ]
+        }
+      ],
+      "ipv4": {
+        "addressing": "dynamic"
+      }
+    },
     {
       "name": "downstream",
       "role": "downstream",
-      "services": ["radsecproxy"],
+      "services": [
+        "radsecproxy"
+      ],
       "ssids": [
         {
           "name": "Corporate-WiFi",
-          "wifi-bands": ["2G", "5G"],
+          "wifi-bands": [
+            "2G",
+            "5G"
+          ],
           "bss-mode": "ap",
           "encryption": {
             "proto": "wpa2",
             "mode": "wpa2-enterprise",
             "ieee80211w": "optional"
           },
-          "services": ["radsecproxy"]
+          "services": [
+            "radsecproxy"
+          ]
         }
       ]
     }
@@ -26,7 +47,10 @@
       "realms": [
         {
           "protocol": "radsec",
-          "realm": ["example.com", "corp.example.com"],
+          "realm": [
+            "example.com",
+            "corp.example.com"
+          ],
           "host": "radius.example.com",
           "port": 2083,
           "secret": "radsec-secret",

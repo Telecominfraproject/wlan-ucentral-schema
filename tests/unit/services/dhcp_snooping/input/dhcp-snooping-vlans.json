@@ -1,54 +1,61 @@
 {
-    "interfaces": [
-      {
-        "name": "upstream",
-        "role": "upstream",
-        "services": [],
-        "ethernet": [
-          {
-            "select-ports": ["WAN"]
-          }
-        ],
-        "vlan": {
-          "id": 100
-        },
-        "ipv4": {
-          "addressing": "dynamic"
+  "interfaces": [
+    {
+      "name": "WAN",
+      "role": "upstream",
+      "services": [],
+      "ethernet": [
+        {
+          "select-ports": [
+            "WAN"
+          ]
         }
+      ],
+      "vlan": {
+        "id": 100
       },
-      {
-        "name": "downstream1", 
-        "role": "downstream",
-        "services": [],
-        "ethernet": [
-          {
-            "select-ports": ["LAN1"]
-          }
-        ],
-        "vlan": {
-          "id": 200
-        },
-        "ipv4": {
-          "addressing": "static",
-          "subnet": "192.168.1.1/24"
-        }
-      },
-      {
-        "name": "downstream2",
-        "role": "downstream", 
-        "services": [],
-        "ethernet": [
-          {
-            "select-ports": ["LAN2"]
-          }
-        ],
-        "vlan": {
-          "id": 300
-        },
-        "ipv4": {
-          "addressing": "static",
-          "subnet": "192.168.2.1/24"
-        }
+      "ipv4": {
+        "addressing": "dynamic"
       }
-    ]
+    },
+    {
+      "name": "downstream1",
+      "role": "downstream",
+      "services": [],
+      "ethernet": [
+        {
+          "select-ports": [
+            "LAN1"
+          ]
+        }
+      ],
+      "vlan": {
+        "id": 200
+      },
+      "ipv4": {
+        "addressing": "static",
+        "subnet": "192.168.1.1/24"
+      }
+    },
+    {
+      "name": "downstream2",
+      "role": "downstream",
+      "services": [],
+      "ethernet": [
+        {
+          "select-ports": [
+            "LAN2"
+          ]
+        }
+      ],
+      "vlan": {
+        "id": 300
+      },
+      "ipv4": {
+        "addressing": "static",
+        "subnet": "192.168.2.1/24"
+      }
+    }
+  ],
+  "uuid": 1
 }

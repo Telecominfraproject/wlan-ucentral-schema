@@ -1,20 +1,41 @@
 {
-  "uuid": "12345678-1234-1234-1234-123456789012",
+  "uuid": 1,
   "interfaces": [
+    {
+      "name": "WAN",
+      "role": "upstream",
+      "ethernet": [
+        {
+          "select-ports": [
+            "WAN"
+          ]
+        }
+      ],
+      "ipv4": {
+        "addressing": "dynamic"
+      }
+    },
     {
       "name": "downstream",
       "role": "downstream",
-      "services": ["radsecproxy"],
+      "services": [
+        "radsecproxy"
+      ],
       "ssids": [
         {
-          "name": "Enterprise-WiFi", 
-          "wifi-bands": ["2G", "5G"],
+          "name": "Enterprise-WiFi",
+          "wifi-bands": [
+            "2G",
+            "5G"
+          ],
           "bss-mode": "ap",
           "encryption": {
             "proto": "wpa3",
             "mode": "wpa3-enterprise"
           },
-          "services": ["radsecproxy"]
+          "services": [
+            "radsecproxy"
+          ]
         }
       ]
     }
@@ -25,20 +46,26 @@
       "realms": [
         {
           "protocol": "radsec",
-          "realm": ["secure.example.com"],
+          "realm": [
+            "secure.example.com"
+          ],
           "auto_discover": true,
           "use_local_certificates": true
         },
         {
           "protocol": "radius",
-          "realm": ["legacy.example.com"],
+          "realm": [
+            "legacy.example.com"
+          ],
           "auth_server": "192.168.2.100",
           "auth_port": 1812,
           "auth_secret": "legacy-auth-secret"
         },
         {
-          "protocol": "block", 
-          "realm": ["banned.example.com"],
+          "protocol": "block",
+          "realm": [
+            "banned.example.com"
+          ],
           "message": "Realm access denied"
         }
       ]

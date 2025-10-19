@@ -10,7 +10,10 @@
   "metrics": {
     "statistics": {
       "interval": 600,
-      "types": ["lldp", "tid-stats"]
+      "types": [
+        "lldp",
+        "tid-stats"
+      ]
     }
   }
 }

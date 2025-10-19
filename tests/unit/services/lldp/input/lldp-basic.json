@@ -8,10 +8,17 @@
   "interfaces": [
     {
       "role": "upstream",
-      "services": ["lldp"],
+      "services": [
+        "lldp"
+      ],
       "ethernet": [
-        {"select_ports": ["WAN"]}
+        {
+          "select_ports": [
+            "WAN"
+          ]
+        }
       ]
     }
-  ]
+  ],
+  "uuid": 1
 }

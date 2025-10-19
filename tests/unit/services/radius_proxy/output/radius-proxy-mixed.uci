@@ -40,3 +40,4 @@ set radsecproxy.@realm[-1].server='server1auth'
 add radsecproxy realm
 set radsecproxy.@realm[-1].name='banned.example.com'
 set radsecproxy.@realm[-1].replyMessage='Realm access denied'
+

@@ -9,7 +9,12 @@
   ],
   "metrics": {
     "wifi_frames": {
-      "filters": ["deauth", "local-deauth", "inactive-deauth", "key-mismatch"]
+      "filters": [
+        "deauth",
+        "local-deauth",
+        "inactive-deauth",
+        "key-mismatch"
+      ]
     }
   }
 }

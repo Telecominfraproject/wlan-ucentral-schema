@@ -1,18 +1,35 @@
 {
-    "interfaces": [
-      {
-        "name": "downstream",
-        "role": "downstream",
-        "services": [],
-        "ethernet": [
-          {
-            "select-ports": ["LAN*"]
-          }
-        ],
-        "ipv4": {
-          "addressing": "static",
-          "subnet": "192.168.1.1/24"
+  "interfaces": [
+    {
+      "name": "WAN",
+      "role": "upstream",
+      "ethernet": [
+        {
+          "select-ports": [
+            "WAN"
+          ]
         }
+      ],
+      "ipv4": {
+        "addressing": "dynamic"
       }
-    ]
+    },
+    {
+      "name": "downstream",
+      "role": "downstream",
+      "services": [],
+      "ethernet": [
+        {
+          "select-ports": [
+            "LAN*"
+          ]
+        }
+      ],
+      "ipv4": {
+        "addressing": "static",
+        "subnet": "192.168.1.1/24"
+      }
+    }
+  ],
+  "uuid": 1
 }

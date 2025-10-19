@@ -1,20 +1,40 @@
 {
-  "uuid": "12345678-1234-1234-1234-123456789012",
+  "uuid": 1,
   "interfaces": [
     {
+      "name": "WAN",
+      "role": "upstream",
+      "ethernet": [
+        {
+          "select-ports": [
+            "WAN"
+          ]
+        }
+      ],
+      "ipv4": {
+        "addressing": "dynamic"
+      }
+    },
+    {
       "name": "downstream",
-      "role": "downstream", 
-      "services": ["radsecproxy"],
+      "role": "downstream",
+      "services": [
+        "radsecproxy"
+      ],
       "ssids": [
         {
           "name": "Guest-WiFi",
-          "wifi-bands": ["2G"],
+          "wifi-bands": [
+            "2G"
+          ],
           "bss-mode": "ap",
           "encryption": {
             "proto": "wpa2",
             "mode": "wpa2-enterprise"
           },
-          "services": ["radsecproxy"]
+          "services": [
+            "radsecproxy"
+          ]
         }
       ]
     }
@@ -25,8 +45,10 @@
       "realms": [
         {
           "protocol": "radius",
-          "realm": ["guest.example.com"],
-          "auth_server": "192.168.1.100", 
+          "realm": [
+            "guest.example.com"
+          ],
+          "auth_server": "192.168.1.100",
           "auth_port": 1812,
           "auth_secret": "auth-secret-123",
           "acct_server": "192.168.1.100",

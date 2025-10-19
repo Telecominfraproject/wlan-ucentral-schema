@@ -1,6 +1,26 @@
 {
-	"ports": {
-		"select_ports": ["LAN1", "LAN2"],
-		"enabled": true
-	}
+  "ports": {
+    "select_ports": [
+      "LAN1",
+      "LAN2"
+    ],
+    "enabled": true
+  },
+  "uuid": 1,
+  "interfaces": [
+    {
+      "name": "WAN",
+      "role": "upstream",
+      "ethernet": [
+        {
+          "select-ports": [
+            "WAN"
+          ]
+        }
+      ],
+      "ipv4": {
+        "addressing": "dynamic"
+      }
+    }
+  ]
 }
