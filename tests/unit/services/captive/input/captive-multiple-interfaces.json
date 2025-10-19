@@ -1,0 +1,69 @@
+{
+  "uuid": "12345678-1234-1234-1234-123456789012",
+  "interfaces": [
+    {
+      "name": "downstream1",
+      "role": "downstream",
+      "ethernet": [
+        {
+          "select-ports": ["LAN1"]
+        }
+      ],
+      "ipv4": {
+        "addressing": "static",
+        "subnet": "192.168.1.1/24"
+      },
+      "vlan": {
+        "id": 101
+      },
+      "ssids": [
+        {
+          "name": "PublicWiFi1",
+          "wifi-bands": ["2G"],
+          "bss-mode": "ap",
+          "encryption": {
+            "proto": "none"
+          },
+          "services": ["captive"]
+        }
+      ]
+    },
+    {
+      "name": "downstream2",
+      "role": "downstream",
+      "ethernet": [
+        {
+          "select-ports": ["LAN2"]
+        }
+      ],
+      "ipv4": {
+        "addressing": "static",
+        "subnet": "192.168.2.1/24"
+      },
+      "vlan": {
+        "id": 102
+      },
+      "ssids": [
+        {
+          "name": "PublicWiFi2",
+          "wifi-bands": ["5G"],
+          "bss-mode": "ap",
+          "encryption": {
+            "proto": "none"
+          },
+          "services": ["captive"]
+        }
+      ]
+    }
+  ],
+  "services": {
+    "captive": {
+      "auth-mode": "click-to-continue"
+    }
+  },
+  "template_vars": {
+    "state": {
+      "services": {}
+    }
+  }
+}

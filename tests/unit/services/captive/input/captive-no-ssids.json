@@ -1,0 +1,42 @@
+{
+  "uuid": "12345678-1234-1234-1234-123456789012",
+  "interfaces": [
+    {
+      "name": "downstream",
+      "role": "downstream",
+      "ethernet": [
+        {
+          "select-ports": ["LAN*"]
+        }
+      ],
+      "ipv4": {
+        "addressing": "static",
+        "subnet": "192.168.1.1/24"
+      },
+      "vlan": {
+        "id": 160
+      },
+      "ssids": [
+        {
+          "name": "RegularWiFi",
+          "wifi-bands": ["2G"],
+          "bss-mode": "ap",
+          "encryption": {
+            "proto": "psk2",
+            "key": "testpassword123"
+          }
+        }
+      ]
+    }
+  ],
+  "services": {
+    "captive": {
+      "auth-mode": "click-to-continue"
+    }
+  },
+  "template_vars": {
+    "state": {
+      "services": {}
+    }
+  }
+}
