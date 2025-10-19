@@ -1,0 +1,5 @@
+
+# Telemetry streaming configuration
+set event.bulk.interval=600
+add_list event.bulk.filter=dns.query
+add_list event.bulk.filter=dhcp.discover
