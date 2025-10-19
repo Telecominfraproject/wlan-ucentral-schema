@@ -1,0 +1,29 @@
+{
+  "uuid": "12345678-1234-1234-1234-123456789012",
+  "interfaces": [
+    {
+      "name": "management",
+      "role": "downstream",
+      "services": ["ssh"],
+      "ethernet": [
+        {
+          "select-ports": ["LAN1"]
+        }
+      ],
+      "ipv4": {
+        "addressing": "static",
+        "subnet": "10.0.0.1/24"
+      }
+    }
+  ],
+  "services": {
+    "ssh": {
+      "port": 2222,
+      "password_authentication": false,
+      "idle_timeout": 1800,
+      "authorized_keys": [
+        "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC... admin@company.com"
+      ]
+    }
+  }
+}

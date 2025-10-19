@@ -1,0 +1,30 @@
+{
+  "uuid": "12345678-1234-1234-1234-123456789012",
+  "interfaces": [
+    {
+      "name": "upstream",
+      "role": "upstream",
+      "services": ["ssh"],
+      "ethernet": [
+        {
+          "select-ports": ["WAN"]
+        }
+      ],
+      "ipv4": {
+        "addressing": "dynamic"
+      }
+    }
+  ],
+  "services": {
+    "ssh": {
+      "port": 22,
+      "password_authentication": false,
+      "idle_timeout": 600
+    }
+  },
+  "template_vars": {
+    "restrict": {
+      "ssh": true
+    }
+  }
+}

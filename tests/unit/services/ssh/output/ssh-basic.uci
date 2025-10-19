@@ -1,0 +1,26 @@
+# SSH service configuration
+
+set dropbear.@dropbear[-1].enable=1
+set dropbear.@dropbear[-1].Port='22'
+set dropbear.@dropbear[-1].PasswordAuth=1
+set dropbear.@dropbear[-1].IdleTimeout=300
+
+add firewall rule
+set firewall.@rule[-1].name='Allow-ssh-upstream'
+set firewall.@rule[-1].src='upstream'
+set firewall.@rule[-1].dest_port='22'
+set firewall.@rule[-1].proto='tcp'
+set firewall.@rule[-1].target='ACCEPT'
+
+add firewall rule
+set firewall.@rule[-1].name='Allow-ssh-downstream'
+set firewall.@rule[-1].src='downstream'
+set firewall.@rule[-1].dest_port='22'
+set firewall.@rule[-1].proto='tcp'
+set firewall.@rule[-1].target='ACCEPT'
+
+-----/etc/dropbear/authorized_keys-----
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC... user@example.com
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI... admin@example.com
+
+--------
