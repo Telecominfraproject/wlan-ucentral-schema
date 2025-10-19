@@ -23,10 +23,5 @@
         "pool.ntp.org"
       ]
     }
-  },
-  "template_vars": {
-    "state": {
-      "services": {}
-    }
   }
 }

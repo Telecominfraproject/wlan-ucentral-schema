@@ -18,10 +18,5 @@
   ],
   "services": {
     "mdns": {}
-  },
-  "template_vars": {
-    "state": {
-      "services": {}
-    }
   }
 }

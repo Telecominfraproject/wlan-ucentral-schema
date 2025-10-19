@@ -1,20 +1,7 @@
 {
-  "template_vars": {
-    "ieee8021x": {
-      "mode": "radius",
-      "radius": {
-        "nas_identifier": "test-nas",
-        "auth_server_addr": "192.168.1.10",
-        "auth_server_port": "1812",
-        "auth_server_secret": "secret123"
-      }
+  "interfaces": [
+    {
+      "role": "upstream"
     }
-  },
-  "state": {
-    "interfaces": [
-      {
-        "role": "upstream"
-      }
-    ]
-  }
+  ]
 }

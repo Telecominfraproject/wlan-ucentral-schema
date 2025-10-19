@@ -88,39 +88,11 @@ let mock_fs = {
 	}
 };
 
-// Mock ports discovery function for ethernet library
-function mock_discover_ports() {
-	return {
-		"WAN": { netdev: "eth0", index: 0 },
-		"LAN1": { netdev: "eth1", index: 0 },
-		"LAN2": { netdev: "eth2", index: 1 },
-		"LAN3": { netdev: "eth3", index: 2 },
-		"LAN4": { netdev: "eth4", index: 3 }
-	};
+// Load capabilities from board data
+function mock_capab(board) {
+	board ??= 'eap101';
+	return json(fs.readfile(sprintf("boards/%s/capabilities.json", board)));
 }
-
-// Mock capabilities for ethernet library
-let mock_ethernet_capab = {
-	network: {
-		upstream: ["eth0"],
-		downstream: ["eth1", "eth2", "eth3", "eth4"]
-	}
-};
-
-
-// Mock capabilities
-let mock_capab = {
-	network: {
-		upstream: ["eth0"],
-		downstream: ["eth1"]
-	},
-	switch_ports: {},
-	macaddr: {
-		wan: "00:11:22:33:44:55",
-		lan: "00:11:22:33:44:56"
-	},
-	platform: "ap"
-};
 
 // Mock restrictions (empty for developer mode)
 let mock_restrict = {};
@@ -277,16 +249,27 @@ let mock_files = {
 		}
 	},
 	
-	write_debug_output: function(test_name, output) {
+	write_debug_output: function(test_path, output) {
 		// Write test output to /tmp/ucentral-test-output/ for debugging
 		let debug_dir = "/tmp/ucentral-test-output";
-		try {
-			fs.mkdir(debug_dir);
-		} catch (e) {
-			// Directory might already exist
+
+		// Create subdirectories to mirror test structure
+		// e.g. "unit/services/dhcp_snooping/dhcp-snooping-basic" -> "/tmp/ucentral-test-output/unit/services/dhcp_snooping/dhcp-snooping-basic.uci"
+		let path_parts = split(test_path, "/");
+		let test_name = path_parts[-1]; // Last part is the test name
+		let dir_parts = slice(path_parts, 0, -1); // All parts except the last
+
+		let full_dir = debug_dir;
+		for (let part in dir_parts) {
+			full_dir += "/" + part;
+			try {
+				fs.mkdir(full_dir);
+			} catch (e) {
+				// Directory might already exist
+			}
 		}
-		
-		let debug_file = debug_dir + "/" + test_name + ".uci";
+
+		let debug_file = full_dir + "/" + test_name + ".uci";
 		let fd = fs.open(debug_file, "w");
 		if (fd) {
 			fd.write(output);
@@ -340,31 +323,37 @@ function tryinclude(path, scope) {
 	}
 };
 
-// Create ethernet instance using shared library
-let mock_ethernet = create_ethernet(mock_discover_ports(), mock_ethernet_capab, mock_fs, null);
+// Create ethernet instance using shared library (initialized in test context)
+let mock_ethernet;
 
-// Create test context with all mocks  
+
+// Create test context with all mocks
 function create_test_context(overrides) {
+	// Initialize ethernet with real board capabilities (unit tests use eap101)
+	let capabilities = mock_capab(null);
+	mock_ethernet = create_ethernet(capabilities, mock_fs, null);
+
+
 	let result = {
 		// Basic functions
 		b, s,
-		
+
 		// UCI helpers
 		uci_cmd,
 		uci_set_string,
-		uci_set_boolean, 
+		uci_set_boolean,
 		uci_set_number,
 		uci_list_string,
 		uci_section,
 		uci_named_section,
 		uci_output,
 		uci_comment,
-		
+
 		// Mock system objects
 		cursor: mock_cursor,
 		conn: mock_conn,
 		fs: mock_fs,
-		capab: mock_capab,
+		capab: capabilities,
 		restrict: mock_restrict,
 		default_config: mock_default_config,
 		services: mock_services,
@@ -372,7 +361,7 @@ function create_test_context(overrides) {
 		files: mock_files,
 		events: mock_events,
 		shell: mock_shell,
-		
+
 		// Mock utility functions
 		warn: function(fmt, ...args) {
 			printf("[W] " + sprintf(fmt, ...args) + "\n");
@@ -383,9 +372,9 @@ function create_test_context(overrides) {
 		info: function(fmt, ...args) {
 			printf("[I] " + sprintf(fmt, ...args) + "\n");
 		},
-		
+
 	};
-	
+
 	// Manually merge overrides
 	if (overrides) {
 		for (let key, value in overrides) {
@@ -394,14 +383,14 @@ function create_test_context(overrides) {
 				result[key] = value;
 			}
 		}
-		
+
 		// Extract individual services from services object
 		if (overrides.services) {
 			for (let service_name, service_config in overrides.services) {
 				result[service_name] = service_config;
 			}
 		}
-		
+
 		// Extract individual metrics from metrics object
 		if (overrides.metrics) {
 			for (let metric_name, metric_config in overrides.metrics) {
@@ -409,28 +398,31 @@ function create_test_context(overrides) {
 			}
 		}
 	}
-	
+
 	// Set test state in services mock for lookup_interfaces
 	if (overrides && overrides.state) {
 		result.services._test_state = overrides.state;
 	} else if (overrides) {
 		result.services._test_state = overrides;
 	}
-	
+
 	// Set global state for ethernet library functions
 	global.state = overrides || {};
-	
+
 	return result;
 }
 
 // Create board-specific test context with real device data
 function create_board_test_context(test_data, board_data, capabilities) {
+	// Initialize ethernet with actual board capabilities
+	mock_ethernet = create_ethernet(capabilities, mock_fs, null);
+
 	let context = create_test_context(test_data);
-	
+
 	// Add board-specific data to context
 	context.board = board_data;
 	context.capab = capabilities;
-	
+
 	// Enhanced wiphy mock based on board capabilities
 	context.wiphy = {
 		lookup_by_band: function(band) {
@@ -446,11 +438,11 @@ function create_board_test_context(test_data, board_data, capabilities) {
 			return phys;
 		}
 	};
-	
+
 	return context;
 };
 
-// Create full test context for toplevel.uc rendering  
+// Create full test context for toplevel.uc rendering
 function create_full_test_context(state, board_data, capabilities) {
 	let context = create_board_test_context({}, board_data, capabilities);
 	

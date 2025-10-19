@@ -1,7 +1,5 @@
 {
-	"template_vars": {
-		"timeout": {
-			"validate": 30
-		}
+	"timeout": {
+		"validate": 30
 	}
 }

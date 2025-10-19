@@ -23,10 +23,5 @@
         "relay_server": "192.168.100.1"
       }
     ]
-  },
-  "template_vars": {
-    "state": {
-      "services": {}
-    }
   }
 }

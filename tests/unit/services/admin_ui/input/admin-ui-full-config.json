@@ -1,21 +1,11 @@
 {
-  "template_vars": {
+  "interfaces": [],
+  "services": {
     "admin_ui": {
       "wifi_ssid": "FullAdminUI",
       "wifi_key": "FullConfiguration2024",
       "wifi_bands": ["2G", "5G"],
       "offline_trigger": 300
-    }
-  },
-  "state": {
-    "interfaces": [],
-    "services": {
-      "admin_ui": {
-        "wifi_ssid": "FullAdminUI",
-        "wifi_key": "FullConfiguration2024",
-        "wifi_bands": ["2G", "5G"],
-        "offline_trigger": 300
-      }
     }
   }
 }

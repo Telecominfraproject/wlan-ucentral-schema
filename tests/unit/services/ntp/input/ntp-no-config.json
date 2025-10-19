@@ -15,10 +15,5 @@
       }
     }
   ],
-  "services": {},
-  "template_vars": {
-    "state": {
-      "services": {}
-    }
-  }
+  "services": {}
 }

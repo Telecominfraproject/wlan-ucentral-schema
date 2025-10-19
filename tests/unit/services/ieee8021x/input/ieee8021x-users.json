@@ -1,5 +1,5 @@
 {
-  "template_vars": {
+  "services": {
     "ieee8021x": {
       "mode": "users",
       "users": [
@@ -14,12 +14,10 @@
       ]
     }
   },
-  "state": {
-    "interfaces": [
-      {
-        "role": "downstream",
-        "ieee8021x_ports": ["eth1", "eth2"]
-      }
-    ]
-  }
+  "interfaces": [
+    {
+      "role": "downstream",
+      "ieee8021x_ports": ["eth1", "eth2"]
+    }
+  ]
 }

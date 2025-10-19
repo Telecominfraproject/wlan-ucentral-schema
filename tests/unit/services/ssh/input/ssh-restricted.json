@@ -22,9 +22,7 @@
       "idle_timeout": 600
     }
   },
-  "template_vars": {
-    "restrict": {
-      "ssh": true
-    }
+  "restrict": {
+    "ssh": true
   }
 }

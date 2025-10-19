@@ -1,5 +1,4 @@
 {
-  "state": {
     "interfaces": [
       {
         "name": "downstream",
@@ -16,5 +15,4 @@
         }
       }
     ]
-  }
 }

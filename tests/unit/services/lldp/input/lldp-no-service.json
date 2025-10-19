@@ -1,19 +1,17 @@
 {
-  "template_vars": {
+  "services": {
     "lldp": {
       "describe": "Test AP",
       "location": "Test Location"
     }
   },
-  "state": {
-    "interfaces": [
-      {
-        "role": "upstream",
-        "services": [],
-        "ethernet": [
-          {"select_ports": ["WAN1"]}
-        ]
-      }
-    ]
-  }
+  "interfaces": [
+    {
+      "role": "upstream",
+      "services": [],
+      "ethernet": [
+        {"select_ports": ["WAN"]}
+      ]
+    }
+  ]
 }

@@ -5,4 +5,5 @@
 set lldpd.config.enable='1'
 set lldpd.config.lldp_description='Test AP Description'
 set lldpd.config.lldp_location='Building A, Floor 2'
+add_list lldpd.config.interface='eth0'
 

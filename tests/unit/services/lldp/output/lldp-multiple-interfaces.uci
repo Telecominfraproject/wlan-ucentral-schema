@@ -5,6 +5,7 @@
 set lldpd.config.enable='1'
 set lldpd.config.lldp_description='Multi-port AP'
 set lldpd.config.lldp_location='Network Closet'
+add_list lldpd.config.interface='eth0'
 add_list lldpd.config.interface='eth1'
 add_list lldpd.config.interface='eth2'
 

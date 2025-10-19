@@ -8,8 +8,8 @@ set dropbear.@dropbear[-1].IdleTimeout=1800
 
 ### generate SSH firewall rules
 add firewall rule
-set firewall.@rule[-1].name='Allow-ssh-management'
-set firewall.@rule[-1].src='management'
+set firewall.@rule[-1].name='Allow-ssh-down0v0'
+set firewall.@rule[-1].src='down0v0'
 set firewall.@rule[-1].dest_port='2222'
 set firewall.@rule[-1].proto='tcp'
 set firewall.@rule[-1].target='ACCEPT'

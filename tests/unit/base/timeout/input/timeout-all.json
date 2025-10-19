@@ -1,9 +1,7 @@
 {
-	"template_vars": {
-		"timeout": {
-			"offline": 3600,
-			"orphan": 120,
-			"validate": 60
-		}
+	"timeout": {
+		"offline": 3600,
+		"orphan": 120,
+		"validate": 60
 	}
 }

@@ -1,8 +1,6 @@
 {
-	"template_vars": {
-		"timeout": {
-			"offline": 1800,
-			"validate": 45
-		}
+	"timeout": {
+		"offline": 1800,
+		"validate": 45
 	}
 }

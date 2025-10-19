@@ -1,5 +1,5 @@
 {
-  "template_vars": {
+  "services": {
     "online_check": {
       "ping_hosts": ["8.8.8.8", "1.1.1.1"],
       "check_interval": 30,

@@ -79,49 +79,6 @@ function tryinclude(path, scope) {
 	}
 }
 
-function discover_ports() {
-	let roles = {};
-
-	/* Derive ethernet port names and roles from default config */
-	for (let role, spec in capab.network) {
-		for (let i, ifname in spec) {
-			role = uc(role);
-			let netdev = split(ifname, ':');
-			let port = {
-				netdev: netdev[0],
-				index: i
-			};
-			if (netdev[1]) {
-				port.swconfig = netdev[1];
-				port.swdev = split(ifname, ':')[0];
-			}
-			push(roles[role] = roles[role] || [], port);
-		}
-	}
-
-	/* Sort ports in each role group according to their index, then normalize
-	 * names into uppercase role name with 1-based index suffix in case of multiple
-	 * ports or just uppercase role name in case of single ports */
-	let rv = {};
-
-	for (let role, ports in roles) {
-		switch (length(ports)) {
-		case 0:
-			break;
-
-		case 1:
-			rv[role] = ports[0];
-			break;
-
-		default:
-			map(sort(ports, (a, b) => (a.index - b.index)), (port, i) => {
-				rv[role + (i + 1)] = port;
-			});
-		}
-	}
-
-	return rv;
-}
 
 /**
  * @class uCentral.wiphy
@@ -289,7 +246,7 @@ let wiphy = {
 };
 
 // Create ethernet instance using shared library
-let ethernet = create_ethernet(discover_ports(), capab, fs, null);
+let ethernet = create_ethernet(capab, fs, null);
 
 
 /**
