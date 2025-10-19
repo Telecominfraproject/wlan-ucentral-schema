@@ -53,6 +53,152 @@ function repeat(str, count) {
 	return result;
 }
 
+function parse_arguments() {
+	let config = {
+		run_unit: false,
+		run_full: false,
+		copy_to_expected: false,
+		show_help: false
+	};
+
+	// Default: run everything if no args
+	if (length(ARGV) == 0) {
+		config.run_unit = true;
+		config.run_full = true;
+		return config;
+	}
+
+	// Parse arguments
+	for (let arg in ARGV) {
+		switch (arg) {
+			case "--unit":
+			case "unit":
+				config.run_unit = true;
+				break;
+			case "--full":
+			case "full":
+				config.run_full = true;
+				break;
+			case "--all":
+			case "all":
+				config.run_unit = true;
+				config.run_full = true;
+				break;
+			case "--copy-to-expected":
+			case "copy-to-expected":
+				config.copy_to_expected = true;
+				break;
+			case "--help":
+			case "help":
+			case "-h":
+				config.show_help = true;
+				break;
+			default:
+				printf("Unknown option: %s\n", arg);
+				printf("Use ./test-runner help for usage information\n");
+				exit(1);
+		}
+	}
+
+	return config;
+}
+
+function print_usage() {
+	printf("Usage: ./test-runner [OPTIONS]\n\n");
+	printf("Options:\n");
+	printf("  unit                Run only unit tests (services, metrics, base)\n");
+	printf("  full                Run only full integration tests\n");
+	printf("  all                 Run all tests (default if no args)\n");
+	printf("  copy-to-expected    Copy debug outputs to expected output directories\n");
+	printf("  help                Show this help message\n\n");
+	printf("Examples:\n");
+	printf("  ./test-runner                       # Run all tests\n");
+	printf("  ./test-runner unit                  # Unit tests only\n");
+	printf("  ./test-runner full copy-to-expected # Integration tests + copy outputs\n");
+}
+
+function copy_debug_to_expected(config) {
+	printf("\n=== Copying Debug Output to Expected ===\n");
+
+	if (config.run_full) {
+		copy_integration_outputs();
+	}
+
+	if (config.run_unit) {
+		copy_unit_outputs();
+	}
+}
+
+function copy_integration_outputs() {
+	printf("Copying integration test outputs...\n");
+
+	// Copy from /tmp/ucentral-test-output/full/eap101/input/*.uci
+	// to full/output/eap101/*.uci
+	let debug_pattern = "/tmp/ucentral-test-output/full/eap101/input/*.uci";
+	let target_dir = "full/output/eap101/";
+
+	let copied = 0;
+	for (let debug_file in fs.glob(debug_pattern)) {
+		let basename = replace(debug_file, /^.*\//, ""); // Get filename only
+		let target_file = target_dir + basename;
+
+		try {
+			let content = fs.readfile(debug_file);
+			let fd = fs.open(target_file, "w");
+			if (fd) {
+				fd.write(content);
+				fd.close();
+				copied++;
+				printf("  Copied %s\n", basename);
+			}
+		} catch (e) {
+			printf("  Failed to copy %s: %s\n", basename, e);
+		}
+	}
+
+	printf("Copied %d integration test outputs\n", copied);
+}
+
+function copy_unit_outputs() {
+	printf("Copying unit test outputs...\n");
+
+	let copied = 0;
+	for (let debug_file in fs.glob("/tmp/ucentral-test-output/unit/**/*.uci")) {
+		// Extract test path: /tmp/ucentral-test-output/unit/services/ssh/ssh-basic.uci
+		// Target path: unit/services/ssh/output/ssh-basic.uci
+
+		let relative_path = replace(debug_file, /^\/tmp\/ucentral-test-output\/unit\//, "");
+		let path_parts = split(relative_path, "/");
+
+		if (length(path_parts) >= 3) {
+			let category = path_parts[0]; // services, metrics, base
+			let test_name = path_parts[1]; // ssh, health, etc
+			let filename = path_parts[2]; // ssh-basic.uci
+
+			let target_file = sprintf("unit/%s/%s/output/%s", category, test_name, filename);
+
+			try {
+				let content = fs.readfile(debug_file);
+
+				// Ensure target directory exists
+				let target_dir = sprintf("unit/%s/%s/output", category, test_name);
+				try { fs.mkdir(target_dir); } catch (e) {}
+
+				let fd = fs.open(target_file, "w");
+				if (fd) {
+					fd.write(content);
+					fd.close();
+					copied++;
+				}
+			} catch (e) {
+				printf("  Failed to copy %s: %s\n", filename, e);
+			}
+		}
+	}
+
+	printf("Copied %d unit test outputs\n", copied);
+}
+
 let total_results = {
 	unit: {
 		total_tests: 0,
@@ -76,8 +222,15 @@ let total_results = {
 };
 
 function main() {
+	let config = parse_arguments();
+
+	if (config.show_help) {
+		print_usage();
+		exit(0);
+	}
+
 	printf("=== Template Test Suite Runner ===\n\n");
-	
+
 	let test_suites = [
 		// Services
 		{ name: "Admin UI Service", run_tests: admin_ui_tests },
@@ -117,11 +270,26 @@ function main() {
 		// Integration tests
 		{ name: "Full Integration", run_tests: full_tests, type: "integration", boards: ["eap101"] },
 	];
-	
-	printf("Found %d test suites\n\n", length(test_suites));
-	
-	// Run each test suite
+
+	// Filter test suites based on config
+	let filtered_suites = [];
 	for (let suite in test_suites) {
+		let suite_type = suite.type || "unit";
+
+		if ((suite_type == "unit" && config.run_unit) ||
+		    (suite_type == "integration" && config.run_full)) {
+			push(filtered_suites, suite);
+		}
+	}
+
+	printf("Found %d test suites", length(test_suites));
+	if (length(filtered_suites) != length(test_suites)) {
+		printf(" (running %d)", length(filtered_suites));
+	}
+	printf("\n\n");
+
+	// Run each filtered test suite
+	for (let suite in filtered_suites) {
 		let suite_type = suite.type || "unit";
 		let target_results = total_results[suite_type];
 		
@@ -187,9 +355,14 @@ function main() {
 	let total_passed_tests = total_results.unit.passed_tests + total_results.integration.passed_tests;
 	let total_failed_tests = total_results.unit.failed_tests + total_results.integration.failed_tests;
 	
-	printf("\nTotal: %d suites, %d tests (%d passed, %d failed)\n", 
+	printf("\nTotal: %d suites, %d tests (%d passed, %d failed)\n",
 		total_suites, total_tests, total_passed_tests, total_failed_tests);
-	
+
+	// Copy debug outputs to expected if requested
+	if (config.copy_to_expected) {
+		copy_debug_to_expected(config);
+	}
+
 	if (total_failed_suites > 0) {
 		printf("\nFailed test suites:\n");
 		for (let suite_name in total_results.unit.failed_suite_names) {
