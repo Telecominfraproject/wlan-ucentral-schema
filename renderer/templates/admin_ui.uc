@@ -4,6 +4,11 @@
 	const ADMIN_UI_SUBNET = '10.254.254.1/24';
 	const ADMIN_UI_SERVICES = [ 'ssh', 'http' ];
 
+	// Variables initialization
+	let admin_ui = state.services?.admin_ui;
+	if (!admin_ui?.wifi_ssid)
+		return;
+
 	// Helper functions
 	function has_admin_ui() {
 		return state.services?.admin_ui?.wifi_ssid;
