@@ -27,8 +27,6 @@ properties:
     $ref: "https://ucentral.io/schema/v1/service/quality-of-service/"
   airtime-fairness:
     $ref: "https://ucentral.io/schema/v1/service/airtime-fairness/"
-  wireguard-overlay:
-    $ref: 'https://ucentral.io/schema/v1/service/wireguard-overlay/'
   captive:
     $ref: 'https://ucentral.io/schema/v1/service/captive/'
   gps:
