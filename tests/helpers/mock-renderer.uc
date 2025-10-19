@@ -480,5 +480,21 @@ function create_board_test_context(test_data, board_data, capabilities) {
 	return context;
 };
 
+// Create full test context for toplevel.uc rendering
+function create_full_test_context(state, board_data, capabilities) {
+	let context = create_board_test_context({}, board_data, capabilities);
+	
+	// Add the validated state
+	context.state = state;
+	
+	// toplevel.uc expects these to be available in scope
+	context.cursor = context.cursor || mock_cursor;
+	context.conn = context.conn || mock_conn;
+	context.restrict = context.restrict || {};
+	context.default_config = context.default_config || mock_default_config;
+	
+	return context;
+};
+
 // Export the functions
-export { create_test_context, create_board_test_context };
+export { create_test_context, create_board_test_context, create_full_test_context };
