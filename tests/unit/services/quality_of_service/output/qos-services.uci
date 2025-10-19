@@ -1,8 +1,9 @@
-
+### generate QoS bulk detection defaults
 set qosify.@defaults[0].bulk_trigger_pps=500
-set qosify.@defaults[0].dscp_bulk=CS0
-
+set qosify.@defaults[0].dscp_bulk='CS0'
+### generate QoS device configuration
 set qosify.eth0=device
 set qosify.eth0.name='eth0'
 set qosify.eth0.bandwidth_up='50mbit'
 set qosify.eth0.bandwidth_down='200mbit'
+
