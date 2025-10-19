@@ -262,6 +262,11 @@ export function FullIntegrationTestFramework(test_title, test_dir) {
                         printf("Process output:\n%s\n", result.output);
                     }
                     this.test_results.failed++;
+                    push(this.test_results.errors, {
+                        test: test_name,
+                        board: board_name,
+                        error: result.error
+                    });
                     return;
                 }
 
@@ -276,11 +281,21 @@ export function FullIntegrationTestFramework(test_title, test_dir) {
                     report_test_fail(test_name, board_name);
                     create_diff_files(test_name, board_name, expected_output, actual_output);
                     this.test_results.failed++;
+                    push(this.test_results.errors, {
+                        test: test_name,
+                        board: board_name,
+                        error: "Output mismatch"
+                    });
                 }
 
             } catch (e) {
                 report_test_error(test_name, board_name, e);
                 this.test_results.failed++;
+                push(this.test_results.errors, {
+                    test: test_name,
+                    board: board_name,
+                    error: e.message || e
+                });
             }
 
             printf("\n");
