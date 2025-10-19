@@ -200,3 +200,156 @@ export function apply_context_overrides(result, overrides, services_mock) {
 
 	return result;
 };
+
+// Shared test execution utilities - eliminates duplication across test framework classes
+
+// Test result reporting functions - standardizes output formatting
+export function report_test_pass(test_name, board_name) {
+	if (board_name) {
+		printf("✓ PASS: %s (%s)\n", test_name, board_name);
+	} else {
+		printf("✓ PASS: %s\n", test_name);
+	}
+};
+
+export function report_test_fail(test_name, board_name) {
+	if (board_name) {
+		printf("✗ FAIL: %s (%s)\n", test_name, board_name);
+	} else {
+		printf("✗ FAIL: %s\n", test_name);
+	}
+};
+
+export function report_test_error(test_name, board_name, error) {
+	if (board_name) {
+		printf("✗ ERROR: %s (%s) - %s\n", test_name, board_name, error);
+	} else {
+		printf("✗ ERROR: %s - %s\n", test_name, error);
+	}
+
+	// Show error context if available
+	if (error.stacktrace && error.stacktrace[0]?.context) {
+		printf("  Error: %s\n", error.stacktrace[0].context);
+	}
+};
+
+// Diff generation utilities - eliminates duplication in failure handling
+export function create_diff_files(test_name, board_name, expected_output, actual_output) {
+	// Create diff directory
+	try {
+		fs.mkdir("/tmp/ucentral-test-diff");
+	} catch (e) {}
+
+	// Generate unique filenames
+	let suffix = board_name ? test_name + "-" + board_name : test_name;
+	let temp_expected = "/tmp/ucentral-test-diff/expected_" + suffix + ".uci";
+	let temp_actual = "/tmp/ucentral-test-diff/actual_" + suffix + ".uci";
+
+	// Write files
+	let fd_exp = fs.open(temp_expected, "w");
+	if (fd_exp) {
+		fd_exp.write(expected_output);
+		fd_exp.close();
+	}
+
+	let fd_act = fs.open(temp_actual, "w");
+	if (fd_act) {
+		fd_act.write(actual_output);
+		fd_act.close();
+	}
+
+	// Show diff
+	let diff_cmd = sprintf("diff -u %s %s", temp_expected, temp_actual);
+	let diff_output = fs.popen(diff_cmd);
+	if (diff_output) {
+		let diff_result = diff_output.read("all");
+		diff_output.close();
+		printf("Diff:\n%s\n", diff_result);
+	}
+};
+
+// File handling utilities - standardizes test file operations
+export function load_test_files(test_dir, input_file, expected_file, board_name) {
+	// Load input file
+	let input_path = sprintf("%s/%s", test_dir, input_file);
+	let test_data = json(fs_real.readfile(input_path));
+
+	// Load expected output file
+	let output_path = expected_file;
+	if (board_name) {
+		output_path = sprintf("%s/output/%s/%s", test_dir, board_name, expected_file);
+	} else {
+		output_path = sprintf("%s/%s", test_dir, expected_file);
+	}
+
+	let expected_output = fs_real.readfile(output_path);
+	if (expected_output === null || expected_output === false) {
+		expected_output = "";
+	}
+
+	return {
+		test_data,
+		expected_output
+	};
+};
+
+// Board data loading utilities - eliminates duplication in integration tests
+export function load_test_board_data(board_name) {
+	let board_dir = sprintf("boards/%s", board_name);
+	let board_data = json(fs_real.readfile(sprintf("%s/board.json", board_dir)));
+	let capabilities = json(fs_real.readfile(sprintf("%s/capabilities.json", board_dir)));
+
+	return {
+		board_data,
+		capabilities
+	};
+};
+
+// Test output processing - standardizes template rendering and file generation
+export function process_test_output(context, template_path, test_name, test_dir, board_name) {
+	// Clear any previous generated files
+	context.files.clear_generated_files();
+
+	// Render template
+	let abs_path = fs_real.realpath ? fs_real.realpath(template_path) : template_path;
+	let output = render(abs_path, context);
+
+	// Add generated files to output
+	let generated_files = context.files.get_generated_files();
+	for (let path, file_info in generated_files) {
+		output += sprintf("\n-----%s-----\n%s\n--------\n", path, file_info.content);
+	}
+
+	// Write debug output
+	let debug_path = board_name ? test_name + "-" + board_name : test_name;
+	context.files.write_debug_output(test_dir + "/" + debug_path, output);
+
+	return trim(output);
+};
+
+// Test suite result formatting - eliminates duplication in result reporting
+export function format_test_suite_results(test_results, suite_name) {
+	printf("=== Test Results ===\n");
+	printf("Passed: %d\n", test_results.passed);
+	printf("Failed: %d\n", test_results.failed);
+
+	if (test_results.failed > 0) {
+		printf("\nFailures:\n");
+		for (let error in test_results.errors) {
+			printf("- %s\n", error.test);
+			if (error.error) {
+				printf("  Error: %s\n", error.error);
+			}
+		}
+	} else {
+		printf("All %s tests passed!\n", suite_name);
+	}
+
+	// Return results for aggregation
+	return {
+		passed: test_results.passed,
+		failed: test_results.failed,
+		errors: test_results.errors,
+		suite_name: suite_name
+	};
+};
