@@ -349,9 +349,6 @@ set wireless.up0v0_0_0_0.strict_forwarding=0
 ### generate quality thresholds configuration
 set wireless.up0v0_0_0_0.rssi_ignore_probe_request=-35
 set wireless.up0v0_0_0_0.dynamic_probe_resp=1
-set usteer2.up0v0_0_0_0=ssid
-set usteer2.up0v0_0_0_0.client_kick_rssi=-45
-set usteer2.up0v0_0_0_0.client_kick_ban_time=60
 
 
 
@@ -364,7 +361,6 @@ add wireless wifi-vlan
 set wireless.@wifi-vlan[-1].iface='up0v0_0_0_0'
 set wireless.@wifi-vlan[-1].name='v#'
 set wireless.@wifi-vlan[-1].vid='*'
-
 
 
 
@@ -550,7 +546,6 @@ set dhcp.down1v0.ra='disabled'
 set dhcp.down1v0.dhcpv6='disabled'
 set dhcp.down1v0.ndp='disabled'
 set dhcp.down1v0.dns_service=1
-
 
 
 

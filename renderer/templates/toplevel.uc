@@ -179,7 +179,6 @@
 			[replace(name, '-', '_')]: config
 		});
 	}
-	services.set_enabled("usteer2", true);
 
 	include('spotfilter.uc');
 

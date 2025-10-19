@@ -21,8 +21,6 @@ properties:
     $ref: "https://ucentral.io/schema/v1/service/online-check/"
   data-plane:
     $ref: "https://ucentral.io/schema/v1/service/data-plane/"
-  wifi-steering:
-    $ref: "https://ucentral.io/schema/v1/service/wifi-steering/"
   quality-of-service:
     $ref: "https://ucentral.io/schema/v1/service/quality-of-service/"
   airtime-fairness:
