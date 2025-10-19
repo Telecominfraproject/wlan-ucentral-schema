@@ -1,0 +1,15 @@
+{
+  "uuid": "12345678-1234-1234-1234-123456789012",
+  "interfaces": [],
+  "services": {
+    "airtime_fairness": {
+      "voice_weight": 8,
+      "packet_threshold": 200,
+      "bulk_threshold": 70,
+      "priority_threshold": 40,
+      "weight_normal": 512,
+      "weight_priority": 1024,
+      "weight_bulk": 64
+    }
+  }
+}

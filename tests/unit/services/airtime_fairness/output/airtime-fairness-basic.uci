@@ -1,0 +1,7 @@
+set atfpolicy.@defaults[0].vo_queue_weight=4
+set atfpolicy.@defaults[0].update_pkt_threshold=100
+set atfpolicy.@defaults[0].bulk_percent_thresh=50
+set atfpolicy.@defaults[0].prio_percent_thresh=30
+set atfpolicy.@defaults[0].weight_normal=256
+set atfpolicy.@defaults[0].weight_prio=394
+set atfpolicy.@defaults[0].weight_bulk=128
