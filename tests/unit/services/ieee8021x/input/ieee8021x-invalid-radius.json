@@ -1,0 +1,18 @@
+{
+  "template_vars": {
+    "ieee8021x": {
+      "mode": "radius",
+      "radius": {
+        "nas_identifier": "test-nas"
+      }
+    }
+  },
+  "state": {
+    "interfaces": [
+      {
+        "role": "upstream",
+        "ieee8021x_ports": ["eth0"]
+      }
+    ]
+  }
+}

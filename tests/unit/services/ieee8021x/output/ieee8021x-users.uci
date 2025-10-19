@@ -1,0 +1,6 @@
+# IEEE8021x service configuration
+
+add ieee8021x config 
+set ieee8021x.@config[-1].ca='/etc/ssl/ca.pem'
+set ieee8021x.@config[-1].cert='/etc/ssl/cert.pem'
+set ieee8021x.@config[-1].key='/etc/ssl/key.pem'

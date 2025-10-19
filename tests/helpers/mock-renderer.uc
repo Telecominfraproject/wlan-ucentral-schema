@@ -12,6 +12,13 @@ let mock_cursor = {
 		if (config == "system" && section == "@system[-1]") {
 			return { hostname: "mock-hostname" };
 		}
+		if (config == "system" && section == "@certificates[-1]") {
+			return {
+				ca: "/etc/ssl/ca.pem",
+				cert: "/etc/ssl/cert.pem", 
+				key: "/etc/ssl/key.pem"
+			};
+		}
 		return {};
 	},
 	get: function(config, section, option) {
@@ -176,7 +183,7 @@ let mock_services = {
 		return interfaces;
 	},
 	lookup_services: function() {
-		return ["log", "ssh", "ntp", "lldp"]; // Common services
+		return ["log", "ssh", "ntp", "lldp", "ieee8021x"]; // Common services
 	},
 	_test_state: null // Will be set by test context
 };

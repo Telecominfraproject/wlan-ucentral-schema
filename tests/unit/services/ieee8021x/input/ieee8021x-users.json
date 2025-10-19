@@ -1,0 +1,25 @@
+{
+  "template_vars": {
+    "ieee8021x": {
+      "mode": "users",
+      "users": [
+        {
+          "name": "testuser1",
+          "password": "password123"
+        },
+        {
+          "name": "testuser2", 
+          "password": "password456"
+        }
+      ]
+    }
+  },
+  "state": {
+    "interfaces": [
+      {
+        "role": "downstream",
+        "ieee8021x_ports": ["eth1", "eth2"]
+      }
+    ]
+  }
+}

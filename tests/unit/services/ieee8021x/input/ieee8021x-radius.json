@@ -1,0 +1,28 @@
+{
+  "template_vars": {
+    "ieee8021x": {
+      "mode": "radius",
+      "radius": {
+        "nas_identifier": "test-nas",
+        "auth_server_addr": "192.168.1.10",
+        "auth_server_port": "1812",
+        "auth_server_secret": "secret123",
+        "acct_server_addr": "192.168.1.11",
+        "acct_server_port": "1813",
+        "acct_server_secret": "acct_secret",
+        "coa_server_addr": "192.168.1.12",
+        "coa_server_port": "3799",
+        "coa_server_secret": "coa_secret",
+        "mac_address_bypass": true
+      }
+    }
+  },
+  "state": {
+    "interfaces": [
+      {
+        "role": "upstream",
+        "ieee8021x_ports": ["eth0"]
+      }
+    ]
+  }
+}
