@@ -192,6 +192,11 @@ let mock_services = {
 let mock_ethernet = {
 	ports: {},
 	calculate_name: function(interface) {
+		// Generate interface name based on interface properties
+		if (interface && interface.name)
+			return interface.name;
+		if (interface && interface.role)
+			return interface.role;
 		return "mock_interface";
 	},
 	lookup_by_interface_spec: function(interface) {
@@ -207,16 +212,81 @@ let mock_ethernet = {
 			}
 		}
 		return ports;
+	},
+	find_interface: function(role, vlan_id) {
+		// Mock interface lookup
+		return role + (vlan_id ? "_" + vlan_id : "");
 	}
 };
 
 // Mock files object
 let mock_files = {
+	_generated_files: {},
+	_test_dir: "/tmp/ucentral-test",
+	
 	add_named: function(path, content) {
-		// Mock file addition
+		// Create test directory structure
+		let test_path = this._test_dir + path;
+		let dir_path = replace(test_path, /\/[^\/]+$/, '');
+		
+		// Ensure directory exists using fs.mkdir
+		try {
+			// Create directory recursively
+			let path_parts = split(dir_path, '/');
+			let current_path = '';
+			for (let part in path_parts) {
+				if (part == '')
+					continue;
+				current_path += '/' + part;
+				try {
+					fs.mkdir(current_path);
+				} catch (e) {
+					// Directory might already exist, ignore error
+				}
+			}
+		} catch (e) {
+			// Ignore mkdir errors
+		}
+		
+		// Write file content
+		let fd = fs.open(test_path, "w");
+		if (fd) {
+			fd.write(content);
+			fd.close();
+		}
+		
+		// Track file for test validation
+		this._generated_files[path] = {
+			test_path: test_path,
+			content: content
+		};
 	},
+	
 	add_anonymous: function(location, name, content) {
-		return "/tmp/mock/" + name;
+		let path = "/tmp/mock/" + name;
+		this.add_named(path, content);
+		return path;
+	},
+	
+	get_generated_files: function() {
+		return this._generated_files;
+	},
+	
+	get_file_content: function(path) {
+		if (this._generated_files[path]) {
+			return this._generated_files[path].content;
+		}
+		return null;
+	},
+	
+	clear_generated_files: function() {
+		this._generated_files = {};
+		// Remove entire test directory
+		try {
+			fs.unlink(this._test_dir);
+		} catch (e) {
+			// Directory might not exist, ignore error
+		}
 	}
 };
 
@@ -264,13 +334,25 @@ function create_test_context(overrides) {
 	// Manually merge overrides
 	if (overrides) {
 		for (let key, value in overrides) {
-			result[key] = value;
+			// Don't override the services mock object
+			if (key != 'services') {
+				result[key] = value;
+			}
+		}
+		
+		// Extract individual services from services object
+		if (overrides.services) {
+			for (let service_name, service_config in overrides.services) {
+				result[service_name] = service_config;
+			}
 		}
 	}
 	
 	// Set test state in services mock for lookup_interfaces
 	if (overrides && overrides.state) {
 		result.services._test_state = overrides.state;
+	} else if (overrides) {
+		result.services._test_state = overrides;
 	}
 	
 	return result;
