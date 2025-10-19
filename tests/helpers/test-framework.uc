@@ -8,7 +8,7 @@ import { validate } from './schemareader.uc';
 import {
 	mock_toplevel, report_test_pass, report_test_fail, report_test_error,
 	create_diff_files, load_test_files, load_test_board_data,
-	process_test_output, format_test_suite_results
+	process_test_output, format_test_suite_results, run_test_via_process
 } from './test-utils.uc';
 
 // Test framework class to consolidate common testing logic
@@ -71,6 +71,48 @@ export function TestFramework(template_path, test_title, test_dir) {
                     test: test_name,
                     error: e.message || e
                 });
+            }
+
+            printf("\n");
+        },
+
+        // Alternative test runner using external process for better isolation
+        run_test_isolated: function(test_name, input_file, expected_file) {
+            printf("Running test: %s (isolated)\n", test_name);
+
+            try {
+                // Load expected output
+                let test_files = load_test_files(this.test_dir, input_file, expected_file);
+                let expected_output = test_files.expected_output;
+
+                // Run test via external process
+                let result = run_test_via_process("unit", this.template_path, this.test_dir, input_file, test_name);
+
+                if (!result.success) {
+                    printf("✗ ERROR: %s - %s\n", test_name, result.error);
+                    if (result.output) {
+                        printf("Process output:\n%s\n", result.output);
+                    }
+                    this.test_results.failed++;
+                    return;
+                }
+
+                // Process and compare output
+                let actual_output = trim(result.output);
+                expected_output = trim(expected_output);
+
+                if (actual_output == expected_output) {
+                    report_test_pass(test_name);
+                    this.test_results.passed++;
+                } else {
+                    report_test_fail(test_name);
+                    create_diff_files(test_name, null, expected_output, actual_output);
+                    this.test_results.failed++;
+                }
+
+            } catch (e) {
+                report_test_error(test_name, null, e);
+                this.test_results.failed++;
             }
 
             printf("\n");
@@ -207,34 +249,24 @@ export function FullIntegrationTestFramework(test_title, test_dir) {
             printf("Running full test: %s (board: %s)\n", test_name, board_name);
 
             try {
-                // Load expected output using shared utility (simpler path handling)
+                // Load expected output using shared utility
                 let test_files = load_test_files(this.test_dir, input_file, expected_file, board_name);
                 let expected_output = test_files.expected_output;
 
-                // Use separate process to avoid file descriptor leaks
-                // Combine stdout and stderr to see all output including errors
-                let cmd = sprintf("ucode helpers/run-single-integration-test.uc '%s' '%s' '%s' '%s' 2>&1",
-                                this.test_dir, input_file, board_name, expected_file);
+                // Run test via generic process runner
+                let result = run_test_via_process("integration", "templates/toplevel.uc", this.test_dir, input_file, test_name, board_name);
 
-                let proc = fs.popen(cmd);
-                if (!proc) {
-                    printf("✗ ERROR: %s (%s) - Failed to start test process\n", test_name, board_name);
-                    this.test_results.failed++;
-                    return;
-                }
-
-                let actual_output = proc.read("all");
-                let exit_code = proc.close();
-
-                if (exit_code !== 0) {
-                    printf("✗ ERROR: %s (%s) - Process failed with code %d\n", test_name, board_name, exit_code);
-                    printf("Process output:\n%s\n", actual_output);
+                if (!result.success) {
+                    printf("✗ ERROR: %s (%s) - %s\n", test_name, board_name, result.error);
+                    if (result.output) {
+                        printf("Process output:\n%s\n", result.output);
+                    }
                     this.test_results.failed++;
                     return;
                 }
 
                 // Compare output using normalized comparison
-                actual_output = trim(actual_output);
+                let actual_output = trim(result.output);
                 expected_output = trim(expected_output);
 
                 if (actual_output == expected_output) {
