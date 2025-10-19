@@ -847,10 +847,6 @@
 		if (ssid.quality_thresholds.probe_request_rssi)
 			uci_set_number(output, `wireless.${section}.dynamic_probe_resp`, 1);
 
-		uci_named_section(output, `usteer2.${section}`, 'ssid');
-		uci_set_number(output, `usteer2.${section}.client_kick_rssi`, ssid.quality_thresholds.client_kick_rssi);
-		uci_set_number(output, `usteer2.${section}.client_kick_ban_time`, ssid.quality_thresholds.client_kick_ban_time);
-
 		return uci_output(output);
 	}
 
