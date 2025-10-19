@@ -1,16 +1,58 @@
-description:
-  Define the behaviour of the periodic wifi scanning interface.
+description: |
+  Configure periodic WiFi environment scanning for site surveys and RF 
+  analysis. This metric enables automatic scanning of surrounding wireless 
+  networks to collect information about neighboring access points, channel 
+  utilization, and radio environment conditions. The collected scan data 
+  helps with channel optimization, interference analysis, and network planning.
 type: object
 properties:
   interval:
-    description:
-      The periodicity at which the scan shall be performed.
+    description: |
+      The scanning interval in seconds that defines how frequently WiFi 
+      environment scans are performed. This controls the balance between 
+      maintaining current RF awareness and minimizing scanning overhead 
+      on the radio interfaces.
+      
+      Typical values range from 60 seconds (1 minute) for detailed monitoring 
+      in dynamic environments to 600 seconds (10 minutes) or more for stable 
+      environments. Frequent scanning provides better RF intelligence but may 
+      impact client performance during scan periods.
     type: integer
+    examples: [60, 120, 300, 600]
   verbose:
-    description:
-      Add capabilities, v/ht_oper, ... to the resulting scan info.
+    description: |
+      Enable collection of detailed capability and operational information 
+      from discovered access points. When enabled, the scan results include 
+      additional technical details beyond basic network identification.
+      
+      Verbose information includes:
+      - Device capabilities and supported features
+      - HT (High Throughput) and VHT (Very High Throughput) operation parameters
+      - Channel width and MIMO configuration details
+      - Advanced 802.11 feature support
+      
+      This detailed information is valuable for comprehensive RF analysis 
+      and competitive intelligence but increases data volume and processing 
+      overhead. Defaults to false.
     type: boolean
+    default: false
   information-elements:
-    description:
-      Add all IEs to the resulting scan info.
+    description: |
+      Include raw Information Elements (IEs) from beacon and probe response 
+      frames in the scan results. Information Elements contain detailed 
+      technical parameters and vendor-specific data from each discovered 
+      access point.
+      
+      When enabled, the complete IE data provides the most comprehensive 
+      view of neighboring networks, including vendor extensions, advanced 
+      features, and non-standard implementations. This is particularly 
+      useful for:
+      - Deep RF analysis and troubleshooting
+      - Vendor identification and feature detection  
+      - Security analysis and compliance monitoring
+      - Research and development purposes
+      
+      Note that raw IE data significantly increases the size of scan results 
+      and should be used judiciously. Defaults to false.
     type: boolean
+    default: false
