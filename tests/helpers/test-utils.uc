@@ -353,3 +353,40 @@ export function format_test_suite_results(test_results, suite_name) {
 		suite_name: suite_name
 	};
 };
+
+// Generic test execution via external process - eliminates duplication between unit and integration
+// Supports both unit tests (with template path) and integration tests (using toplevel.uc)
+export function run_test_via_process(test_type, template_path, test_dir, input_file, test_name, board_name) {
+	// Build command based on test type
+	let cmd;
+	if (test_type == "integration") {
+		// Integration test with board and toplevel.uc
+		cmd = sprintf("ucode helpers/run-single-test.uc 'integration' 'templates/toplevel.uc' '%s' '%s' '%s' '%s' 2>&1",
+					test_dir, input_file, board_name, "unused");
+	} else {
+		// Unit test with specific template
+		cmd = sprintf("ucode helpers/run-single-test.uc 'unit' '%s' '%s' '%s' 2>&1",
+					template_path, test_dir, input_file);
+	}
+
+	// Execute process
+	let proc = fs.popen(cmd);
+	if (!proc) {
+		return {
+			success: false,
+			error: "Failed to start test process",
+			output: null,
+			exit_code: -1
+		};
+	}
+
+	let actual_output = proc.read("all");
+	let exit_code = proc.close();
+
+	return {
+		success: exit_code === 0,
+		error: exit_code !== 0 ? sprintf("Process failed with code %d", exit_code) : null,
+		output: actual_output,
+		exit_code: exit_code
+	};
+};
