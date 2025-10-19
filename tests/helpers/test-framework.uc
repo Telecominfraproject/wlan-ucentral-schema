@@ -146,3 +146,16 @@ export function create_metric_test_cases(metric_name, test_names) {
     }
     return test_cases;
 };
+
+// Helper function to create standard base template test cases pattern
+export function create_base_test_cases(template_name, test_names) {
+    let test_cases = [];
+    for (let test_name in test_names) {
+        push(test_cases, {
+            name: test_name,
+            input: sprintf("input/%s.json", test_name),
+            output: sprintf("output/%s.uci", test_name)
+        });
+    }
+    return test_cases;
+};

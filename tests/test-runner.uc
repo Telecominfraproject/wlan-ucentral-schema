@@ -36,6 +36,9 @@ import { run_tests as telemetry_tests } from './unit/metrics/telemetry/test-tele
 import { run_tests as wifi_frames_tests } from './unit/metrics/wifi_frames/test-wifi_frames.uc';
 import { run_tests as wifi_scan_tests } from './unit/metrics/wifi_scan/test-wifi_scan.uc';
 
+// Base templates
+// (Base template imports will be added here as they are created)
+
 function repeat(str, count) {
 	let result = "";
 	for (let i = 0; i < count; i++) {
@@ -85,7 +88,10 @@ function main() {
 		{ name: "Statistics Metrics", run_tests: statistics_tests },
 		{ name: "Telemetry Metrics", run_tests: telemetry_tests },
 		{ name: "WiFi Frames Metrics", run_tests: wifi_frames_tests },
-		{ name: "WiFi Scan Metrics", run_tests: wifi_scan_tests }
+		{ name: "WiFi Scan Metrics", run_tests: wifi_scan_tests },
+		
+		// Base templates
+		// (Base template tests will be added here as they are created)
 	];
 	
 	printf("Found %d test suites\n\n", length(test_suites));
