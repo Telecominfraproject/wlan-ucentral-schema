@@ -9,8 +9,8 @@ add_list system.ntp.server='pool.ntp.org'
 
 ### generate NTP firewall rules
 add firewall rule
-set firewall.@rule[-1].name='Allow-ntp-management'
-set firewall.@rule[-1].src='management'
+set firewall.@rule[-1].name='Allow-ntp-down0v0'
+set firewall.@rule[-1].src='down0v0'
 set firewall.@rule[-1].dest_port='123'
 set firewall.@rule[-1].proto='udp'
 set firewall.@rule[-1].target='ACCEPT'

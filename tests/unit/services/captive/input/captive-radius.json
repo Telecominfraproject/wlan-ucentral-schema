@@ -41,10 +41,5 @@
       "acct-interval": 600,
       "walled-garden-ipaddr": ["192.168.100.1"]
     }
-  },
-  "template_vars": {
-    "state": {
-      "services": {}
-    }
   }
 }

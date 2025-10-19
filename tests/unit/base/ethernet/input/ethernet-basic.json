@@ -1,8 +1,6 @@
 {
-	"template_vars": {
-		"ports": {
-			"select_ports": ["LAN1", "LAN2"],
-			"enabled": true
-		}
+	"ports": {
+		"select_ports": ["LAN1", "LAN2"],
+		"enabled": true
 	}
 }

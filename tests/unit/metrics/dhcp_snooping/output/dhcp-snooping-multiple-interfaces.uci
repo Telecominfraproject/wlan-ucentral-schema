@@ -1,3 +1,4 @@
+
 ### generate DHCP snooping event configuration
 set event.dhcp=event
 set event.dhcp.type='dhcp'
@@ -5,10 +6,10 @@ set event.dhcp.filter='*'
 
 ### generate DHCP snooping device configuration
 add dhcpsnoop device
-set dhcpsnoop.@device[-1].name='downstream1'
+set dhcpsnoop.@device[-1].name='down0v0'
 set dhcpsnoop.@device[-1].ingress=1
 set dhcpsnoop.@device[-1].egress=1
 add dhcpsnoop device
-set dhcpsnoop.@device[-1].name='downstream2'
+set dhcpsnoop.@device[-1].name='down1v0'
 set dhcpsnoop.@device[-1].ingress=1
 set dhcpsnoop.@device[-1].egress=1

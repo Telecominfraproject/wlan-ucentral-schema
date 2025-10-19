@@ -1,5 +1,5 @@
 {
-  "template_vars": {
+  "services": {
     "online_check": {
       "download_hosts": ["www.google.com", "www.cloudflare.com"],
       "check_interval": 60,

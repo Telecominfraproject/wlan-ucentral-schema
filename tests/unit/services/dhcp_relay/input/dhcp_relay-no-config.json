@@ -18,10 +18,5 @@
   ],
   "services": {
     "dhcp-relay": true
-  },
-  "template_vars": {
-    "state": {
-      "services": {}
-    }
   }
 }

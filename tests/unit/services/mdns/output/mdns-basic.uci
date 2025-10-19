@@ -3,19 +3,19 @@
 ### generate MDNS service configuration
 add umdns umdns
 set umdns.@umdns[-1].enable=1
-add_list umdns.@umdns[-1].network='upstream'
-add_list umdns.@umdns[-1].network='downstream'
+add_list umdns.@umdns[-1].network='up0v0'
+add_list umdns.@umdns[-1].network='down1v0'
 
 ### generate MDNS firewall rules
 add firewall rule
-set firewall.@rule[-1].name='Allow-mdns-upstream'
-set firewall.@rule[-1].src='upstream'
+set firewall.@rule[-1].name='Allow-mdns-up0v0'
+set firewall.@rule[-1].src='up0v0'
 set firewall.@rule[-1].dest_port='5353'
 set firewall.@rule[-1].proto='udp'
 set firewall.@rule[-1].target='ACCEPT'
 add firewall rule
-set firewall.@rule[-1].name='Allow-mdns-downstream'
-set firewall.@rule[-1].src='downstream'
+set firewall.@rule[-1].name='Allow-mdns-down1v0'
+set firewall.@rule[-1].src='down1v0'
 set firewall.@rule[-1].dest_port='5353'
 set firewall.@rule[-1].proto='udp'
 set firewall.@rule[-1].target='ACCEPT'

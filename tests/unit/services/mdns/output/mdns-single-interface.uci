@@ -3,12 +3,12 @@
 ### generate MDNS service configuration
 add umdns umdns
 set umdns.@umdns[-1].enable=1
-add_list umdns.@umdns[-1].network='lan'
+add_list umdns.@umdns[-1].network='down0v0'
 
 ### generate MDNS firewall rules
 add firewall rule
-set firewall.@rule[-1].name='Allow-mdns-lan'
-set firewall.@rule[-1].src='lan'
+set firewall.@rule[-1].name='Allow-mdns-down0v0'
+set firewall.@rule[-1].src='down0v0'
 set firewall.@rule[-1].dest_port='5353'
 set firewall.@rule[-1].proto='udp'
 set firewall.@rule[-1].target='ACCEPT'

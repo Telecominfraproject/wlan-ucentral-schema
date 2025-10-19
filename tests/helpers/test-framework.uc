@@ -6,6 +6,25 @@ import * as fs from 'fs';
 import { create_test_context, create_board_test_context, create_full_test_context } from './mock-renderer.uc';
 import { validate } from './schemareader.uc';
 
+// Mock toplevel initialization logic - moved from mock-renderer.uc
+function mock_toplevel(state) {
+    // Initialize interfaces array if it doesn't exist
+    if (!state.interfaces) {
+        state.interfaces = [];
+    }
+
+    // Initialize VLAN properties like toplevel.uc does
+    let vlans = [];
+    for (let i, interface in state.interfaces) {
+        interface.index = i; // Set interface index
+
+        // Note: We'll rely on the real ethernet mock for VLAN logic
+        if (!interface.vlan) {
+            interface.vlan = { id: 0 }; // Default VLAN like toplevel.uc
+        }
+    }
+}
+
 // Test framework class to consolidate common testing logic
 export function TestFramework(template_path, test_title, test_dir) {
     return {
@@ -33,10 +52,13 @@ export function TestFramework(template_path, test_title, test_dir) {
                 if (expected_output === null || expected_output === false) {
                     expected_output = "";
                 }
-                
+              
+                // Initialize state like toplevel.uc does
+		mock_toplevel(test_data);
+
                 // Create test context (mock events already included by default)
                 let context = create_test_context(test_data);
-                
+
                 // Add template vars to context
                 for (let key, value in test_data.template_vars || {}) {
                     context[key] = value;
@@ -55,8 +77,8 @@ export function TestFramework(template_path, test_title, test_dir) {
                     output += sprintf("\n-----%s-----\n%s\n--------\n", path, file_info.content);
                 }
                 
-                // Write debug output to /tmp/ucentral-test/
-                context.files.write_debug_output(test_name, output);
+                // Write debug output to /tmp/ucentral-test-output/
+                context.files.write_debug_output(this.test_dir + "/" + test_name, output);
                 
                 // Normalize whitespace for comparison
                 output = trim(output);
@@ -68,8 +90,26 @@ export function TestFramework(template_path, test_title, test_dir) {
                     this.test_results.passed++;
                 } else {
                     printf("✗ FAIL: %s\n", test_name);
-                    printf("Expected:\n%s\n", expected_output);
-                    printf("Got:\n%s\n", output);
+                    // Create diff directory
+                    try { fs.mkdir("/tmp/ucentral-test-diff"); } catch (e) {}
+                    
+                    // Write expected and actual to temp files for diff
+                    let temp_expected = "/tmp/ucentral-test-diff/expected_" + test_name + ".uci";
+                    let temp_actual = "/tmp/ucentral-test-diff/actual_" + test_name + ".uci";
+                    let fd_exp = fs.open(temp_expected, "w");
+                    if (fd_exp) { fd_exp.write(expected_output); fd_exp.close(); }
+                    let fd_act = fs.open(temp_actual, "w");
+                    if (fd_act) { fd_act.write(output); fd_act.close(); }
+                    
+                    // Show diff
+                    let diff_cmd = sprintf("diff -u %s %s", temp_expected, temp_actual);
+                    let diff_output = fs.popen(diff_cmd);
+                    if (diff_output) {
+                        let diff_result = diff_output.read("all");
+                        diff_output.close();
+                        printf("Diff:\n%s\n", diff_result);
+                    }
+                    
                     this.test_results.failed++;
                     push(this.test_results.errors, {
                         test: test_name,
@@ -176,24 +216,24 @@ export function IntegrationTestFramework(template_path, test_title, test_dir) {
         
         run_board_test: function(test_name, input_file, board_name, expected_file) {
             printf("Running test: %s (board: %s)\n", test_name, board_name);
-            
+
             try {
                 let input_path = sprintf("%s/%s", this.test_dir, input_file);
                 let test_data = json(fs.readfile(input_path));
-                
+
                 let board_dir = sprintf("boards/%s", board_name);
                 let board_data = json(fs.readfile(sprintf("%s/board.json", board_dir)));
                 let capabilities = json(fs.readfile(sprintf("%s/capabilities.json", board_dir)));
-                
+
                 let output_path = sprintf("%s/output/%s/%s", this.test_dir, board_name, expected_file);
                 let expected_output = fs.readfile(output_path);
-                
+
                 if (expected_output === null || expected_output === false) {
                     expected_output = "";
                 }
-                
+
                 let context = create_board_test_context(test_data, board_data, capabilities);
-                
+
                 for (let key, value in test_data.template_vars || {}) {
                     context[key] = value;
                 }
@@ -219,8 +259,26 @@ export function IntegrationTestFramework(template_path, test_title, test_dir) {
                     this.test_results.passed++;
                 } else {
                     printf("✗ FAIL: %s (%s)\n", test_name, board_name);
-                    printf("Expected:\n%s\n", expected_output);
-                    printf("Got:\n%s\n", output);
+                    // Create diff directory
+                    try { fs.mkdir("/tmp/ucentral-test-diff"); } catch (e) {}
+                    
+                    // Write expected and actual to temp files for diff
+                    let temp_expected = "/tmp/ucentral-test-diff/expected_" + test_name + "-" + board_name + ".uci";
+                    let temp_actual = "/tmp/ucentral-test-diff/actual_" + test_name + "-" + board_name + ".uci";
+                    let fd_exp = fs.open(temp_expected, "w");
+                    if (fd_exp) { fd_exp.write(expected_output); fd_exp.close(); }
+                    let fd_act = fs.open(temp_actual, "w");
+                    if (fd_act) { fd_act.write(output); fd_act.close(); }
+                    
+                    // Show diff
+                    let diff_cmd = sprintf("diff -u %s %s", temp_expected, temp_actual);
+                    let diff_output = fs.popen(diff_cmd);
+                    if (diff_output) {
+                        let diff_result = diff_output.read("all");
+                        diff_output.close();
+                        printf("Diff:\n%s\n", diff_result);
+                    }
+                    
                     this.test_results.failed++;
                 }
             } catch (e) {
@@ -286,7 +344,7 @@ export function FullIntegrationTestFramework(test_title, test_dir) {
                 // Real schema validation
                 let logs = [];
                 let state = validate(config_json, logs);
-                
+
                 if (!state) {
                     printf("✗ ERROR: Schema validation failed for %s\n", test_name);
                     this.test_results.failed++;
@@ -296,7 +354,10 @@ export function FullIntegrationTestFramework(test_title, test_dir) {
                     }
                     return;
                 }
-                
+
+                // Initialize state like toplevel.uc does
+                mock_toplevel(state);
+
                 // Create enhanced context for toplevel.uc
                 let context = create_full_test_context(state, board_data, capabilities);
                 
@@ -331,8 +392,26 @@ export function FullIntegrationTestFramework(test_title, test_dir) {
                     this.test_results.passed++;
                 } else {
                     printf("✗ FAIL: %s (%s)\n", test_name, board_name);
-                    printf("Expected:\n%s\n", expected_output);
-                    printf("Got:\n%s\n", output);
+                    // Create diff directory
+                    try { fs.mkdir("/tmp/ucentral-test-diff"); } catch (e) {}
+                    
+                    // Write expected and actual to temp files for diff
+                    let temp_expected = "/tmp/ucentral-test-diff/expected_" + test_name + "-" + board_name + ".uci";
+                    let temp_actual = "/tmp/ucentral-test-diff/actual_" + test_name + "-" + board_name + ".uci";
+                    let fd_exp = fs.open(temp_expected, "w");
+                    if (fd_exp) { fd_exp.write(expected_output); fd_exp.close(); }
+                    let fd_act = fs.open(temp_actual, "w");
+                    if (fd_act) { fd_act.write(output); fd_act.close(); }
+                    
+                    // Show diff
+                    let diff_cmd = sprintf("diff -u %s %s", temp_expected, temp_actual);
+                    let diff_output = fs.popen(diff_cmd);
+                    if (diff_output) {
+                        let diff_result = diff_output.read("all");
+                        diff_output.close();
+                        printf("Diff:\n%s\n", diff_result);
+                    }
+                    
                     this.test_results.failed++;
                 }
             } catch (e) {

@@ -1,5 +1,5 @@
 {
-  "template_vars": {
+  "services": {
     "log": {
       "host": "syslog.example.com",
       "port": "1514",
@@ -8,7 +8,5 @@
       "priority": "info"
     }
   },
-  "state": {
-    "unit": {}
-  }
+  "unit": {}
 }
