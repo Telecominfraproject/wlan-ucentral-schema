@@ -1,15 +1,24 @@
-description:
-  This section can be used to configure a GPS dongle
+description: |
+  Configure GPS dongle functionality for location services and time synchronization.
+  This service enables the system to receive GPS coordinates and optionally synchronize 
+  the system clock with GPS time. Requires a compatible GPS dongle connected via serial.
 type: object
 properties:
   adjust-time:
-    description:
-      Adjust the systems clock upon a successful GPS lock.
+    description: |
+      Enable automatic system clock synchronization when GPS achieves a valid position fix.
+      When enabled, the system will update its internal clock to match GPS time, providing
+      accurate timekeeping even without internet connectivity. This is useful for precise
+      timing requirements or when NTP servers are unavailable.
     type: boolean
     default: false
   baud-rate:
-    description:
-      The baudrate used by the attached GPS dongle
+    description: |
+      Serial communication baud rate for the GPS dongle. Must match the baud rate
+      configured on the GPS device to establish proper communication. Common rates
+      vary by GPS module manufacturer - consult device documentation for supported
+      rates. Most consumer GPS modules default to 9600 baud.
+      Example: For u-blox modules, 9600 is typical; for some SiRF modules, 4800 is common.
     type: integer
     enum:
     - 2400
