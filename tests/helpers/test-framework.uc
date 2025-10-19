@@ -79,6 +79,9 @@ export function TestFramework(template_path, test_title, test_dir) {
                 }
             } catch (e) {
                 printf("✗ ERROR: %s - %s\n", test_name, e);
+                if (e.stacktrace && e.stacktrace[0]?.context) {
+                    printf("  Error: %s\n", e.stacktrace[0].context);
+                }
                 this.test_results.failed++;
                 push(this.test_results.errors, {
                     test: test_name,
@@ -222,6 +225,9 @@ export function IntegrationTestFramework(template_path, test_title, test_dir) {
                 }
             } catch (e) {
                 printf("✗ ERROR: %s (%s) - %s\n", test_name, board_name, e);
+                if (e.stacktrace && e.stacktrace[0]?.context) {
+                    printf("  Error: %s\n", e.stacktrace[0].context);
+                }
                 this.test_results.failed++;
             }
             
@@ -331,6 +337,9 @@ export function FullIntegrationTestFramework(test_title, test_dir) {
                 }
             } catch (e) {
                 printf("✗ ERROR: %s (%s) - %s\n", test_name, board_name, e);
+                if (e.stacktrace && e.stacktrace[0]?.context) {
+                    printf("  Error: %s\n", e.stacktrace[0].context);
+                }
                 this.test_results.failed++;
             }
             
