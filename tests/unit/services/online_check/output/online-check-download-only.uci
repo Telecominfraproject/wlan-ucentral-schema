@@ -1,0 +1,7 @@
+# Online check service configuration
+add onlinecheck config
+set onlinecheck.@config[-1].check_interval='60'
+set onlinecheck.@config[-1].check_threshold='1'
+add_list onlinecheck.@config[-1].action='wifi'
+add_list onlinecheck.@config[-1].download_hosts='www.google.com'
+add_list onlinecheck.@config[-1].download_hosts='www.cloudflare.com'

@@ -1,0 +1,11 @@
+{
+  "template_vars": {
+    "online_check": {
+      "ping_hosts": ["8.8.8.8"],
+      "download_hosts": ["www.example.org"],
+      "check_interval": 120,
+      "check_threshold": 3,
+      "action": ["leds"]
+    }
+  }
+}
