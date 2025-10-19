@@ -169,9 +169,15 @@
 		}
 	}
 
+	// Variables declaration (declare early for function access)
+	let certificates;
+
 	// Setup and validation
 	if (PURPOSE_CONFIGS[ssid.purpose])
 		ssid = PURPOSE_CONFIGS[ssid.purpose];
+
+	// Early variable assignments needed for validation
+	certificates = normalize_certificates();
 
 	let phys = [];
 	for (let band in ssid.wifi_bands) {
@@ -1008,7 +1014,6 @@
 
 	// Main logic and variable initialization
 	let bss_mode = normalize_bss_mode();
-	let certificates = normalize_certificates();
 	let radius_gw_proxy = has_radius_gw_proxy();
 
 	// Normalize configurations
