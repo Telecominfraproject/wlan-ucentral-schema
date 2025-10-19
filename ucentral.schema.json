@@ -2615,35 +2615,6 @@
                 }
             }
         },
-        "service.rtty": {
-            "type": "object",
-            "properties": {
-                "host": {
-                    "type": "string",
-                    "format": "uc-host",
-                    "examples": [
-                        "192.168.1.10"
-                    ]
-                },
-                "port": {
-                    "type": "integer",
-                    "maximum": 65535,
-                    "default": 5912
-                },
-                "token": {
-                    "type": "string",
-                    "maxLength": 32,
-                    "minLength": 32,
-                    "examples": [
-                        "01234567890123456789012345678901"
-                    ]
-                },
-                "mutual-tls": {
-                    "type": "boolean",
-                    "default": true
-                }
-            }
-        },
         "service.log": {
             "type": "object",
             "properties": {
@@ -3850,9 +3821,6 @@
                 },
                 "mdns": {
                     "$ref": "#/$defs/service.mdns"
-                },
-                "rtty": {
-                    "$ref": "#/$defs/service.rtty"
                 },
                 "log": {
                     "$ref": "#/$defs/service.log"

@@ -7040,90 +7040,6 @@ function instantiateServiceMdns(location, value, errors) {
 	return value;
 }
 
-function instantiateServiceRtty(location, value, errors) {
-	if (type(value) == "object") {
-		let obj = {};
-
-		function parseHost(location, value, errors) {
-			if (type(value) == "string") {
-				if (!matchUcHost(value))
-					push(errors, [ location, "must be a valid hostname or IP address" ]);
-
-			}
-
-			if (type(value) != "string")
-				push(errors, [ location, "must be of type string" ]);
-
-			return value;
-		}
-
-		if (exists(value, "host")) {
-			obj.host = parseHost(location + "/host", value["host"], errors);
-		}
-
-		function parsePort(location, value, errors) {
-			if (type(value) in [ "int", "double" ]) {
-				if (value > 65535)
-					push(errors, [ location, "must be lower than or equal to 65535" ]);
-
-			}
-
-			if (type(value) != "int")
-				push(errors, [ location, "must be of type integer" ]);
-
-			return value;
-		}
-
-		if (exists(value, "port")) {
-			obj.port = parsePort(location + "/port", value["port"], errors);
-		}
-		else {
-			obj.port = 5912;
-		}
-
-		function parseToken(location, value, errors) {
-			if (type(value) == "string") {
-				if (length(value) > 32)
-					push(errors, [ location, "must be at most 32 characters long" ]);
-
-				if (length(value) < 32)
-					push(errors, [ location, "must be at least 32 characters long" ]);
-
-			}
-
-			if (type(value) != "string")
-				push(errors, [ location, "must be of type string" ]);
-
-			return value;
-		}
-
-		if (exists(value, "token")) {
-			obj.token = parseToken(location + "/token", value["token"], errors);
-		}
-
-		function parseMutualTls(location, value, errors) {
-			if (type(value) != "bool")
-				push(errors, [ location, "must be of type boolean" ]);
-
-			return value;
-		}
-
-		if (exists(value, "mutual-tls")) {
-			obj.mutual_tls = parseMutualTls(location + "/mutual-tls", value["mutual-tls"], errors);
-		}
-		else {
-			obj.mutual_tls = true;
-		}
-
-		return obj;
-	}
-
-	if (type(value) != "object")
-		push(errors, [ location, "must be of type object" ]);
-
-	return value;
-}
-
 function instantiateServiceLog(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
@@ -10489,10 +10405,6 @@ function instantiateService(location, value, errors) {
 
 		if (exists(value, "mdns")) {
 			obj.mdns = instantiateServiceMdns(location + "/mdns", value["mdns"], errors);
-		}
-
-		if (exists(value, "rtty")) {
-			obj.rtty = instantiateServiceRtty(location + "/rtty", value["rtty"], errors);
 		}
 
 		if (exists(value, "log")) {
