@@ -10872,6 +10872,9 @@ function instantiateMetricsWifiScan(location, value, errors) {
 		if (exists(value, "verbose")) {
 			obj.verbose = parseVerbose(location + "/verbose", value["verbose"], errors);
 		}
+		else {
+			obj.verbose = false;
+		}
 
 		function parseInformationElements(location, value, errors) {
 			if (type(value) != "bool")
@@ -10882,6 +10885,9 @@ function instantiateMetricsWifiScan(location, value, errors) {
 
 		if (exists(value, "information-elements")) {
 			obj.information_elements = parseInformationElements(location + "/information-elements", value["information-elements"], errors);
+		}
+		else {
+			obj.information_elements = false;
 		}
 
 		return obj;
@@ -11225,11 +11231,9 @@ function newUCentralState(location, value, errors) {
 	return value;
 }
 
-return {
-	validate: (value, errors) => {
-		let err = [];
-		let res = newUCentralState("", value, err);
-		if (errors) push(errors, ...map(err, e => "[E] (In " + e[0] + ") Value " + e[1]));
-		return length(err) ? null : res;
-	}
+export function validate(value, errors) {
+	let err = [];
+	let res = newUCentralState("", value, err);
+	if (errors) push(errors, ...map(err, e => "[E] (In " + e[0] + ") Value " + e[1]));
+	return length(err) ? null : res;
 };
