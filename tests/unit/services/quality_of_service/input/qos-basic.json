@@ -1,0 +1,55 @@
+{
+  "uuid": "12345678-1234-1234-1234-123456789012",
+  "interfaces": [
+    {
+      "name": "upstream",
+      "role": "upstream",
+      "ethernet": [
+        {
+          "select-ports": ["WAN"]
+        }
+      ],
+      "ipv4": {
+        "addressing": "dynamic"
+      }
+    }
+  ],
+  "services": {
+    "quality_of_service": {
+      "select_ports": ["WAN"],
+      "bandwidth_up": 100,
+      "bandwidth_down": 500,
+      "bulk_detection": {
+        "dscp": "CS1",
+        "packets_per_second": 1000
+      },
+      "classifier": [
+        {
+          "dscp": "AF31",
+          "ports": [
+            {
+              "protocol": "tcp",
+              "port": 80,
+              "reclassify": true
+            },
+            {
+              "protocol": "tcp", 
+              "port": 443,
+              "reclassify": true
+            }
+          ]
+        },
+        {
+          "dscp": "EF",
+          "dns": [
+            {
+              "fqdn": "voip.example.com",
+              "suffix_matching": false,
+              "reclassify": true
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
