@@ -1,0 +1,10 @@
+{
+  "template_vars": {
+    "online_check": {
+      "ping_hosts": ["8.8.8.8", "1.1.1.1"],
+      "check_interval": 30,
+      "check_threshold": 2,
+      "action": ["wifi", "leds"]
+    }
+  }
+}
