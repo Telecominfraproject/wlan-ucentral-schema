@@ -1,3 +1,4 @@
+
 ### generate health monitoring configuration
 set state.health.interval=120
 set state.health.dhcp_local=1

@@ -9,7 +9,11 @@
   ],
   "metrics": {
     "realtime": {
-      "types": ["client.associate", "wifi.start", "dhcp.ack"]
+      "types": [
+        "client.associate",
+        "wifi.start",
+        "dhcp.ack"
+      ]
     }
   }
 }

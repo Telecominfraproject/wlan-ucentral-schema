@@ -1,13 +1,17 @@
 {
-  "uuid": "12345678-1234-1234-1234-123456789012",
+  "uuid": 1,
   "interfaces": [
     {
-      "name": "upstream",
+      "name": "WAN",
       "role": "upstream",
-      "services": ["mdns"],
+      "services": [
+        "mdns"
+      ],
       "ethernet": [
         {
-          "select-ports": ["WAN"]
+          "select-ports": [
+            "WAN"
+          ]
         }
       ],
       "ipv4": {
@@ -15,12 +19,16 @@
       }
     },
     {
-      "name": "downstream", 
+      "name": "downstream",
       "role": "downstream",
-      "services": ["mdns"],
+      "services": [
+        "mdns"
+      ],
       "ethernet": [
         {
-          "select-ports": ["LAN*"]
+          "select-ports": [
+            "LAN*"
+          ]
         }
       ],
       "ipv4": {

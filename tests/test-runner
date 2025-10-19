@@ -151,7 +151,7 @@ function copy_unit_outputs() {
 	printf("Copying unit test outputs...\n");
 
 	let copied = 0;
-	for (let debug_file in fs.glob("/tmp/ucentral-test-output/unit/**/*.uci")) {
+	for (let debug_file in fs.glob("/tmp/ucentral-test-output/unit/*/*/*.uci")) {
 		// Extract test path: /tmp/ucentral-test-output/unit/services/ssh/ssh-basic.uci
 		// Target path: unit/services/ssh/output/ssh-basic.uci
 

@@ -1,12 +1,14 @@
 {
-  "uuid": "12345678-1234-1234-1234-123456789012",
+  "uuid": 1,
   "interfaces": [
     {
-      "name": "upstream",
+      "name": "WAN",
       "role": "upstream",
       "ethernet": [
         {
-          "select-ports": ["WAN"]
+          "select-ports": [
+            "WAN"
+          ]
         }
       ],
       "ipv4": {
@@ -16,7 +18,9 @@
   ],
   "services": {
     "quality_of_service": {
-      "select_ports": ["WAN"],
+      "select_ports": [
+        "WAN"
+      ],
       "bandwidth_up": 100,
       "bandwidth_down": 500,
       "bulk_detection": {
@@ -33,7 +37,7 @@
               "reclassify": true
             },
             {
-              "protocol": "tcp", 
+              "protocol": "tcp",
               "port": 443,
               "reclassify": true
             }

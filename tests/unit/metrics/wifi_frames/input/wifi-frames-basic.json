@@ -9,7 +9,11 @@
   ],
   "metrics": {
     "wifi_frames": {
-      "filters": ["probe", "auth", "assoc"]
+      "filters": [
+        "probe",
+        "auth",
+        "assoc"
+      ]
     }
   }
 }
