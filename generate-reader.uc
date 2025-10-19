@@ -588,13 +588,11 @@ let GeneratorProto = {
 
 		this.emit_spec_validation_function(indent, 'new', "UCentralState", this.schema);
 
-		this.print(indent, 'return {');
-		this.print(indent, '	validate: (value, errors) => {');
-		this.print(indent, '		let err = [];');
-		this.print(indent, '		let res = newUCentralState("", value, err);');
-		this.print(indent, '		if (errors) push(errors, ...map(err, e => "[E] (In " + e[0] + ") Value " + e[1]));');
-		this.print(indent, '		return length(err) ? null : res;');
-		this.print(indent, '	}');
+		this.print(indent, 'export function validate(value, errors) {');
+		this.print(indent, '	let err = [];');
+		this.print(indent, '	let res = newUCentralState("", value, err);');
+		this.print(indent, '	if (errors) push(errors, ...map(err, e => "[E] (In " + e[0] + ") Value " + e[1]));');
+		this.print(indent, '	return length(err) ? null : res;');
 		this.print(indent, '};');
 	}
 };
