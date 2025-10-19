@@ -330,106 +330,74 @@ export function FullIntegrationTestFramework(test_title, test_dir) {
         
         run_full_test: function(test_name, input_file, board_name, expected_file) {
             printf("Running full test: %s (board: %s)\n", test_name, board_name);
-            
+
             try {
-                // Load complete configuration from examples
-                let input_path = sprintf("%s/%s", this.test_dir, input_file);
-                let config_json = json(fs.readfile(input_path));
-                
-                // Load board data
-                let board_dir = sprintf("boards/%s", board_name);
-                let board_data = json(fs.readfile(sprintf("%s/board.json", board_dir)));
-                let capabilities = json(fs.readfile(sprintf("%s/capabilities.json", board_dir)));
-                
-                // Real schema validation
-                let logs = [];
-                let state = validate(config_json, logs);
-
-                if (!state) {
-                    printf("✗ ERROR: Schema validation failed for %s\n", test_name);
-                    this.test_results.failed++;
-                    printf("Validation errors:\n");
-                    for (let log in logs) {
-                        printf("  %s\n", log);
-                    }
-                    return;
-                }
-
-                // Initialize state like toplevel.uc does
-                mock_toplevel(state);
-
-                // Create enhanced context for toplevel.uc
-                let context = create_full_test_context(state, board_data, capabilities, board_name);
-                
-                // Render with toplevel.uc (full configuration)
-                let abs_path = fs.realpath("../renderer/templates/toplevel.uc");
-                let output = render(abs_path, context);
-                
-                // Load expected output
+                // Load expected output for comparison
                 let output_path = sprintf("%s/output/%s/%s", this.test_dir, board_name, expected_file);
                 let expected_output = fs.readfile(output_path);
-                
+
                 if (expected_output === null || expected_output === false) {
                     expected_output = "";
                 }
-                
-                // Add generated files to output
-                let generated_files = context.files.get_generated_files();
-                for (let path, file_info in generated_files) {
-                    output += sprintf("\n-----%s-----\n%s\n--------\n", path, file_info.content);
+
+                // Use separate process to avoid file descriptor leaks
+                // Combine stdout and stderr to see all output including errors
+                let cmd = sprintf("ucode helpers/run-single-integration-test.uc '%s' '%s' '%s' '%s' 2>&1",
+                                this.test_dir, input_file, board_name, expected_file);
+
+                let proc = fs.popen(cmd);
+                if (!proc) {
+                    printf("✗ ERROR: %s (%s) - Failed to start test process\n", test_name, board_name);
+                    this.test_results.failed++;
+                    return;
                 }
-                
-                // Write debug output to /tmp/ucentral-test/
-                context.files.write_debug_output(test_name + "-" + board_name, output);
-                
-                // Normalize whitespace for comparison
-                output = trim(output);
-                expected_output = trim(expected_output);
-                
+
+                let actual_output = proc.read("all");
+                let exit_code = proc.close();
+
+                if (exit_code !== 0) {
+                    printf("✗ ERROR: %s (%s) - Process failed with code %d\n", test_name, board_name, exit_code);
+                    printf("Process output:\n%s\n", actual_output);
+                    this.test_results.failed++;
+                    return;
+                }
+
                 // Compare output
-                if (output == expected_output) {
+                actual_output = trim(actual_output);
+                expected_output = trim(expected_output);
+
+                if (actual_output == expected_output) {
                     printf("✓ PASS: %s (%s)\n", test_name, board_name);
                     this.test_results.passed++;
                 } else {
                     printf("✗ FAIL: %s (%s)\n", test_name, board_name);
-                    // Create diff directory
+                    // Create diff files
                     try { fs.mkdir("/tmp/ucentral-test-diff"); } catch (e) {}
-                    
-                    // Write expected and actual to temp files for diff
+
                     let temp_expected = "/tmp/ucentral-test-diff/expected_" + test_name + "-" + board_name + ".uci";
                     let temp_actual = "/tmp/ucentral-test-diff/actual_" + test_name + "-" + board_name + ".uci";
                     let fd_exp = fs.open(temp_expected, "w");
                     if (fd_exp) { fd_exp.write(expected_output); fd_exp.close(); }
                     let fd_act = fs.open(temp_actual, "w");
-                    if (fd_act) { fd_act.write(output); fd_act.close(); }
-                    
-                    // Show diff
-                    let diff_cmd = sprintf("diff -u %s %s", temp_expected, temp_actual);
-                    let diff_output = fs.popen(diff_cmd);
-                    if (diff_output) {
-                        let diff_result = diff_output.read("all");
-                        diff_output.close();
-                        printf("Diff:\n%s\n", diff_result);
-                    }
-                    
+                    if (fd_act) { fd_act.write(actual_output); fd_act.close(); }
+
                     this.test_results.failed++;
                 }
+
             } catch (e) {
                 printf("✗ ERROR: %s (%s) - %s\n", test_name, board_name, e);
-                if (e.stacktrace && e.stacktrace[0]?.context) {
-                    printf("  Error: %s\n", e.stacktrace[0].context);
-                }
                 this.test_results.failed++;
             }
-            
+
             printf("\n");
         },
         
         run_tests: function(test_cases, boards) {
             printf("=== %s ===\n\n", this.test_title);
-            
+
+
             this.test_results = { passed: 0, failed: 0, errors: [] };
-            
+
             for (let test_case in test_cases) {
                 for (let board in boards) {
                     this.run_full_test(test_case.name, test_case.input, board, test_case.output);
