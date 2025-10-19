@@ -2956,20 +2956,6 @@
                 }
             }
         },
-        "service.mdns": {
-            "description": "This section configures the multicast DNS (mDNS) service on the access point.\nmDNS enables automatic service discovery on local networks, allowing devices \nto discover and connect to services without manual configuration. This is \ncommonly used for printer discovery, media streaming, and other local services.\n",
-            "type": "object",
-            "properties": {
-                "enable": {
-                    "description": "Enable the mDNS service on the access point. When enabled, the service will \nrun on all interfaces configured with the 'mdns' service, or on all interfaces \nif the fingerprint service is also enabled. The service listens on UDP port 5353 \nand requires appropriate firewall rules to function properly.\n",
-                    "type": "boolean",
-                    "default": false,
-                    "examples": [
-                        true
-                    ]
-                }
-            }
-        },
         "service.log": {
             "description": "This section can be used to configure remote syslog support.",
             "type": "object",
@@ -4367,9 +4353,6 @@
                 },
                 "ntp": {
                     "$ref": "#/$defs/service.ntp"
-                },
-                "mdns": {
-                    "$ref": "#/$defs/service.mdns"
                 },
                 "log": {
                     "$ref": "#/$defs/service.log"

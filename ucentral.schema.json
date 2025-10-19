@@ -2603,18 +2603,6 @@
                 }
             }
         },
-        "service.mdns": {
-            "type": "object",
-            "properties": {
-                "enable": {
-                    "type": "boolean",
-                    "default": false,
-                    "examples": [
-                        true
-                    ]
-                }
-            }
-        },
         "service.log": {
             "type": "object",
             "properties": {
@@ -3807,9 +3795,6 @@
                 },
                 "ntp": {
                     "$ref": "#/$defs/service.ntp"
-                },
-                "mdns": {
-                    "$ref": "#/$defs/service.mdns"
                 },
                 "log": {
                     "$ref": "#/$defs/service.log"
