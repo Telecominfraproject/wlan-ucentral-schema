@@ -1,7 +1,11 @@
 #!/usr/bin/ucode
 
-let uci = require("uci").cursor();
-let ubus = require("ubus").connect();
+import * as libuci from 'uci';
+import * as libubus from 'ubus';
+import { ulog, LOG_INFO, LOG_ERR, LOG_WARNING } from 'log';
+
+let uci = libuci.cursor();
+let ubus = libubus.connect();
 let status = ubus.call("network.interface", "dump");
 let up = [];
 let down = [];
@@ -75,7 +79,7 @@ let ipcalc = {
 			let pool = match(available, /^([0-9a-fA-F:.]+)\/([0-9]+)$/);
 
 			if (prefix[2] < pool[2]) {
-				printf("Interface IPv4 prefix size exceeds available allocation pool size");
+				ulog(LOG_ERR, "ip-collide: Interface IPv4 prefix size exceeds available allocation pool size");
 				return NULL;
 			}
 
@@ -130,12 +134,12 @@ for (let iface in down)
 	for (let addr in iface['ipv4-address'])
 		if (!ipcalc.reserve_prefix(addr.address, addr.mask)) {
 			let auto = ipcalc.generate_prefix('192.168.0.0/16', 'auto/' + addr.mask, false);
-			system(sprintf("logger ip-collide: collision detected on %s\n", iface.device));
+			ulog(LOG_WARNING, 'ip-collide: collision detected on %s', iface.device);
 			if (auto) {
-				system(sprintf('logger ip-collide: moving from %s/%d to %s\n', addr.address, addr.mask, auto));
+				ulog(LOG_INFO, 'ip-collide: moving from %s/%d to %s', addr.address, addr.mask, auto);
 				uci.set('network', iface.device, 'ipaddr', auto);
 			} else {
-				system(sprintf('logger ip-collide: no free address available, shutting down device\n'));
+				ulog(LOG_ERR, 'ip-collide: no free address available, shutting down device');
 				system(sprintf('ifconfig %s down', iface.device));
 			}
 			uci.set('network', iface.device, 'collision', time());
