@@ -1,0 +1,7 @@
+{
+	"template_vars": {
+		"timeout": {
+			"offline": 7200
+		}
+	}
+}
