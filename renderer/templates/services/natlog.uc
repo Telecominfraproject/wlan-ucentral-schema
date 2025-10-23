@@ -1,4 +1,4 @@
-{% if (!natlog.enabled) { return; } %}
-{% services.set_enabled("natlog", natlog.enabled) %}
+{% if (!natlog.enabled) return; %}
+{% services.set_enabled("natlog", true); %}
 
-set natlog.@natlog[0].enabled={{ b(natlog.enabled) }}
+set natlog.@defaults[0].enabled={{ b(natlog.enabled) }}
