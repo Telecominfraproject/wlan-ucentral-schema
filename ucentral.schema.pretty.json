@@ -4245,6 +4245,17 @@
                 }
             }
         },
+        "service.natlog": {
+            "description": "Whether should device enable NAT logging.",
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "description": "If the kernel module should be enabled, default to false",
+                    "type": "boolean",
+                    "default": false
+                }
+            }
+        },
         "service": {
             "description": "This section describes all of the services that may be present on the AP. Each service is then referenced via its name inside an interface, ssid, ...",
             "type": "object",
@@ -4323,6 +4334,9 @@
                 },
                 "dhcp-inject": {
                     "$ref": "#/$defs/service.dhcp-inject"
+                },
+                "natlog": {
+                    "$ref": "#/$defs/service.natlog"
                 }
             }
         },

@@ -4774,6 +4774,17 @@
                             }
                         }
                     }
+                },
+                "natlog": {
+                    "description": "Whether should device enable NAT logging.",
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "description": "If the kernel module should be enabled, default to false",
+                            "type": "boolean",
+                            "default": false
+                        }
+                    }
                 }
             }
         },
