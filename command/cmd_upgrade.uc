@@ -64,7 +64,7 @@ if (secure_download) {
 	sargs = `--cacert ${ca_file} --cert ${cert_file} --key ${key_file}`;
 }
 
-let dl_cmd = `curl ${sargs} -w "%{http_code}" -o ${image_path} "${args.uri}"`;
+let dl_cmd = `curl -L ${sargs} -w "%{http_code}" -o ${image_path} "${args.uri}"`;
 let dl_ret = download_run(dl_cmd);
 if (dl_ret.err != 0 || dl_ret.http_code < 200 || dl_ret.http_code >= 300) {
 	// Try a second time before erroring out
