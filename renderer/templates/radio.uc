@@ -222,10 +222,10 @@
 # Wireless Configuration
 {% for (let phy in phys): %}
 {%  let reconf = phy.no_reconf ? 0 : 1 %}
+{%  let htmode = match_htmode(phy, radio) %}
 set wireless.{{ phy.section }}.disabled={{ exists(radio, 'enable') ? b(!radio.enable) : 0 }}
 set wireless.{{ phy.section }}.ucentral_path={{ s(location) }}
 {%  if (radio.band != "HaLow"): %}
-{%      let htmode = match_htmode(phy, radio) %}
 set wireless.{{ phy.section }}.htmode={{ htmode }}
 set wireless.{{ phy.section }}.txantenna={{ match_mimo(phy.tx_ant_avail, radio.mimo) }}
 set wireless.{{ phy.section }}.rxantenna={{ match_mimo(phy.rx_ant_avail, radio.mimo) }}
@@ -246,7 +246,7 @@ set wireless.{{ phy.section }}.acs_exclude_dfs={{ b(!radio.allow_dfs) }}
 {%    if (!radio.allow_dfs && channel in phy.dfs_channels) continue %}
 add_list wireless.{{ phy.section }}.channels={{ channel }}
 {% endfor %}
-{%  if (radio.he_settings && match(htmode, /HE.*/)): %}
+{%  if (radio.he_settings && (match(htmode, /HE.*/) || match(htmode, /EHT.*/))): %}
 set wireless.{{ phy.section }}.he_bss_color={{ radio.he_settings.bss_color || '' }}
 set wireless.{{ phy.section }}.multiple_bssid={{ b(radio.he_settings.multiple_bssid) }}
 set wireless.{{ phy.section }}.ema={{ b(radio.he_settings.ema) }}
