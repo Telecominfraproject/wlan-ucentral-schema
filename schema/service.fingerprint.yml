@@ -9,7 +9,7 @@ properties:
     enum:
     - polled
     - final
-    - raw-data
+    - raw
     default: final
   minimum-age:
     description:

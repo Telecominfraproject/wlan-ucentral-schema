@@ -3885,7 +3885,7 @@
                     "enum": [
                         "polled",
                         "final",
-                        "raw-data"
+                        "raw"
                     ],
                     "default": "final"
                 },

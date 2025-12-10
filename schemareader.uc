@@ -9561,8 +9561,8 @@ function instantiateServiceFingerprint(location, value, errors) {
 			if (type(value) != "string")
 				push(errors, [ location, "must be of type string" ]);
 
-			if (!(value in [ "polled", "final", "raw-data" ]))
-				push(errors, [ location, "must be one of \"polled\", \"final\" or \"raw-data\"" ]);
+			if (!(value in [ "polled", "final", "raw" ]))
+				push(errors, [ location, "must be one of \"polled\", \"final\" or \"raw\"" ]);
 
 			return value;
 		}
