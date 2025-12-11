@@ -1097,7 +1097,7 @@ if (ieee8021x)
 
 if (fingerprint) {
 	switch(finger_config?.mode) {
-	case 'raw-data':
+	case 'raw':
 		state.fingerprint = fingerprint;
 		break;
 	case 'final':
