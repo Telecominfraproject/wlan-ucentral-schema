@@ -181,7 +181,11 @@
 	}
 
 	let count = 0;
+	let per_band_counters = {};
 	for (let i, ssid in interface.ssids) {
+		for (let band in ssid.wifi_bands) {
+			per_band_counters[band]++;
+		}
 		let modes = (ssid.bss_mode == "wds-repeater") ?
 			[ "wds-sta", "wds-ap" ] : [ ssid.bss_mode ];
 		for (let mode in modes) {
@@ -194,6 +198,7 @@
 					name,
 					network,
 					owe: true,
+					per_band_counters,
 				});
 				ssid.encryption.proto = 'owe-transition';
 			}
@@ -205,6 +210,7 @@
 				name,
 				tunnel_proto,
 				network,
+				per_band_counters,
 			});
 			count++;
 		}
