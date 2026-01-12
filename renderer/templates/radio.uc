@@ -42,25 +42,15 @@
 		"160": [ 36, 100 ],
 		"80": [ 36, 52, 100, 116, 132, 149 ],
 		"40": [ 36, 44, 52, 60, 100, 108,
-			116, 124, 132, 140, 149, 157, 165, 173,
-			184, 192 ],
+			116, 124, 132, 140, 149, 157, 165 ],
 		"8": [ 12, 28, 44 ],
 		"4": [ 8, 16, 24, 32, 40, 48 ],
 		"2": [ 2, 6, 10, 14, 18, 22, 26, 30, 34, 38, 42, 46, 50 ],
 		"1": [ 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39, 41, 43, 45, 47, 49, 51 ]
 	};
 
-	if (!length(radio.valid_channels) && radio.band == "5G")
-		radio.valid_channels = [ 36, 44, 52, 60, 100, 108, 116, 124, 132, 140, 149, 157, 165, 173, 184, 192 ];
-	if (!length(radio.valid_channels) && radio.band == "6G")
-		radio.valid_channels = [ 1, 2, 5, 9, 13, 17, 21, 25, 29, 33, 37, 41, 45, 49, 53, 57, 61, 65, 69, 73,
-					 77, 81, 85, 89, 93, 97, 101, 105, 109, 113, 117, 121, 125, 129, 133, 137, 141,
-					 145, 149, 153, 157, 161, 165, 169, 173, 177, 181, 185, 189, 193, 197, 201, 205,
-					 209, 213, 217, 221, 225, 229, 233 ];
-	if (!length(radio.valid_channels) && radio.band == "HaLow")
-		radio.valid_channels = [ 1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23,
-					 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 37, 38, 39, 40, 41, 42, 43,
-					 44, 45, 46, 47, 48, 49, 50, 51 ];
+	if (!length(radio.valid_channels))
+		radio.valid_channels = phys[0].channels;
 
 	radio.country ??= default_config.country;
 
@@ -243,6 +233,7 @@ set wireless.{{ phy.section }}.maxassoc_ignore_probe={{ b(radio.maximum_clients_
 set wireless.{{ phy.section }}.reconf={{ b(reconf) }}
 set wireless.{{ phy.section }}.acs_exclude_dfs={{ b(!radio.allow_dfs) }}
 {% for (let channel in radio.valid_channels): %}
+{%    if (!(channel in phy.channels)) continue %}
 {%    if (!radio.allow_dfs && channel in phy.dfs_channels) continue %}
 add_list wireless.{{ phy.section }}.channels={{ channel }}
 {% endfor %}
