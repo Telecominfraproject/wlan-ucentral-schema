@@ -574,7 +574,7 @@ if (!length(state.radios))
 
 
 function iface_add_counters(iface, vlan, port) {
-	if (!devstats[port])
+	if (!devstats || !devstats[port])
 		return;
 	for (let k, vid in devstats[port]) {
 		if (vid.vid != vlan)
