@@ -118,18 +118,6 @@
 		return false;
 	}
 
-	function get_radio_index(band) {
-		switch (band) {
-			case '2G': return 0;
-			case '5G': return 1;
-			case '6G': return 2;
-			case '5G-lower': return 3;
-			case '5G-upper': return 4;
-			case 'HaLow': return 5;
-			default: return 0;
-		}
-	}
-
 	function validate_encryption_sta() {
 		if (ssid.encryption.proto in [ "wpa", "wpa2", "wpa-mixed", "wpa3", "wpa3-mixed", "wpa3-192" ] &&
 		    length(certificates))
@@ -364,9 +352,8 @@
 
 # Wireless configuration
 {% for (let n, phy in phys): %}
-{%   let band_index = get_radio_index(phy.band[0]); %}
-{%   let basename = name + '_' + per_band_counters[phy.band[0]]; %}
-{%   let ssidname = basename + '_' + band_index + '_' + per_band_counters[phy.band[0]]; %}
+{%   let basename = name + '_' + count; %}
+{%   let ssidname = basename + '_' + n + '_' + count; %}
 {%   let section = (owe ? 'o' : '' ) + ssidname; %}
 {%   let id = wiphy.allocate_ssid_section_id(phy) %}
 {%   let band = match_band(phy); %}
