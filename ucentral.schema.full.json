@@ -4445,12 +4445,12 @@
                     "type": "object",
                     "properties": {
                         "mode": {
-                            "description": "Fingerprint collection and reporting mode. Controls how device fingerprint\ndata is processed and when it is reported to the management system.\n- \"polled\": Fingerprints are collected when requested by the management system\n- \"final\": Fingerprints are reported after analysis is complete (recommended)\n- \"raw-data\": Raw fingerprint data is sent immediately without processing\n",
+                            "description": "Fingerprint collection and reporting mode. Controls how device fingerprint\ndata is processed and when it is reported to the management system.\n- \"polled\": Fingerprints are collected when requested by the management system\n- \"final\": Fingerprints are reported after analysis is complete (recommended)\n- \"raw\": Raw fingerprint data is sent immediately without processing\n",
                             "type": "string",
                             "enum": [
                                 "polled",
                                 "final",
-                                "raw-data"
+                                "raw"
                             ],
                             "default": "final"
                         },
