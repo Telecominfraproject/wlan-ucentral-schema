@@ -8,12 +8,12 @@ properties:
       data is processed and when it is reported to the management system.
       - "polled": Fingerprints are collected when requested by the management system
       - "final": Fingerprints are reported after analysis is complete (recommended)
-      - "raw-data": Raw fingerprint data is sent immediately without processing
+      - "raw": Raw fingerprint data is sent immediately without processing
     type: string
     enum:
     - polled
     - final
-    - raw-data
+    - raw
     default: final
   minimum-age:
     description: |

@@ -101,7 +101,7 @@
 			"port": 22
 		},
 		"fingerprint": {
-			"mode": "raw-data",
+			"mode": "raw",
 			"allow-wan": true
 		}
 	}

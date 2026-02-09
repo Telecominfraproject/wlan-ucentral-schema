@@ -45,7 +45,7 @@ export function get_fingerprint_for_mac(mac, ports) {
 export function save_state(state) {
 	if (fingerprint) {
 		switch(finger_config?.mode) {
-		case 'raw-data':
+		case 'raw':
 			state.fingerprint = fingerprint;
 			break;
 		case 'final':
