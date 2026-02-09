@@ -46,7 +46,7 @@ export function lookup_port(netdev, select_ports) {
 };
 
 export function iface_add_counters(iface, vlan, port, previous) {
-	if (!global.devstats[port])
+	if (!global.devstats || !global.devstats[port])
 		return;
 	for (let k, vid in global.devstats[port]) {
 		if (vid.vid != vlan)
