@@ -8,13 +8,15 @@ let fd = fs.open("/tmp/packages.state", "r");
 if (fd) {
     let line;
     while (line = fd.read("line")) {
-        let tokens = split(line, " - ");
-
-        if (length(tokens) < 2) {
+        let pkg = split(trim(line), " ")[0];
+        if (!pkg)
             continue;
-        }
 
-        push(package_json, {"name": tokens[0], "version": replace(tokens[1], "\n", "")});
+        let m = match(pkg, /^(.+)-(\d.*)$/);
+        if (!m)
+            continue;
+
+        push(package_json, {"name": m[1], "version": m[2]});
     }
     fd.close();
 }
