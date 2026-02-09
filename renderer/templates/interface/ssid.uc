@@ -110,13 +110,15 @@
 		if (type(ssid.roaming) == 'bool') {
 			ssid.roaming = {
 				message_exchange: 'air',
-				generate_psk: !has_multi_psk(),
+				generate_psk: false,
 			};
 		}
 
 		if (ssid.encryption.proto in SAE_PROTOCOLS) {
-			if (ssid.roaming?.generate_psk)
+			if (ssid.roaming) {
 				ssid.roaming.generate_psk = false;
+				ssid.roaming.message_exchange = 'ds';
+			}
 		}
 
 		if (ssid.roaming && ssid.encryption.proto in ["wpa", "psk", "none"]) {
