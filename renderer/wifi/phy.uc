@@ -70,44 +70,63 @@ function get_hwmon(phy) {
 	return temp;
 }
 
-function lookup_board() {
-	let board = fs.readfile('/etc/board.json');
-	if (board)
-		board = json(board);
-	if (!length(board?.wlan))
-		return null;
-	let ret = {};
-	for (let name, phy in board?.wlan) {
-		if (!length(phy.info?.radios))
-			continue;
-		for (let band, data in phy.info.bands) {
-			let radio_index = -1;
-			let channels = [];
-			let frequencies = [];
-			for (let radio in phy.info.radios)
-				if (radio.bands[band]) {
-					radio_index = radio.index;
-					frequencies = radio.bands[band].frequencies;
-					channels = radio.bands[band].channels;
-				}
+function freq_range_match(ranges, freq) {
+	freq *= 1000;
+	for (let range in ranges)
+		if (freq >= range.start && freq <= range.end)
+			return true;
+	return false;
+}
 
-			ret[`${phy.path}:${band}`] = {
-				tx_ant: phy.info.antenna_tx,
-				rx_ant: phy.info.antenna_rx,
-				tx_ant_avail: phy.info.antenna_tx,
-				rx_ant_avail: phy.info.antenna_rx,
-				no_reconf: phy.info.reconf ? false : true,
-				htmode: data.modes,
-				band: [ band ],
-				radio_index,
-				frequencies,
-				channels,
-			};
-		}
-		return ret;
+function extract_band_caps(band, p) {
+	if (band?.ht_capa) {
+		p.ht_capa = band.ht_capa;
+		push(p.htmode, 'HT20');
+		if (band.ht_capa & 0x2)
+			push(p.htmode, 'HT40');
 	}
-	return null;
-}   
+	if (band?.vht_capa) {
+		p.vht_capa = band.vht_capa;
+		push(p.htmode, 'VHT20', 'VHT40', 'VHT80');
+		let chwidth = (band?.vht_capa >> 2) & 0x3;
+		switch(chwidth) {
+		case 2:
+			push(p.htmode, 'VHT80+80');
+			/* fall through */
+		case 1:
+			push(p.htmode, 'VHT160');
+		}
+	}
+	for (let iftype in band?.iftype_data) {
+		if (iftype.iftypes?.ap) {
+			p.he_phy_capa = iftype?.he_cap_phy;
+			p.he_mac_capa = iftype?.he_cap_mac;
+			push(p.htmode, 'HE20');
+			let chwidth = (iftype?.he_cap_phy[0] || 0) & 0xff;
+			if (chwidth & 0x2 || chwidth & 0x4)
+				push(p.htmode, 'HE40');
+			if (chwidth & 0x4)
+				push(p.htmode, 'HE80');
+			if (chwidth & 0x8 || chwidth & 0x10)
+				push(p.htmode, 'HE160');
+			if (chwidth & 0x10)
+				push(p.htmode, 'HE80+80');
+			if (iftype.eht_cap_phy) {
+				p.eht_phy_capa = iftype?.eht_cap_phy;
+				p.eht_mac_capa = iftype?.eht_cap_mac;
+				push(p.htmode, 'EHT20');
+				if (chwidth & 0x2 || chwidth & 0x4)
+					push(p.htmode, 'EHT40');
+				if (chwidth & 0x4)
+					push(p.htmode, 'EHT80');
+				if (chwidth & 0x8 || chwidth & 0x10)
+					push(p.htmode, 'EHT160');
+				if (chwidth & 0x10)
+					push(p.htmode, 'EHT80+80');
+			}
+		}
+	}
+}
 
 // mapping 5G to S1G(HaLow)
 function map5GToS1G() {
@@ -171,13 +190,10 @@ function map5GToS1G() {
 }
 
 function lookup_phys() {
-	let ret = lookup_board();
-	if (ret)
-		return ret;
 	lookup_paths();
 
 	let phys = phy_get();
-	ret = {};
+	let ret = {};
 
 	// get 5G to S1G mapping table
 	let s1gMapping = map5GToS1G();
@@ -185,127 +201,135 @@ function lookup_phys() {
 	for (let phy in phys) {
 		if (!exists(phy, 'wiphy'))
 			continue;
-		let phyname = 'phy' + phy.wiphy;
+		let phyname = phy.wiphy_name || ('phy' + phy.wiphy);
 		let path = paths[phyname];
 		if (!path)
 			continue;
 
-		// check whether MORSE PHY
-		let isMorse = false;
-		let morsePath = '/sys/kernel/debug/ieee80211/' + phyname + '/morse';
+		if (length(phy.radios)) {
+			// Multi-radio path (Wi-Fi 7)
+			let temp = get_hwmon(phyname);
 
-		// check whether MORSE dir exists
-		if (fs.stat(morsePath))
-			isMorse = true;
+			for (let radio in phy.radios) {
+				let p = {};
 
-		let p = {};
+				if (temp)
+					p.temperature = temp / 1000;
 
-		p.is_morse_phy = isMorse;  // save result in is_morse_phy
+				p.tx_ant = phy.wiphy_antenna_tx;
+				p.rx_ant = phy.wiphy_antenna_rx;
+				p.tx_ant_avail = phy.wiphy_antenna_avail_tx;
+				p.rx_ant_avail = phy.wiphy_antenna_avail_rx;
+				p.no_reconf = false;
+				p.frequencies = [];
+				p.channels = [];
+				p.dfs_channels = [];
+				p.htmode = [];
+				p.band = [];
+				p.radio_index = radio.index;
 
-		let temp = get_hwmon('phy' + phy.wiphy);
-		if (temp)
-			p.temperature = temp / 1000;
+				for (let band in phy.wiphy_bands) {
+					let has_match = false;
+					for (let freq in band?.freqs) {
+						if (freq.disabled)
+							continue;
+						if (!freq_range_match(radio.freq_ranges, freq.freq))
+							continue;
+						has_match = true;
 
-		p.tx_ant = phy.wiphy_antenna_tx;
-		p.rx_ant = phy.wiphy_antenna_rx;
-		p.tx_ant_avail = phy.wiphy_antenna_avail_tx;
-		p.rx_ant_avail = phy.wiphy_antenna_avail_rx;
-		p.frequencies = [];
-		p.channels = [];
-		p.dfs_channels = [];
-		p.htmode = [];
-		p.band = [];
-		for (let band in phy.wiphy_bands) {
-			for (let freq in band?.freqs) {
-				if (freq.disabled)
-					continue;
-
-				let channel = freq2channel(freq.freq);
-				// if MORSE PHY and band is 5G，mapping to S1G
-				if (isMorse && freq.freq >= 5160 && freq.freq <= 5885) {
-					let ch = "" + channel;
-					if (ch in s1gMapping) {
-						// replace 5G ch into S1G ch
-						channel = s1gMapping[ch].s1g_channel;
-						push(p.channels, channel);
-						push(p.frequencies, s1gMapping[ch].s1g_freq);
-					} else {
-						// no S1G ch in table, keep 5G ch
+						let channel = freq2channel(freq.freq);
 						push(p.channels, channel);
 						push(p.frequencies, freq.freq);
+						if (freq.radar)
+							push(p.dfs_channels, channel);
+
+						if (freq.freq >= 6000)
+							push(p.band, '6G');
+						else if (freq.freq <= 2484 && freq.freq > 2400)
+							push(p.band, '2G');
+						else if (freq.freq >= 5160 && freq.freq <= 5885)
+							push(p.band, '5G');
 					}
-				} else {
-					// not MORSE PHY or not 5G
-					push(p.channels, channel);
-					push(p.frequencies, freq.freq);
-					if (freq.radar)
-						push(p.dfs_channels, channel);
+					if (has_match)
+						extract_band_caps(band, p);
 				}
 
-				if (freq.freq >= 6000)
-					push(p.band, '6G');
-				else if (freq.freq <= 2484 && freq.freq > 2400)
-					push(p.band, '2G');
-				else if (freq.freq >= 5160 && freq.freq <= 5885 && !isMorse)
-					push(p.band, '5G');
-				else if (freq.freq < 1000 || (isMorse && freq.freq >= 5160 && freq.freq <= 5885))
-					push(p.band, 'HaLow');
+				p.band = uniq(p.band);
+				if (p.eht_phy_capa && '6G' in p.band)
+					push(p.htmode, 'EHT320');
+				if (!length(p.dfs_channels))
+					delete p.dfs_channels;
+
+				let band_name = p.band[0];
+				if (band_name)
+					ret[`${path}:${band_name}`] = p;
 			}
-			if (band?.ht_capa) {
-				p.ht_capa = band.ht_capa;
-				push(p.htmode, 'HT20');
-				if (band.ht_capa & 0x2)
-					push(p.htmode, 'HT40');
-			}
-			if (band?.vht_capa) {
-				p.vht_capa = band.vht_capa;
-				push(p.htmode, 'VHT20', 'VHT40', 'VHT80');
-				let chwidth = (band?.vht_capa >> 2) & 0x3;
-				switch(chwidth) {
-				case 2:
-					push(p.htmode, 'VHT80+80');
-					/* fall through */
-				case 1:
-					push(p.htmode, 'VHT160');
-				}
-			}
-			for (let iftype in band?.iftype_data) {
-				if (iftype.iftypes?.ap) {
-					p.he_phy_capa = iftype?.he_cap_phy;
-					p.he_mac_capa = iftype?.he_cap_mac;
-					push(p.htmode, 'HE20');
-					let chwidth = (iftype?.he_cap_phy[0] || 0) & 0xff;
-					if (chwidth & 0x2 || chwidth & 0x4)
-						push(p.htmode, 'HE40');
-					if (chwidth & 0x4)
-						push(p.htmode, 'HE80');
-					if (chwidth & 0x8 || chwidth & 0x10)
-						push(p.htmode, 'HE160');
-					if (chwidth & 0x10)
-						push(p.htmode, 'HE80+80');
-					if (iftype.eht_cap_phy) {
-						p.eht_phy_capa = iftype?.eht_cap_phy;
-						p.eht_mac_capa = iftype?.eht_cap_mac;
-						push(p.htmode, 'EHT20');
-						if (chwidth & 0x2 || chwidth & 0x4)
-							push(p.htmode, 'EHT40');
-						if (chwidth & 0x4)
-							push(p.htmode, 'EHT80');
-						if (chwidth & 0x8 || chwidth & 0x10)
-							push(p.htmode, 'EHT160');
-						if (chwidth & 0x10)
-							push(p.htmode, 'EHT80+80');
-                                                if ('6G' in p.band)
-                                                        push(p.htmode, 'EHT320');
+		} else {
+			// Single-radio path (Wi-Fi 6 and below)
+			let isMorse = false;
+			let morsePath = '/sys/kernel/debug/ieee80211/' + phyname + '/morse';
+			if (fs.stat(morsePath))
+				isMorse = true;
+
+			let p = {};
+			p.is_morse_phy = isMorse;
+
+			let temp = get_hwmon(phyname);
+			if (temp)
+				p.temperature = temp / 1000;
+
+			p.tx_ant = phy.wiphy_antenna_tx;
+			p.rx_ant = phy.wiphy_antenna_rx;
+			p.tx_ant_avail = phy.wiphy_antenna_avail_tx;
+			p.rx_ant_avail = phy.wiphy_antenna_avail_rx;
+			p.frequencies = [];
+			p.channels = [];
+			p.dfs_channels = [];
+			p.htmode = [];
+			p.band = [];
+			for (let band in phy.wiphy_bands) {
+				for (let freq in band?.freqs) {
+					if (freq.disabled)
+						continue;
+
+					let channel = freq2channel(freq.freq);
+					// if MORSE PHY and band is 5G, mapping to S1G
+					if (isMorse && freq.freq >= 5160 && freq.freq <= 5885) {
+						let ch = "" + channel;
+						if (ch in s1gMapping) {
+							channel = s1gMapping[ch].s1g_channel;
+							push(p.channels, channel);
+							push(p.frequencies, s1gMapping[ch].s1g_freq);
+						} else {
+							push(p.channels, channel);
+							push(p.frequencies, freq.freq);
+						}
+					} else {
+						push(p.channels, channel);
+						push(p.frequencies, freq.freq);
+						if (freq.radar)
+							push(p.dfs_channels, channel);
 					}
+
+					if (freq.freq >= 6000)
+						push(p.band, '6G');
+					else if (freq.freq <= 2484 && freq.freq > 2400)
+						push(p.band, '2G');
+					else if (freq.freq >= 5160 && freq.freq <= 5885 && !isMorse)
+						push(p.band, '5G');
+					else if (freq.freq < 1000 || (isMorse && freq.freq >= 5160 && freq.freq <= 5885))
+						push(p.band, 'HaLow');
 				}
+				extract_band_caps(band, p);
 			}
+
+			p.band = uniq(p.band);
+			if (p.eht_phy_capa && '6G' in p.band)
+				push(p.htmode, 'EHT320');
+			if (!length(p.dfs_channels))
+				delete p.dfs_channels;
+			ret[path] = p;
 		}
-
-		p.band = uniq(p.band);
-		if (!length(p.dfs_channels))
-			delete p.dfs_channels;
-		ret[path] = p;
 	}
 	for (let path in ret) {
 		system("logger 'phy: PHY path:" + path + ", bands:" + join(',', ret[path].band) + "'");
