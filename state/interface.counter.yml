@@ -30,6 +30,14 @@ properties:
     type: number
     description:
       The number of packets transmitted.
+  tx_retries:
+    type: number
+    description:
+      The number of transmit retries.
+  tx_failed:
+    type: number
+    description:
+      The number of failed transmissions.
   tx_errors:
     type: number
     description:
