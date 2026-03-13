@@ -108,6 +108,10 @@
 	// normalize_ functions - data transformation
 	function normalize_roaming_config() {
 		if (type(ssid.roaming) == 'bool') {
+			if (!ssid.roaming) {
+				delete ssid.roaming;
+				return;
+			}
 			ssid.roaming = {
 				message_exchange: 'air',
 				generate_psk: false,
