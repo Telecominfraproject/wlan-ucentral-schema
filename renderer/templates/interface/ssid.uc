@@ -1053,8 +1053,8 @@
 # Wireless configuration
 {% for (let n, phy in phys): %}
 {%   let band_index = get_radio_index(phy.band[0]); %}
-{%   let basename = name + '_' + per_band_counters[phy.band[0]]; %}
-{%   let ssidname = basename + '_' + band_index + '_' + per_band_counters[phy.band[0]]; %}
+{%   let basename = name + '_' + count; %}
+{%   let ssidname = name + '_' + per_band_counters[phy.band[0]] + '_' + band_index + '_' + per_band_counters[phy.band[0]]; %}
 {%   let section = (owe ? 'o' : '' ) + ssidname; %}
 {%   let id = wiphy.allocate_ssid_section_id(phy) %}
 {%   let band = match_band(phy); %}
