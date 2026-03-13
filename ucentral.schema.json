@@ -1529,8 +1529,7 @@
                                 "interval": {
                                     "type": "integer",
                                     "maximum": 600,
-                                    "minimum": 60,
-                                    "default": 60
+                                    "minimum": 60
                                 }
                             }
                         }

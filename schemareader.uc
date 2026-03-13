@@ -3946,9 +3946,6 @@ function instantiateInterfaceSsidRadius(location, value, errors) {
 					if (exists(value, "interval")) {
 						obj.interval = parseInterval(location + "/interval", value["interval"], errors);
 					}
-					else {
-						obj.interval = 60;
-					}
 
 					return obj;
 				}

@@ -59,9 +59,9 @@ properties:
           interval:
             description:
               The interim accounting update interval. This value is defined in seconds.
+              If not set, the value from the RADIUS server Access-Accept will be used.
             type: integer
             maximum: 600
             minimum: 60
-            default: 60
   health:
     $ref: "https://ucentral.io/schema/v1/interface/ssid/radius/health/"
