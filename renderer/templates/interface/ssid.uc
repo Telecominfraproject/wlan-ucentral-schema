@@ -928,7 +928,7 @@
 
 		uci_set_boolean(output, `wireless.${section}.disable_dgaf`, ssid.pass_point.disable_dgaf);
 		uci_set_string(output, `wireless.${section}.hs20_release`, '3');
-		uci_set_string(output, `wireless.${section}.iw_ipaddr_type_availability`, sprintf("%02x", ssid.pass_point.ipaddr_type_availability));
+		uci_set_string(output, `wireless.${section}.iw_ipaddr_type_availability`, sprintf("%02x", ssid.pass_point.ipaddr_type_available));
 
 		for (let name in ssid.pass_point.connection_capability)
 			uci_list_string(output, `wireless.${section}.hs20_conn_capab`, name);
