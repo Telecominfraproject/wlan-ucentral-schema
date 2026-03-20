@@ -40,7 +40,8 @@
 	};
 
 	const WPA_PROTOCOLS = ["wpa", "wpa2", "wpa-mixed", "wpa3", "wpa3-mixed", "wpa3-192", "psk2-radius", "mpsk-radius"];
-	const SAE_PROTOCOLS = ["wpa3", "wpa3-mixed", "wpa3-192", "sae", "sae-mixed"];
+	const SAE_PROTOCOLS = ["wpa3", "wpa3-192", "sae"];
+	const SAE_MIXED_PROTOCOLS = ["wpa3-mixed", "sae-mixed"];
 	const PSK_PROTOCOLS = ["psk", "psk2", "psk-mixed", "sae", "sae-mixed"];
 
 	const HS20_AUTH_TYPES = {
@@ -118,7 +119,8 @@
 			};
 		}
 
-		if (ssid.encryption.proto in SAE_PROTOCOLS) {
+		if (ssid.encryption.proto in SAE_PROTOCOLS ||
+		    ssid.encryption.proto in SAE_MIXED_PROTOCOLS) {
 			if (ssid.roaming) {
 				ssid.roaming.generate_psk = false;
 				ssid.roaming.message_exchange = 'ds';
@@ -337,6 +339,11 @@
 
 		if (ssid.encryption.proto in SAE_PROTOCOLS)
 			return 2;
+
+		if (ssid.encryption.proto in SAE_MIXED_PROTOCOLS) {
+			let val = index(["disabled", "optional", "required"], ssid.encryption.ieee80211w);
+			return (val <= 0) ? 1 : val;
+		}
 
 		return index(["disabled", "optional", "required"], ssid.encryption.ieee80211w);
 	}
