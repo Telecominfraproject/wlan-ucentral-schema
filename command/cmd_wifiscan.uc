@@ -153,13 +153,48 @@ function intersect(list, filter) {
 	return res;
 }
 
+function phy_is_halow(phy) {
+	let fs = require('fs');
+	let f = fs.open('/sys/class/ieee80211/phy' + phy.wiphy + '/device/uevent', 'r');
+	if (!f) return false;
+	let content = f.read('all');
+	f.close();
+	if (content && match(content, /morse/i))
+		return true;
+	return false;
+}
+
 function wifi_scan() {
 	let scan = [];
 
+	// Remove any stale 'scan' interface left over from a previous failed scan.
+	let stale = nl.request(def.NL80211_CMD_GET_INTERFACE, 0, { dev: 'scan' });
+	if (stale) {
+		warn('pre-scan cleanup: removing stale scan interface\n');
+		nl.request(def.NL80211_CMD_DEL_INTERFACE, 0, { dev: 'scan' });
+		sleep(500);
+		ifaces = iface_get();
+	}
+
 	for (let phy in phys) {
+		// Skip HaLow (Morse Micro) phys - they advertise 5G channels via nl80211
+		// but cannot actually scan them, causing kernel errors and timeouts.
+		if (phy_is_halow(phy)) {
+			warn('skipping phy' + phy.wiphy + ' (HaLow/Morse driver)\n');
+			continue;
+		}
+
 		let iface = iface_find(phy.wiphy, [ IFTYPE_STATION, IFTYPE_AP ], ifaces);
 		let scan_iface = false;
 		if (!iface) {
+
+			// Clean up any stale scan interface from a previous failed scan
+			let existing = nl.request(def.NL80211_CMD_GET_INTERFACE, 0, { dev: 'scan' });
+			if (existing) {
+				warn('stale scan interface found, removing before scan\n');
+				nl.request(def.NL80211_CMD_DEL_INTERFACE, 0, { dev: 'scan' });
+				sleep(500);
+			}
 			warn('no valid interface found for phy' + phy.wiphy + '\n');
 			nl.request(def.NL80211_CMD_NEW_INTERFACE, 0, { wiphy: phy.wiphy, ifname: 'scan', iftype: IFTYPE_STATION });
 			nl.waitfor([ def.NL80211_CMD_NEW_INTERFACE ], 1000);
@@ -174,97 +209,106 @@ function wifi_scan() {
 
 		printf("scanning on phy%d\n", phy.wiphy);
 
-		let freqs = phy_get_frequencies(phy);
-		if (length(intersect(freqs, frequency_list_2g)))
-			scan_trigger(iface.dev, frequency_list_2g);
+		try {
+			let freqs = phy_get_frequencies(phy);
+			if (length(intersect(freqs, frequency_list_2g)))
+				scan_trigger(iface.dev, frequency_list_2g);
 
-		let ch_width = iface.channel_width;
-		if (frequency_width[bandwith])
-			ch_width = frequency_width[bandwith];
-		let freqs_5g = intersect(freqs, frequency_list_5g[ch_width]);
-		if (length(freqs_5g)) {
-			if (override_dfs && !scan_iface && phy_frequency_dfs(phy, iface.wiphy_freq)) {
-				ctx.call(sprintf('hostapd.%s', iface.dev), 'switch_chan', { freq: 5180, bcn_count: 10 });
-				sleep(2000)
+			let ch_width = iface.channel_width;
+			if (frequency_width[bandwidth])
+				ch_width = frequency_width[bandwidth];
+			let freqs_5g = intersect(freqs, frequency_list_5g[ch_width]);
+			if (length(freqs_5g)) {
+				if (override_dfs && !scan_iface && phy_frequency_dfs(phy, iface.wiphy_freq)) {
+					ctx.call(sprintf('hostapd.%s', iface.dev), 'switch_chan', { freq: 5180, bcn_count: 10 });
+					sleep(2000)
+				}
+				trigger_scan_width(iface.dev, freqs_5g, ch_width);
 			}
-			trigger_scan_width(iface.dev, freqs_5g, ch_width);
-		}
-		let res = nl.request(def.NL80211_CMD_GET_SCAN, def.NLM_F_DUMP, { dev: iface.dev });
-		for (let bss in res) {
-			bss = bss.bss;
-			let res = {
-				bssid: bss.bssid,
-				frequency: +bss.frequency,
-				channel: frequency_to_channel(+bss.frequency),
-				signal: +bss.signal_mbm / 100,
-			};
-			if (verbose) {
-				res.tsf = +bss.tsf;
-				res.last_seen = +bss.seen_ms_ago;
-				res.capability = +bss.capability;
-				res.ies = [];
-			}
+			let res = nl.request(def.NL80211_CMD_GET_SCAN, def.NLM_F_DUMP, { dev: iface.dev });
+			for (let bss in res) {
+				bss = bss.bss;
+				let res = {
+					bssid: bss.bssid,
+					frequency: +bss.frequency,
+					channel: frequency_to_channel(+bss.frequency),
+					signal: +bss.signal_mbm / 100,
+				};
+				if (verbose) {
+					res.tsf = +bss.tsf;
+					res.last_seen = +bss.seen_ms_ago;
+					res.capability = +bss.capability;
+					res.ies = [];
+				}
 
-
-			for (let ie in bss.beacon_ies) {
-				switch (ie.type) {
-				case 0:
-					res.ssid = ie.data;
-					break;
-				case 11:      
-					res.sta_count = ord(ie.data, 1) * 256 + ord(ie.data, 0);
-					res.ch_util = ord(ie.data, 2);                          
-					break;   
-				case 114:
-					if (verbose)
-						res.meshid = ie.data;
-					break;
-				case 0x3d:
-					if (verbose)
-						res.ht_oper = b64enc(ie.data);
-					break;
-				case 0xc0:
-					if (verbose)
-						res.vht_oper = b64enc(ie.data);
-					break;
-				case 0xdd:
-					let oui = hexenc(substr(ie.data, 0, 3));
-					let type = ord(ie.data, 3);
-					let data = substr(ie.data, 4);
-					switch (oui) {
-					case '48d017':
-						res.tip_oui = true;
-						switch(type) {
-						case 1:
-							if (data)
-								res.tip_serial = data;
-							break;
-						case 2:
-							if (data)
-								res.tip_name = data;
-							break;
-						case 3:
-							if (data)
-								res.tip_network_id = data;
+				for (let ie in bss.beacon_ies) {
+					switch (ie.type) {
+					case 0:
+						res.ssid = ie.data;
+						break;
+					case 11:
+						res.sta_count = ord(ie.data, 1) * 256 + ord(ie.data, 0);
+						res.ch_util = ord(ie.data, 2);
+						break;
+					case 114:
+						if (verbose)
+							res.meshid = ie.data;
+						break;
+					case 0x3d:
+						if (verbose)
+							res.ht_oper = b64enc(ie.data);
+						break;
+					case 0xc0:
+						if (verbose)
+							res.vht_oper = b64enc(ie.data);
+						break;
+					case 0xdd:
+						let oui = hexenc(substr(ie.data, 0, 3));
+						let type = ord(ie.data, 3);
+						let data = substr(ie.data, 4);
+						switch (oui) {
+						case '48d017':
+							res.tip_oui = true;
+							switch(type) {
+							case 1:
+								if (data)
+									res.tip_serial = data;
+								break;
+							case 2:
+								if (data)
+									res.tip_name = data;
+								break;
+							case 3:
+								if (data)
+									res.tip_network_id = data;
+								break;
+							}
 							break;
 						}
 						break;
+					default:
+						if (verbose)
+							push(res.ies, { type: ie.type, data: b64enc(ie.data) });
+						break;
 					}
-					break;
-				default:
-					if (verbose)
-						push(res.ies, { type: ie.type, data: b64enc(ie.data) });
-					break;
 				}
-			}
 
-			if (args.periodic && !args.information_elements)
-				delete res.ies;
-			push(scan, res);
-		}
-		if (scan_iface) {
-			warn('removing temporary interface\n');
-			nl.request(def.NL80211_CMD_DEL_INTERFACE, 0, { dev: 'scan' });
+				if (args.periodic && !args.information_elements)
+					delete res.ies;
+				push(scan, res);
+			}
+			if (scan_iface) {
+				warn('removing temporary scan interface\n');
+				nl.request(def.NL80211_CMD_DEL_INTERFACE, 0, { dev: 'scan' });
+				scan_iface = false;
+			}
+		} catch(e) {
+			warn('scan error on phy' + phy.wiphy + ': ' + e + '\n');
+			if (scan_iface) {
+				warn('removing temporary scan interface after error\n');
+				nl.request(def.NL80211_CMD_DEL_INTERFACE, 0, { dev: 'scan' });
+				scan_iface = false;
+			}
 		}
 	}
 	printf("%.J\n", scan);
