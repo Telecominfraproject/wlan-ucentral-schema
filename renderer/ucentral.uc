@@ -1,7 +1,9 @@
 #!/usr/bin/ucode
-push(REQUIRE_SEARCH_PATH,
+REQUIRE_SEARCH_PATH = [
 	"/usr/lib/ucode/*.so",
-	"/usr/share/ucentral/*.uc");
+	"/usr/share/ucentral/*.uc",
+	...REQUIRE_SEARCH_PATH
+];
 
 import * as schemareader from 'schemareader';
 let renderer = require("renderer");

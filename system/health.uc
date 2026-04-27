@@ -1,6 +1,6 @@
 #!/usr/bin/ucode
 
-push(REQUIRE_SEARCH_PATH, '/usr/share/ucentral/*.uc');
+REQUIRE_SEARCH_PATH = [ '/usr/share/ucentral/*.uc', ...REQUIRE_SEARCH_PATH ];
 
 import * as libuci from 'uci';
 import * as libubus from 'ubus';

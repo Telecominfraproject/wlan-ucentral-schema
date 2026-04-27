@@ -1,5 +1,5 @@
 #!/usr/bin/ucode
-push(REQUIRE_SEARCH_PATH, '/usr/share/ucentral/*.uc');
+REQUIRE_SEARCH_PATH = [ '/usr/share/ucentral/*.uc', ...REQUIRE_SEARCH_PATH ];
 let fs = require("fs");
 let uci = require("uci");
 let ubus = require("ubus");
