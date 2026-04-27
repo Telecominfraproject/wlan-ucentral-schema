@@ -76,6 +76,9 @@ function lookup_board() {
 		board = json(board);
 	if (!length(board?.wlan))
 		return null;
+
+	let nl_phys;
+
 	let ret = {};
 	for (let name, phy in board?.wlan) {
 		if (!length(phy.info?.radios))
@@ -84,14 +87,55 @@ function lookup_board() {
 			let radio_index = -1;
 			let channels = [];
 			let frequencies = [];
+			let dfs_channels = [];
+			let matched_radio;
+
 			for (let radio in phy.info.radios)
 				if (radio.bands[band]) {
 					radio_index = radio.index;
-					frequencies = radio.bands[band].frequencies;
-					channels = radio.bands[band].channels;
+					matched_radio = radio;
+					if (length(radio.bands[band].frequencies)) {
+						frequencies = radio.bands[band].frequencies;
+						channels = radio.bands[band].channels;
+					}
 				}
 
-			ret[`${phy.path}:${band}`] = {
+			// New-schema board.json: per-radio info has freq_ranges (kHz)
+			// only, no enumerated frequencies/channels arrays. Derive them
+			// by intersecting NL80211 freqs with the radio's freq_ranges.
+			if (matched_radio && !length(frequencies)) {
+				if (!nl_phys) {
+					nl_phys = {};
+					for (let p in phy_get() || [])
+						if (exists(p, 'wiphy'))
+							nl_phys['phy' + p.wiphy] = p;
+				}
+
+				for (let nl_band in nl_phys[name]?.wiphy_bands || [])
+					for (let f in nl_band?.freqs || []) {
+						if (f.disabled)
+							continue;
+						let khz = f.freq * 1000;
+						let in_range = false;
+						for (let r in matched_radio.freq_ranges || [])
+							if (khz >= r[0] && khz <= r[1]) {
+								in_range = true;
+								break;
+							}
+						if (!in_range)
+							continue;
+						let ch = freq2channel(f.freq);
+						push(frequencies, f.freq);
+						push(channels, ch);
+						if (f.radar)
+							push(dfs_channels, ch);
+					}
+			}
+
+			if (!length(frequencies))
+				continue;
+
+			let entry = {
 				tx_ant: phy.info.antenna_tx,
 				rx_ant: phy.info.antenna_rx,
 				tx_ant_avail: phy.info.antenna_tx,
@@ -103,11 +147,16 @@ function lookup_board() {
 				frequencies,
 				channels,
 			};
+			if (length(dfs_channels))
+				entry.dfs_channels = dfs_channels;
+			ret[`${phy.path}:${band}`] = entry;
 		}
+		if (!length(ret))
+			return null;
 		return ret;
 	}
 	return null;
-}   
+}
 
 // mapping 5G to S1G(HaLow)
 function map5GToS1G() {

@@ -119,6 +119,9 @@ export function create_wiphy(cursor, warn) {
 				if (!(baseband in phy.band))
 					continue;
 
+				if (!length(phy.frequencies) && !length(phy.channels))
+					continue;
+
 				let phy_min_freq, phy_max_freq;
 
 				if (phy.frequencies) {
