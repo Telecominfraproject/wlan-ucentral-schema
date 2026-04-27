@@ -32,11 +32,20 @@ function frequency_to_channel(freq) {
 	return 0;
 }
 
+function hostapd_dev(obj) {
+	let prefix = 'hostapd.';
+	let plen = length(prefix);
+	if (substr(obj, 0, plen) != prefix)
+		return null;
+	let dev = substr(obj, plen);
+	return length(dev) ? dev : null;
+}
+
 function override_dfs() {
 	if (!args?.override_dfs)
 		return;
 	for (let obj in ubus.list()) {
-		if (split(obj, '.')[0] != 'hostapd')
+		if (!hostapd_dev(obj))
 			continue;
 		let status = ubus.call(obj, 'get_status');
 		if (!status)
@@ -51,8 +60,8 @@ function override_dfs() {
 
 function trigger_scan() {
 	for (let obj in ubus.list()) {
-		let dev = split(obj, '.')[1];
-		if (split(obj, '.')[0] != 'hostapd' || !dev)
+		let dev = hostapd_dev(obj);
+		if (!dev)
 			continue;
 		system(`iw dev ${dev} scan ap-force ${args.active ? "ssid ''" : "passive"}`);
 		printf('scan complete\n');

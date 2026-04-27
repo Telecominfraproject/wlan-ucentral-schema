@@ -16,7 +16,8 @@ function lookup_mesh() {
 	let wifs = wif_get();
 	let rv = {};
 	for (let wif in wifs) {
-		if (!wif.wiphy_freq || wif.iftype != NL80211_IFTYPE_MESH_POINT)
+		let wif_obj = wif.mlo_links?.[0] || wif;
+		if (!wif_obj.wiphy_freq || wif_obj.iftype != NL80211_IFTYPE_MESH_POINT)
 			continue;
 		let w = [];
 		let params = { dev: wif.ifname };
