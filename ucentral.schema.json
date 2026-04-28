@@ -329,16 +329,19 @@
             "type": "object",
             "properties": {
                 "port-mirror": {
-                    "type": "object",
-                    "properties": {
-                        "monitor-ports": {
-                            "type": "array",
-                            "items": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "monitor-ports": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "analysis-port": {
                                 "type": "string"
                             }
-                        },
-                        "analysis-port": {
-                            "type": "string"
                         }
                     }
                 },
