@@ -66,6 +66,21 @@ try {
 				  '/usr/share/ucentral/wifi_detect.sh' ])
 			system(cmd);
 
+		let board_name = rtrim(fs.readfile('/tmp/sysinfo/board_name'), '\n');
+		switch(board_name) {
+		case 'sonicfi,rap7110c-341x':
+			let retry = 3;
+			while (retry > 0) {
+				let wl_status = fs.popen("ubus call network.wireless status 2>/dev/null");
+				let wl_data = wl_status.read("all");
+				wl_status.close();
+				if (index(wl_data, '"pending": true') < 0) break;
+				system("sleep 1");
+				retry--;
+			}
+			break;
+		}
+
 		let apply = fs.popen("/sbin/uci -c /tmp/config-shadow batch", "w");
 		apply.write(batch);
 		apply.close();
