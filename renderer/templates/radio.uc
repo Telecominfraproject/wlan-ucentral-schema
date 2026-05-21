@@ -211,7 +211,7 @@
 # Wireless Configuration
 {% for (let phy in phys): %}
 {%  let reconf = phy.no_reconf ? 0 : 1 %}
-{%  let htmode = match_htmode(phy, radio) %}
+{%  let htmode = (radio.band != "HaLow") ? match_htmode(phy, radio) : "" %}
 set wireless.{{ phy.section }}.disabled={{ exists(radio, 'enable') ? b(!radio.enable) : 0 }}
 set wireless.{{ phy.section }}.ucentral_path={{ s(location) }}
 {%  if (radio.band != "HaLow"): %}
