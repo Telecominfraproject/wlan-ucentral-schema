@@ -138,10 +138,23 @@ function swconfig_ports(device, role) {
 capa.network = {};
 macs = {};
 for (let k, v in board.network) {
-	if (v.ports)
-		capa.network[k] = v.ports;
+	let add_to_capa = (dev) => {
+		for (let p in swconfig_ports(dev, k)) {
+			if (index(capa.network[k], p) >= 0)
+				continue;
+			push(capa.network[k], p);
+		}
+	};
+
+	capa.network[k] = [];
+
+	if (v.ports) {
+		for (let port in v.ports) {
+			add_to_capa(port);
+		}
+	}
 	if (v.device)
-		capa.network[k] = swconfig_ports(v.device, k);
+		add_to_capa(v.device);
 	if (v.ifname)
 		capa.network[k] = split(replace(v.ifname, /^ */, ''), " ");
 	if (v.macaddr)
