@@ -124,7 +124,7 @@ function create_ethernet(capab, fs, swconfig) {
 			for (let k, v in lookup) {
 				/* tagged swconfig downstream ports are not allowed */
 				if (interface.role == 'downstream') {
-					if (this.swconfig && this.swconfig[k].switch && v == 'tagged')
+					if (this.swconfig && this.swconfig[k] && this.swconfig[k].switch && v == 'tagged')
 						warn('%s:%d - vlan tagging on downstream swconfig ports is not supported', this.swconfig[k]?.switch.name, this.swconfig[k].swconfig);
 					else
 						rv[k] = v;
