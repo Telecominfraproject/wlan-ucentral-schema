@@ -19,6 +19,24 @@ let error = 0;
 inputfile.close();
 let logs = [];
 
+function wait_wireless_ready() {
+	for (let i = 0; i < 30; i++) {
+		let status = ubus.call('network.wireless', 'status');
+		if (!status)
+			return;
+		let pending = false;
+		for (let name, radio in status)
+			if (radio?.pending) {
+				pending = true;
+				break;
+			}
+		if (!pending)
+			return;
+		sleep(1000);
+	}
+	warn("ucentral: timeout waiting for network.wireless to settle\n");
+}
+
 function set_service_state(state) {
 	let services = ubus.call('service', 'list');
 	for (let service, enable in renderer.services_state()) {
@@ -74,6 +92,8 @@ try {
 		renderer.write_files(logs);
 
 		set_service_state(false);
+
+		wait_wireless_ready();
 
 		for (let cmd in [ 'uci -c /tmp/config-shadow -t /tmp/.uci-shadow commit',
 				  'cp /tmp/config-shadow/* /etc/config/',
