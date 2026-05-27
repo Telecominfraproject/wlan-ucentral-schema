@@ -62,11 +62,12 @@ try {
 		outputjson.close();
 
 		for (let cmd in [ 'rm -rf /tmp/config-shadow',
+				  'rm -rf /tmp/.uci-shadow',
 				  'cp -r /etc/config-shadow /tmp',
 				  '/usr/share/ucentral/wifi_detect.sh' ])
 			system(cmd);
 
-		let apply = fs.popen("/sbin/uci -c /tmp/config-shadow batch", "w");
+		let apply = fs.popen("/sbin/uci -c /tmp/config-shadow -t /tmp/.uci-shadow batch", "w");
 		apply.write(batch);
 		apply.close();
 
@@ -74,9 +75,10 @@ try {
 
 		set_service_state(false);
 
-		for (let cmd in [ 'uci -c /tmp/config-shadow commit',
+		for (let cmd in [ 'uci -c /tmp/config-shadow -t /tmp/.uci-shadow commit',
 				  'cp /tmp/config-shadow/* /etc/config/',
 				  'rm -rf /tmp/config-shadow',
+				  'rm -rf /tmp/.uci-shadow',
 				  'sync'])
 			system(cmd);
 
