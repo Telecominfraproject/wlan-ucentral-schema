@@ -111,6 +111,60 @@ export function collect_wifi_radios(state) {
 					push(radio.survey, v);
 		}
 		delete radio.in_use;
+
+		/* Bridge SSID tx_failed/tx_retries gap on hardware that doesn't
+		 * propagate per-STA TX status to mac80211 (mt76 on mt7621/mt7915,
+		 * ath11k on QSDK). Each driver tracks comparable RF-only retry/fail
+		 * counters in its own debugfs:
+		 *   mt76:   .../mt76/tx_stats           (BA miss count)
+		 *   ath11k: .../ath11k/htt_stats        (tx_xretry via type 1)
+		 * Project the phy-aggregate count onto each VAP, weighted by
+		 * tx_packets share.
+		 */
+		if (length(data.interfaces) && data.interfaces[0].ifname) {
+			let ifname = data.interfaces[0].ifname;
+			let phyname_raw = fs.readfile('/sys/class/net/' + ifname + '/phy80211/name');
+			let phyname = phyname_raw ? trim(phyname_raw) : null;
+			let phy_fail = 0;
+			if (phyname) {
+				let mt76_raw = fs.readfile('/sys/kernel/debug/ieee80211/' + phyname + '/mt76/tx_stats');
+				if (mt76_raw) {
+					let m = match(mt76_raw, /BA miss count: ([0-9]+)/);
+					if (m) phy_fail = +m[1];
+				} else {
+					let ath_type = fs.open('/sys/kernel/debug/ieee80211/' + phyname + '/ath11k/htt_stats_type', 'w');
+					if (ath_type) {
+						ath_type.write('1\n');
+						ath_type.close();
+						sleep(100);
+						let htt_raw = fs.readfile('/sys/kernel/debug/ieee80211/' + phyname + '/ath11k/htt_stats');
+						if (htt_raw) {
+							let m = match(htt_raw, /tx_xretry = ([0-9]+)/);
+							if (m) phy_fail = +m[1];
+						}
+					}
+				}
+			}
+
+			if (phy_fail > 0) {
+				let total_tx = 0;
+				for (let v in data.interfaces) {
+					if (global.ports && global.ports[v.ifname] && global.ports[v.ifname].counters)
+						total_tx += +global.ports[v.ifname].counters.tx_packets || 0;
+				}
+				for (let v in data.interfaces) {
+					if (!global.ports || !global.ports[v.ifname] || !global.ports[v.ifname].counters)
+						continue;
+					let vap_tx = +global.ports[v.ifname].counters.tx_packets || 0;
+					let attributed = total_tx > 0
+						? int(phy_fail * vap_tx / total_tx)
+						: int(phy_fail / length(data.interfaces));
+					global.ports[v.ifname].counters.tx_failed = (+global.ports[v.ifname].counters.tx_failed || 0) + attributed;
+					global.ports[v.ifname].counters.tx_retries = (+global.ports[v.ifname].counters.tx_retries || 0) + attributed;
+				}
+			}
+		}
+
 		push(radios, radio);
 	}
 	
