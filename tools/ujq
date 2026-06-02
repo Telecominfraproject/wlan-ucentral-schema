@@ -1,0 +1,7 @@
+#!/usr/bin/ucode
+import * as fs from 'fs';
+
+let stdin = fs.open('/dev/stdin', 'r');
+const data = json(stdin.read("all"));
+stdin.close();
+printf("%.J\n", data);
