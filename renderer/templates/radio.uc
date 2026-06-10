@@ -25,6 +25,9 @@
 
 		for (let supported_mode in supported_phy_modes) {
 			if (match(supported_mode, fallback_modes[channel_mode])) {
+				if (!radio.allow_dfs && radio.band == "5G" &&
+				    substr(supported_mode, length(supported_mode) - 3) == "160")
+					continue;
 				warn("Selected radio does not support requested HT mode %s, falling back to %s",
 					wanted_mode, supported_mode);
 				delete radio.channel;
