@@ -60,8 +60,10 @@ function lookup_wifs() {
 	let rv = {};
 	for (let wif in wifs) {
 		let wif_obj = wif.mlo_links?.[0] || wif;
-		if (!wif_obj.wiphy_freq || !iftypes[wif.iftype])
+		if (!iftypes[wif.iftype])
 			continue;
+
+		// Allow interfaces with wiphy_freq=0 (e.g. NOHT/channel unknown state)
 		let w = {};
 		w.ssid = wif.ssid;
 		w.bssid = wif.mac;
@@ -69,11 +71,13 @@ function lookup_wifs() {
 		w.channel = [];
 		w.frequency = [];
 		w.tx_power = (wif_obj.wiphy_tx_power_level / 100) || 0;
-		for (let f in [ wif_obj.wiphy_freq, wif_obj.center_freq1, wif_obj.center_freq2 ])
-			if (f) {
-				push(w.channel, freq2channel(f));
-				push(w.frequency, f);
-			}
+		if (wif_obj.wiphy_freq) {
+			for (let f in [ wif_obj.wiphy_freq, wif_obj.center_freq1, wif_obj.center_freq2 ])
+				if (f) {
+					push(w.channel, freq2channel(f));
+					push(w.frequency, f);
+				}
+		}
 		if (chwidth[wif_obj.channel_width])
 			w.ch_width = chwidth[wif_obj.channel_width];
 		rv[wif.ifname] = w;
