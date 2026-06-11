@@ -60,15 +60,20 @@ function lookup_wifs() {
 	let rv = {};
 	for (let wif in wifs) {
 		let wif_obj = wif.mlo_links?.[0] || wif;
-		if (!wif_obj.wiphy_freq || !iftypes[wif.iftype])
+		/* Don't filter on wiphy_freq here — interfaces with freq=0 (radio stuck
+		 * in NOHT/no-channel state) must remain visible so the health checker
+		 * can distinguish "radio present but broken" from "radio missing". */
+		if (!iftypes[wif.iftype])
 			continue;
 		let w = {};
 		w.ssid = wif.ssid;
 		w.bssid = wif.mac;
 		w.mode = iftypes[wif.iftype];
+		w.phy = wif.wiphy;
 		w.channel = [];
 		w.frequency = [];
 		w.tx_power = (wif_obj.wiphy_tx_power_level / 100) || 0;
+		w.has_channel = !!wif_obj.wiphy_freq;
 		for (let f in [ wif_obj.wiphy_freq, wif_obj.center_freq1, wif_obj.center_freq2 ])
 			if (f) {
 				push(w.channel, freq2channel(f));
