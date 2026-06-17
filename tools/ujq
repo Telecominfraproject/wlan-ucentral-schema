@@ -1,0 +1,16 @@
+#!/usr/bin/ucode
+import * as fs from 'fs';
+
+let stdin = fs.open('/dev/stdin', 'r');
+let raw = stdin.read("all");
+stdin.close();
+
+let data;
+try {
+	data = json(raw);
+} catch (e) {
+	warn("ujq: invalid JSON input\n");
+	exit(1);
+}
+
+printf("%.J\n", data);
