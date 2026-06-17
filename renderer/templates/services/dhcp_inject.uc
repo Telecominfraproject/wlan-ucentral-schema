@@ -68,6 +68,7 @@
 	}
 
 	// Main logic
+	services.set_enabled("dhcpinject", has_upstream_interfaces());
 	if (!has_dhcp_inject_interfaces())
 		return;
 %}
