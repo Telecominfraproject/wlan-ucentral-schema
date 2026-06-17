@@ -222,6 +222,15 @@
 		return true;
 	}
 
+	function generate_bridge_empty_config() {
+		let output = [];
+		if (is_downstream_interface() && length(interface.ssids) > 0 && !has_ethernet_ports()) {
+			uci_comment(output, '### generate bridge_empty configuration');
+			uci_set_string(output, `network.${bridgedev}.bridge_empty`, '1');
+		}
+		return uci_output(output);
+	}
+
 	// Variables initialization (declare early for function access)
 	let has_downstream_relays = false;
 	let dest;
@@ -367,3 +376,5 @@
 {% if (tunnel_proto == 'mesh'): %}
 set network.{{ name }}.batman=1
 {% endif %}
+
+{{ generate_bridge_empty_config() }}
