@@ -42,6 +42,13 @@ if (!duration) {
 	push(command, '-c');
 	push(command, packets);
 }
+
+if (args.snaplen && +args.snaplen > 0)
+	push(command, '-s', +args.snaplen);
+
+if (args.filter && length(args.filter))
+	push(command, args.filter);
+
 let rc = system(command);
 
 if (rc != 0) {
