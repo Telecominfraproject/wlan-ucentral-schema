@@ -2,10 +2,12 @@
 	"uuid": 2,
 
 	"switch": {
-		"port-mirror": {
-			"monitor-ports": [ "WAN" ],
-			"analysis-port": "LAN1"
-		}
+		"port-mirror": [
+			{
+				"monitor-ports": [ "WAN" ],
+				"analysis-port": "LAN1"
+			}
+		]
 	},
 
 	"interfaces": [

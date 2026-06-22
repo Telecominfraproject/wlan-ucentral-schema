@@ -5,43 +5,26 @@
 		network_proto: 'none'
 	};
 
-	// Helper functions
-
-	// has_ functions - check for existence/availability
-	function has_port_mirror_config() {
-		return state.switch.port_mirror &&
-		       state.switch.port_mirror.monitor_ports &&
-		       state.switch.port_mirror.analysis_port;
+	// The schema models port-mirror as a list of sessions to stay aligned with
+	// the controller schema, but the AP switch fabric only programs a single
+	// mirror, so we render the first entry and warn about any extras.
+	function first_port_mirror() {
+		let mirrors = state.switch.port_mirror;
+		if (length(mirrors) > 1)
+			warn("switch fabric supports a single port-mirror, ignoring %d additional session(s)", length(mirrors) - 1);
+		return mirrors?.[0];
 	}
 
-	function has_monitor_ports() {
-		return state.switch.port_mirror.monitor_ports &&
-		       length(state.switch.port_mirror.monitor_ports) > 0;
-	}
+	let port_mirror = first_port_mirror();
 
-	function has_analysis_port() {
-		return !!state.switch.port_mirror.analysis_port;
-	}
-
-	// normalize_ functions - data transformation
-	function normalize_analysis_ports() {
-		return ethernet.lookup_by_select_ports([state.switch.port_mirror.analysis_port]);
-	}
-
-	function normalize_monitor_ports() {
-		return ethernet.lookup_by_select_ports(state.switch.port_mirror.monitor_ports);
-	}
-
-	// Configuration generation functions
 	function generate_port_mirror_config() {
-		if (!has_port_mirror_config())
+		if (!port_mirror || !length(port_mirror.monitor_ports) || !port_mirror.analysis_port)
 			return '';
 
-		let analysis = normalize_analysis_ports();
-		let mirrors = normalize_monitor_ports();
+		let analysis = ethernet.lookup_by_select_ports([port_mirror.analysis_port]);
+		let mirrors = ethernet.lookup_by_select_ports(port_mirror.monitor_ports);
 
-		// Reserve the analysis port
-		ethernet.reserve_port(state.switch.port_mirror.analysis_port);
+		ethernet.reserve_port(port_mirror.analysis_port);
 
 		let output = [];
 
