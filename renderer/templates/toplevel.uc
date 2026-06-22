@@ -103,12 +103,26 @@
 	for (let i, radio in state.radios) {
 		if (!radio.channel || radio.channel == 'auto')
 			continue;
-		for (let j, iface in state.interfaces)
-			for (let s, ssid in iface.ssids)
-				if (ssid.bss_mode in [ 'sta', 'wds-sta', 'wds-repeater' ]) {
-					warn('Forcing Auto-Channel as a STA interface is present');
-					delete radio.channel;
+		let radio_phys = wiphy.lookup_by_band(radio.band);
+		let radio_sections = map(radio_phys, p => p.section);
+		for (let j, iface in state.interfaces) {
+			if (!radio.channel) break;
+			for (let s, ssid in (iface.ssids || [])) {
+				if (!radio.channel) break;
+				if (!(ssid.bss_mode in [ 'sta', 'wds-sta', 'wds-repeater' ]))
+					continue;
+				for (let band in (ssid.wifi_bands || [])) {
+					if (!radio.channel) break;
+					for (let phy in wiphy.lookup_by_band(band)) {
+						if (phy.section in radio_sections) {
+							warn('Forcing Auto-Channel as a STA interface is present on radio%d (%s)', i, radio.band);
+							delete radio.channel;
+							break;
+						}
+					}
 				}
+			}
+		}
 	}
 
 	include('base.uc');
