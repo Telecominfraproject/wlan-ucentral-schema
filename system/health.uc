@@ -38,6 +38,193 @@ function find_ssid(ssid, wifi_state) {
 	return 1;
 }
 
+// Helper function: find SSID on a specific phy index
+function find_ssid_on_phy(ssid, phy_idx, wifi_state) {
+	for (let ifname, iface in wifi_state) {
+		if (iface.ssid == ssid && iface.phy == phy_idx) {
+			if (!iface.has_channel)
+				return -1;
+			return 0;
+		}
+	}
+	return 1;
+}
+
+// Helper function: find SSID by interface name prefix
+function find_ssid_by_prefix(ssid, prefix, wifi_state) {
+	for (let ifname, iface in wifi_state) {
+		if (iface.ssid == ssid && index(ifname, prefix) == 0) {
+			if (!iface.has_channel)
+				return -1;
+			return 0;
+		}
+	}
+	return 1;
+}
+
+// Helper function: find SSID on a specific phy filtered by band frequency range
+function find_ssid_on_phy_band(ssid, phy_idx, band, wifi_state) {
+	let band_ranges = {
+		'2g': [2400, 2500],
+		'5g': [5150, 5900],
+		'6g': [5925, 7200],
+	};
+	let range = band_ranges[band];
+	if (!range)
+		return find_ssid_on_phy(ssid, phy_idx, wifi_state);
+
+	for (let ifname, iface in wifi_state) {
+		if (iface.ssid != ssid || iface.phy != phy_idx)
+			continue;
+
+		/* If interface has no channel, we can't verify band by frequency.
+		 * Match it anyway — no_channel is the more useful error. */
+		if (!iface.has_channel)
+			return -1;
+
+		let in_band = false;
+		for (let f in iface.frequency) {
+			if (f >= range[0] && f <= range[1]) {
+				in_band = true;
+				break;
+			}
+		}
+		if (!in_band)
+			continue;
+
+		return 0;
+	}
+	return 1;
+}
+
+// Helper function: find SSID for a radio using match info
+function find_ssid_for_radio(ssid, match_info, wifi_state) {
+	if (match_info.match_mode == 'prefix')
+		return find_ssid_by_prefix(ssid, match_info.ifname_prefix, wifi_state);
+	else if (match_info.match_mode == 'phy_band')
+		return find_ssid_on_phy_band(ssid, match_info.phy_idx, match_info.band, wifi_state);
+	else
+		return find_ssid_on_phy(ssid, match_info.phy_idx, wifi_state);
+}
+
+// Helper function: get radio match info from device config section
+function get_radio_match_info(section) {
+	if (!section || !section.path)
+		return null;
+
+	let info = {};
+
+	/* If device has ifname_prefix, use prefix-based matching */
+	if (section.ifname_prefix) {
+		info.match_mode = 'prefix';
+		info.ifname_prefix = section.ifname_prefix;
+		return info;
+	}
+
+	/* Strip +N suffix used by multi-radio single-phy devices */
+	let base_path = section.path;
+	let path_match = match(base_path, /^(.+)\+([0-9]+)$/);
+	if (path_match)
+		base_path = path_match[1];
+
+	/* Resolve phy from sysfs path */
+	let phys = fs.glob(sprintf('/sys/devices/%s/ieee80211/phy*', base_path));
+	if (!length(phys))
+		phys = fs.glob(sprintf('/sys/devices/platform/%s/ieee80211/phy*', base_path));
+	if (!length(phys))
+		return null;
+
+	sort(phys);
+
+	let phy_offset = path_match ? int(path_match[2]) : 0;
+	if (phy_offset >= length(phys))
+		return null;
+
+	let phy_name = fs.basename(phys[phy_offset]);
+	let phy_idx;
+
+	let idx_str = fs.readfile(sprintf('/sys/class/ieee80211/%s/index', phy_name));
+	if (idx_str != null) {
+		phy_idx = int(trim(idx_str));
+	} else {
+		let match_res = match(phy_name, /phy([0-9]+)/);
+		if (match_res)
+			phy_idx = int(match_res[1]);
+		else
+			return null;
+	}
+
+	/* Reconf-capable devices share one phy across bands; disambiguate by band */
+	if (section.radio != null && section.band) {
+		info.match_mode = 'phy_band';
+		info.phy_idx = phy_idx;
+		info.band = section.band;
+		return info;
+	}
+
+	info.match_mode = 'phy';
+	info.phy_idx = phy_idx;
+	return info;
+}
+
+// Health check: per-radio SSID presence
+function check_radio_health(wifi_config, wifi_state) {
+	let radio_issues = {};
+	let radios_checked = 0;
+
+	for (let k, section in wifi_config) {
+		if (section['.type'] != 'wifi-device')
+			continue;
+		if (section.disabled == '1')
+			continue;
+
+		let dev_name = section['.name'];
+		let match_info = get_radio_match_info(section);
+		if (match_info == null)
+			continue;
+
+		let expected_ssids = [];
+		for (let j, iface_section in wifi_config) {
+			if (iface_section['.type'] != 'wifi-iface')
+				continue;
+			if (iface_section.device != dev_name)
+				continue;
+			/* Skip disabled, non-AP, or ssid-less ifaces */
+			if (iface_section.disabled == '1')
+				continue;
+			if (iface_section.mode && iface_section.mode != 'ap')
+				continue;
+			if (!iface_section.ssid)
+				continue;
+			push(expected_ssids, iface_section.ssid);
+		}
+
+		if (!length(expected_ssids))
+			continue;
+
+		radios_checked++;
+
+		let failed_ssids = {};
+		for (let ssid in expected_ssids) {
+			let result = find_ssid_for_radio(ssid, match_info, wifi_state);
+			if (result != 0)
+				failed_ssids[ssid] = (result == -1) ? 'no_channel' : 'missing';
+		}
+
+		if (length(failed_ssids)) {
+			radio_issues[dev_name] = {
+				failed_ssids: failed_ssids
+			};
+			if (match_info.match_mode == 'prefix')
+				radio_issues[dev_name].prefix = match_info.ifname_prefix;
+			else
+				radio_issues[dev_name].phy = match_info.phy_idx;
+		}
+	}
+
+	return { issues: radio_issues, checked: radios_checked };
+}
+
 // Helper function: RADIUS probe
 function radius_probe(server, port, secret, user, pass) {
 	let f = fs.open('/tmp/radius.conf', 'w');
@@ -276,14 +463,38 @@ function main() {
 	check_rrm_health(configs.rrmd_config);
 	check_memory_health();
 
+	// Per-radio health check
+	let radio_result = check_radio_health(configs.wifi_config, configs.wifi_state);
+	let radio_issues = radio_result.issues;
+	let radios_checked = radio_result.checked;
+
+	if (length(radio_issues)) {
+		state.radios = radio_issues;
+		for (let radio_name, issue in radio_issues) {
+			ubus.call('event', 'event', {
+				object: 'health',
+				verb: 'wifi',
+				payload: {
+					radio: radio_name,
+					error: sprintf('Radio %s has failed SSIDs', radio_name),
+					failed_ssids: issue.failed_ssids
+				}
+			});
+		}
+	}
+
 	// Calculate and report sanity
-	let errors = length(state.interfaces);
-	if (!errors)
+	let iface_errors = length(state.interfaces);
+	if (!iface_errors)
 		delete state.interfaces;
 
-	let sanity = 100 - (errors * 100 / interface_count);
+	let radio_errors = length(radio_issues);
 
-	warn(printf('health check reports sanity of %d', sanity));
+	let total_checks = interface_count + radios_checked;
+	let total_errors = iface_errors + radio_errors;
+	let sanity = 100 - (total_errors * 100 / (total_checks || 1));
+
+	warn(printf('health check reports sanity of %d (iface_errors=%d, radio_errors=%d)', sanity, iface_errors, radio_errors));
 	ubus.call('ucentral', 'health', {sanity: sanity, data: state});
 	
 	let f = fs.open("/tmp/ucentral.health", "w");
