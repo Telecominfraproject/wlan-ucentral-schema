@@ -187,7 +187,7 @@
 	}
 
 	function generate_switch_vlan_config() {
-		if (!swconfig)
+		if (is_vlan_configured() && !swconfig)
 			return '';
 
 		let output = [];
