@@ -42,6 +42,10 @@ function has_accounting_server(realm) {
 	return realm.acct_server;
 }
 
+function has_private_key_password(realm) {
+	return realm.private_key_password;
+}
+
 function get_radsec_certificates(idx, realm) {
 	let certs = {};
 	
@@ -75,7 +79,8 @@ function generate_radsec_realm_config(idx, realm, output) {
 	uci_set_string(output, 'radsecproxy.@tls[-1].CACertificateFile', certs.ca);
 	uci_set_string(output, 'radsecproxy.@tls[-1].certificateFile', certs.cert);
 	uci_set_string(output, 'radsecproxy.@tls[-1].certificateKeyFile', certs.key);
-	uci_set_string(output, 'radsecproxy.@tls[-1].certificateKeyPassword', '');
+	if (has_private_key_password(realm))
+		uci_set_string(output, 'radsecproxy.@tls[-1].certificateKeyPassword', realm.private_key_password);
 	
 	// Server configuration  
 	uci_named_section(output, sprintf('radsecproxy.server%d', idx), 'server');

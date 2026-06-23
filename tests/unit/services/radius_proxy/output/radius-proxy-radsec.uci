@@ -14,7 +14,6 @@ set radsecproxy.@tls[-1].name='tls0'
 set radsecproxy.@tls[-1].CACertificateFile='/tmp/mock/ca0'
 set radsecproxy.@tls[-1].certificateFile='/tmp/mock/cert0'
 set radsecproxy.@tls[-1].certificateKeyFile='/tmp/mock/key0'
-set radsecproxy.@tls[-1].certificateKeyPassword=
 set radsecproxy.server0=server
 set radsecproxy.@server[-1].name='server0'
 set radsecproxy.@server[-1].host='radius.example.com'

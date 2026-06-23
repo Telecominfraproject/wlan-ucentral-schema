@@ -14,7 +14,6 @@ set radsecproxy.@tls[-1].name='tls0'
 set radsecproxy.@tls[-1].CACertificateFile='/etc/ssl/ca.pem'
 set radsecproxy.@tls[-1].certificateFile='/etc/ssl/cert.pem'
 set radsecproxy.@tls[-1].certificateKeyFile='/etc/ssl/key.pem'
-set radsecproxy.@tls[-1].certificateKeyPassword=
 set radsecproxy.server0=server
 set radsecproxy.@server[-1].name='server0'
 set radsecproxy.@server[-1].dynamicLookupCommand='/usr/libexec/naptr_lookup.sh'
