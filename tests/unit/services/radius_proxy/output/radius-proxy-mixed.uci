@@ -20,7 +20,6 @@ set radsecproxy.@server[-1].name='server0'
 set radsecproxy.@server[-1].dynamicLookupCommand='/usr/libexec/naptr_lookup.sh'
 set radsecproxy.@server[-1].type='tls'
 set radsecproxy.@server[-1].tls='tls0'
-set radsecproxy.@server[-1].statusServer='0'
 set radsecproxy.@server[-1].certificateNameCheck='0'
 add radsecproxy realm
 set radsecproxy.@realm[-1].name='secure.example.com'

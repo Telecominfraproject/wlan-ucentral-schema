@@ -22,7 +22,6 @@ set radsecproxy.@server[-1].port='2083'
 set radsecproxy.@server[-1].secret='radsec-secret'
 set radsecproxy.@server[-1].type='tls'
 set radsecproxy.@server[-1].tls='tls0'
-set radsecproxy.@server[-1].statusServer='0'
 set radsecproxy.@server[-1].certificateNameCheck='0'
 add radsecproxy realm
 set radsecproxy.@realm[-1].name='example.com'
