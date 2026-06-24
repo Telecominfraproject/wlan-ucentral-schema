@@ -7586,6 +7586,23 @@ function instantiateServiceRadiusProxy(location, value, errors) {
 								obj.private_key_password = parsePrivateKeyPassword(location + "/private-key-password", value["private-key-password"], errors);
 							}
 
+							function parseStatusServer(location, value, errors) {
+								if (type(value) != "string")
+									push(errors, [ location, "must be of type string" ]);
+
+								if (!(value in [ "off", "on", "minimal", "auto" ]))
+									push(errors, [ location, "must be one of \"off\", \"on\", \"minimal\" or \"auto\"" ]);
+
+								return value;
+							}
+
+							if (exists(value, "status-server")) {
+								obj.status_server = parseStatusServer(location + "/status-server", value["status-server"], errors);
+							}
+							else {
+								obj.status_server = "off";
+							}
+
 							return obj;
 						}
 

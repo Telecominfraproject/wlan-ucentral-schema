@@ -91,7 +91,7 @@ function generate_radsec_realm_config(idx, realm, output) {
 	
 	uci_set_string(output, 'radsecproxy.@server[-1].type', 'tls');
 	uci_set_string(output, 'radsecproxy.@server[-1].tls', sprintf('tls%d', idx));
-	uci_set_string(output, 'radsecproxy.@server[-1].statusServer', '0');
+	uci_set_string(output, 'radsecproxy.@server[-1].statusServer', realm.status_server);
 	uci_set_string(output, 'radsecproxy.@server[-1].certificateNameCheck', '0');
 	
 	// Realm mappings

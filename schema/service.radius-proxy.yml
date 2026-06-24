@@ -72,6 +72,16 @@ properties:
             description:
               Password required to decrypt the private key (if encrypted).
             type: string
+          status-server:
+            description:
+              Controls radsecproxy's StatusServer directive for the upstream radsec server. 'off' disables status-server probing. 'on' sends regular status-server messages and tracks server liveness solely via those replies. 'minimal' sends status-server messages only when regular requests have been lost. 'auto' tries to detect whether the upstream supports status-server and falls back to 'minimal' if so.
+            type: string
+            enum:
+            - 'off'
+            - 'on'
+            - minimal
+            - auto
+            default: 'off'
       - type: object
         properties:
           protocol:

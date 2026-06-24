@@ -2817,6 +2817,16 @@
                                     },
                                     "private-key-password": {
                                         "type": "string"
+                                    },
+                                    "status-server": {
+                                        "type": "string",
+                                        "enum": [
+                                            "off",
+                                            "on",
+                                            "minimal",
+                                            "auto"
+                                        ],
+                                        "default": "off"
                                     }
                                 }
                             },
