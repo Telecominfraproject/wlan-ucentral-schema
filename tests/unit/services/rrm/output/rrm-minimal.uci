@@ -1,5 +1,0 @@
-
-### generate RRM base configuration
-set rrmd.@base[0].beacon_request_assoc=0
-set rrmd.@base[0].station_stats_interval=0
-

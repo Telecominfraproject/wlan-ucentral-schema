@@ -1,1 +1,0 @@
-../../schemareader.uc
