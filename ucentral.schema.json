@@ -3909,6 +3909,75 @@
                 }
             }
         },
+        "metrics.rogue-ap": {
+            "type": "object",
+            "properties": {
+                "override-dfs": {
+                    "type": "boolean"
+                },
+                "interval": {
+                    "type": "integer",
+                    "minimum": 30
+                },
+                "rules": {
+                    "type": "array",
+                    "items": {
+                        "oneOf": [
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "ssid": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "ssid"
+                                ],
+                                "additionalProperties": false
+                            },
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "bssid": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "bssid"
+                                ],
+                                "additionalProperties": false
+                            },
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "rssi": {
+                                        "type": "integer",
+                                        "minimum": -100,
+                                        "maximum": 0
+                                    }
+                                },
+                                "required": [
+                                    "rssi"
+                                ],
+                                "additionalProperties": false
+                            },
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "vendor": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "vendor"
+                                ],
+                                "additionalProperties": false
+                            }
+                        ]
+                    }
+                }
+            }
+        },
         "metrics": {
             "type": "object",
             "properties": {
@@ -3932,6 +4001,9 @@
                 },
                 "realtime": {
                     "$ref": "#/$defs/metrics.realtime"
+                },
+                "rogue-ap": {
+                    "$ref": "#/$defs/metrics.rogue-ap"
                 }
             }
         },

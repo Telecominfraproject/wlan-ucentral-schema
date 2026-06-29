@@ -10306,6 +10306,251 @@ function instantiateMetricsRealtime(location, value, errors) {
 	return value;
 }
 
+function instantiateMetricsRogueAp(location, value, errors) {
+	if (type(value) == "object") {
+		let obj = {};
+
+		function parseOverrideDfs(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "override-dfs")) {
+			obj.override_dfs = parseOverrideDfs(location + "/override-dfs", value["override-dfs"], errors);
+		}
+
+		function parseInterval(location, value, errors) {
+			if (type(value) in [ "int", "double" ]) {
+				if (value < 30)
+					push(errors, [ location, "must be bigger than or equal to 30" ]);
+
+			}
+
+			if (type(value) != "int")
+				push(errors, [ location, "must be of type integer" ]);
+
+			return value;
+		}
+
+		if (exists(value, "interval")) {
+			obj.interval = parseInterval(location + "/interval", value["interval"], errors);
+		}
+
+		function parseRules(location, value, errors) {
+			if (type(value) == "array") {
+				function parseItem(location, value, errors) {
+					function parseVariant0(location, value, errors) {
+						if (type(value) == "object") {
+							let obj = {};
+
+							function parseSsid(location, value, errors) {
+								if (type(value) != "string")
+									push(errors, [ location, "must be of type string" ]);
+
+								return value;
+							}
+
+							if (exists(value, "ssid")) {
+								obj.ssid = parseSsid(location + "/ssid", value["ssid"], errors);
+							}
+							else {
+								push(errors, [ location, "is required" ]);
+							}
+
+							return obj;
+						}
+
+						if (type(value) != "object")
+							push(errors, [ location, "must be of type object" ]);
+
+						return value;
+					}
+
+					function parseVariant1(location, value, errors) {
+						if (type(value) == "object") {
+							let obj = {};
+
+							function parseBssid(location, value, errors) {
+								if (type(value) != "string")
+									push(errors, [ location, "must be of type string" ]);
+
+								return value;
+							}
+
+							if (exists(value, "bssid")) {
+								obj.bssid = parseBssid(location + "/bssid", value["bssid"], errors);
+							}
+							else {
+								push(errors, [ location, "is required" ]);
+							}
+
+							return obj;
+						}
+
+						if (type(value) != "object")
+							push(errors, [ location, "must be of type object" ]);
+
+						return value;
+					}
+
+					function parseVariant2(location, value, errors) {
+						if (type(value) == "object") {
+							let obj = {};
+
+							function parseRssi(location, value, errors) {
+								if (type(value) in [ "int", "double" ]) {
+									if (value > 0)
+										push(errors, [ location, "must be lower than or equal to 0" ]);
+
+									if (value < -100)
+										push(errors, [ location, "must be bigger than or equal to -100" ]);
+
+								}
+
+								if (type(value) != "int")
+									push(errors, [ location, "must be of type integer" ]);
+
+								return value;
+							}
+
+							if (exists(value, "rssi")) {
+								obj.rssi = parseRssi(location + "/rssi", value["rssi"], errors);
+							}
+							else {
+								push(errors, [ location, "is required" ]);
+							}
+
+							return obj;
+						}
+
+						if (type(value) != "object")
+							push(errors, [ location, "must be of type object" ]);
+
+						return value;
+					}
+
+					function parseVariant3(location, value, errors) {
+						if (type(value) == "object") {
+							let obj = {};
+
+							function parseVendor(location, value, errors) {
+								if (type(value) != "string")
+									push(errors, [ location, "must be of type string" ]);
+
+								return value;
+							}
+
+							if (exists(value, "vendor")) {
+								obj.vendor = parseVendor(location + "/vendor", value["vendor"], errors);
+							}
+							else {
+								push(errors, [ location, "is required" ]);
+							}
+
+							return obj;
+						}
+
+						if (type(value) != "object")
+							push(errors, [ location, "must be of type object" ]);
+
+						return value;
+					}
+
+					let success = 0, tryval, tryerr, vvalue = null, verrors = [];
+
+					tryerr = [];
+					tryval = parseVariant0(location, value, tryerr);
+					if (!length(tryerr)) {
+						if (type(vvalue) == "object" && type(tryval) == "object")
+							vvalue = { ...vvalue, ...tryval };
+						else
+							vvalue = tryval;
+
+						success++;
+					}
+					else {
+						push(verrors, join(" and\n", map(tryerr, err => "\t - " + err[1])));
+					}
+
+					tryerr = [];
+					tryval = parseVariant1(location, value, tryerr);
+					if (!length(tryerr)) {
+						if (type(vvalue) == "object" && type(tryval) == "object")
+							vvalue = { ...vvalue, ...tryval };
+						else
+							vvalue = tryval;
+
+						success++;
+					}
+					else {
+						push(verrors, join(" and\n", map(tryerr, err => "\t - " + err[1])));
+					}
+
+					tryerr = [];
+					tryval = parseVariant2(location, value, tryerr);
+					if (!length(tryerr)) {
+						if (type(vvalue) == "object" && type(tryval) == "object")
+							vvalue = { ...vvalue, ...tryval };
+						else
+							vvalue = tryval;
+
+						success++;
+					}
+					else {
+						push(verrors, join(" and\n", map(tryerr, err => "\t - " + err[1])));
+					}
+
+					tryerr = [];
+					tryval = parseVariant3(location, value, tryerr);
+					if (!length(tryerr)) {
+						if (type(vvalue) == "object" && type(tryval) == "object")
+							vvalue = { ...vvalue, ...tryval };
+						else
+							vvalue = tryval;
+
+						success++;
+					}
+					else {
+						push(verrors, join(" and\n", map(tryerr, err => "\t - " + err[1])));
+					}
+
+					if (success != 1) {
+						if (length(verrors))
+							push(errors, [ location, "must match exactly one of the following constraints:\n" + join("\n- or -\n", verrors) ]);
+						else
+							push(errors, [ location, "must match only one variant" ]);
+						return null;
+					}
+
+					value = vvalue;
+
+					return value;
+				}
+
+				return map(value, (item, i) => parseItem(location + "/" + i, item, errors));
+			}
+
+			if (type(value) != "array")
+				push(errors, [ location, "must be of type array" ]);
+
+			return value;
+		}
+
+		if (exists(value, "rules")) {
+			obj.rules = parseRules(location + "/rules", value["rules"], errors);
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
+
+	return value;
+}
+
 function instantiateMetrics(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
@@ -10336,6 +10581,10 @@ function instantiateMetrics(location, value, errors) {
 
 		if (exists(value, "realtime")) {
 			obj.realtime = instantiateMetricsRealtime(location + "/realtime", value["realtime"], errors);
+		}
+
+		if (exists(value, "rogue-ap")) {
+			obj.rogue_ap = instantiateMetricsRogueAp(location + "/rogue-ap", value["rogue-ap"], errors);
 		}
 
 		return obj;

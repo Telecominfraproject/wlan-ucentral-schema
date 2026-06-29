@@ -1,0 +1,41 @@
+description: Used to detect the type of rogue AP
+type: object
+properties:
+  override-dfs:
+    description: Whether to override DFS channels.
+    type: boolean
+  interval:
+    description: The reporting interval defined in minute.
+    type: integer
+    minimum: 30
+  rules:
+    description: The specific rules used to intercept rogue AP.
+    type: array
+    items:
+      oneOf:
+        - type: object
+          properties:
+            ssid:
+              type: string
+          required: [ssid]
+          additionalProperties: false
+        - type: object
+          properties:
+            bssid:
+              type: string
+          required: [bssid]
+          additionalProperties: false
+        - type: object
+          properties:
+            rssi:
+              type: integer
+              minimum: -100
+              maximum: 0
+          required: [rssi]
+          additionalProperties: false
+        - type: object
+          properties:
+            vendor:
+              type: string
+          required: [vendor]
+          additionalProperties: false
