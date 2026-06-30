@@ -102,25 +102,31 @@ export function process_halow_radio(radio, survey_data) {
 		let bandwidth = s1g_info.s1g_bw;
 		radio.channel_width = bandwidth;
 
-		// Calculate lower and upper edge frequencies
-		// For S1G channels, lower edge = center_freq - bandwidth/2
+		// Report channels[] and frequency[] aligned 1:1, same as 2G/5G.
+		// 2G/5G push driver-reported channel/freq directly without collapsing,
+		// so controller can map the operating channel to its center frequency.
 		let center_freq = s1g_info.s1g_freq;
-		let lower_freq = center_freq - bandwidth / 2;
-		let upper_freq = center_freq + bandwidth / 2;
 
-		// Update frequencies to include both lower and upper edge
-		radio.frequency = [lower_freq, upper_freq];
-
-		// Convert all channels
-		let s1g_channels = [];
-		for (let i = 0; i < length(orig_channels); i++) {
-			let ch = '' + orig_channels[i];
-			if (mapping_table[ch]) {
-				push(s1g_channels, mapping_table[ch].s1g_channel);
+		if (bandwidth == 1) {
+			// 1MHz: driver only reports one channel
+			radio.frequency = [center_freq, center_freq];
+			radio.channels = [s1g_info.s1g_channel, s1g_info.s1g_channel];
+		} else {
+			// 2/4/8MHz: map each orig channel to S1G channel+freq, keep
+			// 1:1 aligned (do NOT uniq - same behaviour as 2G/5G).
+			let s1g_channels = [];
+			let s1g_frequencies = [];
+			for (let i = 0; i < length(orig_channels); i++) {
+				let ch = '' + orig_channels[i];
+				if (mapping_table[ch]) {
+					push(s1g_channels, mapping_table[ch].s1g_channel);
+					push(s1g_frequencies, mapping_table[ch].s1g_freq);
+				}
 			}
-		}
-		if (length(s1g_channels)) {
-			radio.channels = uniq(s1g_channels);
+			if (length(s1g_channels)) {
+				radio.channels = s1g_channels;
+				radio.frequency = s1g_frequencies;
+			}
 		}
 
 		// Update survey frequencies to match the S1G center frequency in MHz
