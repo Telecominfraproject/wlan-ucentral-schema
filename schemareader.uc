@@ -6166,6 +6166,20 @@ function instantiateInterfaceSsid(location, value, errors) {
 			obj.hostapd_bss_raw = parseHostapdBssRaw(location + "/hostapd-bss-raw", value["hostapd-bss-raw"], errors);
 		}
 
+		function parseMlo(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "mlo")) {
+			obj.mlo = parseMlo(location + "/mlo", value["mlo"], errors);
+		}
+		else {
+			obj.mlo = false;
+		}
+
 		return obj;
 	}
 

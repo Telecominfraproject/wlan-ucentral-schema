@@ -44,6 +44,7 @@
 	const SAE_MIXED_PROTOCOLS = ["wpa3-mixed", "sae-mixed"];
 	const SAE_ALL_PROTOCOLS = [...SAE_PROTOCOLS, ...SAE_MIXED_PROTOCOLS];
 	const PSK_PROTOCOLS = ["psk", "psk2", "psk-mixed", "sae", "sae-mixed"];
+	const MLO_ALLOWED_PROTOCOLS = ["sae", "wpa3", "wpa3-192", "owe"];
 
 	const HS20_AUTH_TYPES = {
 		"terms-and-conditions": "00",
@@ -198,6 +199,22 @@
 	if (!length(phys)) {
 		warn("Can't find any suitable radio phy for SSID '%s' settings", ssid.name);
 		return;
+	}
+
+	// MLO validation
+	let mlo_enabled = false;
+	let mld_section = null;
+	if (ssid.mlo) {
+		if (length(phys) < 2) {
+			warn("MLO requires the SSID to be configured on two or more radios, disabling MLO for '%s'", ssid.name);
+		} else if (!(ssid.encryption?.proto in MLO_ALLOWED_PROTOCOLS)) {
+			warn("MLO requires SAE, WPA3-Enterprise, WPA3-192 or OWE encryption, disabling MLO for '%s'", ssid.name);
+		} else {
+			mlo_enabled = true;
+			let mld_idx = wiphy.mld_next || 0;
+			mld_section = 'mld' + mld_idx;
+			wiphy.mld_next = mld_idx + 1;
+		}
 	}
 
 	// validate_ functions - complex validation logic
@@ -594,8 +611,13 @@
 		let output = [];
 
 		uci_comment(output, '### generate crypto settings');
-		uci_set_number(output, `wireless.${section}.ieee80211w`, match_ieee80211w(band));
-		uci_set_string(output, `wireless.${section}.sae_pwe`, match_sae_pwe(band));
+		if (mlo_enabled && crypto.proto in SAE_ALL_PROTOCOLS) {
+			let pwe = (band == "6G") ? '1' : '2';
+			uci_set_string(output, `wireless.${section}.sae_pwe`, pwe);
+		} else if (!mlo_enabled) {
+			uci_set_number(output, `wireless.${section}.ieee80211w`, match_ieee80211w(band));
+			uci_set_string(output, `wireless.${section}.sae_pwe`, match_sae_pwe(band));
+		}
 		uci_set_string(output, `wireless.${section}.encryption`, crypto.proto);
 		uci_set_string(output, `wireless.${section}.key`, crypto.key);
 
@@ -1033,6 +1055,37 @@
 		return uci_output(output);
 	}
 
+	function generate_wifi_mld_config() {
+		if (!mlo_enabled)
+			return '';
+
+		let output = [];
+		let is_sae = ssid.encryption?.proto in SAE_ALL_PROTOCOLS;
+
+		uci_comment(output, '### generate wifi-mld configuration for MLO');
+		uci_named_section(output, `wireless.${mld_section}`, 'wifi-mld');
+		uci_set_string(output, `wireless.${mld_section}.ssid`, ssid.name);
+		uci_set_string(output, `wireless.${mld_section}.encryption`, ssid.encryption.proto);
+		uci_set_string(output, `wireless.${mld_section}.key`, ssid.encryption.key);
+		if (is_sae)
+			uci_set_string(output, `wireless.${mld_section}.sae_pwe`, '2');
+		uci_set_string(output, `wireless.${mld_section}.ttlm_enable`, '1');
+
+		return uci_output(output);
+	}
+
+	function generate_mld_link_config(section) {
+		if (!mlo_enabled)
+			return '';
+
+		let output = [];
+
+		uci_comment(output, '### link wifi-iface to wifi-mld');
+		uci_set_string(output, `wireless.${section}.mld`, mld_section);
+
+		return uci_output(output);
+	}
+
 	// Main logic and variable initialization
 	let bss_mode = normalize_bss_mode();
 	let radius_gw_proxy = has_radius_gw_proxy();
@@ -1058,6 +1111,7 @@
 %}
 
 # Wireless configuration
+{{ generate_wifi_mld_config() }}
 {% for (let n, phy in phys): %}
 {%   let band_index = get_radio_index(phy.band[0]); %}
 {%   let basename = name + '_' + count; %}
@@ -1081,6 +1135,7 @@
 {{ generate_ap_sta_config(section, bss_mode) }}
 {{ generate_band_specific_config(section, band) }}
 {{ generate_crypto_base_config(section, band, crypto) }}
+{{ generate_mld_link_config(section) }}
 {% if (crypto.eap_local): %}
 {{ generate_eap_local_config(section, crypto) }}
 {%     files.add_named(crypto.eap_user, render("../eap_users.uc", { users: crypto.eap_local.users })) %}

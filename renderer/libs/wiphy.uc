@@ -168,6 +168,19 @@ export function create_wiphy(cursor, warn) {
 			assert(phy.section, "Radio has no related uci section");
 
 			return phy.section + 'net' + phy.networks;
+		},
+
+		/** @private */
+		mld_next: 0,
+
+		/**
+		 * Allocate a wifi-mld section name.
+		 *
+		 * @returns {string}
+		 * Returns a unique MLD section name like 'mld0', 'mld1', etc.
+		 */
+		allocate_mld_section_id: function() {
+			return 'mld' + this.mld_next++;
 		}
 	};
 };

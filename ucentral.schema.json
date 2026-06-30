@@ -2310,6 +2310,10 @@
                         }
                     }
                 },
+                "mlo": {
+                    "type": "boolean",
+                    "default": false
+                },
                 "hostapd-bss-raw": {
                     "type": "array",
                     "items": {

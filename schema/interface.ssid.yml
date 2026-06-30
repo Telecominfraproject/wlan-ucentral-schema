@@ -186,6 +186,14 @@ properties:
         type: integer
       last:
         type: integer     
+  mlo:
+    description:
+      Enable Multi-Link Operation (MLO) for this SSID. When enabled, a wifi-mld
+      section will be created to link the wifi-iface instances across multiple bands.
+      MLO requires the SSID to be configured on two or more wifi-bands and the
+      encryption protocol must be SAE, WPA3-Enterprise, WPA3-192 or OWE.
+    type: boolean
+    default: false
   hostapd-bss-raw:
     description:
       This array allows passing raw hostapd.conf lines.
