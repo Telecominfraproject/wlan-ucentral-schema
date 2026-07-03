@@ -462,16 +462,27 @@ function map5GToS1G() {
 for (let radio, data in wifistatus) {
 	if (!length(data.interfaces))
 		continue;
-	let vap = wifiiface[data.interfaces[0].ifname];
+
+	// Find first interface with valid frequency, fallback to first available
+	let vap;
+	for (let iface in data.interfaces) {
+		let v = wifiiface[iface.ifname];
+		if (length(v) && length(v.frequency)) {
+			vap = v;
+			break;
+		}
+	}
+	if (!vap)
+		vap = wifiiface[data.interfaces[0].ifname];
 	if (!length(vap))
 		continue;
 
 	let radio = {};
-	radio.channel = vap.channel[0];
-	radio.channels = uniq(vap.channel);
-	radio.frequency = uniq(vap.frequency);
-	radio.channel_width = +vap.ch_width;
-	radio.tx_power = vap.tx_power;
+	radio.channel = length(vap.channel) ? vap.channel[0] : 0;
+	radio.channels = uniq(vap.channel || []);
+	radio.frequency = uniq(vap.frequency || []);
+	radio.channel_width = +vap.ch_width || 0;
+	radio.tx_power = vap.tx_power || 0;
 
 	let path = data.config.path;
 	if (exists(data.config, 'radio'))
