@@ -143,3 +143,56 @@ export function process_halow_radio(radio, survey_data) {
 	return false;
 };
 
+
+
+// Convert the driver-reported (5G-borrowed) frequencies of a HaLow/S1G SSID
+// into real S1G frequencies, mirroring the radio-level conversion done in
+// process_halow_radio(). The morse driver tunes on 5GHz channels under the
+// hood, so wif.channel/wif.frequency carry 5GHz values (e.g. 5560/5570).
+// Without this remap the controller filters the SSID into the 5GHz band and the
+// HaLow client information is not displayed.
+export function process_halow_ssid_chan_info(ssid, wif) {
+	// SSID band is uc(config.band); HaLow radios render band='s1g' -> 'S1G'.
+	if (index(ssid.band, 'S1G') == -1)
+		return false;
+
+	let mapping_table = map5GToS1G();
+	let orig_channels = wif.channel || [];
+
+	// Pick the operating channel the same way as the radio path: prefer the
+	// second channel (center freq), fall back to the smallest mappable one.
+	let selected_channel = null;
+	if (length(orig_channels) >= 2) {
+		selected_channel = '' + orig_channels[1];
+	} else {
+		for (let i = 0; i < length(orig_channels); i++) {
+			let ch = '' + orig_channels[i];
+			if (mapping_table[ch] && (selected_channel === null || +ch < +selected_channel))
+				selected_channel = ch;
+		}
+	}
+
+	if (selected_channel === null || !mapping_table[selected_channel])
+		return false;
+
+	let s1g_info = mapping_table[selected_channel];
+	let bandwidth = s1g_info.s1g_bw;
+	let center_freq = s1g_info.s1g_freq;
+
+	if (bandwidth == 1) {
+		// 1MHz: driver only reports one channel, duplicate for UI
+		ssid.frequency = [center_freq, center_freq];
+	} else {
+		// 2/4/8MHz: map each orig channel to its S1G freq, keep 1:1 aligned
+		let s1g_frequencies = [];
+		for (let i = 0; i < length(orig_channels); i++) {
+			let ch = '' + orig_channels[i];
+			if (mapping_table[ch])
+				push(s1g_frequencies, mapping_table[ch].s1g_freq);
+		}
+		if (length(s1g_frequencies))
+			ssid.frequency = s1g_frequencies;
+	}
+
+	return true;
+};

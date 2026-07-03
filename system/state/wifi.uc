@@ -156,7 +156,11 @@ export function collect_wifi_ssids(iface) {
 			ssid.ssid = wif.ssid || vap.config.mesh_id;
 			ssid.mode = wif.mode;
 			ssid.bssid = wif.bssid;
-			ssid.frequency = uniq(wif.frequency);
+			// HaLow/S1G SSIDs tune on borrowed 5GHz channels, so wif.frequency
+			// holds 5GHz values. Remap them to real S1G frequencies (same as the
+			// radio path) so the controller filters them into the correct band.
+			if (!halow_module.process_halow_ssid_chan_info(ssid, wif))
+				ssid.frequency = uniq(wif.frequency);
 			for (let k, v in all_stations) {
 				let vlan = split(k, '-v');
 				let wds = split(k, '.sta');
