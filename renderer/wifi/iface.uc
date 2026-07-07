@@ -67,9 +67,11 @@ function lookup_wifs() {
 		w.ssid = wif.ssid;
 		w.bssid = wif.mac;
 		w.mode = iftypes[wif.iftype];
+		w.phy = wif.wiphy;
 		w.channel = [];
 		w.frequency = [];
 		w.tx_power = (wif.wiphy_tx_power_level / 100) || 0;
+		w.has_channel = !!wif.wiphy_freq;
 		if (wif.wiphy_freq) {
 			for (let f in [ wif.wiphy_freq, wif.center_freq1, wif.center_freq2 ])
 				if (f) {
