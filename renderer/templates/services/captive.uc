@@ -83,6 +83,31 @@
 		let upstream_interface = ethernet.find_interface("upstream", interface.vlan.id);
 		let output = [];
 
+		// Walled-garden allow rules (must come before Drop-pre-captive)
+		for (let fqdn in captive.walled_garden_fqdn) {
+			if (index(fqdn, "*") >= 0)
+				continue;
+			uci_section(output, 'firewall rule');
+			uci_set_string(output, 'firewall.@rule[-1].name', 'Allow-walled-garden-' + name + '-' + fqdn);
+			uci_set_string(output, 'firewall.@rule[-1].src', name);
+			uci_set_string(output, 'firewall.@rule[-1].dest', upstream_interface);
+			uci_set_string(output, 'firewall.@rule[-1].dest_ip', fqdn);
+			uci_set_string(output, 'firewall.@rule[-1].proto', 'any');
+			uci_set_string(output, 'firewall.@rule[-1].target', 'ACCEPT');
+			uci_set_string(output, 'firewall.@rule[-1].mark', '1/127');
+		}
+
+		for (let ipaddr in captive.walled_garden_ipaddr) {
+			uci_section(output, 'firewall rule');
+			uci_set_string(output, 'firewall.@rule[-1].name', 'Allow-walled-garden-' + name + '-' + ipaddr);
+			uci_set_string(output, 'firewall.@rule[-1].src', name);
+			uci_set_string(output, 'firewall.@rule[-1].dest', upstream_interface);
+			uci_set_string(output, 'firewall.@rule[-1].dest_ip', ipaddr);
+			uci_set_string(output, 'firewall.@rule[-1].proto', 'any');
+			uci_set_string(output, 'firewall.@rule[-1].target', 'ACCEPT');
+			uci_set_string(output, 'firewall.@rule[-1].mark', '1/127');
+		}
+
 		// Drop pre-captive rule
 		uci_section(output, 'firewall rule');
 		uci_set_string(output, 'firewall.@rule[-1].name', 'Drop-pre-captive-' + name);
