@@ -41,10 +41,35 @@ set firewall.@rule[-1].target='ACCEPT'
 set firewall.@rule[-1].mark='2/127'
 
 {%   if (interface.role == 'downstream'): %}
+{%     let upstream = ethernet.find_interface("upstream", interface.vlan.id) %}
+{%     for (let fqdn in captive.walled_garden_fqdn): %}
+{%       if (index(fqdn, "*") < 0): %}
+add firewall rule
+set firewall.@rule[-1].name='Allow-walled-garden-{{ name }}-{{ fqdn }}'
+set firewall.@rule[-1].src='{{ name }}'
+set firewall.@rule[-1].dest='{{ upstream }}'
+set firewall.@rule[-1].dest_ip='{{ fqdn }}'
+set firewall.@rule[-1].proto='any'
+set firewall.@rule[-1].target='ACCEPT'
+set firewall.@rule[-1].mark='1/127'
+
+{%       endif %}
+{%     endfor %}
+{%     for (let ipaddr in captive.walled_garden_ipaddr): %}
+add firewall rule
+set firewall.@rule[-1].name='Allow-walled-garden-{{ name }}-{{ ipaddr }}'
+set firewall.@rule[-1].src='{{ name }}'
+set firewall.@rule[-1].dest='{{ upstream }}'
+set firewall.@rule[-1].dest_ip='{{ ipaddr }}'
+set firewall.@rule[-1].proto='any'
+set firewall.@rule[-1].target='ACCEPT'
+set firewall.@rule[-1].mark='1/127'
+
+{%     endfor %}
 add firewall rule
 set firewall.@rule[-1].name='Drop-pre-captive-{{ name }}'
 set firewall.@rule[-1].src='{{ name }}'
-set firewall.@rule[-1].dest='{{ ethernet.find_interface("upstream", interface.vlan.id) }}'
+set firewall.@rule[-1].dest='{{ upstream }}'
 set firewall.@rule[-1].proto='any'
 set firewall.@rule[-1].target='DROP'
 set firewall.@rule[-1].mark='1/127'
