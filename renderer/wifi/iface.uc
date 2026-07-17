@@ -68,7 +68,7 @@ function lookup_wifs() {
 		w.ssid = wif.ssid;
 		w.bssid = wif.mac;
 		w.mode = iftypes[wif.iftype];
-		w.phy = wif_obj.wiphy;
+		w.phy = wif_obj.wiphy ?? wif.wiphy;
 		w.channel = [];
 		w.frequency = [];
 		w.tx_power = (wif_obj.wiphy_tx_power_level / 100) || 0;
