@@ -50,27 +50,74 @@ function find_ssid_on_phy(ssid, phy_idx, wifi_state) {
 	return 1;
 }
 
-// Helper function: find SSID by interface name prefix
-function find_ssid_by_prefix(ssid, prefix, wifi_state) {
+// Band frequency ranges (MHz) — the single source of truth shared by every
+// band-aware matcher. No other function defines its own range table.
+//
+// '5g-lower' and '5g-upper' are deliberately non-overlapping so a lower-band
+// interface is never credited to an upper-band radio (and vice versa), while
+// the generic '5g' range still covers single-5G devices. 's1g' covers sub-1 GHz
+// HaLow radios; the [700, 1000] window is intentionally broad to span regional
+// S1G allocations (e.g. 863-868, 902-928 MHz) without overlapping any other band.
+let band_freq_ranges = {
+	's1g':      [700, 1000],
+	'2g':       [2400, 2500],
+	'5g':       [5150, 5900],
+	'5g-lower': [5150, 5350],
+	'5g-upper': [5470, 5900],
+	'6g':       [5925, 7200],
+};
+
+// Helper function: does an interface operate within the given band?
+function iface_in_band(iface, band) {
+	let range = band ? band_freq_ranges[lc(band)] : null;
+	if (!range)
+		return false;
+	for (let f in iface.frequency)
+		if (f >= range[0] && f <= range[1])
+			return true;
+	return false;
+}
+
+// Helper function: find SSID by interface name prefix, with a band fallback.
+//
+// Captive (and other custom-named) interfaces do not carry the radio's ifname
+// prefix (e.g. 'wlanc0' instead of 'phy2g-ap0'), so an SSID present on such an
+// interface would be falsely reported as missing. To handle this we also accept
+// an interface whose operating frequency falls within this radio's band. On the
+// single-phy reconf devices that use prefix matching, the band is what uniquely
+// identifies a radio (all interfaces share one phy).
+function find_ssid_by_prefix(ssid, prefix, band, wifi_state) {
+	let no_channel = false;
+
 	for (let ifname, iface in wifi_state) {
-		if (iface.ssid == ssid && index(ifname, prefix) == 0) {
-			if (!iface.has_channel)
-				return -1;
-			return 0;
+		if (iface.ssid != ssid)
+			continue;
+
+		let name_match = (index(ifname, prefix) == 0);
+		let band_match = !name_match && iface_in_band(iface, band);
+
+		if (!name_match && !band_match)
+			continue;
+
+		if (!iface.has_channel) {
+			/* Prefix match without a channel is a reportable issue, but a
+			 * fully-up interface on the same band elsewhere should win, so
+			 * remember it and keep scanning. Band-only matches can't be
+			 * verified without a channel, so ignore those. */
+			if (name_match)
+				no_channel = true;
+			continue;
 		}
+
+		return 0;
 	}
-	return 1;
+
+	return no_channel ? -1 : 1;
 }
 
 // Helper function: find SSID on a specific phy filtered by band frequency range
 function find_ssid_on_phy_band(ssid, phy_idx, band, wifi_state) {
-	let band_ranges = {
-		'2g': [2400, 2500],
-		'5g': [5150, 5900],
-		'6g': [5925, 7200],
-	};
-	let range = band_ranges[band];
-	if (!range)
+	if (!(band && band_freq_ranges[lc(band)]))
 		return find_ssid_on_phy(ssid, phy_idx, wifi_state);
 
 	for (let ifname, iface in wifi_state) {
@@ -82,14 +129,7 @@ function find_ssid_on_phy_band(ssid, phy_idx, band, wifi_state) {
 		if (!iface.has_channel)
 			return -1;
 
-		let in_band = false;
-		for (let f in iface.frequency) {
-			if (f >= range[0] && f <= range[1]) {
-				in_band = true;
-				break;
-			}
-		}
-		if (!in_band)
+		if (!iface_in_band(iface, band))
 			continue;
 
 		return 0;
@@ -100,7 +140,7 @@ function find_ssid_on_phy_band(ssid, phy_idx, band, wifi_state) {
 // Helper function: find SSID for a radio using match info
 function find_ssid_for_radio(ssid, match_info, wifi_state) {
 	if (match_info.match_mode == 'prefix')
-		return find_ssid_by_prefix(ssid, match_info.ifname_prefix, wifi_state);
+		return find_ssid_by_prefix(ssid, match_info.ifname_prefix, match_info.band, wifi_state);
 	else if (match_info.match_mode == 'phy_band')
 		return find_ssid_on_phy_band(ssid, match_info.phy_idx, match_info.band, wifi_state);
 	else
@@ -118,6 +158,20 @@ function get_radio_match_info(section) {
 	if (section.ifname_prefix) {
 		info.match_mode = 'prefix';
 		info.ifname_prefix = section.ifname_prefix;
+		/* Band lets us attribute custom-named ifaces (e.g. captive 'wlanc0')
+		 * to this radio when the ifname prefix does not match. Prefer the
+		 * configured band, otherwise derive it from the prefix (e.g.
+		 * 'phy2g-' -> '2g'). */
+		info.band = section.band;
+		if (!info.band) {
+			/* Order matters: the more specific '5g-lower'/'5g-upper' tokens
+			 * must be tried before the generic '5g' so a lower/upper prefix
+			 * (e.g. 'phy5g-lower-') is not collapsed to plain '5g'. 's1g' is
+			 * included so HaLow prefixes derive a band consistently. */
+			let bm = match(section.ifname_prefix, /(5g-lower|5g-upper|2g|5g|6g|s1g)/i);
+			if (bm)
+				info.band = bm[1];
+		}
 		return info;
 	}
 
