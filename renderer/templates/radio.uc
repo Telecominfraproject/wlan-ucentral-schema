@@ -160,6 +160,33 @@
 		return modes[require_mode] || '';
 	}
 
+	function match_puncture_threshold(phy, radio) {
+		if (!radio.puncture_threshold)
+			return 0;
+
+		if (radio.band == "2G" || radio.band == "HaLow") {
+			warn("puncture-threshold is not supported on the %s band, ignoring", radio.band);
+			return 0;
+		}
+
+		if (radio.channel_mode != "EHT") {
+			warn("puncture-threshold requires channel-mode EHT, ignoring for band %s", radio.band);
+			return 0;
+		}
+
+		if (match_channel(phy, radio) != 0) {
+			warn("puncture-threshold is only supported with 'auto' channel mode, ignoring for band %s", radio.band);
+			return 0;
+		}
+
+		if (radio.channel_width < 80) {
+			warn("puncture-threshold is not supported with channel-width below 80MHz, ignoring for band %s", radio.band);
+			return 0;
+		}
+
+		return radio.puncture_threshold;
+	}
+
 	if (restrict.dfs && radio.allow_dfs && radio.band == "5G") {
 		warn('DFS is restricted.');
 		radio.allow_dfs = false;
@@ -234,6 +261,7 @@ set wireless.{{ phy.section }}.maxassoc={{ radio.maximum_clients }}
 set wireless.{{ phy.section }}.maxassoc_ignore_probe={{ b(radio.maximum_clients_ignore_probe) }}
 set wireless.{{ phy.section }}.reconf={{ b(reconf) }}
 set wireless.{{ phy.section }}.acs_exclude_dfs={{ b(!radio.allow_dfs) }}
+set wireless.{{ phy.section }}.ru_punct_acs_threshold={{ match_puncture_threshold(phy, radio) }}
 {% for (let channel in radio.valid_channels): %}
 {%    if (!(channel in phy.channels)) continue %}
 {%    if (!radio.allow_dfs && channel in phy.dfs_channels) continue %}

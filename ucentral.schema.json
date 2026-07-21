@@ -526,6 +526,12 @@
                     "type": "boolean",
                     "default": false
                 },
+                "puncture-threshold": {
+                    "type": "integer",
+                    "maximum": 100,
+                    "minimum": 0,
+                    "default": 0
+                },
                 "country": {
                     "type": "string",
                     "maxLength": 2,
