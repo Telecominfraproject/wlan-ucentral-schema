@@ -1204,6 +1204,29 @@ function instantiateRadio(location, value, errors) {
 			obj.acs_exclude_6ghz_non_psc = false;
 		}
 
+		function parsePunctureThreshold(location, value, errors) {
+			if (type(value) in [ "int", "double" ]) {
+				if (value > 100)
+					push(errors, [ location, "must be lower than or equal to 100" ]);
+
+				if (value < 0)
+					push(errors, [ location, "must be bigger than or equal to 0" ]);
+
+			}
+
+			if (type(value) != "int")
+				push(errors, [ location, "must be of type integer" ]);
+
+			return value;
+		}
+
+		if (exists(value, "puncture-threshold")) {
+			obj.puncture_threshold = parsePunctureThreshold(location + "/puncture-threshold", value["puncture-threshold"], errors);
+		}
+		else {
+			obj.puncture_threshold = 0;
+		}
+
 		function parseCountry(location, value, errors) {
 			if (type(value) == "string") {
 				if (length(value) > 2)
