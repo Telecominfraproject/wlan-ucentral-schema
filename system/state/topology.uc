@@ -128,7 +128,7 @@ export function collect_link_state(state) {
 				}
 			}
 
-			if (global.ports && global.ports[iface].counters) {
+			if (global.ports && global.ports[iface] && global.ports[iface].counters) {
 				port_state.counters = global.ports[iface].counters;
 				port_state.delta_counters = telemetry_module.ports_deltas(iface, global.ports, global.previous);
 			}
