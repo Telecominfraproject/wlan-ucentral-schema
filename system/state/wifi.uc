@@ -114,13 +114,35 @@ export function collect_wifi_radios(state) {
 		if (_chanUtil > 0)
 			radio.chanUtil = _chanUtil;
 
+		// Pre-scope the survey to THIS radio's own interfaces before anyone
+		// consumes it. The morse HaLow phy borrows 5 GHz shim frequencies that
+		// collide with the real 5 GHz radio, so a frequency-only match would
+		// cross-contaminate the two radios' telemetry. survey rows are tagged
+		// with ifname (renderer/wifi/survey.uc); keep only rows whose ifname
+		// belongs to this radio (untagged rows are left for the frequency
+		// filter).
+		let radio_ifnames = {};
+		for (let wif in data.interfaces)
+			if (wif.ifname)
+				radio_ifnames[wif.ifname] = true;
+		let radio_survey = { survey: [] };
+		for (let k, v in survey.survey)
+			if (v.ifname == null || radio_ifnames[v.ifname])
+				push(radio_survey.survey, v);
+
 		// Check if this is a HaLow device and process accordingly
-		if (!halow_module.process_halow_radio(radio, survey)) {
+		if (!halow_module.process_halow_radio(radio, radio_survey)) {
 			// Non-HaLow device, process survey normally
 			radio.survey = [];
-			for (let k, v in survey.survey)
+			for (let k, v in radio_survey.survey)
 				if (v.frequency in radio.frequency)
 					push(radio.survey, v);
+		}
+		// Drop the internal attribution tags so the uploaded telemetry keeps
+		// the exact original survey shape (no extra ifname/wiphy keys).
+		for (let s in radio.survey) {
+			delete s.ifname;
+			delete s.wiphy;
 		}
 		delete radio.in_use;
 		push(radios, radio);

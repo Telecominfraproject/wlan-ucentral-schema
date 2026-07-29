@@ -458,7 +458,6 @@
 		uci_comment(output, '### generate HaLow mesh specific configuration');
 		uci_named_section(output, 'wireless.halowmesh', 'wifi-iface');
 		uci_set_string(output, 'wireless.halowmesh.device', phy.section);
-		uci_set_string(output, 'wireless.halowmesh.ifname', 'halow_mesh');
 		uci_set_string(output, 'wireless.halowmesh.disabled', '0');
 		uci_set_string(output, 'wireless.halowmesh.beacon_int', '1000');
 		uci_set_string(output, 'wireless.halowmesh.wds', '0');
