@@ -219,10 +219,85 @@ function map5GToS1G() {
     return mappingTable;
 }
 
+function scan_morse_phys() {
+	lookup_paths();
+
+	let phys = phy_get();
+	let ret = {};
+	let s1gMapping = map5GToS1G();
+
+	for (let phy in phys) {
+		if (!exists(phy, 'wiphy'))
+			continue;
+		let phyname = 'phy' + phy.wiphy;
+		let path = paths[phyname];
+		if (!path)
+			continue;
+
+		// Only process Morse PHYs
+		let morsePath = '/sys/kernel/debug/ieee80211/' + phyname + '/morse';
+		if (!fs.stat(morsePath))
+			continue;
+
+		let p = {};
+		p.is_morse_phy = true;
+
+		let temp = get_hwmon('phy' + phy.wiphy);
+		if (temp)
+			p.temperature = temp / 1000;
+
+		p.tx_ant = phy.wiphy_antenna_tx;
+		p.rx_ant = phy.wiphy_antenna_rx;
+		p.tx_ant_avail = phy.wiphy_antenna_avail_tx;
+		p.rx_ant_avail = phy.wiphy_antenna_avail_rx;
+		p.frequencies = [];
+		p.channels = [];
+		p.dfs_channels = [];
+		p.htmode = [];
+		p.band = [];
+		for (let band in phy.wiphy_bands) {
+			for (let freq in band?.freqs) {
+				if (freq.disabled)
+					continue;
+
+				let channel = freq2channel(freq.freq);
+				if (freq.freq >= 5160 && freq.freq <= 5885) {
+					let ch = "" + channel;
+					if (ch in s1gMapping) {
+						channel = s1gMapping[ch].s1g_channel;
+						push(p.channels, channel);
+						push(p.frequencies, s1gMapping[ch].s1g_freq);
+					} else {
+						push(p.channels, channel);
+						push(p.frequencies, freq.freq);
+					}
+				} else {
+					push(p.channels, channel);
+					push(p.frequencies, freq.freq);
+				}
+
+				if (freq.freq < 1000 || (freq.freq >= 5160 && freq.freq <= 5885))
+					push(p.band, 'HaLow');
+			}
+		}
+
+		p.band = uniq(p.band);
+		if (length(p.band))
+			ret[path] = p;
+	}
+	return ret;
+}
+
 function lookup_phys() {
 	let ret = lookup_board();
-	if (ret)
+	if (ret) {
+		// board.json declares the PCIe wlan, but the USB HaLow (Morse) dongle
+		// is not in board.json - scan for it and merge it in.
+		let morse = scan_morse_phys();
+		for (let path, phy in morse)
+			ret[path] = phy;
 		return ret;
+	}
 	lookup_paths();
 
 	let phys = phy_get();
