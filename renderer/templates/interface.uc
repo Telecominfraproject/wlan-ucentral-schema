@@ -12,6 +12,8 @@
 
 	const TUNNEL_PROTOCOLS = ['mesh', 'l2tp', 'vxlan', 'gre', 'gre6'];
 	const WDS_MODES = ['wds-sta', 'wds-ap'];
+	let eth_ports;
+	let bridgedev;
 
 	// Helper functions
 
@@ -236,7 +238,6 @@
 	let dest;
 	let this_vid;
 	let bss_modes;
-	let eth_ports;
 	let dot1x_ports;
 	let swconfig;
 
@@ -275,7 +276,7 @@
 
 	// Compute interface names and configuration
 	let name = ethernet.calculate_name(interface);
-	let bridgedev = normalize_bridge_device();
+	bridgedev = normalize_bridge_device();
 	let netdev = name;
 	let network = name;
 
