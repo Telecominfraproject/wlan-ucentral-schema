@@ -36,7 +36,7 @@ if (broadband.protocol == "pppoe") {
 	let pppoe = { };
 
 	pppoe.protocol = 'pppoe';
-	pppoe.username = broadband['user-name'] || '';
+	pppoe.user_name = broadband['user-name'] || '';
 	pppoe.password = broadband.password || '';
 	pppoe.timeout = broadband.timeout || '30';
 
