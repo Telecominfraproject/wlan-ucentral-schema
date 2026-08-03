@@ -247,6 +247,37 @@ catch(e) {
 	printf("Failed to parse dhcp leases cache: %s\n%s\n", e, e.stacktrace[0].context);
 }
 
+/* only trust a local dnsmasq lease if its address falls inside one of the
+ * interface's own IPv4 subnets - a stale lease (e.g. left behind after an
+ * SSID was moved to another network) would otherwise shadow the address
+ * snooped from the real dhcp exchange */
+function lease_matches_iface(lease, iface) {
+	if (!length(iface.ipv4.addresses))
+		return true;
+
+	let ip = iptoarr(lease.address);
+
+	if (length(ip) != 4)
+		return false;
+
+	for (let cidr in iface.ipv4.addresses) {
+		let net = split(cidr, "/");
+		let sub = iptoarr(net[0]);
+		let bits = net[1] ? int(net[1]) : -1;
+
+		if (length(sub) != 4 || bits < 0 || bits > 32)
+			continue;
+
+		let mask = (0xffffffff << (32 - bits)) & 0xffffffff;
+
+		if ((((ip[0] << 24) | (ip[1] << 16) | (ip[2] << 8) | ip[3]) & mask) ==
+		    (((sub[0] << 24) | (sub[1] << 16) | (sub[2] << 8) | sub[3]) & mask))
+			return true;
+	}
+
+	return false;
+}
+
 /* prepare lldp cache */
 try {
 	let stdout = fs.popen("lldpcli -f json show neighbors");
@@ -765,7 +796,8 @@ cursor.foreach("network", "interface", function(d) {
 
 			let client = {};
 
-			if (length(ip4leases[mac]))
+			if (length(ip4leases[mac]) &&
+			    lease_matches_iface(ip4leases[mac], iface))
 				push(ipv4leases, ip4leases[mac]);
 
 			client.mac = mac;
@@ -889,8 +921,17 @@ cursor.foreach("network", "interface", function(d) {
 					let fp = get_fingerprint(assoc.station);
 					if (fp)
 					 	assoc.fingerprint = fp;
-					if (length(ip4leases[assoc.station]))
-			                           assoc.ipaddr_v4 = ip4leases[assoc.station];
+					let lease = ip4leases[assoc.station];
+
+					/* stations on a dynamic vlan lease from the vlan
+					 * network, which cannot be matched against this
+					 * iface - keep their lease as-is */
+					if (length(lease) && !assoc.dynamic_vlan &&
+					    !lease_matches_iface(lease, iface))
+						lease = null;
+
+					if (length(lease))
+						assoc.ipaddr_v4 = lease;
 					else if (snoop && snoop[assoc.station]) {
 				 		assoc.ipaddr_v4 = snoop[assoc.station];
 						if (!(assoc.station in macs)) {
