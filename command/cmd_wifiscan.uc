@@ -1,6 +1,7 @@
 let verbose = args?.verbose == null ? true : args.verbose;
 let active = args?.active ? true : false;
-let bandwidth = args?.bandwidth || 0;
+/* frequency_width is keyed by string, the UI sends a number */
+let bandwidth = args?.bandwidth ? '' + args.bandwidth : 0;
 let override_dfs = args?.override_dfs ? true : false;
 let nl = require("nl80211");
 let rtnl = require("rtnl");
@@ -89,8 +90,11 @@ function scan_trigger(wdev, frequency, width) {
 	//printf("%.J\n", params);
 	let res = nl.request(def.NL80211_CMD_TRIGGER_SCAN, 0, params);
 
-	if (res === false)
-		die("Unable to trigger scan: " + nl.error() + "\n");
+	/* Don't die() - one failing radio would abort the whole command */
+	if (res === false) {
+		warn("Unable to trigger scan on " + wdev + ": " + nl.error() + "\n");
+		return false;
+	}
 
 	else
 		res = nl.waitfor([
@@ -141,11 +145,24 @@ function phy_frequency_dfs(phy, curr) {
 	return false;
 }
 
+/* Scanning a HaLow phy hangs in the kernel, so skip it. It advertises 5G
+ * frequencies, so detect it via debugfs like renderer/wifi/phy.uc does.
+ */
+function phy_is_halow(phy) {
+	if (phy?.wiphy == null)
+		return false;
+
+	return fs.stat('/sys/kernel/debug/ieee80211/phy' + phy.wiphy + '/morse') ? true : false;
+}
+
 let phys = phy_get();
 let ifaces = iface_get();
 
 function intersect(list, filter) {
 	let res = [];
+
+	if (!list || !filter)
+		return res;
 
 	for (let item in list)
 		if (index(filter, item) >= 0)
@@ -157,10 +174,21 @@ function wifi_scan() {
 	let scan = [];
 
 	for (let phy in phys) {
+		/* split_wiphy_dump can return fragments with no wiphy index */
+		if (!phy || phy.wiphy == null)
+			continue;
+
+		if (phy_is_halow(phy)) {
+			warn('skipping phy' + phy.wiphy + ' (HaLow/morse driver)\n');
+			continue;
+		}
+
 		let iface = iface_find(phy.wiphy, [ IFTYPE_STATION, IFTYPE_AP ], ifaces);
 		let scan_iface = false;
 		if (!iface) {
 			warn('no valid interface found for phy' + phy.wiphy + '\n');
+			/* drop a leftover 'scan' iface from an aborted run */
+			nl.request(def.NL80211_CMD_DEL_INTERFACE, 0, { dev: 'scan' });
 			nl.request(def.NL80211_CMD_NEW_INTERFACE, 0, { wiphy: phy.wiphy, ifname: 'scan', iftype: IFTYPE_STATION });
 			nl.waitfor([ def.NL80211_CMD_NEW_INTERFACE ], 1000);
 			scan_iface = true;
@@ -179,8 +207,13 @@ function wifi_scan() {
 			scan_trigger(iface.dev, frequency_list_2g);
 
 		let ch_width = iface.channel_width;
-		if (frequency_width[bandwith])
-			ch_width = frequency_width[bandwith];
+		if (frequency_width[bandwidth])
+			ch_width = frequency_width[bandwidth];
+		/* frequency_list_5g only has keys 1/2/3. Default to 3 (6 freqs):
+		 * key 1 has 28 and takes the scan past the cloud's timeout.
+		 */
+		if (!frequency_list_5g[ch_width])
+			ch_width = 3;
 		let freqs_5g = intersect(freqs, frequency_list_5g[ch_width]);
 		if (length(freqs_5g)) {
 			if (override_dfs && !scan_iface && phy_frequency_dfs(phy, iface.wiphy_freq)) {
