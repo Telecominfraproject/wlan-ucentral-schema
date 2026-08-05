@@ -78,9 +78,8 @@ function scan_trigger(wdev, frequency, width) {
 		params.scan_frequencies = frequency;
 	}
 	else if (frequency && width) {
-		params.wiphy_freq = frequency;
 		params.center_freq1 = frequency + frequency_offset[width];
-		params.channel_width = frequency_width[width];
+		params.scan_frequencies = [ (int) (frequency) ];
 	}
 
 	if (active)
