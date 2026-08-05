@@ -17,6 +17,7 @@ set dhcpinject.{{ upstream.name }}=network
 set dhcpinject.{{ upstream.name }}.upstream={{ s(iface_name) }}
 
 {%    for (let ssid in upstream.ssids): %}
+{%       if (!ssid.services || index(ssid.services, "dhcp-inject") < 0) continue; %}
 {%       count += length(ssid.wifi_bands) %}
 {%       for (let freq in ssid.wifi_bands): %}
 {%          push(freqs, freq) %}
