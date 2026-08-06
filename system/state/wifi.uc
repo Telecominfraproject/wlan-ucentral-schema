@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as halow_module from './halow.uc';
 import * as telemetry_module from './telemetry.uc';
 import * as fingerprint_module from './fingerprint.uc';
+import * as network_module from './network.uc';
 
 /* Load WiFi data via require */
 let wifiphy = require('wifi.phy');
@@ -185,8 +186,17 @@ export function collect_wifi_ssids(iface) {
 				let fp = fingerprint_module.get_fingerprint_for_mac(assoc.station, null);
 				if (fp)
 					assoc.fingerprint = fp;
-				if (length(global.ip4leases[assoc.station]))
-					assoc.ipaddr_v4 = global.ip4leases[assoc.station];
+				let lease = global.ip4leases[assoc.station];
+
+				/* stations on a dynamic vlan lease from the vlan
+				 * network, which cannot be matched against this
+				 * iface - keep their lease as-is */
+				if (length(lease) && !assoc.dynamic_vlan &&
+				    !network_module.lease_matches_iface(lease, iface))
+					lease = null;
+
+				if (length(lease))
+					assoc.ipaddr_v4 = lease;
 				else if (global.snoop && global.snoop[assoc.station]) {
 					assoc.ipaddr_v4 = global.snoop[assoc.station];
 					if (!(assoc.station in global.macs)) {

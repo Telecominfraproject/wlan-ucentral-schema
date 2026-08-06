@@ -129,7 +129,8 @@ export function collect(state) {
 
 				let client = {};
 
-				if (length(global.ip4leases[mac]))
+				if (length(global.ip4leases[mac]) &&
+				    network_module.lease_matches_iface(global.ip4leases[mac], iface))
 					push(ipv4leases, global.ip4leases[mac]);
 
 				client.mac = mac;

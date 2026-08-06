@@ -113,3 +113,34 @@ export function prepare_dhcp_leases() {
 	return ip4leases;
 };
 
+/* only trust a local dnsmasq lease if its address falls inside one of the
+ * interface's own IPv4 subnets - a stale lease (e.g. left behind after an
+ * SSID was moved to another network) would otherwise shadow the address
+ * snooped from the real dhcp exchange */
+export function lease_matches_iface(lease, iface) {
+	if (!length(iface.ipv4.addresses))
+		return true;
+
+	let ip = iptoarr(lease.address);
+
+	if (length(ip) != 4)
+		return false;
+
+	for (let cidr in iface.ipv4.addresses) {
+		let net = split(cidr, "/");
+		let sub = iptoarr(net[0]);
+		let bits = net[1] ? int(net[1]) : -1;
+
+		if (length(sub) != 4 || bits < 0 || bits > 32)
+			continue;
+
+		let mask = (0xffffffff << (32 - bits)) & 0xffffffff;
+
+		if ((((ip[0] << 24) | (ip[1] << 16) | (ip[2] << 8) | ip[3]) & mask) ==
+		    (((sub[0] << 24) | (sub[1] << 16) | (sub[2] << 8) | sub[3]) & mask))
+			return true;
+	}
+
+	return false;
+};
+
