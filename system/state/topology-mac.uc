@@ -231,11 +231,15 @@ function parseDhcpLeases() {
                     let ip = tokens[2];
                     let hostname = tokens[3];
                     
-                    let entry = getMacEntry(mac);
-                    if (entry) {
-                        if (index(entry.ipv4, ip) == -1) {
-                            push(entry.ipv4, ip);
-                        }
+                    // Only merge lease info into entries already learned from
+                    // ARP/FDB - creating entries from leases alone fabricates
+                    // topology for clients that may be long gone, and a stale
+                    // lease (e.g. SSID moved to another network) must not be
+                    // appended next to the authoritative ARP-learned address.
+                    let nmac = normalizeMacAddress(mac);
+                    let entry = nmac ? macEntries[nmac] : null;
+                    if (entry && length(entry.ipv4) == 0) {
+                        push(entry.ipv4, ip);
                         // Could add hostname info if needed
                     }
                 }
