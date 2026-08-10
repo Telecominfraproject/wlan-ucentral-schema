@@ -221,6 +221,29 @@ function get_radio_match_info(section) {
 	return info;
 }
 
+// Helper function: can this wifi-iface be expected to be on the air?
+//
+// An SSID cannot come up when the iface itself is disabled, or when its parent
+// radio is disabled or absent from the config (e.g. a radio the operator turned
+// off via 'radios[].enable: false', which the renderer emits as
+// wireless.<phy>.disabled='1' while still rendering the SSID sections).
+// Counting those SSIDs as failures is a false positive, so both the
+// interface-level and the radio-level checks skip them.
+function iface_section_enabled(iface_section, wifi_config) {
+	if (iface_section.disabled == '1')
+		return false;
+
+	let dev_name = iface_section.device;
+	if (!dev_name)
+		return true;
+
+	let dev = wifi_config[dev_name];
+	if (!dev || dev['.type'] != 'wifi-device')
+		return false;
+
+	return dev.disabled != '1';
+}
+
 // Health check: per-radio SSID presence
 function check_radio_health(wifi_config, wifi_state) {
 	let radio_issues = {};
@@ -244,7 +267,7 @@ function check_radio_health(wifi_config, wifi_state) {
 			if (iface_section.device != dev_name)
 				continue;
 			/* Skip disabled, non-AP, or ssid-less ifaces */
-			if (iface_section.disabled == '1')
+			if (!iface_section_enabled(iface_section, wifi_config))
 				continue;
 			if (iface_section.mode && iface_section.mode != 'ap')
 				continue;
@@ -379,7 +402,11 @@ function check_wifi_health(iface, wifi_config, wifi_state) {
 	for (let k, wifi_iface in wifi_config) {
 		if (wifi_iface['.type'] != 'wifi-iface' || wifi_iface.network != name)
 			continue;
-			
+		/* SSIDs of a disabled iface or of a disabled/absent radio are not
+		 * expected on the air, so they must not count as interface errors. */
+		if (!iface_section_enabled(wifi_iface, wifi_config))
+			continue;
+
 		// Check SSID availability
 		if (find_ssid(wifi_iface.ssid, wifi_state))
 			ssid[wifi_iface.ssid] = false;
@@ -548,7 +575,7 @@ function main() {
 	let total_errors = iface_errors + radio_errors;
 	let sanity = 100 - (total_errors * 100 / (total_checks || 1));
 
-	warn(printf('health check reports sanity of %d (iface_errors=%d, radio_errors=%d)', sanity, iface_errors, radio_errors));
+	warn(sprintf('health check reports sanity of %d (iface_errors=%d, radio_errors=%d)\n', sanity, iface_errors, radio_errors));
 	ubus.call('ucentral', 'health', {sanity: sanity, data: state});
 	
 	let f = fs.open("/tmp/ucentral.health", "w");
