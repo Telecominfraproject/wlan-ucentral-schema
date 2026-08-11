@@ -5,6 +5,19 @@ if (enable != 1)
 	return;
 
 for (let name, data in captive.interfaces) {
+	/* spotfilter resolves device_macaddr with SIOCGIFHWADDR, so it has to be a
+	 * kernel netdev name. Use the name interface.uc recorded rather than
+	 * deriving it, since a type=bridge interface is br-<network> while the
+	 * bridge-vlan path is an 8021q device named <network>. */
+	let class0 = {
+		index: 0,
+		fwmark: 1,
+		fwmark_mask: 127
+	};
+	let netdev = captive.netdev[split(name, '_')[0]];
+	if (netdev)
+		class0.device_macaddr = netdev;
+
 	let config = {
 		name,
 		devices: [],
@@ -13,12 +26,8 @@ for (let name, data in captive.interfaces) {
 			default_dns_class: 1,
 			client_autoremove: false,
 			class: [
+				class0,
 				{
-					index: 0,
-					device_macaddr: split(name, '_')[0],
-					fwmark: 1,
-					fwmark_mask: 127
-				}, {
 					index: 1,
 					fwmark: 2,
 					fwmark_mask: 127
