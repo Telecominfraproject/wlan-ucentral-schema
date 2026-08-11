@@ -1073,7 +1073,23 @@ let routing_table = {
 let captive = {
 	interfaces: {},
 
+	netdev: {},
+
 	next: 0,
+
+	/**
+	 * Record the kernel netdev backing a captive capable interface.
+	 *
+	 * netifd names an auto created bridge br-<network>, while the bridge-vlan
+	 * path yields an explicit 8021q device named <network>. spotfilter resolves
+	 * class device_macaddr via SIOCGIFHWADDR, so it needs the real netdev name.
+	 *
+	 * @param {string} name  The logical interface name, e.g. down2v0
+	 * @param {string} dev   The kernel netdev name, e.g. br-down2v0
+	 */
+	set_netdev: function(name, dev) {
+		this.netdev[name] = dev;
+	},
 
 	/**
 	 * Allocate a route table index for the given ID

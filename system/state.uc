@@ -173,7 +173,25 @@ if (fingerprint) {
 let lldp = [];
 let wireless = cursor.get_all("wireless");
 let snoop = ctx.call("dhcpsnoop", "dump");
-let captive = ctx.call("spotfilter", "client_list", { "interface": "hotspot"});
+
+/* spotfilter interfaces are named after the uspot config sections that the
+ * renderer emits (e.g. "down2v0_0"), so query each one instead of assuming a
+ * fixed "hotspot" instance. */
+function captive_clients() {
+	let res = {};
+
+	for (let section, config in cursor.get_all("uspot") ?? {}) {
+		if (config?.[".type"] != "uspot")
+			continue;
+		let clients = ctx.call("spotfilter", "client_list", { interface: section });
+		for (let mac, val in clients)
+			res[mac] = val;
+	}
+
+	return res;
+}
+
+let captive = captive_clients();
 
 function generate_deltas(counters, prev_counters) {
 	let ret = {};
