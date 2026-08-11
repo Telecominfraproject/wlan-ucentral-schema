@@ -12,6 +12,7 @@ if (!ctx) {
 }
 
 const SCAN_FLAG_AP = (1<<2);
+const CHANNEL_DWELL = 1000;
 const frequency_list_2g = [ 2412, 2417, 2422, 2427, 2432, 2437, 2442,
 			  2447, 2452, 2457, 2462, 2467, 2472, 2484 ];
 const frequency_list_5g = { '3': [ 5180, 5260, 5500, 5580, 5660, 5745 ],
@@ -78,9 +79,7 @@ function scan_trigger(wdev, frequency, width) {
 		params.scan_frequencies = frequency;
 	}
 	else if (frequency && width) {
-		params.wiphy_freq = frequency;
-		params.center_freq1 = frequency + frequency_offset[width];
-		params.channel_width = frequency_width[width];
+		params.scan_frequencies = [ frequency ];
 	}
 
 	if (active)
@@ -105,9 +104,28 @@ function scan_trigger(wdev, frequency, width) {
 		warn("Scan aborted by kernel\n");
 }
 
+/* merge scan results by BSSID, the kernel expires them while we are still sweeping */
+let bss_seen = {};
+
+function collect_scan(dev) {
+	let res = nl.request(def.NL80211_CMD_GET_SCAN, def.NLM_F_DUMP, { dev });
+
+	for (let entry in res || [])
+		if (entry?.bss?.bssid)
+			bss_seen[entry.bss.bssid] = entry;
+}
+
 function trigger_scan_width(wdev, freqs, width) {
-	for (let freq in freqs)
-		scan_trigger(wdev, freq, width);
+	for (let freq in freqs) {
+		/* scan_trigger() returns false rather than die()ing once #128 lands,
+		 * so a radio that cannot scan would otherwise still burn
+		 * CHANNEL_DWELL on every frequency in the list.
+		 */
+		if (scan_trigger(wdev, freq, width) === false)
+			continue;
+		collect_scan(wdev);
+		sleep(CHANNEL_DWELL);
+	}
 }
 
 function phy_get(wdev) {
@@ -174,9 +192,13 @@ function wifi_scan() {
 
 		printf("scanning on phy%d\n", phy.wiphy);
 
+		bss_seen = {};
+
 		let freqs = phy_get_frequencies(phy);
-		if (length(intersect(freqs, frequency_list_2g)))
+		if (length(intersect(freqs, frequency_list_2g))) {
 			scan_trigger(iface.dev, frequency_list_2g);
+			collect_scan(iface.dev);
+		}
 
 		let ch_width = iface.channel_width;
 		if (frequency_width[bandwith])
@@ -189,7 +211,8 @@ function wifi_scan() {
 			}
 			trigger_scan_width(iface.dev, freqs_5g, ch_width);
 		}
-		let res = nl.request(def.NL80211_CMD_GET_SCAN, def.NLM_F_DUMP, { dev: iface.dev });
+		collect_scan(iface.dev);
+		let res = values(bss_seen);
 		for (let bss in res) {
 			bss = bss.bss;
 			let res = {
