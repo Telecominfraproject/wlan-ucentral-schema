@@ -81,23 +81,32 @@
 				continue;
 			ethernet.swconfig[port.netdev] = port;
 		}
-	} else {
-		// reject config if a wired port is used twice in un-tagged mode
-		let untagged_ports = [];
-		for (let i, interface in state.interfaces) {
-			if (interface.role != 'upstream')
+	}
+
+	/* map netdev names back to logical port names, for diagnostics */
+	let port_names = {};
+	for (let name, port in ethernet.ports)
+		port_names[port.netdev] = name;
+
+	/* reject config if a wired port is used twice in un-tagged mode. this has to run
+	 * after the swconfig port netdevs above have been resolved, as the port lookup
+	 * depends on them.
+	 */
+	let untagged_ports = [];
+	for (let i, interface in state.interfaces) {
+		if (interface.role != 'upstream')
+			continue;
+		let eth_ports = ethernet.lookup_by_interface_vlan(interface);
+		for (let port in keys(eth_ports)) {
+			if (ethernet.port_vlan(interface, eth_ports[port]))
 				continue;
-			let eth_ports = ethernet.lookup_by_interface_vlan(interface);
-			for (let port in keys(eth_ports)) {
-				if (ethernet.port_vlan(interface, eth_ports[port]))
-					continue;
-				if (port in untagged_ports) {
-					state.strict = true;
-					error('duplicate usage of un-tagged ports: ' + port);
-					return;
-				}
-				push(untagged_ports, port);
+			if (port in untagged_ports) {
+				state.strict = true;
+				error('duplicate usage of un-tagged ports: ' +
+				      (port_names[port] ? port_names[port] + ' (' + port + ')' : port));
+				return;
 			}
+			push(untagged_ports, port);
 		}
 	}
 
