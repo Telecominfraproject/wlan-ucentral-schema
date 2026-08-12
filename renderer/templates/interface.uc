@@ -304,6 +304,12 @@
 	if (tunnel_proto in [ "mesh", "l2tp", "vxlan", "gre", "gre6" ])
 		include("interface/" + tunnel_proto + ".uc", { interface, name, eth_ports, location, netdev, ipv4_mode, ipv6_mode, this_vid });
 
+	// Track the kernel netdev backing this interface so the spotfilter template
+	// can resolve a MAC from it. Only record it where the name is unambiguous:
+	// naming a netdev that does not exist is worse than omitting the field,
+	// because spotfilter zeroes the whole traffic class when the lookup fails.
+	let captive_netdev;
+
 	if (!interface.ethernet && length(interface.ssids) == 1 && !tunnel_proto && !("vxlan-overlay" in interface.services)) {
 		if (interface.role == 'downstream')
 			interface.type = 'bridge';
@@ -311,9 +317,19 @@
 	} else if (tunnel_proto == 'vxlan') {
 		netdev = '@' + name + '_vx';
 		interface.type = 'bridge';
-	} else if (tunnel_proto != 'gre' && tunnel_proto != 'gre6')
+	} else if (tunnel_proto != 'gre' && tunnel_proto != 'gre6') {
 		// anything else requires a bridge-vlan
 		include("interface/bridge-vlan.uc", { interface, name, eth_ports, this_vid, bridgedev, swconfig });
+		// bridge-vlan.uc emits an explicit 8021q device named after the interface
+		captive_netdev = name;
+	}
+
+	// netifd auto names a type=bridge interface br-<network>
+	if (interface.type == 'bridge')
+		captive_netdev = 'br-' + name;
+
+	if (captive_netdev)
+		captive.set_netdev(name, captive_netdev);
 
 	include("interface/common.uc", {
 		name, this_vid, netdev,
