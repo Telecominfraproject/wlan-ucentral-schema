@@ -1,7 +1,24 @@
+/* spotfilter interfaces are named after the uspot config sections that the
+ * renderer emits (e.g. "down2v0_0"), so query each one instead of assuming a
+ * fixed "hotspot" instance. */
+function captive_clients() {
+	let res = {};
+
+	for (let section, config in global.uci.get_all("uspot") ?? {}) {
+		if (config?.[".type"] != "uspot")
+			continue;
+		let clients = global.ubus.call("spotfilter", "client_list", { interface: section });
+		for (let mac, val in clients)
+			res[mac] = val;
+	}
+
+	return res;
+}
+
 export function collect(state) {
 	/* Collect data via ubus */
-	let captive = global.ubus.call("spotfilter", "client_list", { "interface": "hotspot"});
-	
+	let captive = captive_clients();
+
 	if (!length(captive))
 		return;
 		

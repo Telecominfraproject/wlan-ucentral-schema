@@ -42,8 +42,29 @@
 	}
 
 	// normalize_ functions - data transformation
+
+	/* spotfilter resolves device_macaddr with SIOCGIFHWADDR, so it has to be a
+	 * kernel netdev name. Use the name interface.uc recorded rather than
+	 * deriving it, since a type=bridge interface is br-<network> while the
+	 * bridge-vlan path is an 8021q device named <network>. Returns null when no
+	 * predictable netdev exists, so the field is omitted rather than pointing at
+	 * a device that does not exist, which would make spotfilter zero the class. */
 	function normalize_device_macaddr(name) {
-		return split(name, '_')[0];
+		return captive.netdev[split(name, '_')[0]];
+	}
+
+	function normalize_class0(name) {
+		let class0 = {
+			index: SPOTFILTER_CLASSES[0].index,
+			fwmark: SPOTFILTER_CLASSES[0].fwmark,
+			fwmark_mask: SPOTFILTER_CLASSES[0].fwmark_mask
+		};
+
+		let netdev = normalize_device_macaddr(name);
+		if (netdev)
+			class0.device_macaddr = netdev;
+
+		return class0;
 	}
 
 	function normalize_interface_devices(data) {
@@ -77,12 +98,7 @@
 				default_dns_class: SPOTFILTER_DEFAULTS.default_dns_class,
 				client_autoremove: SPOTFILTER_DEFAULTS.client_autoremove,
 				class: [
-					{
-						index: SPOTFILTER_CLASSES[0].index,
-						device_macaddr: normalize_device_macaddr(name),
-						fwmark: SPOTFILTER_CLASSES[0].fwmark,
-						fwmark_mask: SPOTFILTER_CLASSES[0].fwmark_mask
-					},
+					normalize_class0(name),
 					{
 						index: SPOTFILTER_CLASSES[1].index,
 						fwmark: SPOTFILTER_CLASSES[1].fwmark,
