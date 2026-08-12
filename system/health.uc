@@ -407,6 +407,9 @@ function check_wifi_health(iface, wifi_config, wifi_state) {
 		if (!iface_section_enabled(wifi_iface, wifi_config))
 			continue;
 
+		if (wifi_iface.mode && wifi_iface.mode != 'ap')
+			continue;
+
 		// Check SSID availability
 		if (find_ssid(wifi_iface.ssid, wifi_state))
 			ssid[wifi_iface.ssid] = false;
