@@ -102,12 +102,14 @@
 	}
 
 	/*
-	 * The Morse Micro HaLow (S1G) radio can only host a single BSS. Keep the
-	 * first SSID that requests the HaLow band and strip the band from any
-	 * further ones, dropping the SSID altogether if HaLow was its only band.
+	 * The Morse Micro HaLow (S1G) radio can host one AP-type BSS and one mesh
+	 * BSS at the same time, but no more than that. Keep the first SSID seen for
+	 * each of the two roles and strip the HaLow band from any further ones,
+	 * dropping the SSID altogether if HaLow was its only band.
 	 */
 	function limit_halow_ssids() {
-		let halow_ssid = null;
+		let halow_ap = null;
+		let halow_mesh = null;
 
 		for (let i, interface in state.interfaces) {
 			if (!length(interface.ssids))
@@ -118,15 +120,26 @@
 			for (let j, ssid in interface.ssids) {
 				let bands = ssid.wifi_bands || [];
 
-				if (!('HaLow' in bands) || !halow_ssid) {
-					if ('HaLow' in bands)
-						halow_ssid = ssid;
+				if (!('HaLow' in bands)) {
 					push(keep, ssid);
 					continue;
 				}
 
-				warn('HaLow radio only supports a single SSID, ignoring SSID "%s" on interface "%s" (already used by "%s")',
-				     ssid.name || '<unnamed>', interface.name || i, halow_ssid.name || '<unnamed>');
+				let is_mesh = ssid.bss_mode == 'mesh';
+				let taken = is_mesh ? halow_mesh : halow_ap;
+
+				if (!taken) {
+					if (is_mesh)
+						halow_mesh = ssid;
+					else
+						halow_ap = ssid;
+					push(keep, ssid);
+					continue;
+				}
+
+				warn('HaLow radio only supports a single %s SSID, ignoring SSID "%s" on interface "%s" (already used by "%s")',
+				     is_mesh ? 'mesh' : 'AP', ssid.name || '<unnamed>',
+				     interface.name || i, taken.name || '<unnamed>');
 
 				ssid.wifi_bands = filter(bands, band => band != 'HaLow');
 
