@@ -11,8 +11,12 @@
 	}
 
 	// is_ functions - boolean checks/validation
-	function is_static_addressing() {
-		return ipv4_mode == 'static' || ipv6_mode == 'static';
+	function is_ipv4_static(afnames, afidx) {
+		return (length(afnames) == 1 || afidx == 0) && ipv4_mode == 'static';
+	}
+
+	function is_ipv6_static(afnames, afidx) {
+		return (length(afnames) == 1 || afidx == 1) && ipv6_mode == 'static';
 	}
 
 	function is_ipv4_dynamic(afnames, afidx) {
@@ -32,8 +36,12 @@
 	}
 
 	// match_ functions - value mapping/selection
+	// Each address family must be matched against its own section, otherwise a
+	// static mode on one family leaks into the other and leaves it as
+	// proto=static without any address, since ipv4.uc/ipv6.uc only emit
+	// addresses for their own family.
 	function match_protocol(afnames, afidx) {
-		if (is_static_addressing())
+		if (is_ipv4_static(afnames, afidx) || is_ipv6_static(afnames, afidx))
 			return 'static';
 		else if (is_ipv4_dynamic(afnames, afidx))
 			return 'dhcp';
