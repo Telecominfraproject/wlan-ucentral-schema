@@ -16,7 +16,9 @@ set network.{{ afname }}.metric={{ interface.metric }}
 set network.{{ afname }}.mtu={{ interface.mtu }}
 set network.{{ afname }}.type={{ interface.type }}
 set network.{{ afname }}.auto={{ interface.auto_start }}
-{%  if (ipv4_mode == 'static' || ipv6_mode == 'static'): %}
+{%  if ((length(afnames) == 1 || afidx == 0) && ipv4_mode == 'static'): %}
+set network.{{ afname }}.proto=static
+{%  elif ((length(afnames) == 1 || afidx == 1) && ipv6_mode == 'static'): %}
 set network.{{ afname }}.proto=static
 {%  elif ((length(afnames) == 1 || afidx == 0) && ipv4_mode == 'dynamic'): %}
 set network.{{ afname }}.proto=dhcp
