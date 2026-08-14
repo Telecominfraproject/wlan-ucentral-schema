@@ -1074,13 +1074,14 @@ if (length(captive)) {
 		res[c] = {
 			status: val.state ? 'Authenticated' : 'Garden',
 			idle: val.idle || 0,
-			time: val.data.connect ? t - val.data.connect : 0,
+			time: val?.data?.connect ? t - val.data.connect : 0,
 			ip4addr: val.ip4addr || '',
 			ip6addr: val.ip6addr || '',
-			packets_ul: val.packets_ul || 0,
-			bytes_ul: val.bytes_ul || 0,
-			packets_dl: val.packets_dl || 0,
-			bytes_dl: val.bytes_dl || 0,
+			/* spotfilter reports the per client counters nested in acct_data */
+			packets_ul: val?.acct_data?.packets_ul || 0,
+			bytes_ul: val?.acct_data?.bytes_ul || 0,
+			packets_dl: val?.acct_data?.packets_dl || 0,
+			bytes_dl: val?.acct_data?.bytes_dl || 0,
 			username: val?.data?.radius?.request?.username || '',
 		};
 	}
