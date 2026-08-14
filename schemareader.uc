@@ -503,6 +503,29 @@ function instantiateInterfaceSsidEncryption(location, value, errors) {
 			obj.key_caching = true;
 		}
 
+		function parseEapReauthPeriod(location, value, errors) {
+			if (type(value) in [ "int", "double" ]) {
+				if (value > 86400)
+					push(errors, [ location, "must be lower than or equal to 86400" ]);
+
+				if (value < 0)
+					push(errors, [ location, "must be bigger than or equal to 0" ]);
+
+			}
+
+			if (type(value) != "int")
+				push(errors, [ location, "must be of type integer" ]);
+
+			return value;
+		}
+
+		if (exists(value, "eap-reauth-period")) {
+			obj.eap_reauth_period = parseEapReauthPeriod(location + "/eap-reauth-period", value["eap-reauth-period"], errors);
+		}
+		else {
+			obj.eap_reauth_period = 3600;
+		}
+
 		return obj;
 	}
 

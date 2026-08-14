@@ -255,6 +255,15 @@
                 "key-caching": {
                     "type": "boolean",
                     "default": true
+                },
+                "eap-reauth-period": {
+                    "type": "integer",
+                    "maximum": 86400,
+                    "minimum": 0,
+                    "default": 3600,
+                    "examples": [
+                        3600
+                    ]
                 }
             }
         },

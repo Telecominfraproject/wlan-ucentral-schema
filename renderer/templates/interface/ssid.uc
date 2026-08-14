@@ -599,6 +599,14 @@
 		uci_set_string(output, `wireless.${section}.encryption`, crypto.proto);
 		uci_set_string(output, `wireless.${section}.key`, crypto.key);
 
+		/* Emit explicitly for any BSS that uses EAP rather than leaving hostapd
+		 * on its compiled-in 3600s, so a configured value takes effect and the
+		 * active setting is visible in hostapd.conf. HaLow is excluded because
+		 * it already forces eap_reauth_period=0 earlier in the template, which
+		 * a 3600 default would otherwise override. */
+		if ((crypto.eap_local || crypto.auth) && !is_halow_band(band))
+			uci_set_number(output, `wireless.${section}.eap_reauth_period`, ssid.encryption.eap_reauth_period);
+
 		return uci_output(output);
 	}
 
