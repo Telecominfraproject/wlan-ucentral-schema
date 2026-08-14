@@ -452,7 +452,9 @@ set wireless.{{ section }}.ieee80211w={{ match_ieee80211w(band) }}
 set wireless.{{ section }}.sae_pwe={{ match_sae_pwe(band) }}
 set wireless.{{ section }}.encryption={{ crypto.proto }}
 set wireless.{{ section }}.key={{ s(crypto.key) }}
-
+{%   if ((crypto.eap_local || crypto.auth) && band != 'HaLow'): %}
+set wireless.{{ section }}.eap_reauth_period={{ ssid.encryption.eap_reauth_period }}
+{%   endif %}
 {%   if (crypto.eap_local): %}
 set wireless.{{ section }}.eap_server=1
 set wireless.{{ section }}.ca_cert={{ s(certificates.ca_certificate) }}

@@ -280,6 +280,16 @@
                     "description": "PMKSA created through EAP authentication and RSN preauthentication can be cached.",
                     "type": "boolean",
                     "default": true
+                },
+                "eap-reauth-period": {
+                    "description": "The interval in seconds at which an 802.1X BSS forces connected clients to reauthenticate via EAP. Reauthentication lets the AAA server re-evaluate a session and apply updated policy, but a client that does not answer the EAP-Request is disconnected and has to associate again, so a short period risks a recurring outage. Set to 0 to disable periodic reauthentication. This has no effect on a BSS that does not use EAP.",
+                    "type": "integer",
+                    "maximum": 86400,
+                    "minimum": 0,
+                    "default": 3600,
+                    "examples": [
+                        3600
+                    ]
                 }
             }
         },
