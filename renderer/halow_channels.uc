@@ -218,30 +218,36 @@ function halow_centre_freq(country, chan) {
 // Map 'country' onto a regulatory domain the HaLow chip supports.
 // Falls back to 'default_country' and then to 'US', warning on each fallback,
 // so the return value is always a country present in the map (never null).
-function halow_resolve_country(country, default_country) {
+// 'quiet' suppresses the fallback warnings. Used when the radio is disabled:
+// the section still has to be rendered, but a disabled radio must not emit
+// warnings that would turn an otherwise valid config into a rejection.
+function halow_resolve_country(country, default_country, quiet) {
 	if (halow_has_country(country))
 		return country;
 	// First fallback: the supplied default country (e.g. from env / board.json).
 	if (halow_has_country(default_country)) {
-		warn(sprintf("HaLow: unknown country '%s', falling back to '%s'\n", country, default_country));
+		if (!quiet)
+			warn(sprintf("HaLow: unknown country '%s', falling back to '%s'\n", country, default_country));
 		return default_country;
 	}
 	// Last-resort fallback: 'US' is always present in the table.
-	warn(sprintf("HaLow: unknown country '%s' and invalid default '%s', falling back to 'US'\n", country, default_country));
+	if (!quiet)
+		warn(sprintf("HaLow: unknown country '%s' and invalid default '%s', falling back to 'US'\n", country, default_country));
 	return 'US';
 }
 
 // Validate 'chan' against 'country' and return a usable channel: 'chan' itself
 // when it is listed for that country, otherwise the country default (with a
 // warning). Returns null for an unknown country, so callers must handle null.
-function halow_resolve_channel(country, chan) {
+function halow_resolve_channel(country, chan, quiet) {
 	let entry = CHANNEL_MAP[country];
 	if (!entry)
 		return null;
 	if (entry.channels[sprintf("%d", chan)] != null)
 		return chan;
 	let fallback = entry.default_channel;
-	warn(sprintf("HaLow: invalid channel %s for country '%s', falling back to %d\n", chan, country, fallback));
+	if (!quiet)
+		warn(sprintf("HaLow: invalid channel %s for country '%s', falling back to %d\n", chan, country, fallback));
 	return fallback;
 }
 
