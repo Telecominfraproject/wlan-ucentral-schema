@@ -71,17 +71,22 @@
 		}
 	}
 
+	// Resolve this radio's country into a local variable. 'radio' is the very
+	// object stored in state.radios, which every radio render shares, so
+	// writing the resolved country back would leak into the next radio's
+	// peer_country lookup and make the outcome depend on render order.
+	let out_country = radio.country;
 	if (radio.band == "HaLow")
-		radio.country ??= peer_country || default_config.country || 'US';
+		out_country ??= peer_country || default_config.country || 'US';
 	else
-		radio.country ??= default_config.country;
+		out_country ??= default_config.country;
 
-	// EdgeCore: AL (Albania) and BA (Bosnia) are aliased to EU below, but
-	// their local regulation only permits 1 MHz operation. Remember the
-	// original code so match_channel() can downgrade any 2 MHz+ channel to
-	// the 1 MHz default (with a warning, not a reject).
+	// AL (Albania) and BA (Bosnia) are aliased to EU below, but their local
+	// regulation only permits 1 MHz operation. Remember the original code so
+	// match_channel() can downgrade any 2 MHz+ channel to the 1 MHz default
+	// (with a warning, not a reject).
 	let halow_1mhz_only = (radio.band == "HaLow") &&
-		(radio.country == "AL" || radio.country == "BA");
+		(out_country == "AL" || out_country == "BA");
 
 	let eu_alias = {
 		AD: true, AL: true, AT: true, BA: true, BE: true, BG: true, BY: true,
@@ -92,8 +97,8 @@
 		NO: true, PL: true, PT: true, RO: true, RS: true, SE: true, SI: true,
 		SK: true, SM: true, TR: true, UA: true, UK: true, VA: true, XK: true
 	};
-	if (radio.band == "HaLow" && radio.country && eu_alias[radio.country])
-		radio.country = "EU";
+	if (radio.band == "HaLow" && out_country && eu_alias[out_country])
+		out_country = "EU";
 	if (peer_country && eu_alias[peer_country])
 		peer_country = "EU";
 
@@ -107,10 +112,14 @@
 	// silently rewritten to US (plus a warn per radio, which turns the whole
 	// configure into 'Rejects') just because the MORSE table has no entry
 	// for e.g. TW.
+	// A disabled HaLow radio still gets rendered, but must stay silent: its
+	// warnings would otherwise be reported as config rejections.
+	let quiet = (radio.band == "HaLow") && exists(radio, 'enable') && !radio.enable;
+
 	let morse_supported = { AU: true, CA: true, EU: true, JP: true, US: true };
 	let halow_configured = false;
 	for (let r in state.radios)
-		if (r.band == "HaLow")
+		if (r.band == "HaLow" && r.enable != false)
 			halow_configured = true;
 	let halow_present = halow_configured && length(wiphy.lookup_by_band("HaLow")) > 0;
 	let need_us = false;
@@ -130,32 +139,38 @@
 	// (the 2G/5G country, or US when that country is unsupported) and we can
 	// derive it safely. Dying here would reject an otherwise valid
 	// configuration over a value the renderer is able to fix by itself.
+	// Judged on what the user actually configured, before any fallback rewrites
+	// the codes, so that an all-same-country config is never seen as a mismatch.
+	let mismatch = halow_present && (radio.band == "HaLow") &&
+		peer_country && out_country != peer_country;
+
 	if (need_us) {
-		if (radio.band == "HaLow" && peer_country && radio.country != peer_country)
+		if (!quiet && mismatch)
 			warn(sprintf("HaLow country '%s' does not match 2G/5G country '%s' and is unsupported by the HaLow radio; the regulatory domain is device global, realigning all radios to US",
-				radio.country, peer_country));
+				out_country, peer_country));
 		// Report once, from the HaLow radio, instead of once per radio.
-		else if (radio.band == "HaLow")
+		else if (!quiet && radio.band == "HaLow")
 			warn(sprintf("HaLow radio does not support the configured country '%s', falling back all radios to US",
-				radio.country));
-		radio.country = "US";
+				out_country));
+		out_country = "US";
 		if (peer_country)
 			peer_country = "US";
-	} else if (halow_present && radio.band == "HaLow" && peer_country && radio.country != peer_country) {
-		warn(sprintf("HaLow country '%s' does not match 2G/5G country '%s'; the regulatory domain is device global, realigning the HaLow radio to '%s'",
-			radio.country, peer_country, peer_country));
-		radio.country = peer_country;
+	} else if (mismatch) {
+		if (!quiet)
+			warn(sprintf("HaLow country '%s' does not match 2G/5G country '%s'; the regulatory domain is device global, realigning the HaLow radio to '%s'",
+				out_country, peer_country, peer_country));
+		out_country = peer_country;
 	}
 
 	// HaLow S1G channel/op_class/frequency are per-country table values, not
 	// derivable by the generic 5G algorithm. Resolve against the map and seed
 	// valid_channels from it.
 	let halow_country = (radio.band == "HaLow")
-		? halow.halow_resolve_country(radio.country, peer_country || default_config.country) : null;
+		? halow.halow_resolve_country(out_country, peer_country || default_config.country, quiet) : null;
 	if (radio.band == "HaLow")
 		radio.valid_channels = halow.halow_valid_channels(halow_country);
 
-	if (length(restrict.country) && !(radio.country in restrict.country)) {
+	if (length(restrict.country) && !(out_country in restrict.country)) {
 		warn("Country code is restricted");
 		die("Country code is restricted");
 	}
@@ -180,7 +195,7 @@
 		if (radio.band == "HaLow") {
 			let chan = !wanted_channel
 				? halow.halow_default_channel(halow_country)
-				: halow.halow_resolve_channel(halow_country, wanted_channel);
+				: halow.halow_resolve_channel(halow_country, wanted_channel, quiet);
 
 			// Ensure we never return null. Try the HaLow default, then a
 			// safe numeric fallback.
@@ -189,13 +204,15 @@
 				if (fallback == null) {
 					// Historic code returned 12 for an unspecified HaLow
 					// default; keep that as a last-resort safe fallback.
-					warn(sprintf("HaLow: resolved channel is null for country '%s', falling back to 12",
-						halow_country));
+					if (!quiet)
+						warn(sprintf("HaLow: resolved channel is null for country '%s', falling back to 12",
+							halow_country));
 					chan = 12;
 				} else {
 					chan = fallback;
-					warn(sprintf("HaLow: resolved channel was null for country '%s', using default %d",
-						halow_country, fallback));
+					if (!quiet)
+						warn(sprintf("HaLow: resolved channel was null for country '%s', using default %d",
+							halow_country, fallback));
 				}
 			}
 
@@ -214,11 +231,13 @@
 							dflt = v.s1g_chan;
 
 					if (dflt == null) {
-						warn(sprintf("HaLow: country '%s' (via AL/BA) allows 1 MHz only but no 1 MHz channel found in the map, keeping channel %d",
-							halow_country, chan));
+						if (!quiet)
+							warn(sprintf("HaLow: country '%s' (via AL/BA) allows 1 MHz only but no 1 MHz channel found in the map, keeping channel %d",
+								halow_country, chan));
 					} else {
-						warn(sprintf("HaLow: country '%s' (via AL/BA) allows 1 MHz only, channel %d is %d MHz, falling back to %d",
-							halow_country, chan, row.bw, dflt));
+						if (!quiet)
+							warn(sprintf("HaLow: country '%s' (via AL/BA) allows 1 MHz only, channel %d is %d MHz, falling back to %d",
+								halow_country, chan, row.bw, dflt));
 						chan = dflt;
 					}
 				}
@@ -361,6 +380,9 @@
 {% for (let phy in phys): %}
 {%  let reconf = phy.no_reconf ? 0 : 1 %}
 {%  let htmode = (radio.band != "HaLow") ? match_htmode(phy, radio) : "" %}
+{#  Resolve the channel once. match_channel() warns on fallback, so calling it
+    per output line would repeat the same warning for a single radio. #}
+{%  let resolved_chan = match_channel(phy, radio) %}
 set wireless.{{ phy.section }}.disabled={{ exists(radio, 'enable') ? b(!radio.enable) : 0 }}
 set wireless.{{ phy.section }}.ucentral_path={{ s(location) }}
 {%  if (radio.band != "HaLow"): %}
@@ -369,9 +391,9 @@ set wireless.{{ phy.section }}.txantenna={{ match_mimo(phy.tx_ant_avail, radio.m
 set wireless.{{ phy.section }}.rxantenna={{ match_mimo(phy.rx_ant_avail, radio.mimo) }}
 set wireless.{{ phy.section }}.noscan=1
 {%  endif %}
-set wireless.{{ phy.section }}.channel={{ match_channel(phy, radio) }}
+set wireless.{{ phy.section }}.channel={{ resolved_chan }}
 set wireless.{{ phy.section }}.beacon_int={{ radio.beacon_interval }}
-set wireless.{{ phy.section }}.country={{ s(radio.country) }}
+set wireless.{{ phy.section }}.country={{ s(out_country) }}
 set wireless.{{ phy.section }}.require_mode={{ s(match_require_mode(radio.require_mode)) }}
 set wireless.{{ phy.section }}.txpower={{ radio.tx_power }}
 set wireless.{{ phy.section }}.legacy_rates={{ b(radio.legacy_rates) }}
@@ -407,8 +429,8 @@ set wireless.{{ phy.section }}.type='morse'
 set wireless.{{ phy.section }}.band='s1g'
 set wireless.{{ phy.section }}.hwmode='a'
 set wireless.{{ phy.section }}.s1g_prim_1mhz_chan_index='auto'
-set wireless.{{ phy.section }}.op_class={{ halow.halow_lookup_op_class(halow_country, match_channel(phy, radio)) }}
-set wireless.{{ phy.section }}.frequency={{ halow.halow_centre_freq(halow_country, match_channel(phy, radio)) }}
+set wireless.{{ phy.section }}.op_class={{ halow.halow_lookup_op_class(halow_country, resolved_chan) }}
+set wireless.{{ phy.section }}.frequency={{ halow.halow_centre_freq(halow_country, resolved_chan) }}
 {%  endif %}
 {%  if (afc): %}
 add wireless afc-server
