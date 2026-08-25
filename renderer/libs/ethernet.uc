@@ -108,6 +108,13 @@ function create_ethernet(capab, fs, swconfig) {
 			return matched;
 		},
 
+		/**
+		 * Every port claimed by an upstream interface, at any tag state.
+		 * Populated by toplevel.uc before any interface is rendered; empty
+		 * until then so lookups stay safe if it is never set.
+		 */
+		reserved: [],
+
 		lookup_by_interface_vlan: function(interface, raw) {
 			// Gather the glob patterns in all `ethernet: [ { select-ports: ... }]` specs,
 			// dedup them and turn them into one global regular expression pattern, then
@@ -126,6 +133,16 @@ function create_ethernet(capab, fs, swconfig) {
 				if (interface.role == 'downstream') {
 					if (this.swconfig && this.swconfig[k] && this.swconfig[k].switch && v == 'tagged')
 						warn('%s:%d - vlan tagging on downstream swconfig ports is not supported', this.swconfig[k]?.switch.name, this.swconfig[k].swconfig);
+					/* An upstream already owns this port (see toplevel.uc), so it is
+					 * not available to a downstream at any tag state - 'up' and
+					 * 'down' are separate bridge devices and cannot share one.
+					 * Dropped silently and deliberately: a glob like "*" means
+					 * "every available port", and any log entry would downgrade the
+					 * controller result from Success to Rejects (ucentral.uc:
+					 * 'else if (length(logs))').
+					 */
+					else if (index(this.reserved, k) >= 0)
+						continue;
 					else
 						rv[k] = v;
 					continue;
