@@ -91,11 +91,25 @@
 	 * depends on them.
 	 */
 	let untagged_ports = [];
+	let upstream_ports = [];
 	for (let i, interface in state.interfaces) {
 		if (interface.role != 'upstream')
 			continue;
 		let eth_ports = ethernet.lookup_by_interface_vlan(interface);
 		for (let port in keys(eth_ports)) {
+			/* Every port an upstream touches is off-limits to a downstream,
+			 * whatever the tag state. 'up' and 'down' are separate bridge
+			 * devices, so a port named by both is enslaved to whichever is
+			 * applied last - always 'down' - starving the uplink. Tagging does
+			 * not make the sharing work, it only changes which claim is inert.
+			 */
+			if (!(port in upstream_ports))
+				push(upstream_ports, port);
+
+			/* Duplicate detection is a separate question and stays un-tagged
+			 * only: two upstreams tagged on one port are legitimate trunking,
+			 * since both land in the same 'up' bridge on different VLANs.
+			 */
 			if (ethernet.port_vlan(interface, eth_ports[port]))
 				continue;
 			if (port in untagged_ports) {
@@ -107,6 +121,12 @@
 			push(untagged_ports, port);
 		}
 	}
+
+	/* Publish the upstream claim so lookup_by_interface_vlan() can drop these
+	 * ports from downstream lookups. Must stay after the loop above, so the set
+	 * is complete before any interface is rendered.
+	 */
+	ethernet.reserved = upstream_ports;
 
 	/*
 	 * The Morse Micro HaLow (S1G) radio can host one AP-type BSS and one mesh
