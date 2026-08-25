@@ -14,6 +14,13 @@
 	const WDS_MODES = ['wds-sta', 'wds-ap'];
 	let eth_ports;
 	let bridgedev;
+	// Which section owns the bridge the wlan members of this interface end up in:
+	// 'netifd' for an auto created br-<network>, 'shared' for the common
+	// downstream bridge device, unset when this interface has no bridge or brings
+	// its own permanent member along. Declared here so the generator functions
+	// below can capture it, a `let` introduced further down the file is not
+	// visible to functions defined above.
+	let bridge_owner;
 
 	// Helper functions
 
@@ -224,12 +231,38 @@
 		return true;
 	}
 
+	// A downstream interface whose only members are wlan netdevs ends up with an
+	// empty bridge every time hostapd is restarted, because netifd removes the
+	// wifi ifaces before adding them back. Without bridge_empty netifd tears the
+	// bridge down at that point and the interface, its address and its firewall
+	// zone disappear until the next config apply.
+	//
+	// The option has to be set on the section that owns the bridge device, and
+	// that differs per code path:
+	//   - the ssid-only path leaves the interface section at type=bridge and lets
+	//     netifd auto create br-<network>, so the option belongs on the interface
+	//     section(s) of this network
+	//   - the bridge-vlan path attaches the members to the shared downstream
+	//     bridge device, so the option belongs on that device
+	// Paths that keep a non wlan member of their own, such as the vxlan tunnel
+	// bridge, cannot run empty and are left alone.
 	function generate_bridge_empty_config() {
+		if (!is_downstream_interface() || !length(interface.ssids) || has_ethernet_ports())
+			return '';
+
+		if (!bridge_owner)
+			return '';
+
+		let sections = (bridge_owner == 'netifd') ?
+			map(ethernet.calculate_names(interface), afname => `network.${afname}`) :
+			[ `network.${bridgedev}` ];
+
 		let output = [];
-		if (is_downstream_interface() && length(interface.ssids) > 0 && !has_ethernet_ports()) {
-			uci_comment(output, '### generate bridge_empty configuration');
-			uci_set_string(output, `network.${bridgedev}.bridge_empty`, '1');
-		}
+
+		uci_comment(output, '### generate bridge_empty configuration');
+		for (let section in sections)
+			uci_set_string(output, `${section}.bridge_empty`, '1');
+
 		return uci_output(output);
 	}
 
@@ -311,8 +344,11 @@
 	let captive_netdev;
 
 	if (!interface.ethernet && length(interface.ssids) == 1 && !tunnel_proto && !("vxlan-overlay" in interface.services)) {
-		if (interface.role == 'downstream')
+		if (interface.role == 'downstream') {
 			interface.type = 'bridge';
+			// netifd owns this bridge, there is no bridge-vlan section for it
+			bridge_owner = 'netifd';
+		}
 		netdev = '';
 	} else if (tunnel_proto == 'vxlan') {
 		netdev = '@' + name + '_vx';
@@ -320,6 +356,7 @@
 	} else if (tunnel_proto != 'gre' && tunnel_proto != 'gre6') {
 		// anything else requires a bridge-vlan
 		include("interface/bridge-vlan.uc", { interface, name, eth_ports, this_vid, bridgedev, swconfig });
+		bridge_owner = 'shared';
 		// bridge-vlan.uc emits an explicit 8021q device named after the interface
 		captive_netdev = name;
 	}
