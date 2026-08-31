@@ -234,6 +234,60 @@
 		include('ethernet.uc', { location: '/ethernet/' + i, ports });
 	services.set_enabled("poe", true);
 
+	/* Country codes are ISO 3166-1 alpha-2 and have to be upper case, which is
+	 * what the driver and hostapd expect. The schema only constrains the length,
+	 * so reject anything else here and fall back to the device default rather
+	 * than passing an unusable code down to the driver.
+	 */
+	function validate_country_codes() {
+		for (let i, radio in state.radios) {
+			if (!radio.country || match(radio.country, /^[A-Z][A-Z]$/))
+				continue;
+
+			warn('Invalid country code "%s" on radio%d (%s), expecting an upper case ISO 3166-1 alpha-2 code, falling back to the default country %s',
+			     radio.country, i, radio.band, default_config.country);
+			radio.country = default_config.country;
+		}
+	}
+
+	/* The regulatory domain is device global, so per radio country codes cannot
+	 * be honoured. When the radios disagree, fall back all of them to the device
+	 * default instead of applying whichever rendered last. A radio that omits the
+	 * country inherits the device default in radio.uc, so it still contributes a
+	 * code to the domain and is counted here.
+	 *
+	 * HaLow takes part in the check like any other band. radio.uc here has no
+	 * HaLow specific country resolution, so excluding it would let a config such
+	 * as 2.4G=GB with HaLow=US through unreported and leave the device on two
+	 * domains.
+	 */
+	function align_global_country() {
+		let seen = {};
+		for (let i, radio in state.radios) {
+			let code = radio.country ?? default_config.country;
+			seen[code] ??= [];
+			push(seen[code], sprintf('radio%d (%s)', i, radio.band));
+		}
+
+		let codes = sort(keys(seen));
+		if (length(codes) < 2)
+			return;
+
+		// default_config.country defined in renderer.uc
+		let fallback = default_config.country;
+		let detail = join(', ', map(codes, code =>
+			sprintf("'%s' on %s", code, join('/', seen[code]))));
+
+		warn('Conflicting country codes configured: %s. The regulatory domain is a device global setting, falling back all radios to the default country %s',
+		     detail, fallback);
+
+		for (let radio in state.radios)
+			radio.country = fallback;
+	}
+
+	validate_country_codes();
+	align_global_country();
+
 	for (let i, radio in state.radios)
 		include('radio.uc', { location: '/radios/' + i, radio });
 
