@@ -51,7 +51,11 @@ properties:
   country:
     description:
       Specifies the country code, affects the available channels and
-      transmission powers.
+      transmission powers. Must be an upper case ISO 3166-1 alpha-2 code. The
+      regulatory domain is a device global setting, so all radios must be
+      configured with the same country code. An invalid code, or radios
+      disagreeing on the code, makes all radios fall back to the device
+      default country.
     type: string
     maxLength: 2
     minLength: 2
