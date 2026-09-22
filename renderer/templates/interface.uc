@@ -1,6 +1,11 @@
 {%
 	let has_downstream_relays = false;
 	let dest;
+	// Which section owns the bridge the wlan members of this interface end up in:
+	// 'netifd' for an auto created br-<network>, 'shared' for the common
+	// downstream bridge device, unset when this interface has no bridge or brings
+	// its own permanent member along.
+	let bridge_owner;
 
 	// Skip interfaces previously marked as conflicting.
 	if (interface.conflicting) {
@@ -157,8 +162,11 @@
 	let captive_netdev;
 
 	if (!interface.ethernet && length(interface.ssids) == 1 && !tunnel_proto && !("vxlan-overlay" in interface.services)) {
-		if (interface.role == 'downstream')
+		if (interface.role == 'downstream') {
 			interface.type = 'bridge';
+			// netifd owns this bridge, there is no bridge-vlan section for it
+			bridge_owner = 'netifd';
+		}
 		netdev = '';
 	} else if (tunnel_proto == 'vxlan') {
 		netdev = '@' + name + '_vx';
@@ -166,6 +174,7 @@
 	} else if (tunnel_proto != 'gre' && tunnel_proto != 'gre6') {
 		// anything else requires a bridge-vlan
 		include("interface/bridge-vlan.uc", { interface, name, eth_ports, this_vid, bridgedev, swconfig });
+		bridge_owner = 'shared';
 		// bridge-vlan.uc emits an explicit 8021q device named after the interface
 		captive_netdev = name;
 	}
@@ -237,10 +246,39 @@
 
 	if (length(dot1x_ports))
 		include('interface/ieee8021x.uc', { dot1x_ports, interface, eth_ports, this_vid });
+		
+	// A downstream interface whose only members are wlan netdevs ends up with an
+	// empty bridge every time hostapd is restarted, because netifd removes the
+	// wifi ifaces before adding them back. Without bridge_empty netifd tears the
+	// bridge down at that point and the interface, its address and its firewall
+	// zone disappear until the next config apply.
+	//
+	// The option has to be set on the section that owns the bridge device, and
+	// that differs per code path:
+	//   - the ssid-only path leaves the interface section at type=bridge and lets
+	//     netifd auto create br-<network>, so the option belongs on the interface
+	//     section(s) of this network
+	//   - the bridge-vlan path attaches the members to the shared downstream
+	//     bridge device, so the option belongs on that device
+	// Paths that keep a non wlan member of their own, such as the vxlan tunnel
+	// bridge, cannot run empty and are left alone.
+	let bridge_empty_sections = [];
+	if (interface.role == 'downstream' && length(interface.ssids) > 0 && length(eth_ports) == 0 && bridge_owner) {
+		bridge_empty_sections = (bridge_owner == 'netifd') ?
+			map(ethernet.calculate_names(interface), afname => `network.${afname}`) :
+			[ `network.${bridgedev}` ];
+	}
 
 %}
 {% if (tunnel_proto == 'mesh'): %}
 set network.{{ name }}.batman=1
+{% endif %}
+
+{% if (length(bridge_empty_sections)): %}
+### generate bridge_empty configuration
+{% for (let section in bridge_empty_sections): %}
+set {{ section }}.bridge_empty=1
+{% endfor %}
 {% endif %}
 
 {% if (interface.role == "downstream" && "wireguard-overlay" in interface.services): %}
