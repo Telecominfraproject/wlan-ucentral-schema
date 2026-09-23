@@ -19,6 +19,10 @@
 # NOTE: §5 also asks for 'let' over bare globals, JSDoc on non-trivial
 # functions, null-guards and assert() for invariants. Those are judgement
 # calls left to review; only the two mechanical rules are enforced here.
+#
+# Findings are emitted as file/line annotations so they render inline on the PR
+# diff, and each message repeats "path:line" in its text because the workflow
+# strips annotation properties when folding these lines into the PR comment.
 
 # 'set -e' is deliberately omitted (the wlan-ap original uses -euo): the
 # '[ x = y ] && arr+=(...)' idioms below legitimately return non-zero, which
@@ -28,9 +32,36 @@ set -uo pipefail
 BASE_SHA="${BASE_SHA:?BASE_SHA not set}"
 HEAD_SHA="${HEAD_SHA:?HEAD_SHA not set}"
 
+# How many offending lines to report per file before collapsing the rest.
+MAX_REPORT=10
+
 fail=0
 err()  { echo "::error::$*"; fail=1; }
 warn() { echo "::warning::$*"; }
+
+# err_at <file> <line> <message…> — annotation anchored to a line of the diff.
+err_at() {
+  local f="$1" l="$2"
+  shift 2
+  echo "::error file=$f,line=$l::$*"
+  fail=1
+}
+
+# Keep a quoted source line short so one runaway line can't flood the comment.
+trunc() {
+  local s="$1" max=80
+  if [ "${#s}" -gt "$max" ]; then
+    printf '%s…' "${s:0:max}"
+  else
+    printf '%s' "$s"
+  fi
+}
+
+# Three-dot range = diff against the merge base. With the two-dot form, a PR
+# whose base branch has moved on would also be judged on files that only the
+# base branch touched (base.sha is the base-branch tip at event time, not the
+# branch point).
+RANGE="${BASE_SHA}...${HEAD_SHA}"
 
 # ---------------------------------------------------------------
 # 1. Generated artefacts must come from the .yml sources (§6)
@@ -50,7 +81,7 @@ GENERATED=(
   schemareader.uc
 )
 
-mapfile -t changed_all < <(git diff --name-only --diff-filter=ACMR "$BASE_SHA" "$HEAD_SHA")
+mapfile -t changed_all < <(git diff --name-only --diff-filter=ACMR "$RANGE")
 
 changed_generated=()
 for g in "${GENERATED[@]}"; do
@@ -81,7 +112,7 @@ is_generated() {
   return 1
 }
 
-mapfile -t changed_uc < <(git diff --name-only --diff-filter=ACMR "$BASE_SHA" "$HEAD_SHA" -- '*.uc')
+mapfile -t changed_uc < <(git diff --name-only --diff-filter=ACMR "$RANGE" -- '*.uc')
 
 if [ "${#changed_uc[@]}" -eq 0 ]; then
   echo "No ucode files changed; skipping ucode checks."
@@ -90,7 +121,7 @@ if [ "${#changed_uc[@]}" -eq 0 ]; then
 fi
 
 # --- SPDX + "use strict" required on NEW .uc files ---
-mapfile -t added_uc < <(git diff --name-only --diff-filter=A "$BASE_SHA" "$HEAD_SHA" -- '*.uc')
+mapfile -t added_uc < <(git diff --name-only --diff-filter=A "$RANGE" -- '*.uc')
 for f in "${added_uc[@]:-}"; do
   [ -z "$f" ] && continue
   is_generated "$f" && continue
@@ -106,10 +137,10 @@ for f in "${added_uc[@]:-}"; do
   if ! head -n3 "$f" | grep -q 'SPDX-License-Identifier:'; then
     case "$f" in
       renderer/templates/*)
-        err "$f: new ucode template must carry '{# SPDX-License-Identifier: <package license> #}' (guidelines §3). Use the {# #} comment form, not '//': text outside a block tag is emitted verbatim into the rendered UCI."
+        err_at "$f" 1 "$f:1: new ucode template must carry \`{# SPDX-License-Identifier: <package license> #}\` (guidelines §3). Use the \`{# #}\` comment form, not \`//\`: text outside a block tag is emitted verbatim into the rendered UCI."
         ;;
       *)
-        err "$f: new ucode file must carry '// SPDX-License-Identifier: <package license>' above \"use strict\"; (guidelines §3)."
+        err_at "$f" 1 "$f:1: new ucode file must carry \`// SPDX-License-Identifier: <package license>\` above \`\"use strict\";\` (guidelines §3)."
         ;;
     esac
   fi
@@ -128,18 +159,33 @@ done
 
 # --- Space-indentation in ADDED lines (§5: tabs) ---
 # Walk the unified diff and flag '+' lines that begin with a space used as
-# indentation, excluding block-comment continuations (' *').
-#
-# No 'grep -n' here: it numbers lines in the diff stream, not in the file, so
-# the number would point a contributor at the wrong place. Echo the offending
-# content instead and let them search for it.
+# indentation, excluding block-comment continuations (' *'). The @@ header
+# carries the first new-file line of each hunk, so each offender is reported at
+# its real location in the file rather than at an offset into the diff text.
 for f in "${changed_uc[@]}"; do
   is_generated "$f" && continue
-  bad=$(git diff --unified=0 "$BASE_SHA" "$HEAD_SHA" -- "$f" \
-        | grep -E '^\+ +[^ *]' || true)
-  if [ -n "$bad" ]; then
-    err "$f: added lines are indented with spaces; use tabs (guidelines §5). Offending added lines:"
-    echo "$bad" | head -n 10
+
+  offenders="$(git diff --unified=0 "$RANGE" -- "$f" | awk '
+    /^\+\+\+/    { next }
+    /^@@/        { match($0, /\+[0-9]+/)
+                   line = substr($0, RSTART + 1, RLENGTH - 1)
+                   next }
+    /^\+/        { text = substr($0, 2)
+                   if (text ~ /^ +[^ *]/) printf "%d\t%s\n", line, text
+                   line++ }
+  ')"
+
+  [ -z "$offenders" ] && continue
+
+  n=0
+  while IFS=$'\t' read -r line text; do
+    n=$((n + 1))
+    [ "$n" -gt "$MAX_REPORT" ] && continue
+    err_at "$f" "$line" "$f:$line: indented with spaces; use tabs (guidelines §5): \`$(trunc "$text")\`"
+  done <<< "$offenders"
+
+  if [ "$n" -gt "$MAX_REPORT" ]; then
+    err_at "$f" 1 "$f: $((n - MAX_REPORT)) further space-indented line(s) not listed — re-indent the file with tabs (guidelines §5)."
   fi
 done
 
