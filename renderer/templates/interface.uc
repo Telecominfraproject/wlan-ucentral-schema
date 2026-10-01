@@ -250,18 +250,13 @@
 		if (!is_downstream_interface() || !length(interface.ssids) || has_ethernet_ports())
 			return '';
 
-		if (!bridge_owner)
+		if (bridge_owner != 'shared')
 			return '';
-
-		let sections = (bridge_owner == 'netifd') ?
-			map(ethernet.calculate_names(interface), afname => `network.${afname}`) :
-			[ `network.${bridgedev}` ];
 
 		let output = [];
 
 		uci_comment(output, '### generate bridge_empty configuration');
-		for (let section in sections)
-			uci_set_string(output, `${section}.bridge_empty`, '1');
+		uci_set_string(output, `network.${bridgedev}.bridge_empty`, '1');
 
 		return uci_output(output);
 	}
@@ -342,17 +337,13 @@
 	// naming a netdev that does not exist is worse than omitting the field,
 	// because spotfilter zeroes the whole traffic class when the lookup fails.
 	let captive_netdev;
+	let is_netifd_bridge = false;
 
 	if (!interface.ethernet && length(interface.ssids) == 1 && !tunnel_proto && !("vxlan-overlay" in interface.services)) {
 		if (interface.role == 'downstream') {
-			interface.type = 'bridge';
-			// netifd owns this bridge, there is no bridge-vlan section for it
-			bridge_owner = 'netifd';
+			is_netifd_bridge = true;
+			captive_netdev = name;
 		}
-		netdev = '';
-	} else if (tunnel_proto == 'vxlan') {
-		netdev = '@' + name + '_vx';
-		interface.type = 'bridge';
 	} else if (tunnel_proto != 'gre' && tunnel_proto != 'gre6') {
 		// anything else requires a bridge-vlan
 		include("interface/bridge-vlan.uc", { interface, name, eth_ports, this_vid, bridgedev, swconfig });
@@ -360,10 +351,6 @@
 		// bridge-vlan.uc emits an explicit 8021q device named after the interface
 		captive_netdev = name;
 	}
-
-	// netifd auto names a type=bridge interface br-<network>
-	if (interface.type == 'bridge')
-		captive_netdev = 'br-' + name;
 
 	if (captive_netdev)
 		captive.set_netdev(name, captive_netdev);
@@ -432,3 +419,12 @@ set network.{{ name }}.batman=1
 {% endif %}
 
 {{ generate_bridge_empty_config() }}
+
+
+{% if (is_netifd_bridge): %}
+### generate netifd bridge device configuration
+add network device
+set network.@device[-1].type='bridge'
+set network.@device[-1].name='{{ name }}'
+set network.@device[-1].bridge_empty='1'
+{% endif %}
