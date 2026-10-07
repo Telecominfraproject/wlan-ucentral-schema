@@ -161,16 +161,13 @@
 	// because spotfilter zeroes the whole traffic class when the lookup fails.
 	let captive_netdev;
 
+	let is_netifd_bridge = false;
 	if (!interface.ethernet && length(interface.ssids) == 1 && !tunnel_proto && !("vxlan-overlay" in interface.services)) {
 		if (interface.role == 'downstream') {
-			interface.type = 'bridge';
-			// netifd owns this bridge, there is no bridge-vlan section for it
+			is_netifd_bridge = true;
 			bridge_owner = 'netifd';
+			captive_netdev = name;
 		}
-		netdev = '';
-	} else if (tunnel_proto == 'vxlan') {
-		netdev = '@' + name + '_vx';
-		interface.type = 'bridge';
 	} else if (tunnel_proto != 'gre' && tunnel_proto != 'gre6') {
 		// anything else requires a bridge-vlan
 		include("interface/bridge-vlan.uc", { interface, name, eth_ports, this_vid, bridgedev, swconfig });
@@ -178,10 +175,6 @@
 		// bridge-vlan.uc emits an explicit 8021q device named after the interface
 		captive_netdev = name;
 	}
-
-	// netifd auto names a type=bridge interface br-<network>
-	if (interface.type == 'bridge')
-		captive_netdev = 'br-' + name;
 
 	if (captive_netdev)
 		captive.set_netdev(name, captive_netdev);
@@ -263,10 +256,8 @@
 	// Paths that keep a non wlan member of their own, such as the vxlan tunnel
 	// bridge, cannot run empty and are left alone.
 	let bridge_empty_sections = [];
-	if (interface.role == 'downstream' && length(interface.ssids) > 0 && length(eth_ports) == 0 && bridge_owner) {
-		bridge_empty_sections = (bridge_owner == 'netifd') ?
-			map(ethernet.calculate_names(interface), afname => `network.${afname}`) :
-			[ `network.${bridgedev}` ];
+	if (interface.role == 'downstream' && length(interface.ssids) > 0 && length(eth_ports) == 0 && bridge_owner == 'shared') {
+		bridge_empty_sections = [ `network.${bridgedev}` ];
 	}
 
 %}
@@ -279,6 +270,14 @@ set network.{{ name }}.batman=1
 {% for (let section in bridge_empty_sections): %}
 set {{ section }}.bridge_empty=1
 {% endfor %}
+{% endif %}
+
+{% if (is_netifd_bridge): %}
+### generate netifd bridge device configuration
+add network device
+set network.@device[-1].type='bridge'
+set network.@device[-1].name='{{ name }}'
+set network.@device[-1].bridge_empty='1'
 {% endif %}
 
 {% if (interface.role == "downstream" && "wireguard-overlay" in interface.services): %}
