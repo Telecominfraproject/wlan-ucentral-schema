@@ -85,6 +85,10 @@
 		return ssid.rate_limit && (ssid.rate_limit.ingress_rate || ssid.rate_limit.egress_rate);
 	}
 
+	function needs_offload_exclude() {
+		return capab.wed && has_rate_limit();
+	}
+
 	// is_ functions - boolean checks/validation
 	function is_6g_band(band) {
 		return band == "6G";
@@ -423,6 +427,8 @@
 	function calculate_ifname(name) {
 		if ('captive' in ssid.services)
 			return 'wlanc' + captive.get(name);
+		if (needs_offload_exclude())
+			return 'wlanr' + captive.next++;
 		return '';
 	}
 
@@ -483,7 +489,7 @@
 		uci_set_string(output, `wireless.${section}.uci_section`, section);
 		uci_set_string(output, `wireless.${section}.device`, phy.section);
 
-		if (has_captive_service())
+		if (has_captive_service() || needs_offload_exclude())
 			uci_set_string(output, `wireless.${section}.ifname`, ifname);
 
 		return uci_output(output);
@@ -497,6 +503,18 @@
 
 		uci_comment(output, '### generate captive portal integration');
 		uci_list_string(output, `uspot.${basename}.ifname`, ifname);
+		uci_list_string(output, 'bridger.@defaults[0].blacklist', ifname);
+
+		return uci_output(output);
+	}
+
+	function generate_offload_exclude_integration(ifname) {
+		if (!needs_offload_exclude() || ifname == '')
+			return '';
+
+		let output = [];
+
+		uci_comment(output, '### exclude rate-limited iface from bridger HW offload (WED on)');
 		uci_list_string(output, 'bridger.@defaults[0].blacklist', ifname);
 
 		return uci_output(output);
@@ -1081,6 +1099,7 @@
 {%   if (!(band == "HaLow" && bss_mode == 'mesh')): %}
 {{ generate_base_wireless_config(section, phy, ifname, bss_mode) }}
 {{ generate_captive_integration(section, basename, ifname) }}
+{{ generate_offload_exclude_integration(ifname) }}
 {{ generate_owe_transition_config(section) }}
 {{ generate_owe_config(section, ssidname, owe) }}
 {{ generate_mesh_config(section, bss_mode) }}
