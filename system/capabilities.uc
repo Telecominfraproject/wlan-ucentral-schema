@@ -170,6 +170,18 @@ if (board.system?.label_macaddr)
 if (length(wifi))
 	capa.wifi = wifi;
 
+for (let path in fs.glob('/sys/module/*/parameters/wed_enable')) {
+	let wedfile = fs.open(path, 'r');
+	if (!wedfile)
+		continue;
+	let wed_enable = trim(wedfile.read('all'));
+	wedfile.close();
+	if (wed_enable == '1' || wed_enable == 'Y') {
+		capa.wed = true;
+		break;
+	}
+}
+
 capa.compress_cmd = true;
 
 fs.writefile('/etc/ucentral/capabilities.json', capa);
