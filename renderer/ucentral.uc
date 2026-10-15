@@ -58,6 +58,7 @@ try {
 			  'mkdir /tmp/ucentral',
 			  'rm /tmp/dnsmasq.conf',
 			  '/etc/init.d/spotfilter stop',
+			  '/etc/init.d/rogueap stop',
 			  'touch /tmp/dnsmasq.conf' ])
 		system(cmd);
 
@@ -109,7 +110,8 @@ try {
 		for (let cmd in [ 'reload_config',
 				  '/etc/init.d/ratelimit reload',
 				  '/etc/init.d/dnsmasq restart',
-				  '/etc/init.d/ucentral-state restart'])
+				  '/etc/init.d/ucentral-state restart',
+				  '/etc/init.d/rogueap restart'])
 			system(cmd);
 
 		if (!custom_config) {
