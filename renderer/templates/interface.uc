@@ -363,6 +363,8 @@
 
 	include('interface/firewall.uc', { name, ipv4_mode, ipv6_mode, dest });
 
+	include('interface/copp.uc', { name });
+
 	if (interface.ipv4 || interface.ipv6) {
 		include('interface/dhcp.uc', {
 			ipv4: interface.ipv4 || {},
