@@ -24,11 +24,18 @@ function wif_get(wdev) {
 function lookup_survey() {
 	let wifs = wif_get();
 
+	// Tag every survey entry with its owning interface + wiphy. The morse
+	// HaLow phy uses borrowed 5 GHz shim frequencies that collide with the
+	// real 5 GHz radio, so frequency alone cannot attribute a survey row to a
+	// radio; the consumer filters by ifname/wiphy.
 	for (let wif in wifs)
 		for (let survey in survey_get(wif.ifname))
 			if (!frequency || survey.survey_info.frequency == frequency)
-				if (survey.survey_info?.time)
+				if (survey.survey_info?.time) {
+					survey.survey_info.ifname = wif.ifname;
+					survey.survey_info.wiphy = wif.wiphy;
 					push(rv.survey, survey.survey_info);
+				}
 }
 
 lookup_survey();
