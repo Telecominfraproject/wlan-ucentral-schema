@@ -155,6 +155,46 @@ if (board.system?.label_macaddr)
 if (length(wifi))
 	capa.wifi = wifi;
 
+/* A board that can host an LTE modem describes the power or reset line of
+ * that modem, so the modem itself is all that is left to look for. It sits
+ * on USB behind that power switch and userspace only turns the switch on in
+ * /etc/init.d/gpio_switch, which runs shortly before this file, so on a
+ * factory boot the bus has not enumerated the modem yet. Wait for it on
+ * those boards only, and stop waiting the moment the kernel binds a WWAN
+ * interface. A board that describes no modem line never waits.
+ */
+function lte_slot() {
+	if (!board.gpioswitch)
+		return false;
+	for (let cfg, sw in board.gpioswitch) {
+		if (index(lc(cfg), 'lte') >= 0)
+			return true;
+		if (index(lc(sw?.name || ''), 'lte') >= 0)
+			return true;
+	}
+	return false;
+}
+
+function lte_modem() {
+	for (let dir in [ '/sys/class/net', '/sys/class/wwan' ])
+		for (let entry in (fs.lsdir(dir) || []))
+			if (substr(entry, 0, 4) == 'wwan')
+				return true;
+	for (let entry in (fs.lsdir('/dev') || []))
+		if (substr(entry, 0, 7) == 'cdc-wdm')
+			return true;
+	return false;
+}
+
+let lte = lte_modem();
+if (!lte && lte_slot())
+	for (let i = 0; i < 50 && !lte; i++) {
+		sleep(500);
+		lte = lte_modem();
+	}
+if (lte)
+	capa.lte = true;
+
 capa.compress_cmd = true;
 
 fs.writefile('/etc/ucentral/capabilities.json', capa);
