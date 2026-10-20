@@ -547,12 +547,27 @@ for (let radio, data in wifistatus) {
 	if (_chanUtil > 0)
 		radio.chanUtil = _chanUtil;
 
+	// Pre-scope the survey to THIS radio's own interfaces before anyone
+	// consumes it. The morse HaLow phy borrows 5 GHz shim frequencies that
+	// collide with the real 5 GHz radio, so a frequency-only match would
+	// cross-contaminate the two radios' telemetry. survey rows are tagged
+	// with ifname (renderer/wifi/survey.uc); keep only rows whose ifname
+	// belongs to this radio (untagged rows are left for the frequency
+	// filter).
+	let radio_ifnames = {};
+	for (let wif in data.interfaces)
+		if (wif.ifname)
+			radio_ifnames[wif.ifname] = true;
+	let radio_survey = { survey: [] };
+	for (let k, v in survey.survey)
+		if (v.ifname == null || radio_ifnames[v.ifname])
+			push(radio_survey.survey, v);
+
 	// Check if this is a HaLow device
 	if (index(radio.band, 'HaLow') != -1) {
 		// Get mapping table
 		let mapping_table = map5GToS1G();
 		let orig_channels = radio.channels;
-		let orig_frequency = radio.frequency;
 
 		// Use the second channel in the list if available
 		let selected_channel = null;
@@ -616,21 +631,38 @@ for (let radio, data in wifistatus) {
 
 			// Collect survey items
 			radio.survey = [];
-			for (let k, v in survey.survey) {
-				if (v.frequency in orig_frequency) {
-					// Make a copy of the survey item and update frequency
-					let survey_item = { ...v };
-					survey_item.frequency = survey_center_freq;
-					push(radio.survey, survey_item);
-				}
+			for (let k, v in radio_survey.survey) {
+				/*
+				 * No frequency test here, unlike main: these rows are already scoped
+				 * to this radio's own interfaces, and on this branch the shim
+				 * frequency the driver surveys on does not equal the vif's operating
+				 * frequency (measured on EAP112: vif 5805/5815 MHz, survey 5180 MHz),
+				 * so a frequency test would discard the radio's own samples.
+				 */
+				// Make a copy of the survey item and update frequency
+				let survey_item = { ...v };
+				survey_item.frequency = survey_center_freq;
+				push(radio.survey, survey_item);
 			}
 		}
 	} else {
 		// Non-HaLow device, process survey normally
 		radio.survey = [];
-		for (let k, v in survey.survey)
+		for (let k, v in radio_survey.survey)
 			if (v.frequency in radio.frequency)
-				push(radio.survey, v);
+				/*
+				 * Push a copy, not the shared row: the tag strip below would
+				 * otherwise clear ifname on the row still held by
+				 * survey.survey, making it look untagged to every radio
+				 * processed after this one.
+				 */
+				push(radio.survey, { ...v });
+	}
+	// Drop the internal attribution tags so the uploaded telemetry keeps
+	// the exact original survey shape (no extra ifname/wiphy keys).
+	for (let s in radio.survey) {
+		delete s.ifname;
+		delete s.wiphy;
 	}
 	delete radio.in_use;
 	push(state.radios, radio);
