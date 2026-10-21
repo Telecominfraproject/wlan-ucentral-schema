@@ -143,6 +143,7 @@ jobs:
           BASE_SHA: ${{ steps.pr.outputs.base_sha }}
           HEAD_SHA: ${{ steps.pr.outputs.head_sha }}
           HEAD_REF: ${{ steps.pr.outputs.head_ref }}
+          BASE_REF: ${{ steps.pr.outputs.base_ref }}
           # Body arrives as a file, not a value — see the resolve step.
           PR_BODY_FILE: ${{ runner.temp }}/pr_body.txt
           # Empty when no milestone is assigned.
