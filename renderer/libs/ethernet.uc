@@ -207,8 +207,8 @@ function create_ethernet(capab, fs, swconfig) {
 		},
 
 		is_single_config: function(interface) {
-			let ipv4_mode = interface.ipv4 ? interface.ipv4.addressing : 'none';
-			let ipv6_mode = interface.ipv6 ? interface.ipv6.addressing : 'none';
+			let ipv4_mode = interface.ipv4?.addressing || 'none';
+			let ipv6_mode = interface.ipv6?.addressing || 'none';
 
 			return (
 				(ipv4_mode == 'none') || (ipv6_mode == 'none') ||
