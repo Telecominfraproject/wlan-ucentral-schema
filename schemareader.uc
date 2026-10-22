@@ -2153,6 +2153,20 @@ function instantiateInterfaceIpv4(location, value, errors) {
 			obj.disallow_upstream_subnet = parseDisallowUpstreamSubnet(location + "/disallow-upstream-subnet", value["disallow-upstream-subnet"], errors);
 		}
 
+		function parseDisallowUpstreamLocalSubnet(location, value, errors) {
+			if (type(value) != "bool")
+				push(errors, [ location, "must be of type boolean" ]);
+
+			return value;
+		}
+
+		if (exists(value, "disallow-upstream-local-subnet")) {
+			obj.disallow_upstream_local_subnet = parseDisallowUpstreamLocalSubnet(location + "/disallow-upstream-local-subnet", value["disallow-upstream-local-subnet"], errors);
+		}
+		else {
+			obj.disallow_upstream_local_subnet = false;
+		}
+
 		if (exists(value, "dhcp")) {
 			obj.dhcp = instantiateInterfaceIpv4Dhcp(location + "/dhcp", value["dhcp"], errors);
 		}

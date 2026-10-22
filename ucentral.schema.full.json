@@ -1130,6 +1130,14 @@
                                     ]
                                 }
                             },
+                            "disallow-upstream-local-subnet": {
+                                "description": "This option only applies to \"downstream\" interfaces. When enabled, the downstream interface will prevent traffic going out to the current IPv4 subnet(s) of the upstream interface(s).",
+                                "type": "boolean",
+                                "default": false,
+                                "examples": [
+                                    true
+                                ]
+                            },
                             "dhcp": {
                                 "description": "This section describes the DHCP server configuration",
                                 "type": "object",

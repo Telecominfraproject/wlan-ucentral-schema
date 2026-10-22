@@ -78,6 +78,15 @@ properties:
      examples:
      - 192.168.0.0/16
      - 10.0.0.0/8
+  disallow-upstream-local-subnet:
+    description:
+      This option only applies to "downstream" interfaces. When enabled, the
+      downstream interface will prevent traffic going out to the current IPv4
+      subnet(s) of the upstream interface(s).
+    type: boolean
+    default: false
+    examples:
+    - true
   dhcp:
     $ref: "https://ucentral.io/schema/v1/interface/ipv4/dhcp/"
   dhcp-leases:
