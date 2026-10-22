@@ -2629,6 +2629,34 @@ function instantiateInterfaceIpv6(location, value, errors) {
 			obj.traffic_allow = parseTrafficAllow(location + "/traffic-allow", value["traffic-allow"], errors);
 		}
 
+		function parseDisallowUpstreamSubnet(location, value, errors) {
+			if (type(value) == "array") {
+				function parseItem(location, value, errors) {
+					if (type(value) == "string") {
+						if (!matchUcCidr6(value))
+							push(errors, [ location, "must be a valid IPv6 CIDR" ]);
+
+					}
+
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				return map(value, (item, i) => parseItem(location + "/" + i, item, errors));
+			}
+
+			if (type(value) != "array")
+				push(errors, [ location, "must be of type array" ]);
+
+			return value;
+		}
+
+		if (exists(value, "disallow-upstream-subnet")) {
+			obj.disallow_upstream_subnet = parseDisallowUpstreamSubnet(location + "/disallow-upstream-subnet", value["disallow-upstream-subnet"], errors);
+		}
+
 		return obj;
 	}
 
