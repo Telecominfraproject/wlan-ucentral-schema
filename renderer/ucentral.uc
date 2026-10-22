@@ -89,7 +89,17 @@ try {
 		apply.write(batch);
 		apply.close();
 
+		// drop rule files of interfaces that no longer use
+		// disallow-upstream-local-subnet; the staged ones are written next
+		for (let f in fs.glob('/etc/ucentral/disallow-wan4-*.nft'))
+			fs.unlink(f);
+
 		renderer.write_files(logs);
+
+		// refresh the upstream set file before the firewall reload below,
+		// so the table-pre include exists when a rule file references it
+		if (length(fs.glob('/etc/ucentral/disallow-wan4-*.nft')))
+			system('/usr/share/ucentral/wan_subnet.uc');
 
 		set_service_state(false);
 

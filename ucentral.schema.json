@@ -916,6 +916,13 @@
                         ]
                     }
                 },
+                "disallow-upstream-local-subnet": {
+                    "type": "boolean",
+                    "default": false,
+                    "examples": [
+                        true
+                    ]
+                },
                 "dhcp": {
                     "$ref": "#/$defs/interface.ipv4.dhcp"
                 },

@@ -40,7 +40,8 @@
 	function has_disallowed_subnets() {
 		return interface.role == 'downstream' && (
 			interface?.ipv4?.disallow_upstream_subnet ||
-			interface?.ipv6?.disallow_upstream_subnet
+			interface?.ipv6?.disallow_upstream_subnet ||
+			interface?.ipv4?.disallow_upstream_local_subnet
 		);
 	}
 
@@ -261,6 +262,30 @@
 			uci_set_string(output, 'firewall.@rule[-1].family', 'ipv6');
 			uci_set_string(output, 'firewall.@rule[-1].proto', 'all');
 			uci_set_string(output, 'firewall.@rule[-1].target', 'DROP');
+		}
+
+		if (interface.ipv4?.disallow_upstream_local_subnet) {
+			let set_dir = '/etc/ucentral';
+			let set_file = set_dir + '/wan4.nft';
+			let rule_file = `${set_dir}/disallow-wan4-${name}.nft`;
+
+			// set_file is written by wan_subnet.uc, which ucentral.uc runs
+			// after the staged files are written and before the firewall reload
+			if (!state._wan4_include_emitted) {
+				state._wan4_include_emitted = true;
+				uci_section(output, 'firewall include');
+				uci_set_string(output, 'firewall.@include[-1].type', 'nftables');
+				uci_set_string(output, 'firewall.@include[-1].position', 'table-pre');
+				uci_set_string(output, 'firewall.@include[-1].path', set_file);
+			}
+
+			files.add_named(rule_file, sprintf('ip daddr @ucentral_wan4 counter drop comment "!ucentral: Reject-wan-subnet-%s"\n', name));
+
+			uci_section(output, 'firewall include');
+			uci_set_string(output, 'firewall.@include[-1].type', 'nftables');
+			uci_set_string(output, 'firewall.@include[-1].position', 'chain-pre');
+			uci_set_string(output, 'firewall.@include[-1].chain', `forward_${name}`);
+			uci_set_string(output, 'firewall.@include[-1].path', rule_file);
 		}
 
 		return uci_output(output);
