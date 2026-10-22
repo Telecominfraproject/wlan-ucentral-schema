@@ -38,7 +38,10 @@
 	}
 
 	function has_disallowed_subnets() {
-		return interface.role == 'downstream' && interface?.ipv4?.disallow_upstream_subnet;
+		return interface.role == 'downstream' && (
+			interface?.ipv4?.disallow_upstream_subnet ||
+			interface?.ipv6?.disallow_upstream_subnet
+		);
 	}
 
 	// Configuration generation functions
@@ -230,12 +233,32 @@
 
 		uci_comment(output, '### generate subnet restriction rules');
 
-		for (let subnet in interface.ipv4.disallow_upstream_subnet) {
+		let upstream_zone = dest || ethernet.find_interface("upstream", interface.vlan?.id);
+
+		for (let subnet in (interface.ipv4?.disallow_upstream_subnet || [])) {
+			if (index(subnet, 'auto/') == 0)
+				continue;
+
 			uci_section(output, 'firewall rule');
 			uci_set_string(output, `firewall.@rule[-1].name`, `Reject-${subnet}-subnet-${name}`);
 			uci_set_string(output, 'firewall.@rule[-1].src', name);
-			uci_set_string(output, 'firewall.@rule[-1].dest', dest || ethernet.find_interface("upstream", interface.vlan.id));
+			uci_set_string(output, 'firewall.@rule[-1].dest', upstream_zone);
 			uci_set_string(output, 'firewall.@rule[-1].dest_ip', subnet);
+			uci_set_string(output, 'firewall.@rule[-1].family', 'ipv4');
+			uci_set_string(output, 'firewall.@rule[-1].proto', 'all');
+			uci_set_string(output, 'firewall.@rule[-1].target', 'DROP');
+		}
+
+		for (let subnet in (interface.ipv6?.disallow_upstream_subnet || [])) {
+			if (index(subnet, 'auto/') == 0)
+				continue;
+
+			uci_section(output, 'firewall rule');
+			uci_set_string(output, `firewall.@rule[-1].name`, `Reject-${subnet}-subnet-${name}`);
+			uci_set_string(output, 'firewall.@rule[-1].src', name);
+			uci_set_string(output, 'firewall.@rule[-1].dest', upstream_zone);
+			uci_set_string(output, 'firewall.@rule[-1].dest_ip', subnet);
+			uci_set_string(output, 'firewall.@rule[-1].family', 'ipv6');
 			uci_set_string(output, 'firewall.@rule[-1].proto', 'all');
 			uci_set_string(output, 'firewall.@rule[-1].target', 'DROP');
 		}
@@ -278,6 +301,6 @@
 {{ generate_firewall_zone() }}
 {{ generate_basic_firewall_rules() }}
 {{ generate_ipv4_specific_rules() }}
+{{ generate_subnet_restriction_rules() }}
 {{ generate_ipv6_specific_rules() }}
 {{ generate_downstream_service_rules() }}
-{{ generate_subnet_restriction_rules() }}
