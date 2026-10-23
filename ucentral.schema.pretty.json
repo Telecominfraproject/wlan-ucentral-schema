@@ -1227,6 +1227,18 @@
                     "items": {
                         "$ref": "#/$defs/interface.ipv6.traffic-allow"
                     }
+                },
+                "disallow-upstream-subnet": {
+                    "description": "This option only applies to \"downstream\" interfaces. The downstream interface will prevent traffic going out to the listed CIDR6s. This can be used to prevent a guest / captive interface from communicating with upstream local / private IPv6 ranges (e.g. ULA fc00::/7). Note that upstream IPv6 GUA prefixes are typically dynamically delegated and can change over time; this option is mainly useful for fixed prefixes or ULA ranges.",
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "format": "uc-cidr6",
+                        "examples": [
+                            "fc00::/7",
+                            "2001:db8::/32"
+                        ]
+                    }
                 }
             }
         },
