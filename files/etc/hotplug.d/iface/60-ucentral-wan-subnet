@@ -1,0 +1,11 @@
+#!/bin/sh
+# SPDX-License-Identifier: BSD-3-Clause
+# Refresh the uCentral upstream IPv4 subnet set when an upstream interface
+# comes up, goes down, or changes address.
+[ "$ACTION" = ifup ] || [ "$ACTION" = ifupdate ] || [ "$ACTION" = ifdown ] || exit 0
+case "$INTERFACE" in up*) ;; *) exit 0 ;; esac
+[ -x /usr/share/ucentral/wan_subnet.uc ] || exit 0
+exec 200>/var/lock/ucentral-wan-subnet.lock
+flock -x 200
+/usr/share/ucentral/wan_subnet.uc
+exit 0
