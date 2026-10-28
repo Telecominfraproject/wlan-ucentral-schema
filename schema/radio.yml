@@ -48,6 +48,19 @@ properties:
       Exclude non-psc when doing auto channel selection on 6GHz
     type: boolean
     default: false
+  puncture-threshold:
+    description:
+      Enables preamble puncturing during auto channel selection (ACS). The value is
+      an RSSI-like threshold that indicates how aggressively the ACS algorithm may
+      puncture individual sub-channels of the operating channel. A value of 0 disables
+      preamble puncturing, meaning the ACS algorithm will not puncture any channel.
+      Puncturing can only be enabled when the radio is using the 'auto' channel mode,
+      requires a channel-mode of EHT, is not supported on the 2G or HaLow bands,
+      and requires a channel-width of at least 80MHz.
+    type: integer
+    maximum: 100
+    minimum: 0
+    default: 0
   country:
     description:
       Specifies the country code, affects the available channels and
