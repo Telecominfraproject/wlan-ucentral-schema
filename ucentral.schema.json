@@ -1092,6 +1092,17 @@
                     "items": {
                         "$ref": "#/$defs/interface.ipv6.traffic-allow"
                     }
+                },
+                "disallow-upstream-subnet": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "format": "uc-cidr6",
+                        "examples": [
+                            "fc00::/7",
+                            "2001:db8::/32"
+                        ]
+                    }
                 }
             }
         },
