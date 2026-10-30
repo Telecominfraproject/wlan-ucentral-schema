@@ -5051,6 +5051,108 @@
                             }
                         }
                     }
+                },
+                "rogue-ap": {
+                    "description": "Periodically scan nearby access points (APs), classify them with the rules\nbelow and report the results. Detection only: no client blocking or\nrogue-AP mitigation is performed.\n\nEach scan cycle is reported with the \"rogue_ap\" method:\n\n  {\n    \"wifi_scan_completed\": true,\n    \"data\": [\n      {\n        \"ssid\": \"OpenWifi\",\n        \"bssid\": \"aa:bb:cc:dd:ee:ff\",\n        \"rssi\": -70,\n        \"vendor\": \"aabbcc\",\n        \"channel\": 36,\n        \"frequency\": 5180,\n        \"rogue_ap\": true\n      }\n    ]\n  }\n\n- wifi_scan_completed: check this first. true means \"data\" holds the\n  BSSs seen in this cycle (possibly none). false means scanning failed\n  and \"data\" is empty; it does not mean \"no APs seen\".\n- data: every BSS seen, rogue or not. ssid is empty for hidden networks,\n  rssi is in dBm, vendor is the BSSID's first 3 octets (6 lowercase hex\n  digits), rogue_ap is the classification result.\n\nA failed scan is retried up to 3 times, 10 seconds apart; if it still\nfails, wifi_scan_completed=false is reported. If only some radios fail,\nthe cycle is also retried, and on the last attempt the results of the\nradios that succeeded are reported. A band whose radio cannot scan (a\n5 GHz radio on a DFS channel with override-dfs false) is simply missing\nfrom \"data\"; if no radio can scan at all, the failure is reported at once.\n\nNothing is reported while the AP is not connected to the controller or\nits wireless interfaces are not ready.\n",
+                    "type": "object",
+                    "required": [
+                        "interval"
+                    ],
+                    "properties": {
+                        "override-dfs": {
+                            "description": "If true, a 5 GHz radio operating on a DFS channel is moved to channel\n36 (5180 MHz, bandwidth kept but limited to 80 MHz) before scanning\nand stays there afterwards.\nIf false, the channel is never changed and a radio on a DFS channel is\nnot scanned, so results for that band may be missing.\n",
+                            "type": "boolean",
+                            "default": false
+                        },
+                        "interval": {
+                            "description": "Required. Delay between scan cycles in minutes, counted from the end\nof the previous cycle.\n",
+                            "type": "integer",
+                            "minimum": 30,
+                            "maximum": 1440
+                        },
+                        "administeredbssid": {
+                            "description": "BSSIDs of managed APs (case-insensitive). A matching BSS is always\nreported with rogue_ap=false, whatever the rules say. Works with both\nrule modes; leave empty for no exemptions.\n",
+                            "type": "array",
+                            "default": [],
+                            "items": {
+                                "type": "string",
+                                "minLength": 17,
+                                "maxLength": 17,
+                                "pattern": "^([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}$"
+                            }
+                        },
+                        "rules": {
+                            "description": "Detection rules. Each rule has exactly one key, and all rules must use\nthe same mode; mixing modes is a configuration error.\n\nBlacklist mode (ssid, bssid, rssi): a BSS matching any rule is rogue.\n  - ssid: exact SSID match\n  - bssid: exact BSSID match\n  - rssi: signal at or above this value (dBm)\n\nVendor-whitelist mode (vendor only): a BSS matching no rule is rogue.\n  - vendor: OUI, 6 hex digits, e.g. \"001A2B\"\n",
+                            "type": "array",
+                            "anyOf": [
+                                {
+                                    "items": {
+                                        "oneOf": [
+                                            {
+                                                "type": "object",
+                                                "properties": {
+                                                    "vendor": {
+                                                        "type": "string",
+                                                        "pattern": "^[0-9a-fA-F]{6}$"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "vendor"
+                                                ],
+                                                "additionalProperties": false
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "items": {
+                                        "oneOf": [
+                                            {
+                                                "type": "object",
+                                                "properties": {
+                                                    "ssid": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "ssid"
+                                                ],
+                                                "additionalProperties": false
+                                            },
+                                            {
+                                                "type": "object",
+                                                "properties": {
+                                                    "bssid": {
+                                                        "type": "string",
+                                                        "pattern": "^([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}$"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "bssid"
+                                                ],
+                                                "additionalProperties": false
+                                            },
+                                            {
+                                                "type": "object",
+                                                "properties": {
+                                                    "rssi": {
+                                                        "type": "integer",
+                                                        "minimum": -100,
+                                                        "maximum": 0
+                                                    }
+                                                },
+                                                "required": [
+                                                    "rssi"
+                                                ],
+                                                "additionalProperties": false
+                                            }
+                                        ]
+                                    }
+                                }
+                            ],
+                            "minItems": 1
+                        }
+                    }
                 }
             }
         },
