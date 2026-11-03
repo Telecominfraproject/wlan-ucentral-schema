@@ -2596,6 +2596,22 @@
                     "type": "integer",
                     "default": 60,
                     "maximum": 600
+                },
+                "connection-rate-limit": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "default": 6
+                },
+                "ban-after-failures": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "default": 9
+                },
+                "ban-duration": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1440,
+                    "default": 10
                 }
             }
         },

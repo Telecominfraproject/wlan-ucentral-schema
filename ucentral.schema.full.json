@@ -3206,6 +3206,25 @@
                             "type": "integer",
                             "default": 60,
                             "maximum": 600
+                        },
+                        "connection-rate-limit": {
+                            "description": "This option defines the maximum number of new SSH connections per minute that are accepted from a single source address. The limit is enforced by the firewall and therefore survives reconnection. Connections above the rate are dropped. Set to 0 to disable the guard.",
+                            "type": "integer",
+                            "minimum": 0,
+                            "default": 6
+                        },
+                        "ban-after-failures": {
+                            "description": "This option defines after how many failed SSH authentication attempts from one source address within ban-duration minutes that address is blocked from the SSH port for ban-duration minutes. A successful login clears the count. Dropbear closes a connection after 3 failures, so a multiple of 3 is recommended. Set to 0 to disable. Requires the ucentral-sshguard package.",
+                            "type": "integer",
+                            "minimum": 0,
+                            "default": 9
+                        },
+                        "ban-duration": {
+                            "description": "This option defines, in minutes, how long a source address stays blocked after reaching ban-after-failures, and the window in which failures are counted.",
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 1440,
+                            "default": 10
                         }
                     }
                 },

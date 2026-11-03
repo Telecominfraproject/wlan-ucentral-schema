@@ -6994,6 +6994,69 @@ function instantiateServiceSsh(location, value, errors) {
 			obj.idle_timeout = 60;
 		}
 
+		function parseConnectionRateLimit(location, value, errors) {
+			if (type(value) in [ "int", "double" ]) {
+				if (value < 0)
+					push(errors, [ location, "must be bigger than or equal to 0" ]);
+
+			}
+
+			if (type(value) != "int")
+				push(errors, [ location, "must be of type integer" ]);
+
+			return value;
+		}
+
+		if (exists(value, "connection-rate-limit")) {
+			obj.connection_rate_limit = parseConnectionRateLimit(location + "/connection-rate-limit", value["connection-rate-limit"], errors);
+		}
+		else {
+			obj.connection_rate_limit = 6;
+		}
+
+		function parseBanAfterFailures(location, value, errors) {
+			if (type(value) in [ "int", "double" ]) {
+				if (value < 0)
+					push(errors, [ location, "must be bigger than or equal to 0" ]);
+
+			}
+
+			if (type(value) != "int")
+				push(errors, [ location, "must be of type integer" ]);
+
+			return value;
+		}
+
+		if (exists(value, "ban-after-failures")) {
+			obj.ban_after_failures = parseBanAfterFailures(location + "/ban-after-failures", value["ban-after-failures"], errors);
+		}
+		else {
+			obj.ban_after_failures = 9;
+		}
+
+		function parseBanDuration(location, value, errors) {
+			if (type(value) in [ "int", "double" ]) {
+				if (value > 1440)
+					push(errors, [ location, "must be lower than or equal to 1440" ]);
+
+				if (value < 1)
+					push(errors, [ location, "must be bigger than or equal to 1" ]);
+
+			}
+
+			if (type(value) != "int")
+				push(errors, [ location, "must be of type integer" ]);
+
+			return value;
+		}
+
+		if (exists(value, "ban-duration")) {
+			obj.ban_duration = parseBanDuration(location + "/ban-duration", value["ban-duration"], errors);
+		}
+		else {
+			obj.ban_duration = 10;
+		}
+
 		return obj;
 	}
 
