@@ -309,8 +309,8 @@
 	let network = name;
 
 	// Determine IP configuration modes
-	let ipv4_mode = interface.ipv4 ? interface.ipv4.addressing : 'none';
-	let ipv6_mode = interface.ipv6 ? interface.ipv6.addressing : 'none';
+	let ipv4_mode = interface.ipv4?.addressing || 'none';
+	let ipv6_mode = interface.ipv6?.addressing || 'none';
 
 	// Normalize interface configuration
 	normalize_interface_metric();
