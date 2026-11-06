@@ -897,6 +897,12 @@
 		if (ssid.quality_thresholds.probe_request_rssi)
 			uci_set_number(output, `wireless.${section}.dynamic_probe_resp`, 1);
 
+		if (ssid.quality_thresholds.client_kick_rssi && services.is_present("rrmd")) {
+			uci_named_section(output, `rrmd.${section}`, 'kick');
+			uci_set_number(output, `rrmd.${section}.client_kick_rssi`, ssid.quality_thresholds.client_kick_rssi);
+			uci_set_number(output, `rrmd.${section}.client_kick_ban_time`, ssid.quality_thresholds.client_kick_ban_time);
+		}
+
 		return uci_output(output);
 	}
 
