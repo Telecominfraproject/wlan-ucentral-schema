@@ -140,7 +140,17 @@ let previous = json(fs.readfile('/tmp/' + (telemetry ? 'telemetry.json' : 'state
 let finger_config = cursor.get_all("state", "fingerprint");
 let finger_state = json(fs.readfile('/tmp/finger.state') || '{}');
 let fingerprint;
-if (finger_config?.mode != 'polled')
+/*
+ * Telemetry consumers do not read fingerprints, and this call is not cheap:
+ * ufpd's fingerprint method refreshes its plugins inline, and plugin_mdns
+ * retries with a blocking one second sleep while a handled mDNS service has
+ * no host (2.02 s measured on a lab AP that sees an unresolved _ipp._tcp
+ * service). Leave fingerprint unset on a telemetry run: that also stops the
+ * /tmp/finger.state write below, and keeps the .reported stamps for the
+ * periodic state message, which is the one the controller reads client
+ * names from.
+ */
+if (!telemetry && finger_config?.mode != 'polled')
 	fingerprint = ctx.call("fingerprint", "fingerprint", { age: +(finger_config?.min_age || 0), raw: (finger_config?.mode == 'raw') }) || {};
 let finger_wan = [];
 if (!+finger_config?.allow_wan) 
@@ -666,6 +676,14 @@ function is_mesh(net, wif) {
 }
 
 function get_fingerprint(mac, ports) {
+	/*
+	 * A telemetry run gathered no fingerprint data, so there is nothing to
+	 * index below, and stamping .reported here would hide the client's
+	 * fingerprint from the periodic state message for up to
+	 * state.fingerprint.period seconds.
+	 */
+	if (telemetry)
+		return null;
 	if (finger_config?.mode != 'final')
 		return null;
 	if (!fingerprint[mac])
