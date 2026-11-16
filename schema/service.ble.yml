@@ -1,0 +1,90 @@
+# SPDX-License-Identifier: BSD-3-Clause
+
+description: |
+  Configure Bluetooth Low Energy (BLE) iBeacon advertising and scanning.
+type: object
+properties:
+  ibeacon:
+    description: |
+      Configure iBeacon advertising parameters.
+    type: object
+    examples:
+    - enabled: true
+      uuid: e2c56db6dffb48d2b060d0f5a71096e0
+      major: 1
+      minor: 1
+      txpower: -59
+    properties:
+      enabled:
+        description: |
+          Enable iBeacon advertising.
+        type: boolean
+        default: false
+        examples:
+        - true
+      uuid:
+        description: |
+          iBeacon proximity UUID encoded as exactly 32 hexadecimal characters
+          without hyphens.
+        type: string
+        pattern: "^[0-9A-Fa-f]{32}$"
+        default: e2c56db6dffb48d2b060d0f5a71096e0
+        examples:
+        - e2c56db6dffb48d2b060d0f5a71096e0
+      major:
+        description: |
+          Unsigned 16-bit iBeacon major identifier.
+        type: integer
+        minimum: 0
+        maximum: 65535
+        default: 1
+        examples:
+        - 1
+      minor:
+        description: |
+          Unsigned 16-bit iBeacon minor identifier.
+        type: integer
+        minimum: 0
+        maximum: 65535
+        default: 1
+        examples:
+        - 1
+      txpower:
+        description: |
+          Calibrated iBeacon power measured at one metre in dBm, represented
+          as a signed 8-bit value.
+        type: integer
+        minimum: -128
+        maximum: 127
+        default: -59
+        examples:
+        - -59
+  scan:
+    description: |
+      Configure BLE scanning and advertisement filtering.
+    type: object
+    examples:
+    - enabled: true
+      filter: ibeacon
+    properties:
+      enabled:
+        description: |
+          Enable BLE scanning.
+        type: boolean
+        default: false
+        examples:
+        - true
+      filter:
+        description: |
+          Select which BLE advertisement type the scanner reports.
+        type: string
+        enum:
+        - all
+        - advertising
+        - beacon
+        - ibeacon
+        - eddystone
+        - altbeacon
+        default: all
+        examples:
+        - all
