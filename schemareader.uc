@@ -8694,6 +8694,187 @@ function instantiateServiceGps(location, value, errors) {
 	return value;
 }
 
+function instantiateServiceBle(location, value, errors) {
+	if (type(value) == "object") {
+		let obj = {};
+
+		function parseIbeacon(location, value, errors) {
+			if (type(value) == "object") {
+				let obj = {};
+
+				function parseEnabled(location, value, errors) {
+					if (type(value) != "bool")
+						push(errors, [ location, "must be of type boolean" ]);
+
+					return value;
+				}
+
+				if (exists(value, "enabled")) {
+					obj.enabled = parseEnabled(location + "/enabled", value["enabled"], errors);
+				}
+				else {
+					obj.enabled = false;
+				}
+
+				function parseUuid(location, value, errors) {
+					if (type(value) == "string") {
+						if (!match(value, regexp("^[0-9A-Fa-f]{32}$")))
+							push(errors, [ location, "must match regular expression /^[0-9A-Fa-f]{32}$/" ]);
+
+					}
+
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				if (exists(value, "uuid")) {
+					obj.uuid = parseUuid(location + "/uuid", value["uuid"], errors);
+				}
+				else {
+					obj.uuid = "e2c56db6dffb48d2b060d0f5a71096e0";
+				}
+
+				function parseMajor(location, value, errors) {
+					if (type(value) in [ "int", "double" ]) {
+						if (value > 65535)
+							push(errors, [ location, "must be lower than or equal to 65535" ]);
+
+						if (value < 0)
+							push(errors, [ location, "must be bigger than or equal to 0" ]);
+
+					}
+
+					if (type(value) != "int")
+						push(errors, [ location, "must be of type integer" ]);
+
+					return value;
+				}
+
+				if (exists(value, "major")) {
+					obj.major = parseMajor(location + "/major", value["major"], errors);
+				}
+				else {
+					obj.major = 1;
+				}
+
+				function parseMinor(location, value, errors) {
+					if (type(value) in [ "int", "double" ]) {
+						if (value > 65535)
+							push(errors, [ location, "must be lower than or equal to 65535" ]);
+
+						if (value < 0)
+							push(errors, [ location, "must be bigger than or equal to 0" ]);
+
+					}
+
+					if (type(value) != "int")
+						push(errors, [ location, "must be of type integer" ]);
+
+					return value;
+				}
+
+				if (exists(value, "minor")) {
+					obj.minor = parseMinor(location + "/minor", value["minor"], errors);
+				}
+				else {
+					obj.minor = 1;
+				}
+
+				function parseTxpower(location, value, errors) {
+					if (type(value) in [ "int", "double" ]) {
+						if (value > 127)
+							push(errors, [ location, "must be lower than or equal to 127" ]);
+
+						if (value < -128)
+							push(errors, [ location, "must be bigger than or equal to -128" ]);
+
+					}
+
+					if (type(value) != "int")
+						push(errors, [ location, "must be of type integer" ]);
+
+					return value;
+				}
+
+				if (exists(value, "txpower")) {
+					obj.txpower = parseTxpower(location + "/txpower", value["txpower"], errors);
+				}
+				else {
+					obj.txpower = -59;
+				}
+
+				return obj;
+			}
+
+			if (type(value) != "object")
+				push(errors, [ location, "must be of type object" ]);
+
+			return value;
+		}
+
+		if (exists(value, "ibeacon")) {
+			obj.ibeacon = parseIbeacon(location + "/ibeacon", value["ibeacon"], errors);
+		}
+
+		function parseScan(location, value, errors) {
+			if (type(value) == "object") {
+				let obj = {};
+
+				function parseEnabled(location, value, errors) {
+					if (type(value) != "bool")
+						push(errors, [ location, "must be of type boolean" ]);
+
+					return value;
+				}
+
+				if (exists(value, "enabled")) {
+					obj.enabled = parseEnabled(location + "/enabled", value["enabled"], errors);
+				}
+				else {
+					obj.enabled = false;
+				}
+
+				function parseFilter(location, value, errors) {
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					if (!(value in [ "all", "advertising", "beacon", "ibeacon", "eddystone", "altbeacon" ]))
+						push(errors, [ location, "must be one of \"all\", \"advertising\", \"beacon\", \"ibeacon\", \"eddystone\" or \"altbeacon\"" ]);
+
+					return value;
+				}
+
+				if (exists(value, "filter")) {
+					obj.filter = parseFilter(location + "/filter", value["filter"], errors);
+				}
+				else {
+					obj.filter = "all";
+				}
+
+				return obj;
+			}
+
+			if (type(value) != "object")
+				push(errors, [ location, "must be of type object" ]);
+
+			return value;
+		}
+
+		if (exists(value, "scan")) {
+			obj.scan = parseScan(location + "/scan", value["scan"], errors);
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
+
+	return value;
+}
+
 function instantiateServiceDhcpRelay(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
@@ -10049,6 +10230,10 @@ function instantiateService(location, value, errors) {
 
 		if (exists(value, "gps")) {
 			obj.gps = instantiateServiceGps(location + "/gps", value["gps"], errors);
+		}
+
+		if (exists(value, "ble")) {
+			obj.ble = instantiateServiceBle(location + "/ble", value["ble"], errors);
 		}
 
 		if (exists(value, "dhcp-relay")) {

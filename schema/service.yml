@@ -29,6 +29,8 @@ properties:
     $ref: 'https://ucentral.io/schema/v1/service/captive/'
   gps:
     $ref: 'https://ucentral.io/schema/v1/service/gps/'
+  ble:
+    $ref: 'https://ucentral.io/schema/v1/service/ble/'
   dhcp-relay:
     $ref: 'https://ucentral.io/schema/v1/service/dhcp-relay/'
   admin-ui:
