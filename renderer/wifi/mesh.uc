@@ -24,7 +24,7 @@ function lookup_mesh() {
 		let mpath = nl.request(def.NL80211_CMD_GET_MPATH, def.NLM_F_DUMP, params);
 		for (let path in mpath) {
 			push(w, {
-				destinantion: path.mac,
+				destination: path.mac,
 				next_hop: path.mpath_next_hop,
 				metric: path.mpath_info.metric,
 				expire: path.mpath_info.expire,

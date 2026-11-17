@@ -154,7 +154,10 @@ export function collect_wifi_radios(state) {
 	telemetry_module.save_current_state(global.telemetry, { ports: global.ports, devstats: global.devstats, stations: stations_lookup });
 };
 
-export function collect_wifi_ssids(iface) {
+/* iface is the state object being filled in, net the uci network section
+ * it comes from; is_mesh() needs the batman flag, which only the uci
+ * section carries */
+export function collect_wifi_ssids(iface, net) {
 	if (index(global.stats.types, 'ssids') < 0 || !length(wifistatus))
 		return [];
 	
@@ -168,7 +171,7 @@ export function collect_wifi_ssids(iface) {
 			    !wifiiface[vap.ifname])
 				continue;
 			let wif = wifiiface[vap.ifname];
-			if (!(iface.name in vap.config.network) && !is_mesh(iface, wif))
+			if (!(iface.name in vap.config.network) && !is_mesh(net, wif))
 				continue;
 			let ssid = {
 				radio:{"$ref": sprintf("#/radios/%d", counter)},
@@ -242,9 +245,11 @@ export function collect_wifi_ssids(iface) {
 				ssid.counters = global.ports[vap.ifname].counters || {};
 				ssid.delta_counters = telemetry_module.ports_deltas(vap.ifname, global.ports, global.previous);
 			}
-			if (is_mesh(iface, wif)) {
-				ssid.counters = global.ports['batman_mesh'].counters;
-				ssid['mesh-path'] = mesh[vap.ifname];
+			if (is_mesh(net, wif)) {
+				if (global.ports?.batman_mesh?.counters)
+					ssid.counters = global.ports.batman_mesh.counters;
+				/* wifi.mesh has no entry for a mesh without a channel */
+				ssid['mesh-path'] = mesh[vap.ifname] || [];
 			}
 			if (global.dyn_vlans[vap.ifname]) {
 				ssid.vlan_ifaces = [];

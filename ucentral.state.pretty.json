@@ -432,27 +432,6 @@
                 }
             }
         },
-        "interface.mesh-path": {
-            "type": "object",
-            "description": "This section contains info about connected mesh nodes.",
-            "properties": {
-                "destiination": {
-                    "type": "string"
-                },
-                "next_hop": {
-                    "type": "string"
-                },
-                "metric": {
-                    "type": "number"
-                },
-                "expire": {
-                    "type": "number"
-                },
-                "hop_count": {
-                    "type": "number"
-                }
-            }
-        },
         "interface.ssid.association": {
             "type": "array",
             "description": "A list all OBSS that this BSS is connected to. The contained entries depend opertational mode. * AP - all associated stationd * STA - the remote AP * mesh - all mesh peers that we can see * wds - the remote wds peer",
@@ -610,6 +589,43 @@
                 }
             }
         },
+        "interface.ssid.mesh-path": {
+            "type": "array",
+            "description": "The paths in the kernel mesh path table of this mesh interface. The list is empty until a path to a mesh destination has been resolved.",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "destination": {
+                        "type": "string",
+                        "description": "The MAC address of the mesh destination."
+                    },
+                    "next_hop": {
+                        "type": "string",
+                        "description": "The MAC address of the mesh peer that frames for the destination are sent to."
+                    },
+                    "metric": {
+                        "type": "number",
+                        "description": "The metric (cost) of the path."
+                    },
+                    "expire": {
+                        "type": "number",
+                        "description": "The time until the path expires. (ms)"
+                    },
+                    "discovery_timeout": {
+                        "type": "number",
+                        "description": "The total path discovery timeout. (ms)"
+                    },
+                    "discovery_retries": {
+                        "type": "number",
+                        "description": "The number of path discovery retries."
+                    },
+                    "hop_count": {
+                        "type": "number",
+                        "description": "The number of hops to the destination."
+                    }
+                }
+            }
+        },
         "interface.ssid": {
             "type": "array",
             "items": {
@@ -687,6 +703,9 @@
                     },
                     "delta_counters": {
                         "$ref": "#/$defs/interface.counter"
+                    },
+                    "mesh-path": {
+                        "$ref": "#/$defs/interface.ssid.mesh-path"
                     }
                 }
             }
@@ -737,9 +756,6 @@
                     },
                     "delta_counters": {
                         "$ref": "#/$defs/interface.counter"
-                    },
-                    "mesh-path": {
-                        "$ref": "#/$defs/interface.mesh-path"
                     },
                     "ssids": {
                         "$ref": "#/$defs/interface.ssid"
