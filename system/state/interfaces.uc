@@ -164,7 +164,7 @@ export function collect(state) {
 		}
 
 		global.macs = macs;
-		let ssids = wifi_module.collect_wifi_ssids(iface);
+		let ssids = wifi_module.collect_wifi_ssids(iface, d);
 		if (length(ssids))
 			iface.ssids = ssids;
 

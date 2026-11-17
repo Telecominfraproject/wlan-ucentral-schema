@@ -1,0 +1,36 @@
+type: array
+description:
+  The paths in the kernel mesh path table of this mesh interface. The list
+  is empty until a path to a mesh destination has been resolved.
+items:
+  type: object
+  properties:
+    destination:
+      type: string
+      description:
+        The MAC address of the mesh destination.
+    next_hop:
+      type: string
+      description:
+        The MAC address of the mesh peer that frames for the destination are
+        sent to.
+    metric:
+      type: number
+      description:
+        The metric (cost) of the path.
+    expire:
+      type: number
+      description:
+        The time until the path expires. (ms)
+    discovery_timeout:
+      type: number
+      description:
+        The total path discovery timeout. (ms)
+    discovery_retries:
+      type: number
+      description:
+        The number of path discovery retries.
+    hop_count:
+      type: number
+      description:
+        The number of hops to the destination.
