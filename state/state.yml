@@ -22,6 +22,8 @@ properties:
     $ref: "https://ucentral.io/state/v1/radio/"
   interfaces:
     $ref: "https://ucentral.io/state/v1/interface/"
+  captive:
+    $ref: "https://ucentral.io/state/v1/captive/"
   lldp-peers:
     type: object
     properties:
