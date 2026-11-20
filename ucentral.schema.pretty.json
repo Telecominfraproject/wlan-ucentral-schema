@@ -3655,6 +3655,110 @@
                 }
             }
         },
+        "service.ble": {
+            "description": "Configure Bluetooth Low Energy (BLE) iBeacon advertising and scanning.\n",
+            "type": "object",
+            "properties": {
+                "ibeacon": {
+                    "description": "Configure iBeacon advertising parameters.\n",
+                    "type": "object",
+                    "examples": [
+                        {
+                            "enabled": true,
+                            "uuid": "e2c56db6dffb48d2b060d0f5a71096e0",
+                            "major": 1,
+                            "minor": 1,
+                            "txpower": -59
+                        }
+                    ],
+                    "properties": {
+                        "enabled": {
+                            "description": "Enable iBeacon advertising.\n",
+                            "type": "boolean",
+                            "default": false,
+                            "examples": [
+                                true
+                            ]
+                        },
+                        "uuid": {
+                            "description": "iBeacon proximity UUID encoded as exactly 32 hexadecimal characters\nwithout hyphens.\n",
+                            "type": "string",
+                            "pattern": "^[0-9A-Fa-f]{32}$",
+                            "default": "e2c56db6dffb48d2b060d0f5a71096e0",
+                            "examples": [
+                                "e2c56db6dffb48d2b060d0f5a71096e0"
+                            ]
+                        },
+                        "major": {
+                            "description": "Unsigned 16-bit iBeacon major identifier.\n",
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 65535,
+                            "default": 1,
+                            "examples": [
+                                1
+                            ]
+                        },
+                        "minor": {
+                            "description": "Unsigned 16-bit iBeacon minor identifier.\n",
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 65535,
+                            "default": 1,
+                            "examples": [
+                                1
+                            ]
+                        },
+                        "txpower": {
+                            "description": "Calibrated iBeacon power measured at one metre in dBm, represented\nas a signed 8-bit value.\n",
+                            "type": "integer",
+                            "minimum": -128,
+                            "maximum": 127,
+                            "default": -59,
+                            "examples": [
+                                -59
+                            ]
+                        }
+                    }
+                },
+                "scan": {
+                    "description": "Configure BLE scanning and advertisement filtering.\n",
+                    "type": "object",
+                    "examples": [
+                        {
+                            "enabled": true,
+                            "filter": "ibeacon"
+                        }
+                    ],
+                    "properties": {
+                        "enabled": {
+                            "description": "Enable BLE scanning.\n",
+                            "type": "boolean",
+                            "default": false,
+                            "examples": [
+                                true
+                            ]
+                        },
+                        "filter": {
+                            "description": "Select which BLE advertisement type the scanner reports.\n",
+                            "type": "string",
+                            "enum": [
+                                "all",
+                                "advertising",
+                                "beacon",
+                                "ibeacon",
+                                "eddystone",
+                                "altbeacon"
+                            ],
+                            "default": "all",
+                            "examples": [
+                                "all"
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "service.dhcp-relay": {
             "description": "Configure DHCP relay service that forwards DHCP requests and responses between \nVLANs and upstream DHCP servers. This service enables centralized DHCP management \nby relaying DHCP traffic from client VLANs to designated DHCP servers on upstream \nnetworks. The service is automatically enabled when interfaces are configured with \n\"dhcp-relay\" in their services array and valid VLANs are specified.\n",
             "type": "object",
@@ -4279,6 +4383,9 @@
                 },
                 "gps": {
                     "$ref": "#/$defs/service.gps"
+                },
+                "ble": {
+                    "$ref": "#/$defs/service.ble"
                 },
                 "dhcp-relay": {
                     "$ref": "#/$defs/service.dhcp-relay"
