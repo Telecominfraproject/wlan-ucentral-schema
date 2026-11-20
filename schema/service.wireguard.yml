@@ -1,0 +1,133 @@
+description:
+  This section configures a WireGuard client tunnel. Downstream interfaces
+  that list "wireguard" in their services send traffic destined to the
+  peers' allowed-ips through the tunnel. All other traffic, including the
+  traffic of the device itself except to the tunnel subnet, keeps using the
+  regular upstream.
+type: object
+properties:
+  private-key:
+    description:
+      The base64 encoded private key of this device.
+    type: string
+    pattern: "^[A-Za-z0-9+/]{42}[AEIMQUYcgkosw480]=$"
+    examples:
+    - yAnz5TF+lXXJte14tji3zlMNq+hd2rYUIgJBgB3fBmk=
+  address:
+    description:
+      The IPv4 address and prefix length of this device inside the tunnel.
+    type: string
+    format: uc-cidr4
+    examples:
+    - 10.0.0.21/24
+  listen-port:
+    description:
+      The local UDP port of the tunnel. A random port is used when this
+      option is not set.
+    type: integer
+    maximum: 65535
+    minimum: 1
+    examples:
+    - 51820
+  mtu:
+    description:
+      The MTU of the tunnel interface.
+    type: integer
+    maximum: 1500
+    minimum: 1280
+    default: 1420
+    examples:
+    - 1420
+  peers:
+    description:
+      The remote WireGuard peers of this tunnel.
+    type: array
+    minItems: 1
+    items:
+      type: object
+      properties:
+        name:
+          description:
+            A name identifying the peer.
+          type: string
+          minLength: 1
+          maxLength: 32
+          examples:
+          - hq
+        disable:
+          description:
+            Keep the peer in the configuration without using it.
+          type: boolean
+          default: false
+          examples:
+          - false
+        public-key:
+          description:
+            The base64 encoded public key of the peer.
+          type: string
+          pattern: "^[A-Za-z0-9+/]{42}[AEIMQUYcgkosw480]=$"
+          examples:
+          - xTIBA5rboUvnH4htodjb6e697QjLERt1NAB4mZqp8Dg=
+        preshared-key:
+          description:
+            An optional base64 encoded pre-shared key used with this peer.
+          type: string
+          pattern: "^[A-Za-z0-9+/]{42}[AEIMQUYcgkosw480]=$"
+          examples:
+          - FpCyhws9cxwWoV4xELtfJvjJN+zQVRPISllRWgeopVE=
+        endpoint:
+          description:
+            The address the tunnel is established with. The device opens no
+            inbound port for the tunnel, so the peer is always reached here.
+          type: object
+          properties:
+            host:
+              description:
+                The hostname or IP address of the peer.
+              type: string
+              format: uc-host
+              examples:
+              - vpn.example.com
+              - 203.0.113.10
+            port:
+              description:
+                The UDP port of the peer.
+              type: integer
+              maximum: 65535
+              minimum: 1
+              default: 51820
+              examples:
+              - 51820
+          required:
+          - host
+        allowed-ips:
+          description:
+            The IPv4 subnets reached through this peer. Traffic from the
+            selected downstream interfaces to these subnets uses the tunnel.
+          type: array
+          minItems: 1
+          items:
+            type: string
+            format: uc-cidr4
+            examples:
+            - 0.0.0.0/0
+            - 10.0.0.0/24
+        persistent-keepalive:
+          description:
+            The interval in seconds of keepalive packets sent to the peer.
+            0 disables them.
+          type: integer
+          maximum: 65535
+          minimum: 0
+          default: 0
+          examples:
+          - 25
+      required:
+      - name
+      - public-key
+      - endpoint
+      - allowed-ips
+required:
+- private-key
+- address
+- peers

@@ -47,6 +47,7 @@ properties:
       examples:
       - ssh
       - lldp
+      - wireguard
   vlan-awareness:
     description:
       Setup additional VLANs inside the bridge
