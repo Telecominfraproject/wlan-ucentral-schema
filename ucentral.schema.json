@@ -2512,7 +2512,8 @@
                         "type": "string",
                         "examples": [
                             "ssh",
-                            "lldp"
+                            "lldp",
+                            "wireguard"
                         ]
                     }
                 },
@@ -3794,6 +3795,137 @@
                 }
             }
         },
+        "service.wireguard": {
+            "type": "object",
+            "properties": {
+                "private-key": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9+/]{42}[AEIMQUYcgkosw480]=$",
+                    "examples": [
+                        "yAnz5TF+lXXJte14tji3zlMNq+hd2rYUIgJBgB3fBmk="
+                    ]
+                },
+                "address": {
+                    "type": "string",
+                    "format": "uc-cidr4",
+                    "examples": [
+                        "10.0.0.21/24"
+                    ]
+                },
+                "listen-port": {
+                    "type": "integer",
+                    "maximum": 65535,
+                    "minimum": 1,
+                    "examples": [
+                        51820
+                    ]
+                },
+                "mtu": {
+                    "type": "integer",
+                    "maximum": 1500,
+                    "minimum": 1280,
+                    "default": 1420,
+                    "examples": [
+                        1420
+                    ]
+                },
+                "peers": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 32,
+                                "examples": [
+                                    "hq"
+                                ]
+                            },
+                            "disable": {
+                                "type": "boolean",
+                                "default": false,
+                                "examples": [
+                                    false
+                                ]
+                            },
+                            "public-key": {
+                                "type": "string",
+                                "pattern": "^[A-Za-z0-9+/]{42}[AEIMQUYcgkosw480]=$",
+                                "examples": [
+                                    "xTIBA5rboUvnH4htodjb6e697QjLERt1NAB4mZqp8Dg="
+                                ]
+                            },
+                            "preshared-key": {
+                                "type": "string",
+                                "pattern": "^[A-Za-z0-9+/]{42}[AEIMQUYcgkosw480]=$",
+                                "examples": [
+                                    "FpCyhws9cxwWoV4xELtfJvjJN+zQVRPISllRWgeopVE="
+                                ]
+                            },
+                            "endpoint": {
+                                "type": "object",
+                                "properties": {
+                                    "host": {
+                                        "type": "string",
+                                        "format": "uc-host",
+                                        "examples": [
+                                            "vpn.example.com",
+                                            "203.0.113.10"
+                                        ]
+                                    },
+                                    "port": {
+                                        "type": "integer",
+                                        "maximum": 65535,
+                                        "minimum": 1,
+                                        "default": 51820,
+                                        "examples": [
+                                            51820
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "host"
+                                ]
+                            },
+                            "allowed-ips": {
+                                "type": "array",
+                                "minItems": 1,
+                                "items": {
+                                    "type": "string",
+                                    "format": "uc-cidr4",
+                                    "examples": [
+                                        "0.0.0.0/0",
+                                        "10.0.0.0/24"
+                                    ]
+                                }
+                            },
+                            "persistent-keepalive": {
+                                "type": "integer",
+                                "maximum": 65535,
+                                "minimum": 0,
+                                "default": 0,
+                                "examples": [
+                                    25
+                                ]
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "public-key",
+                            "endpoint",
+                            "allowed-ips"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "private-key",
+                "address",
+                "peers"
+            ]
+        },
         "service": {
             "type": "object",
             "properties": {
@@ -3856,6 +3988,9 @@
                 },
                 "dhcp-inject": {
                     "$ref": "#/$defs/service.dhcp-inject"
+                },
+                "wireguard": {
+                    "$ref": "#/$defs/service.wireguard"
                 }
             }
         },
