@@ -17,3 +17,5 @@ properties:
     $ref: "https://ucentral.io/schema/v1/metrics/telemetry/"
   realtime:
     $ref: "https://ucentral.io/schema/v1/metrics/realtime/"
+  rogue-ap:
+    $ref: "https://ucentral.io/schema/v1/metrics/rogue-ap/"
