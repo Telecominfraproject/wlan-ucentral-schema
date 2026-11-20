@@ -1,0 +1,50 @@
+type: object
+description:
+  The captive portal clients known to the spotfilter, keyed by client MAC address.
+patternProperties:
+  "^([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}$":
+    type: object
+    properties:
+      status:
+        type: string
+        enum:
+          - Authenticated
+          - Garden
+        description:
+          Authenticated if the client passed the portal, Garden if it is still restricted.
+      idle:
+        type: number
+        description:
+          The number of seconds since the client was last seen in the wireless station list.
+      time:
+        type: number
+        description:
+          The number of seconds since the client was authenticated by the captive portal, 0 if not yet authenticated.
+      ip4addr:
+        type: string
+        description:
+          The IPv4 address of the client, empty if unknown.
+      ip6addr:
+        type: string
+        description:
+          The IPv6 address of the client, empty if unknown.
+      packets_ul:
+        type: number
+        description:
+          The number of packets uploaded by the client since it was authenticated, 0 if not yet authenticated.
+      bytes_ul:
+        type: number
+        description:
+          The number of bytes uploaded by the client since it was authenticated, including the Ethernet header, 0 if not yet authenticated.
+      packets_dl:
+        type: number
+        description:
+          The number of packets downloaded by the client since it was authenticated, 0 if not yet authenticated.
+      bytes_dl:
+        type: number
+        description:
+          The number of bytes downloaded by the client since it was authenticated, including the Ethernet header, 0 if not yet authenticated.
+      username:
+        type: string
+        description:
+          The RADIUS username used to authenticate the client, empty if RADIUS was not used.
