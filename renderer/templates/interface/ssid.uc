@@ -35,15 +35,15 @@
 	};
 
 	const BAND_CRYPTO_RESTRICTIONS = {
-		"6G": ["wpa3", "wpa3-mixed", "wpa3-192", "sae", "sae-mixed", "owe", "mpsk-radius"],
-		"HaLow": ["sae", "sae-mixed", "owe"]
+		"6G": ["wpa3", "wpa3-mixed", "wpa3-192", "sae", "sae-mixed", "sae-cm", "owe", "mpsk-radius"],
+		"HaLow": ["sae", "sae-mixed", "sae-cm", "owe"]
 	};
 
 	const WPA_PROTOCOLS = ["wpa", "wpa2", "wpa-mixed", "wpa3", "wpa3-mixed", "wpa3-192", "psk2-radius", "mpsk-radius"];
 	const SAE_PROTOCOLS = ["wpa3", "wpa3-192", "sae"];
-	const SAE_MIXED_PROTOCOLS = ["wpa3-mixed", "sae-mixed"];
+	const SAE_MIXED_PROTOCOLS = ["wpa3-mixed", "sae-mixed", "sae-cm"];
 	const SAE_ALL_PROTOCOLS = [...SAE_PROTOCOLS, ...SAE_MIXED_PROTOCOLS];
-	const PSK_PROTOCOLS = ["psk", "psk2", "psk-mixed", "sae", "sae-mixed"];
+	const PSK_PROTOCOLS = ["psk", "psk2", "psk-mixed", "sae", "sae-mixed", "sae-cm"];
 
 	const HS20_AUTH_TYPES = {
 		"terms-and-conditions": "00",
@@ -96,6 +96,19 @@
 
 	function is_halow_band(band) {
 		return band == "HaLow";
+	}
+
+	/* The last radio whose band covers this phy configures it, as each
+	 * radio renders onto every phy of its band. */
+	function is_eht_phy(phy) {
+		let mode;
+
+		for (let radio in state.radios)
+			for (let p in wiphy.lookup_by_band(radio.band))
+				if (p.section == phy.section)
+					mode = radio.channel_mode;
+
+		return mode == "EHT" && length(filter(phy.htmode, (m) => index(m, "EHT") == 0)) > 0;
 	}
 
 	function is_mesh_mode(mode) {
@@ -324,13 +337,24 @@
 	function match_crypto(band) {
 		let crypto = validate_encryption(band);
 
+		if (crypto.proto == "sae-cm" && !capab.rsn_override) {
+			state.strict = true;
+			error('sae-cm requires RSN Override support, which this device lacks. Rejecting whole file');
+			return null;
+		}
+
 		if ('6G' == band || 'HaLow' == band) {
-			if (crypto.proto == "sae-mixed" || crypto.proto == "mpsk-radius")
+			if (crypto.proto in ["sae-mixed", "sae-cm", "mpsk-radius"])
 				crypto.proto = "sae";
 			else if (crypto.proto == "wpa3-mixed")
 				crypto.proto = "wpa3";
+			delete crypto.rsn_override;
 		} else if (crypto.proto == "mpsk-radius")
 			crypto.proto = "psk2-radius";
+		else if (crypto.proto == "sae-cm") {
+			crypto.proto = "psk2";
+			crypto.rsn_override = true;
+		}
 		return crypto;
 	}
 
@@ -343,6 +367,11 @@
 
 		if (ssid.encryption.proto in SAE_PROTOCOLS)
 			return 2;
+
+		/* The RSNE of a compatibility mode BSS serves WPA2 clients, so MFP
+		 * stays optional there; the RSN Override elements require it. */
+		if (ssid.encryption.proto == "sae-cm")
+			return 1;
 
 		if (ssid.encryption.proto in SAE_MIXED_PROTOCOLS) {
 			let val = index(["disabled", "optional", "required"], ssid.encryption.ieee80211w);
@@ -623,6 +652,27 @@
 		 * a 3600 default would otherwise override. */
 		if ((crypto.eap_local || crypto.auth) && !is_halow_band(band))
 			uci_set_number(output, `wireless.${section}.eap_reauth_period`, ssid.encryption.eap_reauth_period);
+
+		return uci_output(output);
+	}
+
+	function generate_rsn_override_config(section, phy, crypto) {
+		if (!crypto.rsn_override)
+			return '';
+
+		let output = [];
+		let ft = has_roaming();
+
+		uci_comment(output, '### generate RSN Override configuration');
+		uci_set_string(output, `wireless.${section}.rsn_override_key_mgmt`, ft ? 'SAE FT-SAE' : 'SAE');
+		uci_set_string(output, `wireless.${section}.rsn_override_pairwise`, 'CCMP');
+		uci_set_number(output, `wireless.${section}.rsn_override_mfp`, 2);
+
+		if (is_eht_phy(phy)) {
+			uci_set_string(output, `wireless.${section}.rsn_override_key_mgmt_2`, ft ? 'SAE-EXT-KEY FT-SAE-EXT-KEY' : 'SAE-EXT-KEY');
+			uci_set_string(output, `wireless.${section}.rsn_override_pairwise_2`, 'GCMP-256');
+			uci_set_number(output, `wireless.${section}.rsn_override_mfp_2`, 2);
+		}
 
 		return uci_output(output);
 	}
@@ -1113,6 +1163,7 @@
 {{ generate_ap_sta_config(section, bss_mode) }}
 {{ generate_band_specific_config(section, band) }}
 {{ generate_crypto_base_config(section, band, crypto) }}
+{{ generate_rsn_override_config(section, phy, crypto) }}
 {% if (crypto.eap_local): %}
 {{ generate_eap_local_config(section, crypto) }}
 {%     files.add_named(crypto.eap_user, render("../eap_users.uc", { users: crypto.eap_local.users })) %}

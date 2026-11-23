@@ -442,8 +442,8 @@ function instantiateInterfaceSsidEncryption(location, value, errors) {
 			if (type(value) != "string")
 				push(errors, [ location, "must be of type string" ]);
 
-			if (!(value in [ "none", "owe", "owe-transition", "psk", "psk2", "psk-mixed", "psk2-radius", "wpa", "wpa2", "wpa-mixed", "sae", "sae-mixed", "wpa3", "wpa3-192", "wpa3-mixed", "mpsk-radius" ]))
-				push(errors, [ location, "must be one of \"none\", \"owe\", \"owe-transition\", \"psk\", \"psk2\", \"psk-mixed\", \"psk2-radius\", \"wpa\", \"wpa2\", \"wpa-mixed\", \"sae\", \"sae-mixed\", \"wpa3\", \"wpa3-192\", \"wpa3-mixed\" or \"mpsk-radius\"" ]);
+			if (!(value in [ "none", "owe", "owe-transition", "psk", "psk2", "psk-mixed", "psk2-radius", "wpa", "wpa2", "wpa-mixed", "sae", "sae-mixed", "sae-cm", "wpa3", "wpa3-192", "wpa3-mixed", "mpsk-radius" ]))
+				push(errors, [ location, "must be one of \"none\", \"owe\", \"owe-transition\", \"psk\", \"psk2\", \"psk-mixed\", \"psk2-radius\", \"wpa\", \"wpa2\", \"wpa-mixed\", \"sae\", \"sae-mixed\", \"sae-cm\", \"wpa3\", \"wpa3-192\", \"wpa3-mixed\" or \"mpsk-radius\"" ]);
 
 			return value;
 		}
