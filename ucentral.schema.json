@@ -229,6 +229,7 @@
                         "wpa-mixed",
                         "sae",
                         "sae-mixed",
+                        "sae-cm",
                         "wpa3",
                         "wpa3-192",
                         "wpa3-mixed",

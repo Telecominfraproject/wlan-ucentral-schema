@@ -5,7 +5,12 @@ type: object
 properties:
   proto:
     description:
-      The wireless encryption protocol that shall be used for this BSS
+      The wireless encryption protocol that shall be used for this BSS.
+      sae-cm selects WPA3 Compatibility Mode, where legacy clients join
+      with WPA2-PSK while WPA3 clients use SAE that is advertised through
+      the RSN Override elements. A 6 GHz or HaLow BSS uses plain SAE. A
+      device without RSN Override support rejects a configuration that
+      uses sae-cm.
     type: string
     enum:
     - none
@@ -20,6 +25,7 @@ properties:
     - wpa-mixed
     - sae
     - sae-mixed
+    - sae-cm
     - wpa3
     - wpa3-192
     - wpa3-mixed
