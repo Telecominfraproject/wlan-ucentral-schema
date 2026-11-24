@@ -741,7 +741,12 @@ cursor.foreach("network", "interface", function(d) {
 		return;
 	let role = split(name, /[[:digit:]]/)[0];
 	let vlan = split(name, 'v')[1];
-	let iface_port;
+	/* This used to declare iface_port, singular, which is then never used,
+	 * while the assignment below writes iface_ports, plural and undeclared,
+	 * i.e. a global that survives across cursor.foreach() iterations. An
+	 * interface that resolved no bridge members reported the previous
+	 * interface's ports. Declare it per iteration so it cannot leak. */
+	let iface_ports = [];
 
 	let iface = { name, location: d.ucentral_path, ipv4:{}, ipv6:{} };
 	let ipv4leases = [];
@@ -759,7 +764,14 @@ cursor.foreach("network", "interface", function(d) {
 	let status_v4 = ctx.call(sprintf("network.interface.%s_4", name), "status");
 	let status_v6 = ctx.call(sprintf("network.interface.%s_6", name), "status");
 
-	if (devices && devices[role] && length(devices[role]["bridge-members"]))
+	/* role is the section name with its digits removed, so every upstream
+	 * interface resolves to the same role - a wired uplink up0v0 and an LTE
+	 * uplink up3v0 both give "up" - and they would share one bridge's member
+	 * list. A broad-band uplink has no bridge, so its counters come from its
+	 * own L3 netdev further down. */
+	let l3dev = status.l3_device || status.device;
+	let is_broadband = (d.proto in [ 'wwan', 'pppoe', 'modemmanager', 'qmi', 'mbim', 'ncm' ]);
+	if (!is_broadband && devices && devices[role] && length(devices[role]["bridge-members"]))
 		iface_ports = devices[role]["bridge-members"];
 	iface.uptime = status.uptime || 0;
 
@@ -1029,11 +1041,42 @@ cursor.foreach("network", "interface", function(d) {
 			iface.ssids = ssids;
 	}
 
+	/* Copy, do not alias. The branches below zero and then accumulate into
+	 * iface.counters, which used to write straight through into the ports
+	 * table that is saved to /tmp/state.json as the baseline for the next
+	 * round of deltas. */
 	if (ports && ports[name]?.counters)
-		iface.counters = ports[name].counters;
+		iface.counters = { ...ports[name].counters };
 	else
 		iface.counters = {};
-	if (role == 'up') {
+	if (is_broadband) {
+		/* The traffic of a broad-band uplink runs over its own netdev
+		 * (wwan0, pppoe-up3v0, ...), which is not a bridge port.
+		 * topology lists such a netdev but never counts it: its
+		 * counters stay at zero for the whole life of the interface,
+		 * measured on an LTE uplink where ports['wwan0'] read 0/0
+		 * bytes while the device itself had passed 30589/19540. The
+		 * per-device statistics netifd reports come straight from the
+		 * kernel and match /sys/class/net/<dev>/statistics exactly, so
+		 * take those first and keep topology as the fallback, since it
+		 * is the only one of the two that can also give deltas. */
+		let st = (l3dev && devices) ? devices[l3dev]?.statistics : null;
+		if (length(st)) {
+			iface.counters.rx_bytes = +st.rx_bytes || 0;
+			iface.counters.tx_bytes = +st.tx_bytes || 0;
+			iface.counters.rx_packets = +st.rx_packets || 0;
+			iface.counters.tx_packets = +st.tx_packets || 0;
+			iface.counters.rx_errors = +st.rx_errors || 0;
+			iface.counters.tx_errors = +st.tx_errors || 0;
+			iface.counters.rx_dropped = +st.rx_dropped || 0;
+			iface.counters.tx_dropped = +st.tx_dropped || 0;
+			iface.counters.multicast = +st.multicast || 0;
+			iface.counters.collisions = +st.collisions || 0;
+		} else if (l3dev && ports && ports[l3dev]?.counters) {
+			iface.counters = { ...ports[l3dev].counters };
+			iface.delta_counters = ports_deltas(l3dev);
+		}
+	} else if (role == 'up') {
 		iface.counters.rx_bytes = 0;
 		iface.counters.tx_bytes = 0;
 		iface.counters.rx_packets = 0;

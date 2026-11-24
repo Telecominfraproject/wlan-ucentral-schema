@@ -27,6 +27,16 @@ set network.{{ name }}.pdptype={{ s(match_pdptype()) }}
 set network.{{ name }}.auth={{ s(match_authtype()) }}
 set network.{{ name }}.username={{ s(interface.broad_band.user_name) }}
 set network.{{ name }}.password={{ s(interface.broad_band.password) }}
+{%
+/* interface.uc hands a broad-band uplink straight to this template and
+ * returns, so interface/common.uc - the only template that emits
+ * network.<iface>.metric - never runs for it. netifd then treats the route as
+ * metric 0, which beats the default of 5 that interface.uc gives every other
+ * upstream interface, so an LTE route won even while the modem could not
+ * carry traffic. The value itself was already decided by broadband.uc
+ * (uplink.metric = 1); this only makes it reach uci. */
+%}
+set network.{{ name }}.metric={{ interface.metric }}
 {% endif %}
 
 {% if (interface.broad_band.protocol == 'pppoe'): %}
@@ -39,6 +49,7 @@ set network.{{ name }}.proto='pppoe'
 set network.{{ name }}.username={{ s(interface.broad_band.user_name) }}
 set network.{{ name }}.password={{ s(interface.broad_band.password) }}
 set network.{{ name }}.timeout={{ s(interface.broad_band.timeout) }}
+set network.{{ name }}.metric={{ interface.metric }}
 {% endif %}
 
 

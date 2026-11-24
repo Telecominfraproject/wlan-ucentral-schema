@@ -128,9 +128,15 @@
 
 	// If no metric is defined explicitly, any upstream interfaces will default
 	// to 5 and downstream interfaces will default to 10
-	if (!interface.metric && interface.role == "upstream")
+	//
+	// Test against null, not falsiness. The cloud sends "metric": 0 for an
+	// LTE uplink, and !0 is true in ucode, so an explicitly requested 0 was
+	// taken for "not set" and overwritten with 5 - the very value the wired
+	// uplink already carries. Both upstream interfaces then held the same
+	// metric, which is why they could not each keep a default route.
+	if (interface.metric == null && interface.role == "upstream")
 		interface.metric = 5;
-	if (!interface.metric && interface.role == "downstream")
+	if (interface.metric == null && interface.role == "downstream")
 		interface.metric = 10;
 
 	if (interface.isolate_hosts) {
