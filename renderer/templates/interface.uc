@@ -188,7 +188,14 @@
 
 	// normalize_ functions - data transformation
 	function normalize_interface_metric() {
-		if (!interface.metric) {
+		// Test against null, not falsiness. The cloud sends
+		// "metric": 0 for an LTE uplink, and !0 is true in ucode, so an
+		// explicitly requested 0 was taken for "not set" and
+		// overwritten with the upstream default - the very value the
+		// wired uplink already carries. Both upstream interfaces then
+		// held the same metric, which is why they could not each keep a
+		// default route.
+		if (interface.metric == null) {
 			if (is_upstream_interface())
 				interface.metric = DEFAULT_METRICS.upstream;
 			else if (is_downstream_interface())
