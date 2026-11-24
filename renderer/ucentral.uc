@@ -8,6 +8,7 @@ REQUIRE_SEARCH_PATH = [
 import * as schemareader from 'schemareader';
 let renderer = require("renderer");
 let fs = require("fs");
+let uci = require("uci");
 let ubus = require("ubus").connect();
 
 let inputfile = fs.open(ARGV[0], "r");
@@ -35,6 +36,26 @@ function wait_wireless_ready() {
 		sleep(1000);
 	}
 	warn("ucentral: timeout waiting for network.wireless to settle\n");
+}
+
+// netifd restarts wg0 only when its interface section changes, so a peer
+// change (allowed-ips, endpoint, keys) needs an explicit restart; returns
+// the committed peers of wg0, or null when wg0 is not configured
+function wireguard_peers() {
+	let cursor = uci.cursor();
+	if (cursor.get('network', 'wg0') != 'interface')
+		return null;
+
+	let peers = [];
+	cursor.foreach('network', 'wireguard_wg0', (s) => {
+		let peer = {};
+		for (let k, v in s)
+			if (substr(k, 0, 1) != '.')
+				peer[k] = v;
+		push(peers, peer);
+	});
+
+	return sprintf('%J', peers);
 }
 
 function set_service_state(state) {
@@ -105,6 +126,8 @@ try {
 
 		wait_wireless_ready();
 
+		let old_wireguard_peers = wireguard_peers();
+
 		for (let cmd in [ 'uci -c /tmp/config-shadow -t /tmp/.uci-shadow commit',
 				  'cp /tmp/config-shadow/* /etc/config/',
 				  'rm -rf /tmp/config-shadow',
@@ -121,6 +144,23 @@ try {
 				  '/etc/init.d/dnsmasq restart',
 				  '/etc/init.d/ucentral-state restart'])
 			system(cmd);
+
+		let new_wireguard_peers = wireguard_peers();
+		if (old_wireguard_peers != null && new_wireguard_peers != null &&
+		    old_wireguard_peers != new_wireguard_peers) {
+			system('ifup wg0');
+
+			let up = false;
+			for (let i = 0; i < 15 && !up; i++) {
+				sleep(1000);
+				up = ubus.call('network.interface.wg0', 'status')?.up;
+			}
+			if (!up) {
+				let msg = 'wireguard: wg0 did not come back up after its peers changed';
+				warn(msg + "\n");
+				push(logs, msg);
+			}
+		}
 
 		if (!custom_config) {
 			fs.unlink('/etc/ucentral/ucentral.active');
