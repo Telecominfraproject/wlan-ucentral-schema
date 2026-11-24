@@ -139,6 +139,7 @@
 		uci_set_string(output, 'network.@device[-1].name', name);
 		uci_set_string(output, 'network.@device[-1].ifname', bridgedev);
 		uci_set_number(output, 'network.@device[-1].vid', this_vid);
+		uci_set_number(output, 'network.@device[-1].mtu', interface.mtu);
 
 		return uci_output(output);
 	}
