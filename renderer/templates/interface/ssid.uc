@@ -444,6 +444,15 @@
 		}
 	}
 
+	/* A band can be served by more than one phy, e.g. split 5 GHz radios.
+	 * Each of them needs its own section, the first keeps the plain name. */
+	let band_phys = {};
+	function phy_suffix(phy) {
+		let n = band_phys[phy.band[0]] = (band_phys[phy.band[0]] || 0) + 1;
+
+		return n > 1 ? '_' + n : '';
+	}
+
 	function match_band(phy) {
 		for (let band in ssid.wifi_bands) {
 			if (band in phy.band)
@@ -1092,7 +1101,7 @@
 {% for (let n, phy in phys): %}
 {%   let band_index = get_radio_index(phy.band[0]); %}
 {%   let basename = name + '_' + count; %}
-{%   let ssidname = name + '_' + per_band_counters[phy.band[0]] + '_' + band_index + '_' + per_band_counters[phy.band[0]]; %}
+{%   let ssidname = name + '_' + per_band_counters[phy.band[0]] + '_' + band_index + '_' + per_band_counters[phy.band[0]] + phy_suffix(phy); %}
 {%   let section = (owe ? 'o' : '' ) + ssidname; %}
 {%   let id = wiphy.allocate_ssid_section_id(phy) %}
 {%   let band = match_band(phy); %}
