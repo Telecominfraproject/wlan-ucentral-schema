@@ -1,0 +1,117 @@
+description: |
+  Periodically scan nearby access points (APs), classify them with the rules
+  below and report the results. Detection only: no client blocking or
+  rogue-AP mitigation is performed.
+
+  Each scan cycle is reported with the "rogue_ap" method:
+
+    {
+      "wifi_scan_completed": true,
+      "data": [
+        {
+          "ssid": "OpenWifi",
+          "bssid": "aa:bb:cc:dd:ee:ff",
+          "rssi": -70,
+          "vendor": "aabbcc",
+          "channel": 36,
+          "frequency": 5180,
+          "rogue_ap": true
+        }
+      ]
+    }
+
+  - wifi_scan_completed: check this first. true means "data" holds the
+    BSSs seen in this cycle (possibly none). false means scanning failed
+    and "data" is empty; it does not mean "no APs seen".
+  - data: every BSS seen, rogue or not. ssid is empty for hidden networks,
+    rssi is in dBm, vendor is the BSSID's first 3 octets (6 lowercase hex
+    digits), rogue_ap is the classification result.
+
+  A failed scan is retried up to 3 times, 10 seconds apart; if it still
+  fails, wifi_scan_completed=false is reported. If only some radios fail,
+  the cycle is also retried, and on the last attempt the results of the
+  radios that succeeded are reported. A band whose radio cannot scan (a
+  5 GHz radio on a DFS channel with override-dfs false) is simply missing
+  from "data"; if no radio can scan at all, the failure is reported at once.
+
+  Nothing is reported while the AP is not connected to the controller or
+  its wireless interfaces are not ready.
+type: object
+required: [interval]
+properties:
+  override-dfs:
+    description: |
+      If true, a 5 GHz radio operating on a DFS channel is moved to channel
+      36 (5180 MHz, bandwidth kept but limited to 80 MHz) before scanning
+      and stays there afterwards.
+      If false, the channel is never changed and a radio on a DFS channel is
+      not scanned, so results for that band may be missing.
+    type: boolean
+    default: false
+  interval:
+    description: |
+      Required. Delay between scan cycles in minutes, counted from the end
+      of the previous cycle.
+    type: integer
+    minimum: 30
+    maximum: 1440
+  administeredbssid:
+    description: |
+      BSSIDs of managed APs (case-insensitive). A matching BSS is always
+      reported with rogue_ap=false, whatever the rules say. Works with both
+      rule modes; leave empty for no exemptions.
+    type: array
+    default: []
+    items:
+      type: string
+      minLength: 17
+      maxLength: 17
+      pattern: '^([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}$'
+  rules:
+    description: |
+      Detection rules. Each rule has exactly one key, and all rules must use
+      the same mode; mixing modes is a configuration error.
+
+      Blacklist mode (ssid, bssid, rssi): a BSS matching any rule is rogue.
+        - ssid: exact SSID match
+        - bssid: exact BSSID match
+        - rssi: signal at or above this value (dBm)
+
+      Vendor-whitelist mode (vendor only): a BSS matching no rule is rogue.
+        - vendor: OUI, 6 hex digits, e.g. "001A2B"
+    type: array
+    anyOf:
+      - items:
+          oneOf:
+            - type: object
+              properties:
+                vendor:
+                  type: string
+                  pattern: '^[0-9a-fA-F]{6}$'
+              required: [vendor]
+              additionalProperties: false
+      - items:
+          oneOf:
+            - type: object
+              properties:
+                ssid:
+                  type: string
+              required: [ssid]
+              additionalProperties: false
+            - type: object
+              properties:
+                bssid:
+                  type: string
+                  pattern: '^([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}$'
+              required: [bssid]
+              additionalProperties: false
+            - type: object
+              properties:
+                rssi:
+                  type: integer
+                  minimum: -100
+                  maximum: 0
+              required: [rssi]
+              additionalProperties: false
+    minItems: 1
+
