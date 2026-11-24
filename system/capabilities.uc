@@ -182,6 +182,11 @@ for (let path in fs.glob('/sys/module/*/parameters/wed_enable')) {
 	}
 }
 
+/* Only wifi-scripts that declare the explicit RSN Override options can
+ * carry WPA3 Compatibility Mode (sae-cm). */
+if (index(fs.readfile('/lib/netifd/hostapd.sh') || '', 'config_add_string rsn_override_key_mgmt') >= 0)
+	capa.rsn_override = true;
+
 capa.compress_cmd = true;
 
 fs.writefile('/etc/ucentral/capabilities.json', capa);
